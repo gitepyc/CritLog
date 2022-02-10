@@ -1,0 +1,45 @@
+0.1.5 CHANGES:
+
+1. Pain Sup. Sound added
+2. HymnOfHope Dummy Sound added
+
+
+0.1.4.2 CHANEGES:
+
+1. Lottery Sound added
+2. Moon Sound added
+3. Drum Sound added
+3. Roll sounds jetzt für alle rolls 100+
+
+
+0.1.4.1 CHANEGES:
+
+1. 9k Sounds can now be turned off
+2. Somina Sound added
+
+
+
+0.1.4 CHANGES:
+
+1. Sounds for MageTable added
+2. Sounds for HealthStones added
+3. Evocation Sound added
+4. Truby Sounds added
+5. Some Fixxes... priest sound still buggy
+
+
+
+0.1.3 CHANGES:
+
+1. Sounds for /roll added
+2. Ready Check Sound now works as it did before 0.1.2
+ 
+
+
+0.1.2 CHANGES:
+
+1. /cl does now work correctly
+2. Death of Heal Priests Sound was reworked, should work now... looks good but might be buggy AF
+3. Over9k Damage Sound can now be turned off with "/cl 9k"
+4. Ready Check Sound reworked: sound plays now only if all raid/group member are ready
+5. Soulstone Sound works now
