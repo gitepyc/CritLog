@@ -2,6 +2,72 @@
 
 ## Unreleased
 
+- **First draft, needs in-game verification and a product decision before
+  merge** — replaced the hardcoded melee/tank/priest death-sound rosters
+  with class/role-based matching as the primary check, per the roadmap item
+  in docs/REFACTORING.md (step 5) and docs/CLEANUP-REVIEW.md ("Direction
+  decided, not yet scheduled"). `CombatLog.lua`'s `HandleDeath` now resolves
+  a live unit token for the dying player via the existing `findUnitToken()`
+  helper and checks:
+  - **Priest**: `UnitClass(token)` englishClass `== "PRIEST"`. Clean 1:1
+    mapping, no judgment call needed.
+  - **Tank**: `UnitGroupRolesAssigned(token) == "TANK"`. This is the
+    correct API for an actually-assigned role, but it only reflects a role
+    someone explicitly set (e.g. raid-frame role icons) — it commonly
+    reports `"NONE"` for a real tank who was never manually flagged,
+    especially outside a raid group. Deliberately **not** falling back to
+    a class-based guess (e.g. "Warrior with no Healer role") when the role
+    is unassigned — that would flag every non-tanking Warrior/Paladin/Druid
+    too, trading one gap for a worse one. Judgment call; open for
+    reconsideration.
+  - **Melee**: the fuzziest of the three, flagged as a known, accepted
+    blind spot rather than presented as solved. `Data.lua`'s new
+    `deathClasses.meleeCapable` (`WARRIOR`, `ROGUE`, `PALADIN`, `SHAMAN`,
+    `DRUID`) and `alwaysMelee` (`WARRIOR`, `ROGUE`, which have no
+    ranged/caster spec at all) narrow the hybrids by excluding anyone with
+    `UnitGroupRolesAssigned(token) == "HEALER"`. This does **not** exclude
+    ranged-caster DPS specs of those same hybrid classes (Elemental
+    Shaman, Balance Druid, ...) — there is no reliable API to distinguish
+    a melee spec from a caster spec of the same class for another player
+    without inspecting talents, which isn't always possible. Hunter is
+    excluded entirely (functionally ranged despite being able to equip
+    melee weapons); Mage/Warlock are excluded entirely (never melee).
+    Judgment call; open for reconsideration.
+  - **`"Schnutz"` special case**: kept, unchanged, as a standalone
+    exact-name check independent of the class/role logic above — it's a
+    personal in-joke tied to one specific character, not a generalizable
+    class or role rule, so it doesn't fit "no more names" cleanly either
+    way. Not silently dropped and not silently kept as if it were
+    resolved: flagged explicitly in the PR for the user to decide (keep
+    for nostalgia / make configurable / drop). Currently keeping it is the
+    recommendation, since dropping it silently would be a behavior change
+    the user didn't ask for.
+
+  The old `Data.lua` `playerGroups` name rosters (melee/tank/priest) are
+  **kept as a fallback**, not deleted, using the same
+  ID-first-then-name-fallback pattern already established for spell
+  matching: class/role detection needs a live unit token (not guaranteed —
+  the dying player might not be targeted or on a visible nameplate) and,
+  for tank, an explicitly assigned role (also not guaranteed) — a name
+  match in the legacy roster still fires the sound when the live check
+  can't. This was a judgment call, not a mandate: full replacement was
+  considered and rejected because role detection is inherently less
+  reliable than the spell-ID lookups this pattern was originally built
+  for, so the failure mode (a death sound silently not firing) is more
+  likely here, not less.
+
+  No new `CritLogDB` field was added — `MeleeSoundFlag`/`TankSoundFlag`/
+  `PriestSoundFlag` still gate the same three sounds as before, just with
+  a different match underneath. `CRITLOG_VERSION` is unchanged and
+  `SetDefaults()` needed no changes; migration safety isn't affected by
+  this change at all.
+
+  **Cannot be verified without a WoW client** (see tests/README.md — no
+  headless mode exists in this environment): whether `UnitClass`/
+  `UnitGroupRolesAssigned` behave as expected against real group members,
+  whether `findUnitToken()` reliably resolves a token for a dying player in
+  practice, and whether the melee/tank heuristics above produce acceptable
+  results for an actual roster. This needs in-game testing before merge.
 - Added a debug mode: `/cl debug` toggles `DebugFlag` (off by default,
   standard migration-safe new field - existing characters just get it
   backfilled as `false`). `CritLog:Debug(...)` in Core.lua prints only

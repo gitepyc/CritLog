@@ -43,6 +43,61 @@ local function findUnitToken(guid)
     return nil
 end
 
+-- Returns true if the unit's class is melee-capable, per the rules in
+-- Data.lua's deathClasses.meleeCapable/alwaysMelee. Warrior and Rogue have
+-- no ranged/caster spec at all, so class alone identifies them. The
+-- remaining hybrid classes (Paladin, Shaman, Druid) are narrowed by
+-- assigned raid role: a Healer-flagged member of one of those classes is
+-- excluded, since a Holy Paladin/Restoration Shaman/Restoration Druid is
+-- never in melee.
+--
+-- Known blind spot, accepted rather than solved: this does NOT exclude
+-- ranged-caster DPS specs of those same hybrid classes (Elemental Shaman,
+-- Balance Druid, ...), which will still be flagged as "melee" here. There
+-- is no reliable API to tell a melee spec from a caster spec of the same
+-- class for another player without inspecting talents, which isn't always
+-- possible. See CHANGELOG.md.
+local function isMeleeClass(token)
+    local _, class = UnitClass(token)
+    if not class then
+        return false
+    end
+
+    if tContains(CritLog.Data.deathClasses.alwaysMelee, class) then
+        return true
+    end
+
+    if not tContains(CritLog.Data.deathClasses.meleeCapable, class) then
+        return false
+    end
+
+    return UnitGroupRolesAssigned(token) ~= "HEALER"
+end
+
+-- Returns true only if the unit currently has the Tank role explicitly
+-- assigned (raid-frame role icons, or equivalent). Tank is a raid role,
+-- not a class — a Warrior/Paladin/Druid can each be a tank or something
+-- else — and UnitGroupRolesAssigned only reflects a role someone actually
+-- set, which is not guaranteed. It commonly reports "NONE" for a real tank
+-- who was never manually flagged, especially outside a raid.
+--
+-- Known blind spot, accepted rather than solved: an unassigned real tank
+-- is not detected here. Deliberately not falling back to a class-based
+-- guess (e.g. "Warrior with no Healer role") — that would also flag every
+-- non-tanking Warrior/Paladin/Druid, trading one gap for a worse one. The
+-- playerGroups.tank name-roster fallback in HandleDeath covers this gap
+-- for the same handful of characters it always has. See CHANGELOG.md.
+local function isAssignedTank(token)
+    return UnitGroupRolesAssigned(token) == "TANK"
+end
+
+-- Straightforward class check — Priest has no role ambiguity like
+-- melee/tank above.
+local function isPriestClass(token)
+    local _, class = UnitClass(token)
+    return class ~= nil and tContains(CritLog.Data.deathClasses.priest, class)
+end
+
 -- Excludes crits against trivial ("grey") enemies from counting as
 -- highscores, so a one-shot on low-level content doesn't overwrite a real
 -- record from relevant content. If the hit target's unit token can't be
@@ -249,12 +304,25 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         return
     end
 
-    if CritLogDB.MeleeSoundFlag
-        and tContains(self.Data.playerGroups.melee, destName)
-    then
+    -- Live unit token for the dying player, used by the class/role checks
+    -- below. May be nil (e.g. no nameplate on screen and not the current
+    -- target) — every check below falls back to the legacy name roster
+    -- when that happens, same as when the token resolves but the
+    -- class/role check itself doesn't match.
+    local token = findUnitToken(destGUID)
+
+    if CritLogDB.MeleeSoundFlag then
+        -- "Schnutz" is a personal in-joke tied to one specific character,
+        -- not a generalizable class/role rule, so it stays a standalone
+        -- name check rather than being folded into the class-based melee
+        -- detection or the legacy roster fallback below. Flagged as an
+        -- open decision point in the PR rather than silently dropped or
+        -- silently kept — see CHANGELOG.md.
         if destName == "Schnutz" then
             self:PlaySound(self.Data.sounds.meleeDeathSchnutz)
-        else
+        elseif (token and isMeleeClass(token))
+            or tContains(self.Data.playerGroups.melee, destName)
+        then
             self:PlaySound(self.Data.sounds.meleeDeath)
         end
     end
@@ -269,13 +337,19 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     end
 
     if CritLogDB.TankSoundFlag
-        and tContains(self.Data.playerGroups.tank, destName)
+        and (
+            (token and isAssignedTank(token))
+            or tContains(self.Data.playerGroups.tank, destName)
+        )
     then
         self:PlaySound(self.Data.sounds.tankDeath)
     end
 
     if CritLogDB.PriestSoundFlag
-        and tContains(self.Data.playerGroups.priest, destName)
+        and (
+            (token and isPriestClass(token))
+            or tContains(self.Data.playerGroups.priest, destName)
+        )
     then
         self:PlaySound(randomEntry(self.Data.sounds.priestDeath))
     end
