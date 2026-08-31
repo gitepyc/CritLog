@@ -11,34 +11,59 @@ a trigger.
 
 ## Triggers
 
-| # | Trigger | Toggle | Sound(s) |
-| ---: | --- | --- | --- |
-| 1 | `PLAYER_LOGIN` — always fires, inits/migrates `CritLogDB`, prints stored highscores | none | — (Login sound wired but disabled, see #24) |
-| 2 | Ready check | `/cl ready` | `Ready.mp3` |
-| 3 | Player's `SPELL_DAMAGE` crit | `/cl allcrits`, `/cl sound` | `at_bam_babam.mp3` |
-| 4 | Player's `SWING_DAMAGE` crit (white hit) | `/cl whitehit` | `at_bam_babam.mp3` |
-| 5 | Player's `RANGE_DAMAGE` crit (counted as white hit) | `/cl whitehit` | `at_bam_babam.mp3` |
-| 6 | Player's `SPELL_HEAL` crit | `/cl allcrits` | `at_bam_babam.mp3` |
-| 7 | Party/raid member summons Mana Tide Totem | `/cl aura` | `Manatide.mp3` |
-| 8 | Player receives Bloodlust/Heroism | `/cl aura` | `Bloodlust.mp3` |
-| 9 | Player receives Innervate | `/cl aura` | `Inervate1.mp3` / `Inervate2.mp3` (random) |
-| 10 | Player receives Power Infusion | `/cl aura` | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random) |
-| 11 | Player receives Blessing of Protection | `/cl aura` | `Bubble.mp3` |
-| 12 | Player receives Divine Intervention | `/cl aura` | `divineInt.mp3` |
-| 13 | Player receives Soulstone Resurrection | `/cl aura` | `soulstone.mp3` / `soulstone2.mp3` / `soulstone3.mp3` (random) |
-| 14 | Player dies | `/cl player` + `/cl dead` | `MarioDeath.mp3` |
-| 15 | Hardcoded roster member "Schnutz" dies (special case) | `/cl melee` + `/cl dead` | `schnutz.mp3` |
-| 16 | Any other hardcoded `MELEE_NAMES` roster member dies | `/cl melee` + `/cl dead` | `wilhelm.ogg` |
-| 17 | Hardcoded EN/DE TBC boss list — boss dies | `/cl boss` + `/cl dead` | `FFX.mp3` / `Zelda.mp3` (random) |
-| 18 | Hardcoded `TANK_NAMES` roster member dies | `/cl tank` + `/cl dead` | `Tank.mp3` / `Tank2.mp3` (random) |
-| 19 | Hardcoded `HEALPRIEST_NAMES` roster member dies | `/cl priest` + `/cl dead` | `Angels1.mp3` / `Angels2.mp3` (random) |
-| 20 | Raid leader says "raid end" / "raid ende" in chat | none — always active | `bye.mp3` then `end.mp3` (may overlap) |
-| 21 | Raid leader says "wipe" / "shit show" in chat | none — always active | `wipe.mp3` |
-| 22 | Hardcoded boss list — killing blow chat print | none | text only, no sound |
-| 23 | Zone change | inactive — event not registered | — |
-| 24 | Login sound | inactive — commented out | `Login.mp3` (Toni profile only; absent from default) |
-| 25 | "Over 9k" damage hit | inactive — commented out | `Xtreme.mp3` (Toni profile only; absent from default) |
-| 26 | Spirit of Redemption | inactive — commented out, marked "not working" | — |
+`= default` means the Toni file is byte-identical to the default one (same
+audio, no reason to listen twice). Everything else in the Toni column is a
+genuinely different clip.
+
+| # | Trigger | Toggle | Default mode | Toni mode |
+| ---: | --- | --- | --- | --- |
+| 1 | `PLAYER_LOGIN` — always fires, inits/migrates `CritLogDB`, prints stored highscores | none | — (Login sound wired but disabled, see #24) | — (same) |
+| 2 | Ready check | `/cl ready` | `Ready.mp3` | `= default` |
+| 3 | Player's `SPELL_DAMAGE` crit | `/cl allcrits`, `/cl sound` | `at_bam_babam.mp3` | `= default` |
+| 4 | Player's `SWING_DAMAGE` crit (white hit) | `/cl whitehit` | `at_bam_babam.mp3` | `= default` |
+| 5 | Player's `RANGE_DAMAGE` crit (counted as white hit) | `/cl whitehit` | `at_bam_babam.mp3` | `= default` |
+| 6 | Player's `SPELL_HEAL` crit | `/cl allcrits` | `at_bam_babam.mp3` | `= default` |
+| 7 | Party/raid member summons Mana Tide Totem | `/cl aura` | `Manatide.mp3` | different clip |
+| 8 | Player receives Bloodlust/Heroism | `/cl aura` | `Bloodlust.mp3` | different clip |
+| 9 | Player receives Innervate | `/cl aura` | `Inervate1.mp3` / `Inervate2.mp3` (random) | different clips (both) |
+| 10 | Player receives Power Infusion | `/cl aura` | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random, 3 **distinct** clips) | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random, but all 3 are **byte-identical** — the "randomness" plays the same clip every time) |
+| 11 | Player receives Blessing of Protection | `/cl aura` | `Bubble.mp3` | different clip |
+| 12 | Player receives Divine Intervention | `/cl aura` | `divineInt.mp3` | `= default` |
+| 13 | Player receives Soulstone Resurrection | `/cl aura` | `soulstone.mp3` / `soulstone2.mp3` / `soulstone3.mp3` (random) | `= default` for all three (we copied `soulstone2.mp3` in to close a prior gap) |
+| 14 | Player dies | `/cl player` + `/cl dead` | `MarioDeath.mp3` | different clip |
+| 15 | Hardcoded roster member "Schnutz" dies (special case) | `/cl melee` + `/cl dead` | `schnutz.mp3` | different clip |
+| 16 | Any other hardcoded `MELEE_NAMES` roster member dies | `/cl melee` + `/cl dead` | `wilhelm.ogg` | `= default` |
+| 17 | Hardcoded EN/DE TBC boss list — boss dies | `/cl boss` + `/cl dead` | `FFX.mp3` / `Zelda.mp3` (random) | `= default` for both |
+| 18 | Hardcoded `TANK_NAMES` roster member dies | `/cl tank` + `/cl dead` | `Tank.mp3` / `Tank2.mp3` (random, 2 **distinct** clips) | `Tank.mp3` / `Tank2.mp3` (random, but both are **byte-identical** — same clip every time) |
+| 19 | Hardcoded `HEALPRIEST_NAMES` roster member dies | `/cl priest` + `/cl dead` | `Angels1.mp3` / `Angels2.mp3` (random) | `= default` for both |
+| 20 | Raid leader says "raid end" / "raid ende" in chat | none — always active | `bye.mp3` then `end.mp3` (may overlap) | different clips (both) |
+| 21 | Raid leader says "wipe" / "shit show" in chat | none — always active | `wipe.mp3` | `= default` |
+| 22 | Hardcoded boss list — killing blow chat print | none | text only, no sound | text only, no sound |
+| 23 | Zone change | inactive — event not registered | — | — |
+| 24 | Login sound | inactive — commented out | — (file doesn't exist in this profile) | `Login.mp3` exists but is unreachable |
+| 25 | "Over 9k" damage hit | inactive — commented out | — (file doesn't exist in this profile) | `Xtreme.mp3` exists but is unreachable |
+| 26 | Spirit of Redemption | inactive — commented out, marked "not working" | — | — |
+
+### Do you need to carry sounds over if Toni becomes the only profile?
+
+**No, not for anything that currently plays.** Every trigger that is active
+today (2–21) already has a complete, working sound in the Toni profile —
+nothing is missing there that only exists in default. The only
+default-only-vs-Toni-only asymmetry is triggers 24–25 (`Login.mp3`,
+`Xtreme.mp3`), and those code paths are commented out in both profiles, so
+there's nothing to preserve unless you plan to re-enable that code later —
+in which case note it's already sitting in `assi/`, just not in the default
+folder.
+
+One real behavior change to be aware of before dropping default: in Toni,
+the "random" pick for **Power Infusion (#10)** and **Tank death (#18)**
+isn't actually random-sounding — all the candidate files are byte-identical
+copies of each other, so those triggers always play the same clip today.
+Default has 3 distinct Power Infusion clips and 2 distinct Tank clips. If
+you want the randomness to feel meaningful after the switch, you'd want to
+either pull default's distinct variants into the new single profile for
+just those two triggers, or accept that they're effectively single-clip
+triggers with dead code around them.
 
 Notes worth weighing while deciding:
 - Triggers 15–19 depend on hardcoded character names from one specific raid
