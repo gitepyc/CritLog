@@ -51,7 +51,7 @@ now; a later refactor, not a cleanup pass:
 | # | What | Where |
 | ---: | --- | --- |
 | 1 | Hardcoded melee/tank/healer-priest death rosters (`MELEE_NAMES`, `TANK_NAMES`, `HEALPRIEST_NAMES`) plus the special-cased `"Schnutz"` death sound | Death-sound triggers — see [BEHAVIOR.md](BEHAVIOR.md#deaths) |
-| 2 | `CritLog/README.txt` — 3-line legacy readme, fully superseded by the root `README.md` and `docs/` | `CritLog/README.txt` |
+| 2 | `README.txt` — 3-line legacy readme, fully superseded by the root `README.md` and `docs/` | `README.txt` |
 
 For anyone who isn't in that original roster, the melee/tank/priest death
 sounds simply never fire today — dead weight in practice, but removing it

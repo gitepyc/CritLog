@@ -5,6 +5,6 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-docker build -q -t wow-addons-luacheck:5.1 -f tests/lint/Dockerfile tests/lint >/dev/null
+docker build -q -t critlog-luacheck:5.1 -f tests/lint/Dockerfile tests/lint >/dev/null
 
-docker run --rm -v "$PWD":/addon:ro wow-addons-luacheck:5.1 .
+docker run --rm -v "$PWD":/addon:ro critlog-luacheck:5.1 .

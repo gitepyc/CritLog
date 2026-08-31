@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build lint image
-        run: docker build -t wow-addons-luacheck:5.1 -f tests/lint/Dockerfile tests/lint
+        run: docker build -t critlog-luacheck:5.1 -f tests/lint/Dockerfile tests/lint
 
       - name: Run luacheck
         # luacheck exits 1 for warnings-only, 2+ for actual errors (e.g.
@@ -22,7 +22,7 @@ jobs:
         # train everyone to ignore a failing pipeline.
         run: |
           set +e
-          docker run --rm -v "$PWD":/addon:ro wow-addons-luacheck:5.1 .
+          docker run --rm -v "$PWD":/addon:ro critlog-luacheck:5.1 .
           code=$?
           set -e
           echo "luacheck exit code: $code"

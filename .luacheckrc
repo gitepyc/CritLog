@@ -36,7 +36,7 @@ max_line_length = false
 -- event-dispatch-style methods, not a defect to fix line by line.
 self = false
 
-files["CritLog/CritLog.lua"] = {
+files["CritLog.lua"] = {
     -- SavedVariables and the slash-command hook are required by Blizzard's
     -- addon conventions and must be real globals, not locals.
     globals = {

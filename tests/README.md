@@ -33,7 +33,7 @@ itself has no Actions runner registered). It only fails the build on real
 warnings (currently 10, see CHANGELOG.md) don't turn the pipeline red, since
 a pipeline that's always red trains people to ignore it. Trigger it manually
 from the GitHub UI ("Actions" tab → "Lint" → "Run workflow") or via
-`gh workflow run lint.yml --repo gitepyc/wow-addons`.
+`gh workflow run lint.yml --repo gitepyc/critlog`.
 
 ## What cannot be automated here
 

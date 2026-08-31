@@ -1,7 +1,8 @@
-# WoW Addons
+# CritLog
 
-This repository contains private World of Warcraft addons. It currently hosts
-one addon: **CritLog**.
+CritLog is a World of Warcraft addon that records personal critical-hit and
+critical-heal highscores and plays event-driven sounds for crits, deaths,
+auras, and raid-leader chat triggers.
 
 > **Project status:** Working legacy addon under active documentation and
 > modernization. CritLog `0.1.1` is currently tested with Season of Discovery
@@ -15,16 +16,11 @@ one addon: **CritLog**.
 - [Refactoring plan](docs/REFACTORING.md)
 - [Cleanup review checklist](docs/CLEANUP-REVIEW.md)
 
-## Included addons
+## Install
 
-| Addon | Purpose | Status |
-| --- | --- | --- |
-| [CritLog](CritLog/) | Records personal critical-hit and critical-heal highscores and plays event-driven sounds. | Working legacy addon; modernization planned |
-
-## Install CritLog
-
-There is no build or release pipeline yet. Copy the `CritLog` directory directly
-into the addon directory of the Classic Era client:
+There is no build or release pipeline yet. Copy this repository's contents
+into a folder named `CritLog` inside the addon directory of the Classic Era
+client:
 
 ```text
 World of Warcraft/
@@ -86,7 +82,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 ## Repository layout
 
 ```text
-wow-addons/
+critlog/
 ├── README.md
 ├── LICENSE               # MIT, code only — see License section below
 ├── CHANGELOG.md
@@ -97,12 +93,16 @@ wow-addons/
 ├── .luacheckrc           # luacheck config; stds.wow lists only the WoW API CritLog calls
 ├── .pkgmeta              # Draft BigWigsMods/packager config (not yet wired into CI)
 ├── .github/workflows/    # CI (runs against the GitHub push mirror; Gitea has no runner yet)
-└── CritLog/
-    ├── CritLog.toc       # WoW metadata and SavedVariables declaration
-    ├── CritLog.lua       # Current event, storage, sound, and command logic
-    ├── README.txt        # Historical minimal readme
-    └── sounds/
+├── CritLog.toc           # WoW metadata and SavedVariables declaration
+├── CritLog.lua           # Current event, storage, sound, and command logic
+├── README.txt            # Historical minimal readme
+└── sounds/
 ```
+
+This repository's root doubles as the addon's own folder content: the
+`package-as: CritLog` rule in `.pkgmeta` (once wired into a build) packages it
+into a `CritLog/` folder for distribution, matching what manual installation
+above does by hand.
 
 ## Hard-coded data inventory
 
@@ -155,7 +155,7 @@ hard-coded data and bugs across several files.
 ## Development
 
 There are no external dependencies or build steps. Changes are made directly in
-`CritLog/CritLog.lua` and must be tested in the target client. Until a release
+`CritLog.lua` and must be tested in the target client. Until a release
 pipeline exists, the versions in `CritLog.lua` and `CritLog.toc` must be kept
 in sync manually.
 
@@ -170,7 +170,7 @@ manual in-game testing.
 ## License
 
 The Lua source code is MIT-licensed — see [LICENSE](LICENSE). The audio
-files under `CritLog/sounds/` are **not** covered by that license: their
+files under `sounds/` are **not** covered by that license: their
 origin and redistribution rights are undocumented and must be reviewed
 before public distribution — see
 [docs/SOUNDS.md](docs/SOUNDS.md#required-human-review).
