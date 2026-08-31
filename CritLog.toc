@@ -1,0 +1,9 @@
+## Interface: 20502
+## Title: CritLog AriZoNa!
+## Note: gtrkt
+## Author: Kîtten aka Chabo
+## Version: 0.1.1
+
+## SavedVariablesPerCharacter: CritLogDB
+
+CritLog.lua
