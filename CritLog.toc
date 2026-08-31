@@ -6,4 +6,11 @@
 
 ## SavedVariablesPerCharacter: CritLogDB
 
-CritLog.lua
+Core.lua
+Data.lua
+Database.lua
+Sounds.lua
+ChatTriggers.lua
+CombatLog.lua
+Commands.lua
+Events.lua

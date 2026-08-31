@@ -42,11 +42,10 @@ Met on `fix/safe-cleanups`.
 ### 3. Extract data from control flow
 
 Done. Centralized sounds, spells, bosses, player rosters, and chat-trigger
-phrases into one `local CritLogData` table (not a new global) near the top
-of `CritLog.lua`:
+phrases under the addon namespace in `Data.lua`:
 
 ```lua
-local CritLogData = {
+CritLog.Data = {
   sounds = { ... },
   bosses = { ... },
   playerGroups = { ... },
@@ -55,7 +54,7 @@ local CritLogData = {
 }
 ```
 
-Event handlers now read `CritLogData.sounds.*`, `CritLogData.spells.*`, etc.
+Event handlers now read `CritLog.Data.sounds.*`, `CritLog.Data.spells.*`, etc.
 instead of ~30 scattered top-level constants and standalone sound-list
 locals. No behavior change: verified with luacheck (still 7 warnings / 0
 errors, same set as before) and a script cross-checking every sound
@@ -77,26 +76,28 @@ lists. Met.
 
 ### 4. Split along stable responsibilities
 
-Recommended target layout:
+Completed on `refactor/split-modules` with this layout:
 
 ```text
 CritLog/
 ├── CritLog.toc
-├── Core.lua          # Namespace, initialization, and event dispatch
-├── Data.lua          # Spell/NPC IDs, defaults, and sound catalog
+├── Core.lua          # Namespace and version
+├── Data.lua          # Names, rosters, triggers, and sound catalog
 ├── Database.lua      # Defaults, schema, and migrations
 ├── Sounds.lua        # Resolve and play logical sound IDs
 ├── CombatLog.lua     # Crits, auras, and deaths
 ├── ChatTriggers.lua  # Raid-leader phrases
 ├── Commands.lua      # Slash commands
-└── Options.lua       # Future options UI
+├── Events.lua        # Frame registration and event dispatch
+└── Options.lua       # Future options UI (not implemented)
 ```
 
 Load the files in this order from `CritLog.toc`. Shared state belongs in one
 addon namespace, not in new globals.
 
-**Acceptance:** Every file has one clear responsibility and behavior from step
-1 remains unchanged.
+**Acceptance:** Every file has one clear responsibility, the TOC load order is
+explicit, and shared state is namespaced. Static checks are complete; the
+manual in-game behavior checklist remains required before merge.
 
 ### 5. Professionalize configuration
 
@@ -114,8 +115,8 @@ addon namespace, not in new globals.
   with a curated WoW API globals list (`.luacheckrc`); `scripts/lint.sh` runs
   it locally, `.github/workflows/lint.yml` runs it in CI against the GitHub
   push mirror (Gitea has no Actions runner registered yet). 79 pre-existing
-  warnings remain unaddressed — mostly unused combat-log fields, unused dead
-  sound constants, and the global-pollution items already tracked in step 4.
+  warnings are reviewed rather than treated as build failures; most come from
+  unused fields in Blizzard's positional combat-log payload.
 - focused tests for pure functions, migrations, and trigger matching — still
   outstanding; no runtime/unit-test harness exists because the WoW client has
   no supported headless mode (see [tests/README.md](../tests/README.md))
@@ -130,14 +131,10 @@ addon namespace, not in new globals.
 - changelog and versioned releases — `CHANGELOG.md` started; no tagged
   releases yet
 
-## First structural refactoring branch
+## Current refactoring status
 
-The first structural branch should be named `refactor/catalog-and-safety`, not
-“split files”. It should contain only:
-
-1. centralized sound and trigger tables
-2. protection from unavailable sounds
-3. the remaining small verified defects
-4. no intentional user-visible behavior change
-
-After that, splitting files becomes substantially safer and easier to review.
+The catalog-and-safety work and the responsibility-based file split are
+complete. The next refactoring branch should focus on one independently
+testable concern, preferably stable spell/NPC identifiers or extraction of
+pure trigger-matching functions, rather than combining configuration UI,
+schema changes, and combat-log behavior in one review.
