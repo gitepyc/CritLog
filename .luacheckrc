@@ -33,6 +33,11 @@ std = "lua51+wow"
 -- would hurt readability more than it helps.
 max_line_length = false
 
+-- CritLog uses Lua's colon-method OOP idiom throughout (function
+-- CritLog:Foo()); most handlers don't need self, and that's expected for
+-- event-dispatch-style methods, not a defect to fix line by line.
+self = false
+
 files["CritLog/CritLog.lua"] = {
     -- SavedVariables and the slash-command hook are required by Blizzard's
     -- addon conventions and must be real globals, not locals.
