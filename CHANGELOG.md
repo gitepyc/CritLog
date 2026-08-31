@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Made the Toni sound set the addon's only profile and removed the old
+  default-only clips (25 active files now, down from 53, ~4.18 MB →
+  ~3.13 MB). `/cl toni`, `ToniFlag`, `SoundFile`, and the whole
+  `ResolveSound()`/dedup-alias mechanism from the previous step are gone —
+  there's only one profile now, so nothing to resolve between. Power
+  Infusion and Tank death now play a single fixed clip instead of
+  "randomly" picking between files that were already identical in the Toni
+  set. `CritLogDB` migration verified: `CRITLOG_VERSION` is unchanged, so
+  existing characters' saved data is untouched on login; the now-unused
+  `ToniFlag`/`SoundFile` fields simply stop being read. See
+  docs/CLEANUP-REVIEW.md for what's still worth cutting as dead weight
+  (disabled-feature constants/assets, hardcoded raid rosters, the unused
+  `more sounds/` candidates folder).
 - Deduplicated the sound catalog: 16 files that were byte-identical to
   another file already in the catalog were removed (69 → 53 files,
   ~5.68 MB → ~4.18 MB). `CritLog.lua` now resolves sound paths through a new

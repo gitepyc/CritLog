@@ -82,7 +82,6 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl tank` | Toggles death sounds for a hard-coded tank roster. |
 | `/cl priest` | Toggles death sounds for a hard-coded healer-priest roster. |
 | `/cl boss` | Toggles death sounds for a hard-coded boss roster. |
-| `/cl toni` | Switches between the default and alternate sound directories. The alternate set is still incomplete. |
 
 ## Repository layout
 
@@ -103,7 +102,6 @@ wow-addons/
     ├── CritLog.lua       # Current event, storage, sound, and command logic
     ├── README.txt        # Historical minimal readme
     └── sounds/
-        ├── assi/         # Alternate sound set
         └── more sounds/  # Unused candidate sound files
 ```
 

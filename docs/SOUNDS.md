@@ -2,23 +2,23 @@
 
 ## Overview
 
-The catalog contains **53 files** totaling approximately **4.18 MB**. Files
-that were byte-identical to another file already in the catalog were
-removed; `CritLog.lua`'s `ResolveSound()` transparently redirects requests
-for a removed filename to the one physical copy that is still on disk (see
-[REFACTORING.md](REFACTORING.md) and `CHANGELOG.md`). Playback is
-unaffected — every trigger still plays the exact same audio it did before.
+The catalog contains **25 files in active use** plus a **14-file unused
+candidates folder**, totaling approximately **3.13 MB**.
+
+> **History:** CritLog used to ship two profiles (default and an alternate
+> "Toni" set). Byte-identical files were deduplicated first, then the Toni
+> set was promoted to be the only profile — the old default-only clips were
+> dropped. See `CHANGELOG.md` for the exact steps and
+> [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for what's still worth stripping.
 
 | Directory | Purpose in the current code |
 | --- | --- |
-| `CritLog/sounds/` | Default sound profile |
-| `CritLog/sounds/assi/` | Alternate “Toni” profile selected with `/cl toni` |
-| `CritLog/sounds/more sounds/` | Candidate files; currently not referenced |
+| `CritLog/sounds/` | The (only) sound profile. |
+| `CritLog/sounds/more sounds/` | Candidate files; not referenced by any code path — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
 
-There are 52 MP3 and 1 OGG file. Duration and bitrate values come from Windows
-audio metadata; `n/a` means Windows did not expose the value. “Used” only
-describes reachability from the current source code, not a completed listening
-test.
+Duration and bitrate values come from Windows audio metadata; `n/a` means
+Windows did not expose the value. "Used" only describes reachability from
+the current source code, not a completed listening test.
 
 ## Sounds requested by code
 
@@ -29,102 +29,52 @@ test.
 | Mana Tide | `Manatide.mp3` | Party/raid member summons Mana Tide Totem | Fixed |
 | Bloodlust | `Bloodlust.mp3` | Player receives Bloodlust/Heroism | Fixed |
 | Innervate | `Inervate1.mp3`, `Inervate2.mp3` | Player receives Innervate | Random 1/2 |
-| Power Infusion | `Surprise.mp3` through `Surprise3.mp3` | Player receives Power Infusion | Random 1/3 |
+| Power Infusion | `Surprise.mp3` | Player receives Power Infusion | Fixed |
 | Blessing of Protection | `Bubble.mp3` | Player receives Blessing of Protection | Fixed |
-| Divine Intervention | `divineInt.mp3` | Player receives Divine Intervention | Fixed; the missing `divineInt2.mp3` was removed from the selection |
+| Divine Intervention | `divineInt.mp3` | Player receives Divine Intervention | Fixed |
 | Soulstone | `soulstone.mp3`, `soulstone2.mp3`, `soulstone3.mp3` | Player receives Soulstone Resurrection | Random 1/3 |
 | Player death | `MarioDeath.mp3` | Player dies | Fixed |
 | Special melee death | `schnutz.mp3` | `Schnutz` dies | Fixed |
 | Other melee death | `wilhelm.ogg` | Hard-coded melee-roster member dies | Fixed |
-| Tank death | `Tank.mp3`, `Tank2.mp3` | Hard-coded tank-roster member dies | Random 1/2 |
+| Tank death | `Tank.mp3` | Hard-coded tank-roster member dies | Fixed |
 | Healer-priest death | `Angels1.mp3`, `Angels2.mp3` | Hard-coded healer-priest member dies | Random 1/2 |
 | Boss death | `FFX.mp3`, `Zelda.mp3` | Hard-coded boss dies | Random 1/2 |
 | Raid end | `bye.mp3`, then `end.mp3` | Matching raid-leader message | Both immediately |
 | Wipe | `wipe.mp3` | Matching raid-leader message | Fixed |
-| Login | `Login.mp3` | Login | Disabled code |
-| Extreme hit | `Xtreme.mp3` | Damage above 9,000 | Disabled code |
+| Login | `Login.mp3` | Login | Disabled code — file is dead weight, see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) |
+| Extreme hit | `Xtreme.mp3` | Damage above 9,000 | Disabled code — file is dead weight, see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) |
 
 See [BEHAVIOR.md](BEHAVIOR.md) for the complete conditions.
 
-## Default profile
+## Active profile (`CritLog/sounds/`)
 
 | File | Duration | Bitrate | Size | Status |
 | --- | ---: | ---: | ---: | --- |
 | `Angels1.mp3` | 5 s | 178 kbps | 121,680 B | Used: healer-priest death |
 | `Angels2.mp3` | 6 s | 192 kbps | 161,568 B | Used: healer-priest death |
 | `at_bam_babam.mp3` | 1 s | 128 kbps | 17,553 B | Used: crit/highscore |
-| `Bloodlust.mp3` | 2 s | 128 kbps | 38,496 B | Used: Bloodlust/Heroism |
-| `Bubble.mp3` | 3 s | 128 kbps | 60,247 B | Used: Blessing of Protection |
-| `bye.mp3` | 1 s | 128 kbps | 20,925 B | Used: raid end, first clip |
+| `Bloodlust.mp3` | 3 s | 128 kbps | 56,134 B | Used: Bloodlust/Heroism |
+| `Bubble.mp3` | 1 s | 128 kbps | 27,305 B | Used: Blessing of Protection |
+| `bye.mp3` | 4 s | 128 kbps | 66,980 B | Used: raid end, first clip |
 | `divineInt.mp3` | 4 s | 128 kbps | 66,486 B | Used: Divine Intervention |
-| `end.mp3` | 15 s | 128 kbps | 247,766 B | Used: raid end, second clip |
+| `end.mp3` | 9 s | 160 kbps | 183,508 B | Used: raid end, second clip |
 | `FFX.mp3` | 4 s | 128 kbps | 67,495 B | Used: boss death |
-| `Inervate1.mp3` | 1 s | 64 kbps | 17,052 B | Used: Innervate |
-| `Inervate2.mp3` | <1 s | 320 kbps | 36,745 B | Used: Innervate |
-| `Manatide.mp3` | 4 s | 128 kbps | 77,321 B | Used: Mana Tide Totem |
-| `MarioDeath.mp3` | 9 s | 192 kbps | 250,524 B | Used: player death |
+| `Inervate1.mp3` | 2 s | 128 kbps | 37,305 B | Used: Innervate |
+| `Inervate2.mp3` | 2 s | 128 kbps | 47,754 B | Used: Innervate |
+| `Login.mp3` | 3 s | 192 kbps | 77,574 B | **Dead weight** — playback commented out |
+| `Manatide.mp3` | 2 s | 320 kbps | 82,684 B | Used: Mana Tide Totem |
+| `MarioDeath.mp3` | 2 s | 128 kbps | 37,305 B | Used: player death |
 | `Ready.mp3` | 1 s | 128 kbps | 30,336 B | Used: ready check |
-| `schnutz.mp3` | 1 s | 128 kbps | 120,496 B | Used: special-case death |
+| `schnutz.mp3` | 1 s | 128 kbps | 22,676 B | Used: special-case death |
 | `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | Used: Soulstone |
 | `soulstone2.mp3` | 6 s | 128 kbps | 97,939 B | Used: Soulstone |
 | `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | Used: Soulstone |
-| `Surprise.mp3` | 3 s | 128 kbps | 58,180 B | Used: Power Infusion |
-| `Surprise2.mp3` | 2 s | 128 kbps | 32,181 B | Used: Power Infusion |
-| `Surprise3.mp3` | 2 s | 128 kbps | 37,632 B | Used: Power Infusion |
-| `Tank.mp3` | 1 s | 184 kbps | 28,267 B | Used: tank death |
-| `Tank2.mp3` | 3 s | 74 kbps | 29,950 B | Used: tank death |
+| `Surprise.mp3` | 5 s | 128 kbps | 83,280 B | Used: Power Infusion |
+| `Tank.mp3` | 1 s | 128 kbps | 31,763 B | Used: tank death |
 | `wilhelm.ogg` | n/a | n/a | 12,524 B | Used: melee death |
 | `wipe.mp3` | 10 s | 234 kbps | 298,605 B | Used: wipe chat phrase |
+| `Xtreme.mp3` | 2 s | 128 kbps | 42,214 B | **Dead weight** — code path commented out |
 | `Zelda.mp3` | 2 s | 128 kbps | 42,630 B | Used: boss death |
-
-The default profile lacks the disabled `Login.mp3` and `Xtreme.mp3` files;
-neither is reachable from the current code.
-
-## Alternate “Toni” profile (`assi/`)
-
-Files that were byte-identical to a default-profile file were removed from
-this directory; `ResolveSound()` in `CritLog.lua` loads those from the
-default profile instead, regardless of which profile is active. They are
-listed here as "→ default/…" so the profile's full sound set is still
-visible in one place.
-
-| File | Duration | Bitrate | Size | Status |
-| --- | ---: | ---: | ---: | --- |
-| `Angels1.mp3` | 5 s | 178 kbps | 121,680 B | → `default/Angels1.mp3` |
-| `Angels2.mp3` | 6 s | 192 kbps | 161,568 B | → `default/Angels2.mp3` |
-| `at_bam_babam.mp3` | 1 s | 128 kbps | 17,553 B | → `default/at_bam_babam.mp3` |
-| `Bloodlust.mp3` | 3 s | 128 kbps | 56,134 B | Used; alternate file |
-| `Bubble.mp3` | 1 s | 128 kbps | 27,305 B | Used; alternate file |
-| `bye.mp3` | 4 s | 128 kbps | 66,980 B | Used; alternate file |
-| `divineInt.mp3` | 4 s | 128 kbps | 66,486 B | → `default/divineInt.mp3` |
-| `end.mp3` | 9 s | 160 kbps | 183,508 B | Used; alternate file |
-| `FFX.mp3` | 4 s | 128 kbps | 67,495 B | → `default/FFX.mp3` |
-| `Inervate1.mp3` | 2 s | 128 kbps | 37,305 B | Used; alternate file |
-| `Inervate2.mp3` | 2 s | 128 kbps | 47,754 B | Used; alternate file |
-| `Login.mp3` | 3 s | 192 kbps | 77,574 B | Present; playback commented out |
-| `Manatide.mp3` | 2 s | 320 kbps | 82,684 B | Used; alternate file |
-| `MarioDeath.mp3` | 2 s | 128 kbps | 37,305 B | Used; alternate file |
-| `Ready.mp3` | 1 s | 128 kbps | 30,336 B | → `default/Ready.mp3` |
-| `schnutz.mp3` | 1 s | 128 kbps | 22,676 B | Used; alternate file |
-| `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | → `default/soulstone.mp3` |
-| `soulstone2.mp3` | 6 s | 128 kbps | 97,939 B | → `default/soulstone2.mp3` |
-| `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | → `default/soulstone3.mp3` |
-| `Surprise.mp3` | 5 s | 128 kbps | 83,280 B | Used; alternate file — also stands in for `Surprise2.mp3`/`Surprise3.mp3` (see below) |
-| `Tank.mp3` | 1 s | 128 kbps | 31,763 B | Used; alternate file — also stands in for `Tank2.mp3` (see below) |
-| `wilhelm.ogg` | n/a | n/a | 12,524 B | → `default/wilhelm.ogg` |
-| `Xtreme.mp3` | 2 s | 128 kbps | 42,214 B | Present; code path commented out |
-| `Zelda.mp3` | 2 s | 128 kbps | 42,630 B | → `default/Zelda.mp3` |
-
-`Surprise2.mp3`, `Surprise3.mp3`, and `Tank2.mp3` were byte-identical to
-`Surprise.mp3`/`Tank.mp3` within this profile and were removed.
-`ResolveSound()`'s `TONI_ALIASES` table redirects requests for them to the
-one remaining copy, so Power Infusion and Tank-death still resolve
-correctly when the Toni profile is active — they just always play that one
-clip now (they already did in practice, since the "random" picks were
-identical audio; see `docs/CLEANUP-REVIEW.md`).
-
-The Toni profile still has every file the code can select — just not all
-of them as separate physical copies anymore.
 
 ## Candidate files (`more sounds/`)
 
@@ -146,19 +96,6 @@ None of these files is referenced by the current Lua code.
 | `m1.mp3` | <1 s | 128 kbps | 9,957 B |
 | `m2.mp3` | 1 s | 132 kbps | 20,863 B |
 | `Wololooo.mp3` | 1 s | 128 kbps | 26,330 B |
-
-This folder's own `wipe.mp3` (byte-identical to `default/wipe.mp3`, the one
-actually used by the wipe-chat trigger) was removed — nothing referenced it
-by this path, so there was nothing to redirect.
-
-## Deduplication
-
-A SHA-256 comparison found 16 files that were byte-identical to another file
-already in the catalog. Those physical copies were removed; see the
-"Alternate Toni profile" section above and `CritLog.lua`'s `ResolveSound()`
-for how playback still resolves to the one remaining copy. This dropped the
-catalog from 69 files / ~5.68 MB to 53 files / ~4.18 MB with no change to
-what actually plays in game.
 
 ## Required human review
 
