@@ -24,6 +24,17 @@ a new API function; do not import a generic multi-thousand-entry globals
 list — for a project this size a curated list stays honest about what is
 actually verified.
 
+### CI
+
+`.github/workflows/lint.yml` runs the same container against the GitHub push
+mirror (`sync_on_commit` triggers it on every Gitea push; the Gitea instance
+itself has no Actions runner registered). It only fails the build on real
+`luacheck` errors (exit code ≥ 2, e.g. a syntax error) — pre-existing, known
+warnings (currently 10, see CHANGELOG.md) don't turn the pipeline red, since
+a pipeline that's always red trains people to ignore it. Trigger it manually
+from the GitHub UI ("Actions" tab → "Lint" → "Run workflow") or via
+`gh workflow run lint.yml --repo gitepyc/wow-addons`.
+
 ## What cannot be automated here
 
 The WoW client is a graphical game client with no supported headless mode.
