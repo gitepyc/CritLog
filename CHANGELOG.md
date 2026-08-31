@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Verified `.pkgmeta` end-to-end by running the BigWigsMods `release.sh`
+  packager locally (skip upload, skip zip creation). It produces a clean
+  `CritLog/` package directory containing only `CritLog.toc`, `CritLog.lua`,
+  `sounds/`, `README.txt`, and this changelog — no repo scaffolding. Added
+  `manual-changelog: CHANGELOG.md` so the packager ships this hand-maintained
+  changelog instead of auto-generating one from raw git log messages, and
+  added `.gitattributes` to the ignore list (it isn't an addon file). Still
+  not wired into CI, and no CurseForge/Wago project id is configured for
+  actual uploads yet.
 - Centralized sounds, spells, bosses, player rosters, and chat-trigger
   phrases into one `local CritLogData` table instead of ~30 scattered
   top-level constants and sound-list locals. No behavior change — see

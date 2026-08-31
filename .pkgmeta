@@ -1,15 +1,23 @@
 # Config for https://github.com/BigWigsMods/packager
-# Not yet wired into CI or a CurseForge/Wago project id — see CHANGELOG.md.
-# Treat this as a first draft; it has not been run end-to-end yet.
+# Verified locally with `release.sh -d -z` (skip upload, skip zip): produces
+# a clean CritLog/ directory with only the addon files and the real
+# CHANGELOG.md. Not yet wired into CI, and no CurseForge/Wago project id
+# configured yet for actual uploads — see CHANGELOG.md.
 
 package-as: CritLog
+
+# Ship the hand-maintained changelog as-is instead of letting the packager
+# auto-generate one from raw git log messages.
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
 
 ignore:
   - docs
   - tests
   - scripts
   - README.md
-  - CHANGELOG.md
   - LICENSE
   - .luacheckrc
   - .editorconfig
+  - .gitattributes

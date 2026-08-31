@@ -91,7 +91,7 @@ critlog/
 │   └── lint/Dockerfile   # Containerized luacheck (Lua 5.1 + WoW globals)
 ├── scripts/lint.sh        # Convenience wrapper to build and run the lint container
 ├── .luacheckrc           # luacheck config; stds.wow lists only the WoW API CritLog calls
-├── .pkgmeta              # Draft BigWigsMods/packager config (not yet wired into CI)
+├── .pkgmeta              # BigWigsMods/packager config, verified locally (not yet wired into CI)
 ├── .github/workflows/    # CI (runs against the GitHub push mirror; Gitea has no runner yet)
 ├── CritLog.toc           # WoW metadata and SavedVariables declaration
 ├── CritLog.lua           # Current event, storage, sound, and command logic
@@ -138,7 +138,8 @@ This is a static inventory, not a complete in-game verification:
 5. **Packaging and releases not yet automated:** Static linting runs via
    `tests/lint/` and CI (see [Testing](#testing)), but there is no packaged
    release build, versioned release process, or CurseForge/Wago project yet.
-   `.pkgmeta` exists as an unverified first draft.
+   `.pkgmeta` is verified locally (`release.sh -d -z` produces a clean
+   `CritLog/` package directory) but not wired into CI or upload automation.
 6. **Unclear asset rights:** Audio-file origin and redistribution rights are
    undocumented and must be reviewed before public distribution.
 
