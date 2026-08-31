@@ -8,8 +8,7 @@ local CRITLOG_VERSION = "0.1.1"
 ----------------
 --SOUNDS:
 ----------------
-local SOUNDPATH = 'Interface/AddOns/CritLog/sounds/' --path of  normal sounds
-local ASSISOUND = 'Interface/AddOns/CritLog/sounds/assi/' -- path of assi sounds
+local SOUNDPATH = 'Interface/AddOns/CritLog/sounds/'
 
 local BAM_SOUND = 'at_bam_babam.mp3'        -- crit sounds
 local XTREME_DMG = 'Xtreme.mp3'
@@ -17,13 +16,12 @@ local XTREME_DMG = 'Xtreme.mp3'
 -------------------
 -- on death sounds:
 --------------------
-local MELEE_DEAD = 'wilhelm.ogg'            
+local MELEE_DEAD = 'wilhelm.ogg'
 local MELEE_DEAD_SCHNUTZ = 'schnutz.mp3'
 local YOU_DEAD = 'MarioDeath.mp3'
 local BOSS_DEAD = 'FFX.mp3'
 local BOSS_DEAD2 = 'Zelda.mp3'
 local TANK_DEAD = 'Tank.mp3'
-local TANK_DEAD2 = 'Tank2.mp3'
 local ANGELS1 = 'Angels1.mp3'
 local ANGELS2 = 'Angels2.mp3'
 
@@ -34,12 +32,9 @@ local INNERVATE1 = 'Inervate1.mp3'
 local INNERVATE2 = 'Inervate2.mp3'
 local MANATIDESOUND = 'Manatide.mp3'
 local BLOODLUS_SOUND = 'Bloodlust.mp3'
-local POWERINFUSION1 = 'Surprise.mp3'
-local POWERINFUSION2 = 'Surprise2.mp3'
-local POWERINFUSION3 = 'Surprise3.mp3'
+local POWERINFUSION_SOUND = 'Surprise.mp3'
 local BUBBLE_BOB = 'Bubble.mp3'
 local DIVINE_INT_SOUND = 'divineInt.mp3'
-local DIVINE_INT_SOUND2 = 'divineInt2.mp3'
 local SOULSTONE_SOUND = 'soulstone.mp3'
 local SOULSTONE_SOUND2 = 'soulstone2.mp3'
 local SOULSTONE_SOUND3 = 'soulstone3.mp3'
@@ -48,16 +43,12 @@ local SOULSTONE_SOUND3 = 'soulstone3.mp3'
 -- other sounds:
 --------------------
 local READY_CHECK_SOUND = 'Ready.mp3'
-local LOGIN_SOUND = 'Login.mp3'
 
 
 --SoundLists:
-local TANK_DEAD_LIST = {TANK_DEAD, TANK_DEAD2}
 local BOSS_DEAD_LIST = {BOSS_DEAD, BOSS_DEAD2}
 local ANGEL_LIST = { ANGELS1, ANGELS2 }
 local INNERVATE_SOUND_LIST = {INNERVATE1, INNERVATE2}
-local POWERINFUSION_LIST = { POWERINFUSION1, POWERINFUSION2, POWERINFUSION3 }
-local DIVINE_INT_SOUND_LIST = { DIVINE_INT_SOUND, DIVINE_INT_SOUND2 }
 local SOULSTONE_SOUND_LIST = { SOULSTONE_SOUND, SOULSTONE_SOUND2, SOULSTONE_SOUND3 }
 
 -----------
@@ -73,7 +64,7 @@ local HEALPRIEST_NAMES = {"Ilenkov", "Epyç"}
 -- Ability names English and german:
 local BLOODLUST_NAMES = {'Bloodlust', 'Heroism', 'Blutrausch', 'Heldentum'}
 local INERVATE_NAMES = {'Innervate', 'Anregen'}
-local POWERINFUSION_NAMES = {'Power Infusion', 'Seele der Macht'} 
+local POWERINFUSION_NAMES = {'Power Infusion', 'Seele der Macht'}
 local MANATIDE_NAMES = {'Mana Tide Totem', 'Totem der Manaflut'}
 local SREDEMPTION_NAMES = {"Spirit of Redemption", "Geist der Erlösung"}
 local BOB_NAMES = {"Blessing of Protection", "Segen des Schutzes"}
@@ -91,10 +82,9 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("READY_CHECK")
---frame:RegisterEvent("ZONE_CHANGED")
 frame:RegisterEvent("CHAT_MSG_RAID_LEADER")
 
-frame:SetScript("OnEvent", function(this, event, ...)
+frame:SetScript("OnEvent", function(_, event, ...)
     CritLog[event](CritLog, ...)
 end)
 
@@ -102,35 +92,12 @@ end)
 -- Function is triggert at /reload and every Login
 ---------------------------------------------------
 function CritLog:PLAYER_LOGIN()
-    
+
     --initalize DB
     self:SetDefaults()
-    
+
     PrintCritLogs()
-    
-    -- Plays Login Sound
---    if CritLogDB.LoginSoundFlag then
---        PlaySoundFile(CritLogDB.SoundFile..LOGIN_SOUND, 'Master')
---    end
-    
-end
 
----------------------------------------------------
--- Function is triggert at Zone Change
--- 
--- Event NOT REGISTERED ATM
----------------------------------------------------
-function CritLog:ZONE_CHANGED()
-    
-    --possible events:
-    --ZONE_CHANGED_NEW_AREA
-    --CHAT_MSG_RAID#
-    --CHAT_MSG_RAID_LEADER
-    
-    print(GetSubZoneText())
-    print(GetRealZoneText())
-
-    
 end
 
 
@@ -138,55 +105,55 @@ end
 -- Function is triggert with Chat MSG in a raid (raidleader only)
 ------------------------------------------------------------------
 function CritLog:CHAT_MSG_RAID_LEADER(...)
-    
-    local message, author = ...
-     
+
+    local message, _ = ...
+
     --string.lower(myString)
     --print(message,author)
     if string.lower(message) =="raid ende" or string.lower(message) =="raid end"  then -- and Split(author, "-")[1] == "Kîtten" then
-        PlaySoundFile(CritLogDB.SoundFile..'bye.mp3', 'Master')
-        PlaySoundFile(CritLogDB.SoundFile..'end.mp3', 'Master')
+        PlaySoundFile(SOUNDPATH..'bye.mp3', 'Master')
+        PlaySoundFile(SOUNDPATH..'end.mp3', 'Master')
     end
     if string.lower(message) =="shit show" or string.lower(message) =="wipe"  then -- and Split(author, "-")[1] == "Kîtten" then
-        PlaySoundFile(CritLogDB.SoundFile..'wipe.mp3', 'Master')
+        PlaySoundFile(SOUNDPATH..'wipe.mp3', 'Master')
     end
-    
+
 end
 
 ---------------------------------------------------
 -- Function is triggert with a Ready Check
 ---------------------------------------------------
-function CritLog:READY_CHECK(...)
-    
+function CritLog:READY_CHECK()
+
     -- Plays Ready Check Sound
     if CritLogDB.ReadySoundFlag then
-        PlaySoundFile(CritLogDB.SoundFile..READY_CHECK_SOUND, 'Master')
+        PlaySoundFile(SOUNDPATH..READY_CHECK_SOUND, 'Master')
     end
-    
+
 end
 
 
 ---------------------------------------------------
 -- Combat Log Event functions
 ---------------------------------------------------
-function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
-    local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, sv1, sv2, sv3, sv4, sv5, sv6, sv7, sv8, sv9, sv10 = CombatLogGetCurrentEventInfo()
- 
+function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
+    local _, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, sv1, sv2, _, sv4, sv5, _, sv7, _, _, sv10 = CombatLogGetCurrentEventInfo()
 
- 
+
+
 ----------------------------------------------------------------------------
 -- Checks if Player got some specific Auras/Buffs and then triggers Sounds
-----------------------------------------------------------------------------  
+----------------------------------------------------------------------------
     if CritLogDB.AuraSoundFlag then
         --   UnitInRaid
         --   UnitInParty
         if UnitInParty(sourceName) or UnitInRaid(sourceName) then
-            --if sourceName == "Epyç" then 
+            --if sourceName == "Epyç" then
             --    print("---------------------------")
             --    print(subevent)
             --    print(sv2)
             --    print(destName)
-            --    print("---------------------------")               
+            --    print("---------------------------")
             --end
             if subevent == "SPELL_SUMMON" then
                 --
@@ -195,7 +162,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                 if sv2 ~= nil and tContains( MANATIDE_NAMES, sv2 ) then
                     --print("MANA TIDE TOTEM SCRIPT WORKING")
                     --print(subevent)
-                    PlaySoundFile(CritLogDB.SoundFile..MANATIDESOUND, 'Master')
+                    PlaySoundFile(SOUNDPATH..MANATIDESOUND, 'Master')
                 end
             end
         end
@@ -205,76 +172,71 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
             --
             if subevent == "SPELL_AURA_APPLIED" then
                 if tContains( BLOODLUST_NAMES, sv2 ) then
-                    PlaySoundFile(CritLogDB.SoundFile..BLOODLUS_SOUND, 'Master')
+                    PlaySoundFile(SOUNDPATH..BLOODLUS_SOUND, 'Master')
                 end
                 --
                 -- Inervate Sound
                 --
                 if tContains( INERVATE_NAMES, sv2 ) then
-                    tmpRNDM = math.random(1, 2)
-                    --print(CritLogDB.SoundFile..INNERVATE_SOUND_LIST[tmpRNDM])
-                    PlaySoundFile(CritLogDB.SoundFile..INNERVATE_SOUND_LIST[tmpRNDM], 'Master')                
+                    local tmpRNDM = math.random(1, 2)
+                    --print(SOUNDPATH..INNERVATE_SOUND_LIST[tmpRNDM])
+                    PlaySoundFile(SOUNDPATH..INNERVATE_SOUND_LIST[tmpRNDM], 'Master')
                 end
                 --
                 -- Power Word Infusion Sound
                 --
                 if tContains( POWERINFUSION_NAMES, sv2 ) then
-                    tmpRNDM = math.random(1, 3)
-                    PlaySoundFile(CritLogDB.SoundFile..POWERINFUSION_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(SOUNDPATH..POWERINFUSION_SOUND, 'Master')
                 end
                 --
                 -- Blessing of Protection Sound
                 --
                 if tContains( BOB_NAMES, sv2 ) then
-                    PlaySoundFile(CritLogDB.SoundFile..BUBBLE_BOB, 'Master')
+                    PlaySoundFile(SOUNDPATH..BUBBLE_BOB, 'Master')
                 end
                 --
                 -- Divine Intervention Sound
                 --
                 if tContains( DIVINE_INT, sv2 ) then
-                    tmpRNDM = math.random(1, 2)
-                    PlaySoundFile(CritLogDB.SoundFile..DIVINE_INT_SOUND_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(SOUNDPATH..DIVINE_INT_SOUND, 'Master')
                 end
                 --
                 -- Soulstone Sound
                 --
                 if tContains( SOULSTONE_NAMES, sv2 ) then
-                    tmpRNDM = math.random(1, 2)
-                    PlaySoundFile(CritLogDB.SoundFile..SOULSTONE_SOUND_LIST[tmpRNDM], 'Master')
+                    local tmpRNDM = math.random(1, 3)
+                    PlaySoundFile(SOUNDPATH..SOULSTONE_SOUND_LIST[tmpRNDM], 'Master')
                 end
             end
         end
-    end    
+    end
     --
-    --  Plays Sound if OVER 9k DMG :D
-    --    testphase should be working
-    -- 
+    --  Plays a sound if a single SPELL_DAMAGE hit exceeds 9000 damage.
+    --  Off by default; enable with /cl xtreme.
+    --
+    if sourceGUID == UnitGUID("Player") and subevent == "SPELL_DAMAGE" then
+        if CritLogDB.XtremeSoundFlag and tonumber(sv4) > 9000 then
+            PlaySoundFile(SOUNDPATH..XTREME_DMG, 'Master')
+        end
+    end
+    --
+    -- Spirit of Redemtption TEST ------not working
+    --
     --if Split(sourceGUID, "-")[1] == "Player" then
-    --    if subevent == "SPELL_DAMAGE" then
-            --print("shit: "..sv4)
-    --        if tonumber(sv4) > 9000 then
-                --print(sv4)
-     --           PlaySoundFile(CritLogDB.SoundFile..XTREME_DMG, 'Master')
-                --print("working")
-     --       end    
-    --    end
-        --
-        -- Spirit of Redemtption TEST ------not working
-        --
     --    if subevent == "SPELL_AURA_APPLIED" then
     --        if tContains( SREDEMPTION_NAMES, sv2 ) then
     --            tmpRNDM = math.random(1, 2)
     --            print("SPIRIT OF REDEMPTION SCRIPT WORKING----- TELL ME IF IT DOES Cause i thinks it's not")
-    --        end 
+    --        end
     --    end
     --end
 
 
-    
+
 ---------------------------------------------------
 -- Crit Log Functions:
 ---------------------------------------------------
-    
+
     if sourceGUID == UnitGUID("Player") then
         if UnitLevel("target") > UnitLevel("player")-9 or UnitClassification("target") == "worldboss" or CritLogDB.AllLevel then
     --
@@ -295,7 +257,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                 end
     --
     --  Plays Sound and Logs on White hit Crits
-    --          
+    --
             elseif (subevent == "SWING_DAMAGE") then
                 if sv7 == true then
                     if CritLogDB.AllCritFlag and CritLogDB.WhiteHitFlag then
@@ -308,7 +270,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                         if CritLogDB.WhiteHitFlag then
                             self:PlaySoundFile()
                         end
-                    end                
+                    end
                 end
     --
     --  Plays Sound and Logs on Range Crits (counts as White hit)
@@ -326,13 +288,14 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                         if CritLogDB.WhiteHitFlag then
                             self:PlaySoundFile()
                         end
-                    end                
+                    end
                 end
-            end            
+            end
+        end
     --
-    --  Plays Sound and Logs on Heal Crits
+    --  Plays Sound and Logs on Heal Crits (independent of enemy target level)
     --
-        elseif subevent == "SPELL_HEAL" then
+        if subevent == "SPELL_HEAL" then
             if sv7 == true then
                 if CritLogDB.AllCritFlag then
                      self:PlaySoundFile()
@@ -343,8 +306,8 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                     CritLogDB.HAC_Tar = destName
                     print("HEAL Crit "..sv2..": "..sv4.." ("..destName..")")
                     self:PlaySoundFile()
-                end                
-            end       
+                end
+            end
         end
     end
 
@@ -357,7 +320,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
         end
     end
 
-    
+
 ---------------------------------------------------
 -- UNIT_DIED FUNKTIONS:
 ---------------------------------------------------
@@ -372,54 +335,53 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
         --
         if destGUID == UnitGUID("Player") then
             if CritLogDB.PlayerSoundFlag then
-                PlaySoundFile(CritLogDB.SoundFile..YOU_DEAD, 'Master')
-            end    
+                PlaySoundFile(SOUNDPATH..YOU_DEAD, 'Master')
+            end
         else
             --
             -- Melee died
             --
-            if  CritLogDB.MeleeSoundFlag then 
+            if  CritLogDB.MeleeSoundFlag then
                 if tContains( MELEE_NAMES, destName ) then
                    if destName == "Schnutz" then
-                        PlaySoundFile(CritLogDB.SoundFile..MELEE_DEAD_SCHNUTZ, 'Master')
+                        PlaySoundFile(SOUNDPATH..MELEE_DEAD_SCHNUTZ, 'Master')
                     else
-                        PlaySoundFile(CritLogDB.SoundFile..MELEE_DEAD, 'Master')
+                        PlaySoundFile(SOUNDPATH..MELEE_DEAD, 'Master')
                     end
                 end
             end
             --
             -- Boss died
-            -- 
+            --
             if CritLogDB.BossSoundFlag then
                 if tContains( BOSS_NAMES, destName ) or tContains( BOSS_NAMES_GERMAN, destName ) then
-                    tmpRNDM = math.random(1, 2)
-                    PlaySoundFile(CritLogDB.SoundFile..BOSS_DEAD_LIST[tmpRNDM], 'Master')
+                    local tmpRNDM = math.random(1, 2)
+                    PlaySoundFile(SOUNDPATH..BOSS_DEAD_LIST[tmpRNDM], 'Master')
                 end
             end
             --
             -- Tank died
             --
             if tContains( TANK_NAMES, destName ) and CritLogDB.TankSoundFlag then
-                tmpRNDM = math.random(1, 2)
-                PlaySoundFile(CritLogDB.SoundFile..TANK_DEAD_LIST[tmpRNDM], 'Master')
+                PlaySoundFile(SOUNDPATH..TANK_DEAD, 'Master')
                 --print("wtf2")
             end
             --
             -- Heal Priest died
             --
             if tContains( HEALPRIEST_NAMES, destName ) and CritLogDB.PriestSoundFlag then
-                tmpRNDM = math.random(1, 2)
-                --print(tmpRNDM) 
-                PlaySoundFile(CritLogDB.SoundFile..ANGEL_LIST[tmpRNDM], 'Master')
+                local tmpRNDM = math.random(1, 2)
+                --print(tmpRNDM)
+                PlaySoundFile(SOUNDPATH..ANGEL_LIST[tmpRNDM], 'Master')
             end
         end
-    end    
+    end
 end
 
 --plays sound file for crits
 function CritLog:PlaySoundFile()
     if CritLogDB.SoundFlag then
-        PlaySoundFile(CritLogDB.SoundFile..BAM_SOUND, 'Master')
+        PlaySoundFile(SOUNDPATH..BAM_SOUND, 'Master')
     end
 end
 
@@ -428,13 +390,13 @@ end
 --  Sets Character spec. Variables (DataBase)
 ---------------------------------------------------
 function CritLog:SetDefaults()
-    
+
     --
     -- Checks for last CritLog-Version and builds initiale DataBase ( New Version resets config )
     --
-    if not CritLogDB or CritLogDB.Version ~= CRITLOG_VERSION then 
-        
-        
+    if not CritLogDB or CritLogDB.Version ~= CRITLOG_VERSION then
+
+
         --Character specifc Database:
         CritLogDB = {
             Version = CRITLOG_VERSION,
@@ -450,7 +412,6 @@ function CritLog:SetDefaults()
             AllLevel = false,
             AllCritFlag = false,
             WhiteHitFlag = true,
-            LoginSoundFlag = true,
             ReadySoundFlag = true,
             AuraSoundFlag = true,
             PriestSoundFlag = true,
@@ -459,8 +420,7 @@ function CritLog:SetDefaults()
             PlayerSoundFlag = true,
             BossSoundFlag = true,
             DeadSoundFlag = true,
-            ToniFlag = false,
-            SoundFile = SOUNDPATH
+            XtremeSoundFlag = false,
         }
 
         print("CritLog Initialized")
@@ -473,16 +433,8 @@ end
 
 
 ---------------------------------------------------
---  Split String Functions
+--  String helper functions
 ---------------------------------------------------
-function Split(s, delimiter)
-    result = {};
-    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
-        table.insert(result, match);
-    end
-    return result;
-end
-
 function ends_with(str, ending)
   return ending == "" or str:sub(-#ending) == ending
 end
@@ -490,29 +442,30 @@ end
 
 -----------------------------------------------------------------
 --  Show Logs in Chat
---  and handle "/cl <commands>" where msg is the actual command 
+--  and handle "/cl <commands>" where msg is the actual command
 -----------------------------------------------------------------
 function PrintCritLogs(msg)
     --
     -- reset crits
     --
     if msg == "reset" then
-        tmpSoundFlag = CritLogDB.SoundFlag
-        tmpAllLevel = CritLogDB.AllLevel
-        tmpAllCritFlag = CritLogDB.AllCritFlag
-        tmpWhiteHitFlag = CritLogDB.WhiteHitFlag
-        tmpLoginSoundFlag = CritLogDB.LoginSoundFlag
-        tmpReadySoundFlag = CritLogDB.ReadySoundFlag
-        tmpAuraSoundFlag = CritLogDB.AuraSoundFlag
-        tmpPriestSoundFlag = CritLogDB.PriestSoundFlag
-        tmpTankSoundFlag = CritLogDB.TankSoundFlag
-        tmpMeleeSoundFlag = CritLogDB.MeleeSoundFlag
-        tmpPlayerSoundFlag = CritLogDB.PlayerSoundFlag
-        tmpBossSoundFlag = CritLogDB.BossSoundFlag
-        tmpDeadSoundFlag = CritLogDB.DeadSoundFlag
-        
+        local tmpSoundFlag = CritLogDB.SoundFlag
+        local tmpAllLevel = CritLogDB.AllLevel
+        local tmpAllCritFlag = CritLogDB.AllCritFlag
+        local tmpWhiteHitFlag = CritLogDB.WhiteHitFlag
+        local tmpReadySoundFlag = CritLogDB.ReadySoundFlag
+        local tmpAuraSoundFlag = CritLogDB.AuraSoundFlag
+        local tmpPriestSoundFlag = CritLogDB.PriestSoundFlag
+        local tmpTankSoundFlag = CritLogDB.TankSoundFlag
+        local tmpMeleeSoundFlag = CritLogDB.MeleeSoundFlag
+        local tmpPlayerSoundFlag = CritLogDB.PlayerSoundFlag
+        local tmpBossSoundFlag = CritLogDB.BossSoundFlag
+        local tmpDeadSoundFlag = CritLogDB.DeadSoundFlag
+        local tmpXtremeSoundFlag = CritLogDB.XtremeSoundFlag
+
         --Character specifc Database:
         CritLogDB = {
+            Version = CRITLOG_VERSION,
             DamageAbilityCrit = 0,
             DAC_Name = "",
             DAC_Tar = "",
@@ -525,7 +478,6 @@ function PrintCritLogs(msg)
             AllLevel = tmpAllLevel,
             AllCritFlag = tmpAllCritFlag,
             WhiteHitFlag = tmpWhiteHitFlag,
-            LoginSoundFlag = tmpLoginSoundFlag,
             ReadySoundFlag = tmpReadySoundFlag,
             AuraSoundFlag = tmpAuraSoundFlag,
             PriestSoundFlag = tmpPriestSoundFlag,
@@ -534,11 +486,10 @@ function PrintCritLogs(msg)
             BossSoundFlag = tmpBossSoundFlag,
             PlayerSoundFlag = tmpPlayerSoundFlag,
             DeadSoundFlag = tmpDeadSoundFlag,
-            ToniFlag = false,
-            SoundFile = SOUNDPATH
+            XtremeSoundFlag = tmpXtremeSoundFlag,
         }
         PrintCritLogs()
-    --    
+    --
     -- Crit Sound config
     --
     elseif msg == "sound" then
@@ -550,7 +501,7 @@ function PrintCritLogs(msg)
             print("CritLog Sounds On")
         end
     --
-    -- Config for Sound at ALL critical hits 
+    -- Config for Sound at ALL critical hits
     --
     elseif msg == "allcrits" then
         if CritLogDB.AllCritFlag then
@@ -559,9 +510,9 @@ function PrintCritLogs(msg)
         else
             CritLogDB.AllCritFlag = true
             print("Sound for all crits On("..tostring(CritLogDB.AllCritFlag)..")")
-        end    
+        end
     --
-    -- Config for Sound at WHITE HIT critical hits 
+    -- Config for Sound at WHITE HIT critical hits
     --
     elseif msg == "whitehit" then
         if CritLogDB.WhiteHitFlag then
@@ -570,17 +521,6 @@ function PrintCritLogs(msg)
         else
             CritLogDB.WhiteHitFlag = true
             print("Sound for whitehit crits On("..tostring(CritLogDB.WhiteHitFlag)..")")
-        end
-    --
-    -- Config for Login Sound
-    --
-    elseif msg == "login" then
-        if CritLogDB.LoginSoundFlag then
-            CritLogDB.LoginSoundFlag = false
-            print("CritLog LoginSound Off ("..tostring(CritLogDB.LoginSoundFlag)..")")
-        else
-            CritLogDB.LoginSoundFlag = true
-            print("CritLog LoginSound On ("..tostring(CritLogDB.LoginSoundFlag)..")")
         end
     --
     -- Config for ReadyCheck Sound
@@ -658,7 +598,7 @@ function PrintCritLogs(msg)
         else
             CritLogDB.BossSoundFlag = true
             print("CritLog BossSound On ("..tostring(CritLogDB.BossSoundFlag)..")")
-        end 
+        end
     --
     -- Config overall on Death sounds (excluding Bosses)
     --
@@ -669,20 +609,18 @@ function PrintCritLogs(msg)
         else
             CritLogDB.DeadSoundFlag = true
             print("CritLog DeathSound On ("..tostring(CritLogDB.DeadSoundFlag)..")")
-        end 
+        end
     --
-    -- Config TONI Sounds
+    -- Config for "over 9000 damage" Sound (off by default)
     --
-    elseif msg == "toni" then
-        if CritLogDB.ToniFlag then
-            CritLogDB.ToniFlag = false
-            CritLogDB.SoundFile = SOUNDPATH
-            print("CritLog special Toni Sounds Off ("..tostring(CritLogDB.ToniFlag)..")")
+    elseif msg == "xtreme" then
+        if CritLogDB.XtremeSoundFlag then
+            CritLogDB.XtremeSoundFlag = false
+            print("CritLog XtremeSound Off ("..tostring(CritLogDB.XtremeSoundFlag)..")")
         else
-            CritLogDB.ToniFlag = true
-            CritLogDB.SoundFile = ASSISOUND
-            print("CritLog special Toni Sounds On ("..tostring(CritLogDB.ToniFlag)..")")
-        end         
+            CritLogDB.XtremeSoundFlag = true
+            print("CritLog XtremeSound On ("..tostring(CritLogDB.XtremeSoundFlag)..")")
+        end
     --
     -- Config for Level-Range on crits
     --
@@ -703,7 +641,7 @@ function PrintCritLogs(msg)
         print("/cl sound: turns BÄM sound on/off (highscore sound)")
         print("/cl allcrits: turns BÄM sound on/off for all crits")
         print("/cl whitehit: turns BÄM sound on/off for all WHITEHIT crits")
-        print("/cl login: turns Login Sound on/off")
+        print("/cl xtreme: turns sound for hits over 9000 damage on/off (off by default)")
         print("/cl ready: turns ReadyCheck Sound on/off")
         print("/cl aura: turns Aura/Spell Sound on/off")
         print("------------")
@@ -714,7 +652,6 @@ function PrintCritLogs(msg)
         print("/cl player: turns Player Death Sound on/off")
         print("/cl dead: turns  OnDeath Sound on/off (turn on for priest, melee, tank and boss config to work)")
         print("------------")
-        print("/cl toni: turns special Toni Sounds on/off (vulgar)")
         print("/cl config: shows actual config/DB-data")
         print("/cl      : prints CritLogs")
     --
@@ -725,7 +662,7 @@ function PrintCritLogs(msg)
         print("/cl sound: " .. tostring(CritLogDB.SoundFlag))
         print("/cl allcrits: " .. tostring(CritLogDB.AllCritFlag))
         print("/cl whitehit: " .. tostring(CritLogDB.WhiteHitFlag))
-        print("/cl login: " .. tostring(CritLogDB.LoginSoundFlag))
+        print("/cl xtreme: " .. tostring(CritLogDB.XtremeSoundFlag))
         print("/cl ready: " .. tostring(CritLogDB.ReadySoundFlag))
         print("/cl aura: " .. tostring(CritLogDB.AuraSoundFlag))
         print("------------")
@@ -735,16 +672,14 @@ function PrintCritLogs(msg)
         print("/cl boss: " .. tostring(CritLogDB.BossSoundFlag))
         print("/cl player: " .. tostring(CritLogDB.PlayerSoundFlag))
         print("/cl dead: " .. tostring(CritLogDB.DeadSoundFlag))
-        print("------------")
-        print("/cl toni: " .. tostring(CritLogDB.ToniFlag))
-        
+
     --
-    -- Prints Highest Crits 
+    -- Prints Highest Crits
     --
     else
-        print("DAMAGE Crit "..CritLogDB.DAC_Name..": "..CritLogDB.DamageAbilityCrit.." ("..CritLogDB.DAC_Name..")")
+        print("DAMAGE Crit "..CritLogDB.DAC_Name..": "..CritLogDB.DamageAbilityCrit.." ("..CritLogDB.DAC_Tar..")")
         print("DAMAGE Crit WhiteHit: "..CritLogDB.WhiteHitCrit.." ("..CritLogDB.WHC_Tar..")")
-        print("HEAL Crit "..CritLogDB.HAC_Name..": "..CritLogDB.HealAbilityCrit.." ("..CritLogDB.HAC_Name..")")
+        print("HEAL Crit "..CritLogDB.HAC_Name..": "..CritLogDB.HealAbilityCrit.." ("..CritLogDB.HAC_Tar..")")
         print("/cl help for list of commands")
     end
 end

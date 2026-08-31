@@ -1,0 +1,31 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  luacheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build lint image
+        run: docker build -t wow-addons-luacheck:5.1 -f tests/lint/Dockerfile tests/lint
+
+      - name: Run luacheck
+        # luacheck exits 1 for warnings-only, 2+ for actual errors (e.g.
+        # syntax errors). Only fail the build on real errors — CritLog
+        # currently carries a small set of known, accepted warnings (see
+        # CHANGELOG.md) and flagging those red on every run would just
+        # train everyone to ignore a failing pipeline.
+        run: |
+          set +e
+          docker run --rm -v "$PWD":/addon:ro wow-addons-luacheck:5.1 .
+          code=$?
+          set -e
+          echo "luacheck exit code: $code"
+          if [ "$code" -ge 2 ]; then
+            exit 1
+          fi
