@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Added `.github/workflows/release.yml`: on a tag push, runs the
+  BigWigsMods packager and creates a GitHub Release with the built zip
+  attached. No CurseForge/WoWInterface/Wago project id or API keys are
+  configured yet, so only the GitHub Release step runs; the workflow uses
+  the automatically-provided `GITHUB_TOKEN`. Requires this GitHub mirror
+  repo's Settings → Actions → General → Workflow permissions to be set to
+  "Read and write", or the release step fails with "Resource not
+  accessible by integration".
 - Verified `.pkgmeta` end-to-end by running the BigWigsMods `release.sh`
   packager locally (skip upload, skip zip creation). It produces a clean
   `CritLog/` package directory containing only the TOC, addon Lua modules,
