@@ -4,18 +4,22 @@
 
 - Verified `.pkgmeta` end-to-end by running the BigWigsMods `release.sh`
   packager locally (skip upload, skip zip creation). It produces a clean
-  `CritLog/` package directory containing only `CritLog.toc`, `CritLog.lua`,
+  `CritLog/` package directory containing only the TOC, addon Lua modules,
   `sounds/`, `README.txt`, and this changelog — no repo scaffolding. Added
   `manual-changelog: CHANGELOG.md` so the packager ships this hand-maintained
   changelog instead of auto-generating one from raw git log messages, and
   added `.gitattributes` to the ignore list (it isn't an addon file). Still
   not wired into CI, and no CurseForge/Wago project id is configured for
   actual uploads yet.
+- Split the former monolithic `CritLog.lua` into focused modules for core
+  state, data, SavedVariables, sounds, chat triggers, combat-log handling,
+  commands, and event dispatch. The TOC defines their dependency order and
+  shared state lives under the `CritLog` namespace.
+- Added `.gitattributes` to keep source and documentation files on LF across
+  development platforms. WoW can load LF files on Windows.
 - Centralized sounds, spells, bosses, player rosters, and chat-trigger
-  phrases into one `local CritLogData` table instead of ~30 scattered
-  top-level constants and sound-list locals. No behavior change — see
-  docs/REFACTORING.md (step 3) for what was verified. Sets up file-splitting
-  (step 4) as the next, now much smaller, step.
+  phrases in `CritLog.Data` instead of scattered constants and sound lists.
+  No intentional user-visible behavior change; see docs/REFACTORING.md.
 
 ## 0.2.0
 

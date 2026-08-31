@@ -19,7 +19,7 @@ scripts/lint.sh
 ```
 
 The globals whitelist in `.luacheckrc` (`stds.wow`) only lists the WoW API
-calls `CritLog.lua` actually uses. Add a new entry there when the code calls
+calls the addon modules actually use. Add a new entry there when the code calls
 a new API function; do not import a generic multi-thousand-entry globals
 list — for a project this size a curated list stays honest about what is
 actually verified.
@@ -53,7 +53,7 @@ merging a behavior-affecting change:
    settings.
 3. Walk the relevant rows of the BEHAVIOR.md matrix (crits, auras, deaths,
    raid-leader chat, ready check) and confirm the expected clip plays from
-   both the default and Toni (`/cl toni`) sound profiles.
+   the current sound catalog.
 4. Watch for Lua errors with `/console scriptErrors 1` or an error-display
    addon enabled.
 
