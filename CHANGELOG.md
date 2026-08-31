@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.2.0
+
+- `CritLogDB` version upgrades no longer reset existing data. Previously,
+  any `CRITLOG_VERSION` change rebuilt the whole per-character database from
+  scratch (documented as a known risk). `SetDefaults()` now only back-fills
+  fields that don't exist yet on a version change; existing highscores and
+  toggles are kept. A brand-new character still gets the full default table
+  as before.
 - Split CritLog out of the former `wow-addons` monorepo into its own
   repository (`critlog`), with full commit history preserved. The addon's
   files (`CritLog.toc`, `CritLog.lua`, `README.txt`, `sounds/`) moved from

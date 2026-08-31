@@ -5,7 +5,7 @@ critical-heal highscores and plays event-driven sounds for crits, deaths,
 auras, and raid-leader chat triggers.
 
 > **Project status:** Working legacy addon under active documentation and
-> modernization. CritLog `0.1.1` is currently tested with Season of Discovery
+> modernization. CritLog `0.2.0` is currently tested with Season of Discovery
 > on Classic Era `1.15.9` (Interface `11509`).
 
 ## Documentation
@@ -132,16 +132,14 @@ This is a static inventory, not a complete in-game verification:
    damage crits, not to healing crits.
 3. **Name-based localization:** Abilities and bosses are matched by displayed
    English/German names instead of stable spell and NPC IDs.
-4. **Destructive version upgrades:** Any change to `CRITLOG_VERSION` replaces
-   the complete per-character database instead of migrating it.
-5. **Spirit of Redemption:** Test code is commented out and marked "not
+4. **Spirit of Redemption:** Test code is commented out and marked "not
    working" by the original author. Deliberately left as-is for now — see
    [docs/CLEANUP-REVIEW.md](docs/CLEANUP-REVIEW.md).
-6. **Packaging and releases not yet automated:** Static linting runs via
+5. **Packaging and releases not yet automated:** Static linting runs via
    `tests/lint/` and CI (see [Testing](#testing)), but there is no packaged
    release build, versioned release process, or CurseForge/Wago project yet.
    `.pkgmeta` exists as an unverified first draft.
-7. **Unclear asset rights:** Audio-file origin and redistribution rights are
+6. **Unclear asset rights:** Audio-file origin and redistribution rights are
    undocumented and must be reviewed before public distribution.
 
 ## Next steps
