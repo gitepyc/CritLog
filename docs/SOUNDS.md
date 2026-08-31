@@ -2,7 +2,12 @@
 
 ## Overview
 
-The catalog contains **69 files** totaling approximately **5.68 MB**:
+The catalog contains **53 files** totaling approximately **4.18 MB**. Files
+that were byte-identical to another file already in the catalog were
+removed; `CritLog.lua`'s `ResolveSound()` transparently redirects requests
+for a removed filename to the one physical copy that is still on disk (see
+[REFACTORING.md](REFACTORING.md) and `CHANGELOG.md`). Playback is
+unaffected — every trigger still plays the exact same audio it did before.
 
 | Directory | Purpose in the current code |
 | --- | --- |
@@ -10,7 +15,7 @@ The catalog contains **69 files** totaling approximately **5.68 MB**:
 | `CritLog/sounds/assi/` | Alternate “Toni” profile selected with `/cl toni` |
 | `CritLog/sounds/more sounds/` | Candidate files; currently not referenced |
 
-There are 66 MP3 and 2 OGG files. Duration and bitrate values come from Windows
+There are 52 MP3 and 1 OGG file. Duration and bitrate values come from Windows
 audio metadata; `n/a` means Windows did not expose the value. “Used” only
 describes reachability from the current source code, not a completed listening
 test.
@@ -77,38 +82,49 @@ neither is reachable from the current code.
 
 ## Alternate “Toni” profile (`assi/`)
 
+Files that were byte-identical to a default-profile file were removed from
+this directory; `ResolveSound()` in `CritLog.lua` loads those from the
+default profile instead, regardless of which profile is active. They are
+listed here as "→ default/…" so the profile's full sound set is still
+visible in one place.
+
 | File | Duration | Bitrate | Size | Status |
 | --- | ---: | ---: | ---: | --- |
-| `Angels1.mp3` | 5 s | 178 kbps | 121,680 B | Used; identical to default |
-| `Angels2.mp3` | 6 s | 192 kbps | 161,568 B | Used; identical to default |
-| `at_bam_babam.mp3` | 1 s | 128 kbps | 17,553 B | Used; identical to default |
+| `Angels1.mp3` | 5 s | 178 kbps | 121,680 B | → `default/Angels1.mp3` |
+| `Angels2.mp3` | 6 s | 192 kbps | 161,568 B | → `default/Angels2.mp3` |
+| `at_bam_babam.mp3` | 1 s | 128 kbps | 17,553 B | → `default/at_bam_babam.mp3` |
 | `Bloodlust.mp3` | 3 s | 128 kbps | 56,134 B | Used; alternate file |
 | `Bubble.mp3` | 1 s | 128 kbps | 27,305 B | Used; alternate file |
 | `bye.mp3` | 4 s | 128 kbps | 66,980 B | Used; alternate file |
-| `divineInt.mp3` | 4 s | 128 kbps | 66,486 B | Used; identical to default |
+| `divineInt.mp3` | 4 s | 128 kbps | 66,486 B | → `default/divineInt.mp3` |
 | `end.mp3` | 9 s | 160 kbps | 183,508 B | Used; alternate file |
-| `FFX.mp3` | 4 s | 128 kbps | 67,495 B | Used; identical to default |
+| `FFX.mp3` | 4 s | 128 kbps | 67,495 B | → `default/FFX.mp3` |
 | `Inervate1.mp3` | 2 s | 128 kbps | 37,305 B | Used; alternate file |
 | `Inervate2.mp3` | 2 s | 128 kbps | 47,754 B | Used; alternate file |
 | `Login.mp3` | 3 s | 192 kbps | 77,574 B | Present; playback commented out |
 | `Manatide.mp3` | 2 s | 320 kbps | 82,684 B | Used; alternate file |
 | `MarioDeath.mp3` | 2 s | 128 kbps | 37,305 B | Used; alternate file |
-| `Ready.mp3` | 1 s | 128 kbps | 30,336 B | Used; identical to default |
+| `Ready.mp3` | 1 s | 128 kbps | 30,336 B | → `default/Ready.mp3` |
 | `schnutz.mp3` | 1 s | 128 kbps | 22,676 B | Used; alternate file |
-| `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | Used; identical to default |
-| `soulstone2.mp3` | 6 s | 128 kbps | 97,939 B | Used; copied from default to close the gap |
-| `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | Used; identical to default |
-| `Surprise.mp3` | 5 s | 128 kbps | 83,280 B | Used; identical to next two files |
-| `Surprise2.mp3` | 5 s | 128 kbps | 83,280 B | Used; duplicate |
-| `Surprise3.mp3` | 5 s | 128 kbps | 83,280 B | Used; duplicate |
-| `Tank.mp3` | 1 s | 128 kbps | 31,763 B | Used; renamed from `Tank1.mp3` to match code |
-| `Tank2.mp3` | 1 s | 128 kbps | 31,763 B | Used; identical to `Tank.mp3` |
-| `wilhelm.ogg` | n/a | n/a | 12,524 B | Used; identical to default |
-| `wipe.mp3` | 10 s | 234 kbps | 298,605 B | Used; identical to default and candidate copy |
+| `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | → `default/soulstone.mp3` |
+| `soulstone2.mp3` | 6 s | 128 kbps | 97,939 B | → `default/soulstone2.mp3` |
+| `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | → `default/soulstone3.mp3` |
+| `Surprise.mp3` | 5 s | 128 kbps | 83,280 B | Used; alternate file — also stands in for `Surprise2.mp3`/`Surprise3.mp3` (see below) |
+| `Tank.mp3` | 1 s | 128 kbps | 31,763 B | Used; alternate file — also stands in for `Tank2.mp3` (see below) |
+| `wilhelm.ogg` | n/a | n/a | 12,524 B | → `default/wilhelm.ogg` |
 | `Xtreme.mp3` | 2 s | 128 kbps | 42,214 B | Present; code path commented out |
-| `Zelda.mp3` | 2 s | 128 kbps | 42,630 B | Used; identical to default |
+| `Zelda.mp3` | 2 s | 128 kbps | 42,630 B | → `default/Zelda.mp3` |
 
-The Toni profile now has every file the code can select.
+`Surprise2.mp3`, `Surprise3.mp3`, and `Tank2.mp3` were byte-identical to
+`Surprise.mp3`/`Tank.mp3` within this profile and were removed.
+`ResolveSound()`'s `TONI_ALIASES` table redirects requests for them to the
+one remaining copy, so Power Infusion and Tank-death still resolve
+correctly when the Toni profile is active — they just always play that one
+clip now (they already did in practice, since the "random" picks were
+identical audio; see `docs/CLEANUP-REVIEW.md`).
+
+The Toni profile still has every file the code can select — just not all
+of them as separate physical copies anymore.
 
 ## Candidate files (`more sounds/`)
 
@@ -129,20 +145,20 @@ None of these files is referenced by the current Lua code.
 | `luffy-senpai.mp3` | 3 s | 320 kbps | 129,611 B |
 | `m1.mp3` | <1 s | 128 kbps | 9,957 B |
 | `m2.mp3` | 1 s | 132 kbps | 20,863 B |
-| `wipe.mp3` | 10 s | 234 kbps | 298,605 B |
 | `Wololooo.mp3` | 1 s | 128 kbps | 26,330 B |
 
-## Byte-identical files
+This folder's own `wipe.mp3` (byte-identical to `default/wipe.mp3`, the one
+actually used by the wipe-chat trigger) was removed — nothing referenced it
+by this path, so there was nothing to redirect.
 
-SHA-256 comparison found the following exact duplicates:
+## Deduplication
 
-- Default and Toni: `Angels1.mp3`, `Angels2.mp3`,
-  `at_bam_babam.mp3`, `divineInt.mp3`, `FFX.mp3`, `Ready.mp3`,
-  `soulstone.mp3`, `soulstone2.mp3`, `soulstone3.mp3`, `wilhelm.ogg`, and
-  `Zelda.mp3`
-- `wipe.mp3` is identical in the default, Toni, and candidate directories.
-- Toni `Surprise.mp3`, `Surprise2.mp3`, and `Surprise3.mp3` are identical.
-- Toni `Tank.mp3` and `Tank2.mp3` are identical.
+A SHA-256 comparison found 16 files that were byte-identical to another file
+already in the catalog. Those physical copies were removed; see the
+"Alternate Toni profile" section above and `CritLog.lua`'s `ResolveSound()`
+for how playback still resolves to the one remaining copy. This dropped the
+catalog from 69 files / ~5.68 MB to 53 files / ~4.18 MB with no change to
+what actually plays in game.
 
 ## Required human review
 

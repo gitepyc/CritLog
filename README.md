@@ -13,6 +13,7 @@ one addon: **CritLog**.
 - [Behavior and triggers](docs/BEHAVIOR.md)
 - [Complete sound catalog](docs/SOUNDS.md)
 - [Refactoring plan](docs/REFACTORING.md)
+- [Cleanup review checklist](docs/CLEANUP-REVIEW.md)
 
 ## Included addons
 
