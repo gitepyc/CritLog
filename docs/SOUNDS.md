@@ -2,7 +2,7 @@
 
 ## Overview
 
-The catalog contains **68 files** totaling approximately **5.58 MB**:
+The catalog contains **69 files** totaling approximately **5.68 MB**:
 
 | Directory | Purpose in the current code |
 | --- | --- |
@@ -26,8 +26,8 @@ test.
 | Innervate | `Inervate1.mp3`, `Inervate2.mp3` | Player receives Innervate | Random 1/2 |
 | Power Infusion | `Surprise.mp3` through `Surprise3.mp3` | Player receives Power Infusion | Random 1/3 |
 | Blessing of Protection | `Bubble.mp3` | Player receives Blessing of Protection | Fixed |
-| Divine Intervention | `divineInt.mp3`, `divineInt2.mp3` | Player receives Divine Intervention | Random 1/2; second file is missing |
-| Soulstone | `soulstone.mp3`, `soulstone2.mp3` | Player receives Soulstone Resurrection | Random 1/2; `soulstone3.mp3` is never selected |
+| Divine Intervention | `divineInt.mp3` | Player receives Divine Intervention | Fixed; the missing `divineInt2.mp3` was removed from the selection |
+| Soulstone | `soulstone.mp3`, `soulstone2.mp3`, `soulstone3.mp3` | Player receives Soulstone Resurrection | Random 1/3 |
 | Player death | `MarioDeath.mp3` | Player dies | Fixed |
 | Special melee death | `schnutz.mp3` | `Schnutz` dies | Fixed |
 | Other melee death | `wilhelm.ogg` | Hard-coded melee-roster member dies | Fixed |
@@ -62,7 +62,7 @@ See [BEHAVIOR.md](BEHAVIOR.md) for the complete conditions.
 | `schnutz.mp3` | 1 s | 128 kbps | 120,496 B | Used: special-case death |
 | `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | Used: Soulstone |
 | `soulstone2.mp3` | 6 s | 128 kbps | 97,939 B | Used: Soulstone |
-| `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | Listed but unreachable due to random range |
+| `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | Used: Soulstone |
 | `Surprise.mp3` | 3 s | 128 kbps | 58,180 B | Used: Power Infusion |
 | `Surprise2.mp3` | 2 s | 128 kbps | 32,181 B | Used: Power Infusion |
 | `Surprise3.mp3` | 2 s | 128 kbps | 37,632 B | Used: Power Infusion |
@@ -72,8 +72,8 @@ See [BEHAVIOR.md](BEHAVIOR.md) for the complete conditions.
 | `wipe.mp3` | 10 s | 234 kbps | 298,605 B | Used: wipe chat phrase |
 | `Zelda.mp3` | 2 s | 128 kbps | 42,630 B | Used: boss death |
 
-The default profile is missing `divineInt2.mp3`. It also lacks the disabled
-`Login.mp3` and `Xtreme.mp3` files.
+The default profile lacks the disabled `Login.mp3` and `Xtreme.mp3` files;
+neither is reachable from the current code.
 
 ## Alternate “Toni” profile (`assi/`)
 
@@ -96,7 +96,8 @@ The default profile is missing `divineInt2.mp3`. It also lacks the disabled
 | `Ready.mp3` | 1 s | 128 kbps | 30,336 B | Used; identical to default |
 | `schnutz.mp3` | 1 s | 128 kbps | 22,676 B | Used; alternate file |
 | `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | Used; identical to default |
-| `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | Present but unreachable due to random range |
+| `soulstone2.mp3` | 6 s | 128 kbps | 97,939 B | Used; copied from default to close the gap |
+| `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | Used; identical to default |
 | `Surprise.mp3` | 5 s | 128 kbps | 83,280 B | Used; identical to next two files |
 | `Surprise2.mp3` | 5 s | 128 kbps | 83,280 B | Used; duplicate |
 | `Surprise3.mp3` | 5 s | 128 kbps | 83,280 B | Used; duplicate |
@@ -107,8 +108,7 @@ The default profile is missing `divineInt2.mp3`. It also lacks the disabled
 | `Xtreme.mp3` | 2 s | 128 kbps | 42,214 B | Present; code path commented out |
 | `Zelda.mp3` | 2 s | 128 kbps | 42,630 B | Used; identical to default |
 
-The Toni profile still lacks the reachable `divineInt2.mp3` and
-`soulstone2.mp3` files.
+The Toni profile now has every file the code can select.
 
 ## Candidate files (`more sounds/`)
 
@@ -138,7 +138,8 @@ SHA-256 comparison found the following exact duplicates:
 
 - Default and Toni: `Angels1.mp3`, `Angels2.mp3`,
   `at_bam_babam.mp3`, `divineInt.mp3`, `FFX.mp3`, `Ready.mp3`,
-  `soulstone.mp3`, `soulstone3.mp3`, `wilhelm.ogg`, and `Zelda.mp3`
+  `soulstone.mp3`, `soulstone2.mp3`, `soulstone3.mp3`, `wilhelm.ogg`, and
+  `Zelda.mp3`
 - `wipe.mp3` is identical in the default, Toni, and candidate directories.
 - Toni `Surprise.mp3`, `Surprise2.mp3`, and `Surprise3.mp3` are identical.
 - Toni `Tank.mp3` and `Tank2.mp3` are identical.

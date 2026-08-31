@@ -26,16 +26,18 @@ control.
 
 ## Critical hits and heals
 
-Detection runs through `COMBAT_LOG_EVENT_UNFILTERED`. Damage events must
+Detection runs through `COMBAT_LOG_EVENT_UNFILTERED`. Damage and heal events must
 originate from the player. The level filter currently checks the selected target
-rather than reliably checking the combat-log destination.
+rather than reliably checking the combat-log destination, and only applies to
+damage events; healing crits are always recorded regardless of the current
+target's level.
 
 | Combat-log type | Condition | State change | Sound condition | Sound |
 | --- | --- | --- | --- | --- |
 | `SPELL_DAMAGE` | Player source, critical hit, level filter passes | Updates highest ability crit, ability, and target. | Every crit when `/cl allcrits` is enabled; also every new record. | `at_bam_babam.mp3` |
 | `SWING_DAMAGE` | Player source, critical hit, level filter passes | Updates highest white-hit crit and target. | Every crit when both `/cl allcrits` and `/cl whitehit` are enabled; new records when `/cl whitehit` is enabled. | `at_bam_babam.mp3` |
 | `RANGE_DAMAGE` | Player source, critical hit, level filter passes | Stores the result in the white-hit record. | Every crit with `/cl allcrits`; new records with `/cl whitehit`. | `at_bam_babam.mp3` |
-| `SPELL_HEAL` | Critical heal; current branch structure may make this depend on target level | Updates highest heal crit, ability, and target. | Every crit with `/cl allcrits`; also every new record. | `at_bam_babam.mp3` |
+| `SPELL_HEAL` | Player source, critical heal | Updates highest heal crit, ability, and target. | Every crit with `/cl allcrits`; also every new record. | `at_bam_babam.mp3` |
 
 `/cl sound` is the master switch for `at_bam_babam.mp3` and suppresses the
 clip even when the individual conditions above are met.
@@ -52,8 +54,8 @@ matches displayed English or German spell names rather than spell IDs.
 | Innervate received | Destination is the player. | `Innervate`, `Anregen` | Randomly `Inervate1.mp3` or `Inervate2.mp3` |
 | Power Infusion received | Destination is the player. | `Power Infusion`, `Seele der Macht` | Randomly `Surprise.mp3`, `Surprise2.mp3`, or `Surprise3.mp3` |
 | Blessing of Protection received | Destination is the player. | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
-| Divine Intervention received | Destination is the player. | `Divine Intervention`, `Göttliches Eingreifen` | Randomly `divineInt.mp3` or missing `divineInt2.mp3` |
-| Soulstone Resurrection received | Destination is the player. | `Soulstone Resurrection`, `Seelenstein Auferstehung` | Randomly `soulstone.mp3` or `soulstone2.mp3`. `soulstone3.mp3` is listed but never selected because the code uses `math.random(1, 2)`. |
+| Divine Intervention received | Destination is the player. | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` (fixed; the missing second clip was removed from the selection) |
+| Soulstone Resurrection received | Destination is the player. | `Soulstone Resurrection`, `Seelenstein Auferstehung` | Randomly `soulstone.mp3`, `soulstone2.mp3`, or `soulstone3.mp3` |
 
 ## Deaths
 
@@ -90,6 +92,7 @@ disables them.
 | Function | Status |
 | --- | --- |
 | Boss killing-blow output | Prints a chat line for a matching boss name and a `_DAMAGE` event with a positive fifth payload value. The positional payload check is fragile across event types. |
+| Divine Intervention second clip | `divineInt2.mp3` was removed from the sound selection because it was never shipped in either profile. Re-add it if a second clip becomes available. |
 | Login sound | Commented out. |
 | “Over 9k” sound `Xtreme.mp3` | Fully commented out; the file is absent from the default profile. |
 | Zone logging | Handler exists, but the event is not registered. |
