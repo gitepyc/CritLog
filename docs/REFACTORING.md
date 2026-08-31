@@ -108,6 +108,17 @@ manual in-game behavior checklist remains required before merge.
 - ~~explicit sound profiles instead of switching a raw directory path~~ —
   moot: the addon now ships a single sound profile, see CHANGELOG.md and
   [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md)
+- replace the hardcoded melee/tank/priest death rosters with class-based
+  matching (e.g. "a Warrior tank died" instead of a fixed character-name
+  list) — direction decided, deliberately not scheduled yet. Nontrivial:
+  correlating a combat-log `destGUID` to a class requires either a live
+  unit token (target/nameplate/group member — not guaranteed available)
+  or GUID parsing, and role (tank/melee/priest) isn't 1:1 with class, so
+  this needs actual design work, not just a data-structure change. See
+  [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for the current state.
+- give Spirit of Redemption a real, working implementation, or remove
+  `SREDEMPTION_NAMES` and the disabled test block entirely — currently
+  parked, not scheduled
 
 ### 6. Add quality and release automation
 
@@ -126,11 +137,12 @@ manual in-game behavior checklist remains required before merge.
 - packaging that contains only used assets — done and verified: `.pkgmeta`
   (`package-as: CritLog`, `manual-changelog: CHANGELOG.md`) run locally via
   `release.sh -d -z` produces a `CritLog/` directory with only the TOC, the
-  addon's Lua modules, `sounds/`, `README.txt`, and the real `CHANGELOG.md`
-  — no `docs/`, `tests/`, `scripts/`, or other repo scaffolding. Not yet
-  wired into CI or an actual upload (no CurseForge/Wago project id
-  configured)
-- one source of truth for the version number — still outstanding
+  addon's Lua modules, `sounds/`, and the real `CHANGELOG.md` — no `docs/`,
+  `tests/`, `scripts/`, or other repo scaffolding. Not yet wired into CI or
+  an actual upload (no CurseForge/Wago project id configured)
+- one source of truth for the version number — done: `Core.lua` reads
+  `CritLog.toc`'s `## Version:` via `GetAddOnMetadata` instead of
+  duplicating the string
 - changelog and versioned releases — `CHANGELOG.md` started; no tagged
   releases yet
 

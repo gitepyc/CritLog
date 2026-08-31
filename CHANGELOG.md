@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Removed `README.txt`, the 3-line legacy readme fully superseded by
+  `README.md`/`docs/`. One readme instead of two.
+- `Core.lua` now reads the version from `CritLog.toc` via
+  `GetAddOnMetadata("CritLog", "Version")` (falling back to
+  `C_AddOns.GetAddOnMetadata` if the plain global isn't available on a
+  given client) instead of duplicating the version string. `CritLog.toc`'s
+  `## Version:` is now the single source of truth. No `CritLogDB` migration
+  impact: `CritLog.version` still resolves to the same `"0.2.0"` string,
+  just read from a different place.
 - Added `.github/workflows/release.yml`: on a tag push, runs the
   BigWigsMods packager and creates a GitHub Release with the built zip
   attached. No CurseForge/WoWInterface/Wago project id or API keys are
