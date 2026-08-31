@@ -125,11 +125,11 @@ manual in-game behavior checklist remains required before merge.
   no supported headless mode (see [tests/README.md](../tests/README.md))
 - packaging that contains only used assets — done and verified: `.pkgmeta`
   (`package-as: CritLog`, `manual-changelog: CHANGELOG.md`) run locally via
-  `release.sh -d -z` produces a `CritLog/` directory with only
-  `CritLog.toc`, `CritLog.lua`, `sounds/`, `README.txt`, and the real
-  `CHANGELOG.md` — no `docs/`, `tests/`, `scripts/`, or other repo
-  scaffolding. Not yet wired into CI or an actual upload (no CurseForge/Wago
-  project id configured)
+  `release.sh -d -z` produces a `CritLog/` directory with only the TOC, the
+  addon's Lua modules, `sounds/`, `README.txt`, and the real `CHANGELOG.md`
+  — no `docs/`, `tests/`, `scripts/`, or other repo scaffolding. Not yet
+  wired into CI or an actual upload (no CurseForge/Wago project id
+  configured)
 - one source of truth for the version number — still outstanding
 - changelog and versioned releases — `CHANGELOG.md` started; no tagged
   releases yet
