@@ -1,6 +1,6 @@
 # CritLog Wiki
 
-This documentation describes the current state of CritLog `0.1.1`. It
+This documentation describes the current state of CritLog `0.2.0`. It
 distinguishes user-confirmed runtime behavior, behavior derived from static code
 review, and checks that are still outstanding.
 

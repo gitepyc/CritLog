@@ -3,7 +3,7 @@ CritLog = { }
 
 
 --Version
-local CRITLOG_VERSION = "0.1.1"
+local CRITLOG_VERSION = "0.2.0"
 
 ----------------
 --SOUNDS:
@@ -391,43 +391,56 @@ end
 ---------------------------------------------------
 function CritLog:SetDefaults()
 
-    --
-    -- Checks for last CritLog-Version and builds initiale DataBase ( New Version resets config )
-    --
-    if not CritLogDB or CritLogDB.Version ~= CRITLOG_VERSION then
+    local defaults = {
+        DamageAbilityCrit = 0,
+        DAC_Name = "",
+        DAC_Tar = "",
+        WhiteHitCrit = 0,
+        WHC_Tar = "",
+        HealAbilityCrit = 0,
+        HAC_Name = "",
+        HAC_Tar ="",
+        SoundFlag = true,
+        AllLevel = false,
+        AllCritFlag = false,
+        WhiteHitFlag = true,
+        ReadySoundFlag = true,
+        AuraSoundFlag = true,
+        PriestSoundFlag = true,
+        TankSoundFlag = true,
+        MeleeSoundFlag = true,
+        PlayerSoundFlag = true,
+        BossSoundFlag = true,
+        DeadSoundFlag = true,
+        XtremeSoundFlag = false,
+    }
 
-
+    if not CritLogDB then
         --Character specifc Database:
-        CritLogDB = {
-            Version = CRITLOG_VERSION,
-            DamageAbilityCrit = 0,
-            DAC_Name = "",
-            DAC_Tar = "",
-            WhiteHitCrit = 0,
-            WHC_Tar = "",
-            HealAbilityCrit = 0,
-            HAC_Name = "",
-            HAC_Tar ="",
-            SoundFlag = true,
-            AllLevel = false,
-            AllCritFlag = false,
-            WhiteHitFlag = true,
-            ReadySoundFlag = true,
-            AuraSoundFlag = true,
-            PriestSoundFlag = true,
-            TankSoundFlag = true,
-            MeleeSoundFlag = true,
-            PlayerSoundFlag = true,
-            BossSoundFlag = true,
-            DeadSoundFlag = true,
-            XtremeSoundFlag = false,
-        }
+        CritLogDB = { Version = CRITLOG_VERSION }
+        for key, value in pairs(defaults) do
+            CritLogDB[key] = value
+        end
 
         print("CritLog Initialized")
         --print("CritLog Sounds Off")
         print("/cl help for list of commands")
         --message('\n Kîtten is DruidLord \n\n Pappi is ShamanKing \n') -- IMPORTANT DO NOT DELETE :D !!!11!1!11
 
+    elseif CritLogDB.Version ~= CRITLOG_VERSION then
+        --
+        -- Version changed: back-fill any field that doesn't exist yet.
+        -- Existing highscores and toggles are kept as-is.
+        --
+        for key, value in pairs(defaults) do
+            if CritLogDB[key] == nil then
+                CritLogDB[key] = value
+            end
+        end
+        CritLogDB.Version = CRITLOG_VERSION
+
+        print("CritLog updated to "..CRITLOG_VERSION.." (existing data kept)")
+        print("/cl help for list of commands")
     end
 end
 
