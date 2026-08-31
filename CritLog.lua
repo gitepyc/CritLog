@@ -6,71 +6,74 @@ CritLog = { }
 local CRITLOG_VERSION = "0.2.0"
 
 ----------------
---SOUNDS:
+--SOUND, SPELL, BOSS AND ROSTER DATA:
 ----------------
+-- Centralized so every trigger's sound file(s) and matched names live in one
+-- place instead of being scattered through the event-handling code below.
 local SOUNDPATH = 'Interface/AddOns/CritLog/sounds/'
 
-local BAM_SOUND = 'at_bam_babam.mp3'        -- crit sounds
-local XTREME_DMG = 'Xtreme.mp3'
+local CritLogData = {
+    sounds = {
+        crit = 'at_bam_babam.mp3',            -- crit sounds
+        xtremeDamage = 'Xtreme.mp3',
 
--------------------
--- on death sounds:
---------------------
-local MELEE_DEAD = 'wilhelm.ogg'
-local MELEE_DEAD_SCHNUTZ = 'schnutz.mp3'
-local YOU_DEAD = 'MarioDeath.mp3'
-local BOSS_DEAD = 'FFX.mp3'
-local BOSS_DEAD2 = 'Zelda.mp3'
-local TANK_DEAD = 'Tank.mp3'
-local ANGELS1 = 'Angels1.mp3'
-local ANGELS2 = 'Angels2.mp3'
+        -- on death sounds:
+        meleeDeath = 'wilhelm.ogg',
+        meleeDeathSchnutz = 'schnutz.mp3',
+        playerDeath = 'MarioDeath.mp3',
+        bossDeath = { 'FFX.mp3', 'Zelda.mp3' },
+        tankDeath = 'Tank.mp3',
+        priestDeath = { 'Angels1.mp3', 'Angels2.mp3' },
 
--------------------
--- on Aura sounds:
---------------------
-local INNERVATE1 = 'Inervate1.mp3'
-local INNERVATE2 = 'Inervate2.mp3'
-local MANATIDESOUND = 'Manatide.mp3'
-local BLOODLUS_SOUND = 'Bloodlust.mp3'
-local POWERINFUSION_SOUND = 'Surprise.mp3'
-local BUBBLE_BOB = 'Bubble.mp3'
-local DIVINE_INT_SOUND = 'divineInt.mp3'
-local SOULSTONE_SOUND = 'soulstone.mp3'
-local SOULSTONE_SOUND2 = 'soulstone2.mp3'
-local SOULSTONE_SOUND3 = 'soulstone3.mp3'
+        -- on Aura sounds:
+        innervate = { 'Inervate1.mp3', 'Inervate2.mp3' },
+        manaTide = 'Manatide.mp3',
+        bloodlust = 'Bloodlust.mp3',
+        powerInfusion = 'Surprise.mp3',
+        blessingOfProtection = 'Bubble.mp3',
+        divineIntervention = 'divineInt.mp3',
+        soulstone = { 'soulstone.mp3', 'soulstone2.mp3', 'soulstone3.mp3' },
 
--------------------
--- other sounds:
---------------------
-local READY_CHECK_SOUND = 'Ready.mp3'
+        -- other sounds:
+        readyCheck = 'Ready.mp3',
+        raidEndBye = 'bye.mp3',
+        raidEndFinal = 'end.mp3',
+        wipe = 'wipe.mp3',
+    },
 
+    -- FILL OUT THOSE FOR THE FUN :
+    bosses = {
+        english = {"Lady Vashj", "Kael'thas Sunstrider" , "Hydross the Unstable", "The Lurker Below", "Leotheras the Blind", "Fathom-Lord Karathress", "Morogrim Tidewalker", "Al'ar", "High Astromancer Solarian", "Void Reaver", "Rage Winterchill", "Anetheron", "Kaz'rogal", "Azgalor", "Archimonde", "High Warlord Naj'entus", "Supremus", "Shade of Akama", "Gurtogg Bloodboil", "Reliquary of the Lost", "Teron Gorefiend", "Mother Shahraz", "The Illidari Council", "Illidan Stormrage"},
+        german = {"Lady Vashj", "Kael'thas Sonnenwanderer", "Hydross der Unstete", "Das Grauen aus der Tiefe", "Leotheras der Blinde", "Tiefenlord Karathress", "Morogrim Gezeitenwandler", "Al'ar", "Hochastromantin Solarian", "Leerhäscher", "Furor Winterfrost", "Kaz'rogal", "Azgalor", "Archimonde", "Oberster Kriegsfürst Naj'entus", "Supremus", "Akamas Schemen", "Gurtogg Siedeblut", "Reliquiar der Verirrten", "Teron Blutschatten", "Mutter Shahraz", "Der Rat der Illidari", "Illidan Sturmgrimm"},
+    },
 
---SoundLists:
-local BOSS_DEAD_LIST = {BOSS_DEAD, BOSS_DEAD2}
-local ANGEL_LIST = { ANGELS1, ANGELS2 }
-local INNERVATE_SOUND_LIST = {INNERVATE1, INNERVATE2}
-local SOULSTONE_SOUND_LIST = { SOULSTONE_SOUND, SOULSTONE_SOUND2, SOULSTONE_SOUND3 }
+    playerGroups = {
+        melee = { "Schnutz", "Synday", "Kamicaze", "Alcira", "Shocksx", "Dripperx", "Enry", "Feniara", "Lemonsoda", "Cindarr", "Truffi", "Gradba", "Zoiy" },
+        tank = {"Truby", "Ketamartin","Hïnatahÿuuga" ,"Kîtten"},
+        priest = {"Ilenkov", "Epyç"},
+    },
 
------------
---NAMES
------------
---FILL OUT THOSE FOR THE FUN :
-local BOSS_NAMES = {"Lady Vashj", "Kael'thas Sunstrider" , "Hydross the Unstable", "The Lurker Below", "Leotheras the Blind", "Fathom-Lord Karathress", "Morogrim Tidewalker", "Al'ar", "High Astromancer Solarian", "Void Reaver", "Rage Winterchill", "Anetheron", "Kaz'rogal", "Azgalor", "Archimonde", "High Warlord Naj'entus", "Supremus", "Shade of Akama", "Gurtogg Bloodboil", "Reliquary of the Lost", "Teron Gorefiend", "Mother Shahraz", "The Illidari Council", "Illidan Stormrage"}
-local BOSS_NAMES_GERMAN = {"Lady Vashj", "Kael'thas Sonnenwanderer", "Hydross der Unstete", "Das Grauen aus der Tiefe", "Leotheras der Blinde", "Tiefenlord Karathress", "Morogrim Gezeitenwandler", "Al'ar", "Hochastromantin Solarian", "Leerhäscher", "Furor Winterfrost", "Kaz'rogal", "Azgalor", "Archimonde", "Oberster Kriegsfürst Naj'entus", "Supremus", "Akamas Schemen", "Gurtogg Siedeblut", "Reliquiar der Verirrten", "Teron Blutschatten", "Mutter Shahraz", "Der Rat der Illidari", "Illidan Sturmgrimm"  }
-local MELEE_NAMES = { "Schnutz", "Synday", "Kamicaze", "Alcira", "Shocksx", "Dripperx", "Enry", "Feniara", "Lemonsoda", "Cindarr", "Truffi", "Gradba", "Zoiy" }
-local TANK_NAMES = {"Truby", "Ketamartin","Hïnatahÿuuga" ,"Kîtten"}
-local HEALPRIEST_NAMES = {"Ilenkov", "Epyç"}
+    -- Ability names, English and German:
+    spells = {
+        bloodlust = {'Bloodlust', 'Heroism', 'Blutrausch', 'Heldentum'},
+        innervate = {'Innervate', 'Anregen'},
+        powerInfusion = {'Power Infusion', 'Seele der Macht'},
+        manaTide = {'Mana Tide Totem', 'Totem der Manaflut'},
+        blessingOfProtection = {"Blessing of Protection", "Segen des Schutzes"},
+        divineIntervention = {"Göttliches Eingreifen", "Divine Intervention"},
+        soulstone = {"Seelenstein Auferstehung", "Soulstone Resurrection"},
+    },
 
--- Ability names English and german:
-local BLOODLUST_NAMES = {'Bloodlust', 'Heroism', 'Blutrausch', 'Heldentum'}
-local INERVATE_NAMES = {'Innervate', 'Anregen'}
-local POWERINFUSION_NAMES = {'Power Infusion', 'Seele der Macht'}
-local MANATIDE_NAMES = {'Mana Tide Totem', 'Totem der Manaflut'}
+    chatTriggers = {
+        raidEnd = {"raid ende", "raid end"},
+        wipe = {"shit show", "wipe"},
+    },
+}
+
+-- Spirit of Redemption is a disabled test feature (see the commented-out
+-- block in COMBAT_LOG_EVENT_UNFILTERED below); its name list is kept
+-- separate and untouched until that feature gets a real fix.
 local SREDEMPTION_NAMES = {"Spirit of Redemption", "Geist der Erlösung"}
-local BOB_NAMES = {"Blessing of Protection", "Segen des Schutzes"}
-local DIVINE_INT = {"Göttliches Eingreifen", "Divine Intervention"}
-local SOULSTONE_NAMES = {"Seelenstein Auferstehung", "Soulstone Resurrection"}
-
 
 
 local frame = CreateFrame("Frame")
@@ -107,15 +110,15 @@ end
 function CritLog:CHAT_MSG_RAID_LEADER(...)
 
     local message, _ = ...
+    local lowerMessage = string.lower(message)
 
-    --string.lower(myString)
     --print(message,author)
-    if string.lower(message) =="raid ende" or string.lower(message) =="raid end"  then -- and Split(author, "-")[1] == "Kîtten" then
-        PlaySoundFile(SOUNDPATH..'bye.mp3', 'Master')
-        PlaySoundFile(SOUNDPATH..'end.mp3', 'Master')
+    if tContains( CritLogData.chatTriggers.raidEnd, lowerMessage ) then -- and Split(author, "-")[1] == "Kîtten" then
+        PlaySoundFile(SOUNDPATH..CritLogData.sounds.raidEndBye, 'Master')
+        PlaySoundFile(SOUNDPATH..CritLogData.sounds.raidEndFinal, 'Master')
     end
-    if string.lower(message) =="shit show" or string.lower(message) =="wipe"  then -- and Split(author, "-")[1] == "Kîtten" then
-        PlaySoundFile(SOUNDPATH..'wipe.mp3', 'Master')
+    if tContains( CritLogData.chatTriggers.wipe, lowerMessage ) then -- and Split(author, "-")[1] == "Kîtten" then
+        PlaySoundFile(SOUNDPATH..CritLogData.sounds.wipe, 'Master')
     end
 
 end
@@ -127,7 +130,7 @@ function CritLog:READY_CHECK()
 
     -- Plays Ready Check Sound
     if CritLogDB.ReadySoundFlag then
-        PlaySoundFile(SOUNDPATH..READY_CHECK_SOUND, 'Master')
+        PlaySoundFile(SOUNDPATH..CritLogData.sounds.readyCheck, 'Master')
     end
 
 end
@@ -159,10 +162,10 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
                 --
                 -- Mana Tide Totem Sound
                 --
-                if sv2 ~= nil and tContains( MANATIDE_NAMES, sv2 ) then
+                if sv2 ~= nil and tContains( CritLogData.spells.manaTide, sv2 ) then
                     --print("MANA TIDE TOTEM SCRIPT WORKING")
                     --print(subevent)
-                    PlaySoundFile(SOUNDPATH..MANATIDESOUND, 'Master')
+                    PlaySoundFile(SOUNDPATH..CritLogData.sounds.manaTide, 'Master')
                 end
             end
         end
@@ -171,41 +174,41 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             -- Gets Trigger if New Aura gets applied ( NOT on refresh of buffs, remove buff with right click to trigger again)
             --
             if subevent == "SPELL_AURA_APPLIED" then
-                if tContains( BLOODLUST_NAMES, sv2 ) then
-                    PlaySoundFile(SOUNDPATH..BLOODLUS_SOUND, 'Master')
+                if tContains( CritLogData.spells.bloodlust, sv2 ) then
+                    PlaySoundFile(SOUNDPATH..CritLogData.sounds.bloodlust, 'Master')
                 end
                 --
                 -- Inervate Sound
                 --
-                if tContains( INERVATE_NAMES, sv2 ) then
+                if tContains( CritLogData.spells.innervate, sv2 ) then
                     local tmpRNDM = math.random(1, 2)
-                    --print(SOUNDPATH..INNERVATE_SOUND_LIST[tmpRNDM])
-                    PlaySoundFile(SOUNDPATH..INNERVATE_SOUND_LIST[tmpRNDM], 'Master')
+                    --print(SOUNDPATH..CritLogData.sounds.innervate[tmpRNDM])
+                    PlaySoundFile(SOUNDPATH..CritLogData.sounds.innervate[tmpRNDM], 'Master')
                 end
                 --
                 -- Power Word Infusion Sound
                 --
-                if tContains( POWERINFUSION_NAMES, sv2 ) then
-                    PlaySoundFile(SOUNDPATH..POWERINFUSION_SOUND, 'Master')
+                if tContains( CritLogData.spells.powerInfusion, sv2 ) then
+                    PlaySoundFile(SOUNDPATH..CritLogData.sounds.powerInfusion, 'Master')
                 end
                 --
                 -- Blessing of Protection Sound
                 --
-                if tContains( BOB_NAMES, sv2 ) then
-                    PlaySoundFile(SOUNDPATH..BUBBLE_BOB, 'Master')
+                if tContains( CritLogData.spells.blessingOfProtection, sv2 ) then
+                    PlaySoundFile(SOUNDPATH..CritLogData.sounds.blessingOfProtection, 'Master')
                 end
                 --
                 -- Divine Intervention Sound
                 --
-                if tContains( DIVINE_INT, sv2 ) then
-                    PlaySoundFile(SOUNDPATH..DIVINE_INT_SOUND, 'Master')
+                if tContains( CritLogData.spells.divineIntervention, sv2 ) then
+                    PlaySoundFile(SOUNDPATH..CritLogData.sounds.divineIntervention, 'Master')
                 end
                 --
                 -- Soulstone Sound
                 --
-                if tContains( SOULSTONE_NAMES, sv2 ) then
+                if tContains( CritLogData.spells.soulstone, sv2 ) then
                     local tmpRNDM = math.random(1, 3)
-                    PlaySoundFile(SOUNDPATH..SOULSTONE_SOUND_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(SOUNDPATH..CritLogData.sounds.soulstone[tmpRNDM], 'Master')
                 end
             end
         end
@@ -216,7 +219,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
     --
     if sourceGUID == UnitGUID("Player") and subevent == "SPELL_DAMAGE" then
         if CritLogDB.XtremeSoundFlag and tonumber(sv4) > 9000 then
-            PlaySoundFile(SOUNDPATH..XTREME_DMG, 'Master')
+            PlaySoundFile(SOUNDPATH..CritLogData.sounds.xtremeDamage, 'Master')
         end
     end
     --
@@ -314,7 +317,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
 ---------------------------------------
 -- Print who got KillingBlow of Bosses
 ---------------------------------------
-    if tContains( BOSS_NAMES, destName ) then
+    if tContains( CritLogData.bosses.english, destName ) then
         if (ends_with(subevent, '_DAMAGE')) and sv5 and sv5 > 0 then
         print(sourceName.." killed "..destName)
         end
@@ -335,18 +338,18 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
         --
         if destGUID == UnitGUID("Player") then
             if CritLogDB.PlayerSoundFlag then
-                PlaySoundFile(SOUNDPATH..YOU_DEAD, 'Master')
+                PlaySoundFile(SOUNDPATH..CritLogData.sounds.playerDeath, 'Master')
             end
         else
             --
             -- Melee died
             --
             if  CritLogDB.MeleeSoundFlag then
-                if tContains( MELEE_NAMES, destName ) then
+                if tContains( CritLogData.playerGroups.melee, destName ) then
                    if destName == "Schnutz" then
-                        PlaySoundFile(SOUNDPATH..MELEE_DEAD_SCHNUTZ, 'Master')
+                        PlaySoundFile(SOUNDPATH..CritLogData.sounds.meleeDeathSchnutz, 'Master')
                     else
-                        PlaySoundFile(SOUNDPATH..MELEE_DEAD, 'Master')
+                        PlaySoundFile(SOUNDPATH..CritLogData.sounds.meleeDeath, 'Master')
                     end
                 end
             end
@@ -354,25 +357,25 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             -- Boss died
             --
             if CritLogDB.BossSoundFlag then
-                if tContains( BOSS_NAMES, destName ) or tContains( BOSS_NAMES_GERMAN, destName ) then
+                if tContains( CritLogData.bosses.english, destName ) or tContains( CritLogData.bosses.german, destName ) then
                     local tmpRNDM = math.random(1, 2)
-                    PlaySoundFile(SOUNDPATH..BOSS_DEAD_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(SOUNDPATH..CritLogData.sounds.bossDeath[tmpRNDM], 'Master')
                 end
             end
             --
             -- Tank died
             --
-            if tContains( TANK_NAMES, destName ) and CritLogDB.TankSoundFlag then
-                PlaySoundFile(SOUNDPATH..TANK_DEAD, 'Master')
+            if tContains( CritLogData.playerGroups.tank, destName ) and CritLogDB.TankSoundFlag then
+                PlaySoundFile(SOUNDPATH..CritLogData.sounds.tankDeath, 'Master')
                 --print("wtf2")
             end
             --
             -- Heal Priest died
             --
-            if tContains( HEALPRIEST_NAMES, destName ) and CritLogDB.PriestSoundFlag then
+            if tContains( CritLogData.playerGroups.priest, destName ) and CritLogDB.PriestSoundFlag then
                 local tmpRNDM = math.random(1, 2)
                 --print(tmpRNDM)
-                PlaySoundFile(SOUNDPATH..ANGEL_LIST[tmpRNDM], 'Master')
+                PlaySoundFile(SOUNDPATH..CritLogData.sounds.priestDeath[tmpRNDM], 'Master')
             end
         end
     end
@@ -381,7 +384,7 @@ end
 --plays sound file for crits
 function CritLog:PlaySoundFile()
     if CritLogDB.SoundFlag then
-        PlaySoundFile(SOUNDPATH..BAM_SOUND, 'Master')
+        PlaySoundFile(SOUNDPATH..CritLogData.sounds.crit, 'Master')
     end
 end
 

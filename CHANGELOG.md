@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Centralized sounds, spells, bosses, player rosters, and chat-trigger
+  phrases into one `local CritLogData` table instead of ~30 scattered
+  top-level constants and sound-list locals. No behavior change — see
+  docs/REFACTORING.md (step 3) for what was verified. Sets up file-splitting
+  (step 4) as the next, now much smaller, step.
+
 ## 0.2.0
 
 - `CritLogDB` version upgrades no longer reset existing data. Previously,

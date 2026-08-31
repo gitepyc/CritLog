@@ -41,24 +41,39 @@ Met on `fix/safe-cleanups`.
 
 ### 3. Extract data from control flow
 
-Introduce central tables while the addon still has one working implementation
-file:
+Done. Centralized sounds, spells, bosses, player rosters, and chat-trigger
+phrases into one `local CritLogData` table (not a new global) near the top
+of `CritLog.lua`:
 
 ```lua
-CritLogData = {
+local CritLogData = {
   sounds = { ... },
-  spells = { ... },
   bosses = { ... },
   playerGroups = { ... },
+  spells = { ... },
   chatTriggers = { ... },
 }
 ```
 
-Then replace displayed names with stable spell and NPC IDs where possible.
-Player rosters should become SavedVariables configuration rather than source
-code.
+Event handlers now read `CritLogData.sounds.*`, `CritLogData.spells.*`, etc.
+instead of ~30 scattered top-level constants and standalone sound-list
+locals. No behavior change: verified with luacheck (still 7 warnings / 0
+errors, same set as before) and a script cross-checking every sound
+filename in code against every file in `sounds/` (24/24 match both ways).
+`SREDEMPTION_NAMES` was deliberately left out of the catalog and untouched,
+per the standing decision to leave Spirit of Redemption as-is for now.
 
-**Acceptance:** Event handlers no longer contain long filename or name lists.
+Two things from the original version of this step are still open, not part
+of this pass:
+
+- Replacing displayed English/German names with stable spell and NPC IDs.
+  Riskier than the data move above — needs verified IDs and in-game testing
+  per trigger, since a wrong ID fails silently. A separate follow-up.
+- Player rosters (`playerGroups`) are still hardcoded names, not
+  SavedVariables configuration. Tracked under step 5.
+
+**Acceptance:** Event handlers no longer contain long filename or name
+lists. Met.
 
 ### 4. Split along stable responsibilities
 
