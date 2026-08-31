@@ -17,6 +17,8 @@ stds.wow = {
         "UnitInRaid",
         "UnitLevel",
         "tContains",
+        "GetAddOnMetadata",
+        "C_AddOns",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned

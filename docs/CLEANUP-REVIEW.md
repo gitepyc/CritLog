@@ -29,6 +29,7 @@ The first dead-weight pass is done:
 | Login sound | Removed entirely: `LOGIN_SOUND` constant, the commented-out playback in `PLAYER_LOGIN`, the live-but-pointless `LoginSoundFlag` field, the `/cl login` command, and its `help`/`config` lines. It had a real toggle but no code path ever read it. |
 | `Login.mp3` | Deleted — its last reference is gone. |
 | `CritLog/sounds/more sounds/` (14 files) | Deleted — none of it was ever referenced by any trigger. |
+| `README.txt` | Removed — 3-line legacy readme, fully superseded by the root `README.md` and `docs/`. |
 
 `CritLogDB` migration was checked for every field change here, same as the
 Toni merge: `CRITLOG_VERSION` is unchanged. Removed fields (`LoginSoundFlag`)
@@ -51,13 +52,19 @@ now; a later refactor, not a cleanup pass:
 | # | What | Where |
 | ---: | --- | --- |
 | 1 | Hardcoded melee/tank/healer-priest death rosters (`MELEE_NAMES`, `TANK_NAMES`, `HEALPRIEST_NAMES`) plus the special-cased `"Schnutz"` death sound | Death-sound triggers — see [BEHAVIOR.md](BEHAVIOR.md#deaths) |
-| 2 | `README.txt` — 3-line legacy readme, fully superseded by the root `README.md` and `docs/` | `README.txt` |
 
 For anyone who isn't in that original roster, the melee/tank/priest death
 sounds simply never fire today — dead weight in practice, but removing it
 changes what the addon does for you specifically, so it's a product
 decision (keep as-is for nostalgia, make it configurable, or cut it), not a
 pure cleanup.
+
+**Direction decided, not yet scheduled:** the long-term replacement is
+class-based matching (e.g. "a Warrior tank died" instead of a hardcoded
+character name) instead of a fixed name list — see
+[REFACTORING.md](REFACTORING.md#5-professionalize-configuration) for why
+that's real design work, not a quick swap, and is parked as a roadmap item
+rather than done alongside this cleanup pass.
 
 ## Reminder
 

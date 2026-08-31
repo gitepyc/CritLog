@@ -109,7 +109,6 @@ critlog/
 ├── CombatLog.lua          # Crit, aura, death, and boss-kill handling
 ├── Commands.lua           # Slash commands and chat output
 ├── Events.lua             # Frame registration and event dispatch
-├── README.txt            # Historical minimal readme
 └── sounds/
 ```
 
@@ -131,7 +130,6 @@ be managed through an options UI or configuration file:
 - raid-leader phrases that trigger sounds
 - a nine-level threshold for relevant damage targets
 - defaults for all feature toggles
-- the addon version, independently duplicated in the TOC file
 
 ## Known technical issues and risks
 
@@ -169,8 +167,9 @@ tests for pure matching and migration logic.
 
 There are no runtime dependencies or build steps. Changes are made in the
 focused Lua modules listed above and must be tested in the target client.
-Until a release pipeline exists, the versions in `Core.lua` and `CritLog.toc` must be kept
-in sync manually.
+`CritLog.toc`'s `## Version:` is the single source of truth for the version
+number — `Core.lua` reads it via `GetAddOnMetadata`/`C_AddOns.GetAddOnMetadata`
+at load time instead of duplicating it.
 
 ## Testing
 
