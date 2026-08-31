@@ -36,21 +36,13 @@ max_line_length = false
 -- event-dispatch-style methods, not a defect to fix line by line.
 self = false
 
-read_globals = {
+globals = {
+    "SlashCmdList",
+    -- Every module contributes fields/methods to these two shared tables
+    -- (the addon namespace and its SavedVariables), so both need to be
+    -- mutable everywhere, not just in the one file that first creates them.
     "CritLog",
     "CritLogDB",
-}
-
-files["Core.lua"] = {
-    globals = {
-        "CritLog",
-    },
-}
-
-files["Database.lua"] = {
-    globals = {
-        "CritLogDB",
-    },
 }
 
 files["Commands.lua"] = {

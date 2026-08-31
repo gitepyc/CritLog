@@ -114,9 +114,12 @@ manual in-game behavior checklist remains required before merge.
 - Lua linting: done. `tests/lint/` containerizes `luacheck` against Lua 5.1
   with a curated WoW API globals list (`.luacheckrc`); `scripts/lint.sh` runs
   it locally, `.github/workflows/lint.yml` runs it in CI against the GitHub
-  push mirror (Gitea has no Actions runner registered yet). 79 pre-existing
-  warnings are reviewed rather than treated as build failures; most come from
-  unused fields in Blizzard's positional combat-log payload.
+  push mirror (Gitea has no Actions runner registered yet). Splitting the
+  addon into per-responsibility modules (this step) dropped the accepted
+  warning count from 7 to 1 — turning the former `PrintCritLogs`/`ends_with`
+  global-pollution warnings into ordinary module functions removed them
+  outright. The one remaining warning is the intentionally-unused
+  `SREDEMPTION_NAMES`, kept for the disabled Spirit of Redemption feature.
 - focused tests for pure functions, migrations, and trigger matching — still
   outstanding; no runtime/unit-test harness exists because the WoW client has
   no supported headless mode (see [tests/README.md](../tests/README.md))

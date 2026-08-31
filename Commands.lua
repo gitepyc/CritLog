@@ -8,24 +8,24 @@ local function toggle(field, enabledMessage, disabledMessage)
 end
 
 local function printHelp()
-    print("/cl reset: sets all logs to 0")
+    print("/cl reset: sets all Logs to 0")
     print("/cl level: changes level requirements for crit logs")
     print("/cl sound: turns BÄM sound on/off (highscore sound)")
     print("/cl allcrits: turns BÄM sound on/off for all crits")
-    print("/cl whitehit: turns BÄM sound on/off for all white-hit crits")
+    print("/cl whitehit: turns BÄM sound on/off for all WHITEHIT crits")
     print("/cl xtreme: turns sound for hits over 9000 damage on/off (off by default)")
-    print("/cl ready: turns ReadyCheck sound on/off")
-    print("/cl aura: turns aura/spell sound on/off")
+    print("/cl ready: turns ReadyCheck Sound on/off")
+    print("/cl aura: turns Aura/Spell Sound on/off")
     print("------------")
-    print("/cl priest: turns priest sound on/off")
-    print("/cl melee: turns melee sound on/off")
-    print("/cl tank: turns tank sound on/off")
-    print("/cl boss: turns boss sound on/off")
-    print("/cl player: turns player death sound on/off")
-    print("/cl dead: turns death sounds on/off")
+    print("/cl priest: turns Priest Sound on/off")
+    print("/cl melee: turns Melee Sound on/off")
+    print("/cl tank: turns Tank Sound on/off")
+    print("/cl boss: turns Boss Sound on/off")
+    print("/cl player: turns Player Death Sound on/off")
+    print("/cl dead: turns  OnDeath Sound on/off (turn on for priest, melee, tank and boss config to work)")
     print("------------")
-    print("/cl config: shows the current configuration")
-    print("/cl: prints CritLog highscores")
+    print("/cl config: shows actual config/DB-data")
+    print("/cl      : prints CritLogs")
 end
 
 local function printConfig()
@@ -75,17 +75,19 @@ function CritLog:PrintCritLogs(message)
             print("CritLog Sounds Off")
         end
     elseif command == "allcrits" then
-        toggle(
-            "AllCritFlag",
-            "Sound for all crits On",
-            "Sound for all crits Off"
-        )
+        CritLogDB.AllCritFlag = not CritLogDB.AllCritFlag
+        if CritLogDB.AllCritFlag then
+            print("Sound for all crits On("..tostring(CritLogDB.AllCritFlag)..")")
+        else
+            print("Sound for all crits Off ("..tostring(CritLogDB.AllCritFlag)..")")
+        end
     elseif command == "whitehit" then
-        toggle(
-            "WhiteHitFlag",
-            "Sound for white-hit crits On",
-            "Sound for white-hit crits Off"
-        )
+        CritLogDB.WhiteHitFlag = not CritLogDB.WhiteHitFlag
+        if CritLogDB.WhiteHitFlag then
+            print("Sound for whitehit crits On("..tostring(CritLogDB.WhiteHitFlag)..")")
+        else
+            print("Sound for whitehit crits Off ("..tostring(CritLogDB.WhiteHitFlag)..")")
+        end
     elseif command == "ready" then
         toggle(
             "ReadySoundFlag",
@@ -143,9 +145,9 @@ function CritLog:PrintCritLogs(message)
     elseif command == "level" then
         CritLogDB.AllLevel = not CritLogDB.AllLevel
         if CritLogDB.AllLevel then
-            print("CritLog: enemy level no longer affects damage crit logging")
+            print("CritLog: Enemy Level does not matter now")
         else
-            print("CritLog: damage crits require a relevant-level target")
+            print("CritLog: Enemy Level + 9 < Player Level to log DAMAGE Crits (GREEN Level Units) only")
         end
     elseif command == "help" then
         printHelp()

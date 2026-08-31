@@ -2,6 +2,11 @@ local function endsWith(value, ending)
     return ending == "" or value:sub(-#ending) == ending
 end
 
+-- Spirit of Redemption is a disabled test feature (see the commented-out
+-- block at the bottom of this file); its name list is kept separate and
+-- untouched until that feature gets a real fix.
+local SREDEMPTION_NAMES = {"Spirit of Redemption", "Geist der Erlösung"}
+
 local function randomEntry(values)
     return values[math.random(1, #values)]
 end
@@ -236,5 +241,14 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
     self:HandleDeath(subevent, destGUID, destName)
 end
 
--- Spirit of Redemption support remains intentionally disabled. The original
--- test implementation was marked as nonfunctional and had no runtime effect.
+--
+-- Spirit of Redemtption TEST ------not working
+--
+--if Split(sourceGUID, "-")[1] == "Player" then
+--    if subevent == "SPELL_AURA_APPLIED" then
+--        if tContains( SREDEMPTION_NAMES, sv2 ) then
+--            tmpRNDM = math.random(1, 2)
+--            print("SPIRIT OF REDEMPTION SCRIPT WORKING----- TELL ME IF IT DOES Cause i thinks it's not")
+--        end
+--    end
+--end
