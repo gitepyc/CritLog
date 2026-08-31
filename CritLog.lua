@@ -8,8 +8,7 @@ local CRITLOG_VERSION = "0.1.1"
 ----------------
 --SOUNDS:
 ----------------
-local SOUNDPATH = 'Interface/AddOns/CritLog/sounds/' --path of  normal sounds
-local ASSISOUND = 'Interface/AddOns/CritLog/sounds/assi/' -- path of assi sounds
+local SOUNDPATH = 'Interface/AddOns/CritLog/sounds/'
 
 local BAM_SOUND = 'at_bam_babam.mp3'        -- crit sounds
 local XTREME_DMG = 'Xtreme.mp3'
@@ -23,7 +22,6 @@ local YOU_DEAD = 'MarioDeath.mp3'
 local BOSS_DEAD = 'FFX.mp3'
 local BOSS_DEAD2 = 'Zelda.mp3'
 local TANK_DEAD = 'Tank.mp3'
-local TANK_DEAD2 = 'Tank2.mp3'
 local ANGELS1 = 'Angels1.mp3'
 local ANGELS2 = 'Angels2.mp3'
 
@@ -34,9 +32,7 @@ local INNERVATE1 = 'Inervate1.mp3'
 local INNERVATE2 = 'Inervate2.mp3'
 local MANATIDESOUND = 'Manatide.mp3'
 local BLOODLUS_SOUND = 'Bloodlust.mp3'
-local POWERINFUSION1 = 'Surprise.mp3'
-local POWERINFUSION2 = 'Surprise2.mp3'
-local POWERINFUSION3 = 'Surprise3.mp3'
+local POWERINFUSION_SOUND = 'Surprise.mp3'
 local BUBBLE_BOB = 'Bubble.mp3'
 local DIVINE_INT_SOUND = 'divineInt.mp3'
 local SOULSTONE_SOUND = 'soulstone.mp3'
@@ -51,56 +47,10 @@ local LOGIN_SOUND = 'Login.mp3'
 
 
 --SoundLists:
-local TANK_DEAD_LIST = {TANK_DEAD, TANK_DEAD2}
 local BOSS_DEAD_LIST = {BOSS_DEAD, BOSS_DEAD2}
 local ANGEL_LIST = { ANGELS1, ANGELS2 }
 local INNERVATE_SOUND_LIST = {INNERVATE1, INNERVATE2}
-local POWERINFUSION_LIST = { POWERINFUSION1, POWERINFUSION2, POWERINFUSION3 }
 local SOULSTONE_SOUND_LIST = { SOULSTONE_SOUND, SOULSTONE_SOUND2, SOULSTONE_SOUND3 }
-
---
--- Sound files that are byte-identical between the default and Toni profile
--- only exist once on disk, under the default folder, to keep the packaged
--- addon smaller. ResolveSound() always loads them from there regardless of
--- the active profile.
---
-local SHARED_WITH_DEFAULT = {
-    ['Angels1.mp3'] = true,
-    ['Angels2.mp3'] = true,
-    ['at_bam_babam.mp3'] = true,
-    ['divineInt.mp3'] = true,
-    ['FFX.mp3'] = true,
-    ['Ready.mp3'] = true,
-    ['soulstone.mp3'] = true,
-    ['soulstone2.mp3'] = true,
-    ['soulstone3.mp3'] = true,
-    ['wilhelm.ogg'] = true,
-    ['wipe.mp3'] = true,
-    ['Zelda.mp3'] = true,
-}
-
---
--- Within the Toni profile, Surprise2.mp3/Surprise3.mp3 and Tank2.mp3 were
--- byte-identical to Surprise.mp3/Tank.mp3 respectively, so only one physical
--- copy of each is kept. This redirects the "random" pick to the file that
--- is actually still on disk; the default profile keeps its distinct clips
--- and is unaffected.
---
-local TONI_ALIASES = {
-    ['Surprise2.mp3'] = 'Surprise.mp3',
-    ['Surprise3.mp3'] = 'Surprise.mp3',
-    ['Tank2.mp3'] = 'Tank.mp3',
-}
-
-local function ResolveSound(filename)
-    if SHARED_WITH_DEFAULT[filename] then
-        return SOUNDPATH..filename
-    end
-    if CritLogDB.SoundFile == ASSISOUND and TONI_ALIASES[filename] then
-        return ASSISOUND..TONI_ALIASES[filename]
-    end
-    return CritLogDB.SoundFile..filename
-end
 
 -----------
 --NAMES
@@ -152,7 +102,7 @@ function CritLog:PLAYER_LOGIN()
 
     -- Plays Login Sound
 --    if CritLogDB.LoginSoundFlag then
---        PlaySoundFile(CritLogDB.SoundFile..LOGIN_SOUND, 'Master')
+--        PlaySoundFile(SOUNDPATH..LOGIN_SOUND, 'Master')
 --    end
 
 end
@@ -186,11 +136,11 @@ function CritLog:CHAT_MSG_RAID_LEADER(...)
     --string.lower(myString)
     --print(message,author)
     if string.lower(message) =="raid ende" or string.lower(message) =="raid end"  then -- and Split(author, "-")[1] == "Kîtten" then
-        PlaySoundFile(ResolveSound('bye.mp3'), 'Master')
-        PlaySoundFile(ResolveSound('end.mp3'), 'Master')
+        PlaySoundFile(SOUNDPATH..'bye.mp3', 'Master')
+        PlaySoundFile(SOUNDPATH..'end.mp3', 'Master')
     end
     if string.lower(message) =="shit show" or string.lower(message) =="wipe"  then -- and Split(author, "-")[1] == "Kîtten" then
-        PlaySoundFile(ResolveSound('wipe.mp3'), 'Master')
+        PlaySoundFile(SOUNDPATH..'wipe.mp3', 'Master')
     end
 
 end
@@ -202,7 +152,7 @@ function CritLog:READY_CHECK()
 
     -- Plays Ready Check Sound
     if CritLogDB.ReadySoundFlag then
-        PlaySoundFile(ResolveSound(READY_CHECK_SOUND), 'Master')
+        PlaySoundFile(SOUNDPATH..READY_CHECK_SOUND, 'Master')
     end
 
 end
@@ -237,7 +187,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
                 if sv2 ~= nil and tContains( MANATIDE_NAMES, sv2 ) then
                     --print("MANA TIDE TOTEM SCRIPT WORKING")
                     --print(subevent)
-                    PlaySoundFile(ResolveSound(MANATIDESOUND), 'Master')
+                    PlaySoundFile(SOUNDPATH..MANATIDESOUND, 'Master')
                 end
             end
         end
@@ -247,41 +197,40 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             --
             if subevent == "SPELL_AURA_APPLIED" then
                 if tContains( BLOODLUST_NAMES, sv2 ) then
-                    PlaySoundFile(ResolveSound(BLOODLUS_SOUND), 'Master')
+                    PlaySoundFile(SOUNDPATH..BLOODLUS_SOUND, 'Master')
                 end
                 --
                 -- Inervate Sound
                 --
                 if tContains( INERVATE_NAMES, sv2 ) then
                     local tmpRNDM = math.random(1, 2)
-                    --print(CritLogDB.SoundFile..INNERVATE_SOUND_LIST[tmpRNDM])
-                    PlaySoundFile(ResolveSound(INNERVATE_SOUND_LIST[tmpRNDM]), 'Master')
+                    --print(SOUNDPATH..INNERVATE_SOUND_LIST[tmpRNDM])
+                    PlaySoundFile(SOUNDPATH..INNERVATE_SOUND_LIST[tmpRNDM], 'Master')
                 end
                 --
                 -- Power Word Infusion Sound
                 --
                 if tContains( POWERINFUSION_NAMES, sv2 ) then
-                    local tmpRNDM = math.random(1, 3)
-                    PlaySoundFile(ResolveSound(POWERINFUSION_LIST[tmpRNDM]), 'Master')
+                    PlaySoundFile(SOUNDPATH..POWERINFUSION_SOUND, 'Master')
                 end
                 --
                 -- Blessing of Protection Sound
                 --
                 if tContains( BOB_NAMES, sv2 ) then
-                    PlaySoundFile(ResolveSound(BUBBLE_BOB), 'Master')
+                    PlaySoundFile(SOUNDPATH..BUBBLE_BOB, 'Master')
                 end
                 --
                 -- Divine Intervention Sound
                 --
                 if tContains( DIVINE_INT, sv2 ) then
-                    PlaySoundFile(ResolveSound(DIVINE_INT_SOUND), 'Master')
+                    PlaySoundFile(SOUNDPATH..DIVINE_INT_SOUND, 'Master')
                 end
                 --
                 -- Soulstone Sound
                 --
                 if tContains( SOULSTONE_NAMES, sv2 ) then
                     local tmpRNDM = math.random(1, 3)
-                    PlaySoundFile(ResolveSound(SOULSTONE_SOUND_LIST[tmpRNDM]), 'Master')
+                    PlaySoundFile(SOUNDPATH..SOULSTONE_SOUND_LIST[tmpRNDM], 'Master')
                 end
             end
         end
@@ -295,7 +244,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             --print("shit: "..sv4)
     --        if tonumber(sv4) > 9000 then
                 --print(sv4)
-     --           PlaySoundFile(CritLogDB.SoundFile..XTREME_DMG, 'Master')
+     --           PlaySoundFile(SOUNDPATH..XTREME_DMG, 'Master')
                 --print("working")
      --       end
     --    end
@@ -414,7 +363,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
         --
         if destGUID == UnitGUID("Player") then
             if CritLogDB.PlayerSoundFlag then
-                PlaySoundFile(ResolveSound(YOU_DEAD), 'Master')
+                PlaySoundFile(SOUNDPATH..YOU_DEAD, 'Master')
             end
         else
             --
@@ -423,9 +372,9 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             if  CritLogDB.MeleeSoundFlag then
                 if tContains( MELEE_NAMES, destName ) then
                    if destName == "Schnutz" then
-                        PlaySoundFile(ResolveSound(MELEE_DEAD_SCHNUTZ), 'Master')
+                        PlaySoundFile(SOUNDPATH..MELEE_DEAD_SCHNUTZ, 'Master')
                     else
-                        PlaySoundFile(ResolveSound(MELEE_DEAD), 'Master')
+                        PlaySoundFile(SOUNDPATH..MELEE_DEAD, 'Master')
                     end
                 end
             end
@@ -435,15 +384,14 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             if CritLogDB.BossSoundFlag then
                 if tContains( BOSS_NAMES, destName ) or tContains( BOSS_NAMES_GERMAN, destName ) then
                     local tmpRNDM = math.random(1, 2)
-                    PlaySoundFile(ResolveSound(BOSS_DEAD_LIST[tmpRNDM]), 'Master')
+                    PlaySoundFile(SOUNDPATH..BOSS_DEAD_LIST[tmpRNDM], 'Master')
                 end
             end
             --
             -- Tank died
             --
             if tContains( TANK_NAMES, destName ) and CritLogDB.TankSoundFlag then
-                local tmpRNDM = math.random(1, 2)
-                PlaySoundFile(ResolveSound(TANK_DEAD_LIST[tmpRNDM]), 'Master')
+                PlaySoundFile(SOUNDPATH..TANK_DEAD, 'Master')
                 --print("wtf2")
             end
             --
@@ -452,7 +400,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             if tContains( HEALPRIEST_NAMES, destName ) and CritLogDB.PriestSoundFlag then
                 local tmpRNDM = math.random(1, 2)
                 --print(tmpRNDM)
-                PlaySoundFile(ResolveSound(ANGEL_LIST[tmpRNDM]), 'Master')
+                PlaySoundFile(SOUNDPATH..ANGEL_LIST[tmpRNDM], 'Master')
             end
         end
     end
@@ -461,7 +409,7 @@ end
 --plays sound file for crits
 function CritLog:PlaySoundFile()
     if CritLogDB.SoundFlag then
-        PlaySoundFile(ResolveSound(BAM_SOUND), 'Master')
+        PlaySoundFile(SOUNDPATH..BAM_SOUND, 'Master')
     end
 end
 
@@ -501,8 +449,6 @@ function CritLog:SetDefaults()
             PlayerSoundFlag = true,
             BossSoundFlag = true,
             DeadSoundFlag = true,
-            ToniFlag = false,
-            SoundFile = SOUNDPATH
         }
 
         print("CritLog Initialized")
@@ -552,8 +498,6 @@ function PrintCritLogs(msg)
         local tmpPlayerSoundFlag = CritLogDB.PlayerSoundFlag
         local tmpBossSoundFlag = CritLogDB.BossSoundFlag
         local tmpDeadSoundFlag = CritLogDB.DeadSoundFlag
-        local tmpToniFlag = CritLogDB.ToniFlag
-        local tmpSoundFile = CritLogDB.SoundFile
 
         --Character specifc Database:
         CritLogDB = {
@@ -579,8 +523,6 @@ function PrintCritLogs(msg)
             BossSoundFlag = tmpBossSoundFlag,
             PlayerSoundFlag = tmpPlayerSoundFlag,
             DeadSoundFlag = tmpDeadSoundFlag,
-            ToniFlag = tmpToniFlag,
-            SoundFile = tmpSoundFile
         }
         PrintCritLogs()
     --
@@ -716,19 +658,6 @@ function PrintCritLogs(msg)
             print("CritLog DeathSound On ("..tostring(CritLogDB.DeadSoundFlag)..")")
         end
     --
-    -- Config TONI Sounds
-    --
-    elseif msg == "toni" then
-        if CritLogDB.ToniFlag then
-            CritLogDB.ToniFlag = false
-            CritLogDB.SoundFile = SOUNDPATH
-            print("CritLog special Toni Sounds Off ("..tostring(CritLogDB.ToniFlag)..")")
-        else
-            CritLogDB.ToniFlag = true
-            CritLogDB.SoundFile = ASSISOUND
-            print("CritLog special Toni Sounds On ("..tostring(CritLogDB.ToniFlag)..")")
-        end
-    --
     -- Config for Level-Range on crits
     --
     elseif msg == "level" then
@@ -759,7 +688,6 @@ function PrintCritLogs(msg)
         print("/cl player: turns Player Death Sound on/off")
         print("/cl dead: turns  OnDeath Sound on/off (turn on for priest, melee, tank and boss config to work)")
         print("------------")
-        print("/cl toni: turns special Toni Sounds on/off (vulgar)")
         print("/cl config: shows actual config/DB-data")
         print("/cl      : prints CritLogs")
     --
@@ -780,8 +708,6 @@ function PrintCritLogs(msg)
         print("/cl boss: " .. tostring(CritLogDB.BossSoundFlag))
         print("/cl player: " .. tostring(CritLogDB.PlayerSoundFlag))
         print("/cl dead: " .. tostring(CritLogDB.DeadSoundFlag))
-        print("------------")
-        print("/cl toni: " .. tostring(CritLogDB.ToniFlag))
 
     --
     -- Prints Highest Crits

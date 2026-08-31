@@ -13,7 +13,7 @@ distributed across several files.
 
 - Use the matrix in [BEHAVIOR.md](BEHAVIOR.md) as a manual SoD test checklist.
 - Exercise critical-hit records, ready check, every aura group, every death
-  group, raid-leader phrases, and both sound profiles in game.
+  group, and raid-leader phrases in game.
 - Record Lua errors with script-error reporting enabled.
 - Decide which historical special cases should remain, become configurable, or
   be removed.
@@ -89,7 +89,9 @@ addon namespace, not in new globals.
 - UI for sound groups, audio channel/volume, and player roles
 - clip selection and preview
 - configurable chat triggers
-- explicit sound profiles instead of switching a raw directory path
+- ~~explicit sound profiles instead of switching a raw directory path~~ —
+  moot: the addon now ships a single sound profile, see CHANGELOG.md and
+  [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md)
 
 ### 6. Add quality and release automation
 

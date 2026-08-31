@@ -1,181 +1,90 @@
 # Cleanup Review Checklist
 
-A condensed, decision-oriented view for deciding what to keep, replace, or
-cut. Full technical detail (conditions, payload fields, exact matching
-rules) lives in [BEHAVIOR.md](BEHAVIOR.md) and [SOUNDS.md](SOUNDS.md) — this
-page exists so you don't have to cross-reference two tables while deciding.
+## Resolved: default vs. Toni
 
-Each trigger below has a number; the sound list references it under "Used
-by" so you can see at a glance which sound files become orphaned if you cut
-a trigger.
+CritLog used to ship two interchangeable sound profiles (default and an
+alternate "Toni" set, switchable with `/cl toni`). That decision is made:
+the Toni set was promoted to be the only profile, the old default-only
+clips were dropped, and the whole profile-switching mechanism
+(`ASSISOUND`, `ToniFlag`, `/cl toni`, the `ResolveSound()`/dedup-alias
+machinery from the interim step) was removed as no longer needed. See
+`CHANGELOG.md` for the exact steps. `CritLogDB` migration was checked at
+each step: `CRITLOG_VERSION` never changed, so existing characters' saved
+data is left untouched on login and any now-unused fields (`ToniFlag`,
+`SoundFile`) simply stop being read — no reset, no error, no data loss for
+fields still in use.
 
-## Triggers
+One real behavior change from that merge, not just an asset swap: **Power
+Infusion** and **Tank death** used to pick "randomly" among 2–3 sound
+files, but in the Toni set those files were byte-identical copies of each
+other, so the randomness was always fake. Rather than duplicate a file back
+in just to keep pretending, the code now plays a single fixed clip for both
+(`POWERINFUSION_SOUND`, `TANK_DEAD`) — same audible result as before, less
+code.
 
-`= default` means the Toni file is byte-identical to the default one (same
-audio, no reason to listen twice). Everything else in the Toni column is a
-genuinely different clip.
+## Dead weight
 
-| # | Trigger | Toggle | Default mode | Toni mode |
-| ---: | --- | --- | --- | --- |
-| 1 | `PLAYER_LOGIN` — always fires, inits/migrates `CritLogDB`, prints stored highscores | none | — (Login sound wired but disabled, see #24) | — (same) |
-| 2 | Ready check | `/cl ready` | `Ready.mp3` | `= default` |
-| 3 | Player's `SPELL_DAMAGE` crit | `/cl allcrits`, `/cl sound` | `at_bam_babam.mp3` | `= default` |
-| 4 | Player's `SWING_DAMAGE` crit (white hit) | `/cl whitehit` | `at_bam_babam.mp3` | `= default` |
-| 5 | Player's `RANGE_DAMAGE` crit (counted as white hit) | `/cl whitehit` | `at_bam_babam.mp3` | `= default` |
-| 6 | Player's `SPELL_HEAL` crit | `/cl allcrits` | `at_bam_babam.mp3` | `= default` |
-| 7 | Party/raid member summons Mana Tide Totem | `/cl aura` | `Manatide.mp3` | different clip |
-| 8 | Player receives Bloodlust/Heroism | `/cl aura` | `Bloodlust.mp3` | different clip |
-| 9 | Player receives Innervate | `/cl aura` | `Inervate1.mp3` / `Inervate2.mp3` (random) | different clips (both) |
-| 10 | Player receives Power Infusion | `/cl aura` | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random, 3 **distinct** clips) | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random, but `Surprise2.mp3`/`Surprise3.mp3` were byte-identical copies and have been removed — `ResolveSound()` redirects all three picks to the one remaining `Surprise.mp3`) |
-| 11 | Player receives Blessing of Protection | `/cl aura` | `Bubble.mp3` | different clip |
-| 12 | Player receives Divine Intervention | `/cl aura` | `divineInt.mp3` | `= default` |
-| 13 | Player receives Soulstone Resurrection | `/cl aura` | `soulstone.mp3` / `soulstone2.mp3` / `soulstone3.mp3` (random) | `= default` for all three (we copied `soulstone2.mp3` in to close a prior gap) |
-| 14 | Player dies | `/cl player` + `/cl dead` | `MarioDeath.mp3` | different clip |
-| 15 | Hardcoded roster member "Schnutz" dies (special case) | `/cl melee` + `/cl dead` | `schnutz.mp3` | different clip |
-| 16 | Any other hardcoded `MELEE_NAMES` roster member dies | `/cl melee` + `/cl dead` | `wilhelm.ogg` | `= default` |
-| 17 | Hardcoded EN/DE TBC boss list — boss dies | `/cl boss` + `/cl dead` | `FFX.mp3` / `Zelda.mp3` (random) | `= default` for both |
-| 18 | Hardcoded `TANK_NAMES` roster member dies | `/cl tank` + `/cl dead` | `Tank.mp3` / `Tank2.mp3` (random, 2 **distinct** clips) | `Tank.mp3` / `Tank2.mp3` (random, but `Tank2.mp3` was a byte-identical copy and has been removed — `ResolveSound()` redirects both picks to the one remaining `Tank.mp3`) |
-| 19 | Hardcoded `HEALPRIEST_NAMES` roster member dies | `/cl priest` + `/cl dead` | `Angels1.mp3` / `Angels2.mp3` (random) | `= default` for both |
-| 20 | Raid leader says "raid end" / "raid ende" in chat | none — always active | `bye.mp3` then `end.mp3` (may overlap) | different clips (both) |
-| 21 | Raid leader says "wipe" / "shit show" in chat | none — always active | `wipe.mp3` | `= default` |
-| 22 | Hardcoded boss list — killing blow chat print | none | text only, no sound | text only, no sound |
-| 23 | Zone change | inactive — event not registered | — | — |
-| 24 | Login sound | inactive — commented out | — (file doesn't exist in this profile) | `Login.mp3` exists but is unreachable |
-| 25 | "Over 9k" damage hit | inactive — commented out | — (file doesn't exist in this profile) | `Xtreme.mp3` exists but is unreachable |
-| 26 | Spirit of Redemption | inactive — commented out, marked "not working" | — | — |
+Concrete candidates for the next cleanup pass, each with what removing it
+actually costs and touches. None of these are removed yet — this is the
+list to check off, not a change already made.
 
-### Do you need to carry sounds over if Toni becomes the only profile?
+### Code with zero live surface (safe to delete outright)
 
-**No, not for anything that currently plays.** Every trigger that is active
-today (2–21) already has a complete, working sound in the Toni profile —
-nothing is missing there that only exists in default. The only
-default-only-vs-Toni-only asymmetry is triggers 24–25 (`Login.mp3`,
-`Xtreme.mp3`), and those code paths are commented out in both profiles, so
-there's nothing to preserve unless you plan to re-enable that code later —
-in which case note it's already sitting in `assi/`, just not in the default
-folder.
+| # | What | Where | Why it's dead |
+| ---: | --- | --- | --- |
+| 1 | "Over 9k damage" sound feature | `XTREME_DMG` constant + ~6-line commented block in `COMBAT_LOG_EVENT_UNFILTERED` | Fully commented out, no `/cl` toggle ever existed for it |
+| 2 | Spirit of Redemption test code | `SREDEMPTION_NAMES` constant + ~6-line commented block | Commented out, author's own note says "not working" |
+| 3 | `ZONE_CHANGED` handler | Whole function (~12 lines) | Its `RegisterEvent` call is commented out — the handler can never fire |
+| 4 | `Split()` function | Whole function (~7 lines) | Only referenced inside a commented-out debug condition; never called at runtime |
 
-One real behavior change to be aware of before dropping default: in Toni,
-the "random" pick for **Power Infusion (#10)** and **Tank death (#18)**
-isn't actually random-sounding — all the candidate files are byte-identical
-copies of each other, so those triggers always play the same clip today.
-Default has 3 distinct Power Infusion clips and 2 distinct Tank clips. If
-you want the randomness to feel meaningful after the switch, you'd want to
-either pull default's distinct variants into the new single profile for
-just those two triggers, or accept that they're effectively single-clip
-triggers with dead code around them.
+None of these have a `CritLogDB` field, so deleting them doesn't touch the
+saved-variables schema at all — no migration concern.
 
-Notes worth weighing while deciding:
-- Triggers 15–19 depend on hardcoded character names from one specific raid
-  roster — they do nothing for anyone else running the addon.
-- Triggers 20–21 have no on/off toggle at all; cutting or gating them is a
-  behavior decision, not just asset cleanup.
-- Triggers 23–26 are already inert in the shipped code; the only "cost" of
-  removing them is the dead code/constants and (for 24–25) the orphaned
-  Toni-only sound files.
+### Code with live-but-pointless config surface
 
-## Sounds
+| # | What | Where | Why it's dead |
+| ---: | --- | --- | --- |
+| 5 | Login sound | `LOGIN_SOUND` constant, commented-out playback in `PLAYER_LOGIN`, **and** the live `LoginSoundFlag` field + `/cl login` toggle + its `help`/`config` lines | `/cl login` genuinely flips a saved flag, but no code path ever reads it to play anything — toggling it is a no-op that looks like it does something |
 
-"Used by" references the trigger numbers above. Files that were
-byte-identical to another file already in the catalog have since been
-deleted — `CritLog.lua`'s `ResolveSound()` transparently redirects to the
-one physical copy that's left, so playback is unaffected. "`→ file`" marks
-where that redirect points (see [SOUNDS.md](SOUNDS.md#deduplication) for the
-full mechanism).
+Removing #5 means dropping `LoginSoundFlag` from the `CritLogDB` table
+constructors (both in `SetDefaults()` and the `/cl reset` path). Same safe
+pattern already used for `ToniFlag`/`SoundFile`: existing characters keep
+whatever value they have sitting unused in their saved data; it's simply
+never read or rewritten going forward.
 
-### Default profile (`CritLog/sounds/`)
+### Orphaned assets
 
-| File | Used by | Decision |
-| --- | --- | --- |
-| `Angels1.mp3` | 19 | |
-| `Angels2.mp3` | 19 | |
-| `at_bam_babam.mp3` | 3, 4, 5, 6 | |
-| `Bloodlust.mp3` | 8 | |
-| `Bubble.mp3` | 11 | |
-| `bye.mp3` | 20 | |
-| `divineInt.mp3` | 12 | |
-| `end.mp3` | 20 | |
-| `FFX.mp3` | 17 | |
-| `Inervate1.mp3` | 9 | |
-| `Inervate2.mp3` | 9 | |
-| `Manatide.mp3` | 7 | |
-| `MarioDeath.mp3` | 14 | |
-| `Ready.mp3` | 2 | |
-| `schnutz.mp3` | 15 | |
-| `soulstone.mp3` | 13 | |
-| `soulstone2.mp3` | 13 | |
-| `soulstone3.mp3` | 13 | |
-| `Surprise.mp3` | 10 | |
-| `Surprise2.mp3` | 10 | |
-| `Surprise3.mp3` | 10 | |
-| `Tank.mp3` | 18 | |
-| `Tank2.mp3` | 18 | |
-| `wilhelm.ogg` | 16 | |
-| `wipe.mp3` | 21 | |
-| `Zelda.mp3` | 17 | |
+| # | What | Size | Tied to |
+| ---: | --- | ---: | --- |
+| 6 | `Login.mp3` | 77,574 B | Item 5 above |
+| 7 | `Xtreme.mp3` | 42,214 B | Item 1 above |
+| 8 | `CritLog/sounds/more sounds/` (14 files, none referenced by any trigger, ever) | ~1.5 MB | Nothing — pure leftover candidates, see [SOUNDS.md](SOUNDS.md#candidate-files-more-sounds) |
 
-### Toni / "assi" profile (`CritLog/sounds/assi/`, `/cl toni`)
+Deleting 6–7 only makes sense together with removing their matching dead
+code (1 and 5) — otherwise the constants/comments reference files that no
+longer exist. Item 8 has no code dependency at all and can be deleted
+independently of everything else.
 
-Rows marked "→ default/…" no longer have a physical file in this folder —
-they were removed as duplicates. Everything else is a real file here.
+### Needs a decision, not just deletion
 
-| File on disk here? | Used by | Decision |
-| --- | --- | --- |
-| `Angels1.mp3` — no, → `default/Angels1.mp3` | 19 | |
-| `Angels2.mp3` — no, → `default/Angels2.mp3` | 19 | |
-| `at_bam_babam.mp3` — no, → `default/at_bam_babam.mp3` | 3, 4, 5, 6 | |
-| `Bloodlust.mp3` — yes | 8 | alternate clip |
-| `Bubble.mp3` — yes | 11 | alternate clip |
-| `bye.mp3` — yes | 20 | alternate clip |
-| `divineInt.mp3` — no, → `default/divineInt.mp3` | 12 | |
-| `end.mp3` — yes | 20 | alternate clip |
-| `FFX.mp3` — no, → `default/FFX.mp3` | 17 | |
-| `Inervate1.mp3` — yes | 9 | alternate clip |
-| `Inervate2.mp3` — yes | 9 | alternate clip |
-| `Login.mp3` — yes | 24 (inactive) | unreachable — the code path that would play it is commented out |
-| `Manatide.mp3` — yes | 7 | alternate clip |
-| `MarioDeath.mp3` — yes | 14 | alternate clip |
-| `Ready.mp3` — no, → `default/Ready.mp3` | 2 | |
-| `schnutz.mp3` — yes | 15 | alternate clip |
-| `soulstone.mp3` — no, → `default/soulstone.mp3` | 13 | |
-| `soulstone2.mp3` — no, → `default/soulstone2.mp3` | 13 | |
-| `soulstone3.mp3` — no, → `default/soulstone3.mp3` | 13 | |
-| `Surprise.mp3` — yes | 10 | also stands in for `Surprise2.mp3`/`Surprise3.mp3` via `TONI_ALIASES` |
-| `Tank.mp3` — yes | 18 | also stands in for `Tank2.mp3` via `TONI_ALIASES` |
-| `wilhelm.ogg` — no, → `default/wilhelm.ogg` | 16 | |
-| `Xtreme.mp3` — yes | 25 (inactive) | unreachable — the code path that would play it is commented out |
-| `Zelda.mp3` — no, → `default/Zelda.mp3` | 17 | |
+These aren't unreachable code — they run every time, they just encode
+choices specific to one historical raid group. Worth a conscious call
+before a public release, not a mechanical cleanup:
 
-### Unused candidates (`CritLog/sounds/more sounds/`)
+| # | What | Where |
+| ---: | --- | --- |
+| 9 | Hardcoded melee/tank/healer-priest death rosters (`MELEE_NAMES`, `TANK_NAMES`, `HEALPRIEST_NAMES`) plus the special-cased `"Schnutz"` death sound | Death-sound triggers — see [BEHAVIOR.md](BEHAVIOR.md#deaths) |
+| 10 | `CritLog/README.txt` — 3-line legacy readme, fully superseded by the root `README.md` and `docs/` | `CritLog/README.txt` |
 
-Not referenced by any trigger today — nothing currently plays these.
-
-| File | Decision |
-| --- | --- |
-| `Bloodlust2.mp3` | |
-| `Bloodlust3.mp3` | |
-| `Bloodlust4.mp3` | |
-| `jok.mp3` | |
-| `knock.mp3` | |
-| `Login2.mp3` | |
-| `Login3.mp3` | |
-| `Login4.mp3` | |
-| `Login5.mp3` | |
-| `Login6.mp3` | |
-| `luffy-senpai.mp3` | |
-| `m1.mp3` | |
-| `m2.mp3` | |
-| `Wololooo.mp3` | |
-
-(`wipe.mp3` was also in this folder, byte-identical to `default/wipe.mp3` —
-already deleted, nothing referenced it here.)
-
-If nothing here ends up wired to a trigger, this entire folder is a
-straightforward first cut — it adds to package size and review burden for
-zero runtime benefit.
+Item 9 is the bigger one: for anyone who isn't in that original roster, the
+melee/tank/priest death sounds simply never fire — dead weight in practice,
+but removing it changes what the addon does for you today, so it's a
+product decision (keep as-is for nostalgia, make it configurable, or cut
+it), not a pure cleanup.
 
 ## Reminder
 
-None of these files have a resolved rights/license status yet (see
+None of the kept files have a resolved rights/license status yet (see
 [SOUNDS.md#required-human-review](SOUNDS.md#required-human-review)). A file
-being "kept" here still needs that review before public distribution.
+surviving this cleanup pass still needs that review before public
+distribution.
