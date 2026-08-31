@@ -119,8 +119,13 @@ addon namespace, not in new globals.
 - focused tests for pure functions, migrations, and trigger matching — still
   outstanding; no runtime/unit-test harness exists because the WoW client has
   no supported headless mode (see [tests/README.md](../tests/README.md))
-- packaging that contains only used assets — `.pkgmeta` exists as a first
-  draft (`package-as: CritLog`), not yet run end-to-end or wired into CI
+- packaging that contains only used assets — done and verified: `.pkgmeta`
+  (`package-as: CritLog`, `manual-changelog: CHANGELOG.md`) run locally via
+  `release.sh -d -z` produces a `CritLog/` directory with only
+  `CritLog.toc`, `CritLog.lua`, `sounds/`, `README.txt`, and the real
+  `CHANGELOG.md` — no `docs/`, `tests/`, `scripts/`, or other repo
+  scaffolding. Not yet wired into CI or an actual upload (no CurseForge/Wago
+  project id configured)
 - one source of truth for the version number — still outstanding
 - changelog and versioned releases — `CHANGELOG.md` started; no tagged
   releases yet
