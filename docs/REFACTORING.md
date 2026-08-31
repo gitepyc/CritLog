@@ -1,43 +1,49 @@
-# Refactoring-Plan
+# Refactoring Plan
 
-## Empfehlung
+## Recommendation
 
-Ja, CritLog sollte in mehrere Dateien aufgeteilt werden – aber nicht als erster
-isolierter Schritt. Vorher brauchen wir eine kleine Verhaltenssicherung und
-einen zentralen Datenkatalog. Sonst verteilen wir dieselben Hardcodings und
-unbemerkten Fehler nur auf mehrere Dateien.
+CritLog should be split into multiple files, but not as the first isolated
+change. Establish a small behavioral safety net and a centralized data catalog
+first. Otherwise, the same hard-coded data and unnoticed bugs will simply be
+distributed across several files.
 
-## Empfohlene Reihenfolge
+## Recommended sequence
 
-### 1. Verhalten einfrieren
+### 1. Freeze current behavior
 
-- Die Matrix aus [BEHAVIOR.md](BEHAVIOR.md) als manuelle SoD-Testcheckliste
-  verwenden.
-- Mindestens Crit-Rekorde, Ready Check, jede Aura-Gruppe, Todesgruppen,
-  Raidleiter-Phrasen und beide Soundsets einmal im Spiel prüfen.
-- Lua-Fehler mit aktivierter Fehleranzeige protokollieren.
-- Entscheiden, welche historischen Sonderfälle erhalten, konfigurierbar gemacht
-  oder entfernt werden sollen.
+- Use the matrix in [BEHAVIOR.md](BEHAVIOR.md) as a manual SoD test checklist.
+- Exercise critical-hit records, ready check, every aura group, every death
+  group, raid-leader phrases, and both sound profiles in game.
+- Record Lua errors with script-error reporting enabled.
+- Decide which historical special cases should remain, become configurable, or
+  be removed.
 
-**Abnahme:** Für jeden erwünschten Trigger ist dokumentiert, ob er in Classic
-Era `1.15.9` funktioniert und welcher Clip hörbar ist.
+**Acceptance:** Every desired trigger records whether it works on Classic Era
+`1.15.9` and which clip is audible.
 
-### 2. Offensichtliche Defekte in kleinen Commits reparieren
+### 2. Fix verified defects in small commits
 
-- `divineInt2.mp3`-Auswahl absichern oder fehlenden Clip ergänzen.
-- `Tank.mp3`/`Tank1.mp3` und fehlendes `soulstone2.mp3` im Toni-Set klären.
-- Soulstone-Zufallsauswahl korrigieren.
-- Reset mit `Version` und echter Migration versehen.
-- Zielnamen in der Rekordausgabe korrigieren.
-- temporäre Variablen lokal machen.
+Already completed on `fix/safe-cleanups`:
 
-**Abnahme:** Keine Soundauswahl zeigt auf eine fehlende Datei; Reset behält
-Einstellungen auch nach `/reload`.
+- reset retains the schema version and active configuration
+- highscore output uses the stored target names
+- known temporary values are local instead of global
+- the alternate tank clip uses the filename requested by the code
 
-### 3. Daten aus der Logik ziehen
+Still outstanding:
 
-Noch in derselben funktionierenden Ein-Datei-Version zentrale Tabellen
-einführen:
+- make the `divineInt2.mp3` selection safe or add the intended clip
+- resolve missing `soulstone2.mp3` in the alternate profile
+- correct the Soulstone random range
+- verify and correct the healing-event branch
+
+**Acceptance:** No reachable sound selection points to a missing file, reset
+retains settings after `/reload`, and record output shows the correct target.
+
+### 3. Extract data from control flow
+
+Introduce central tables while the addon still has one working implementation
+file:
 
 ```lua
 CritLogData = {
@@ -49,60 +55,59 @@ CritLogData = {
 }
 ```
 
-Anschließend sichtbare Namen schrittweise durch Spell- und NPC-IDs ersetzen.
-Spielerlisten sollten SavedVariables-Konfiguration statt Quellcode sein.
+Then replace displayed names with stable spell and NPC IDs where possible.
+Player rosters should become SavedVariables configuration rather than source
+code.
 
-**Abnahme:** Event-Handler enthalten keine langen Namens- oder
-Dateinamenslisten mehr.
+**Acceptance:** Event handlers no longer contain long filename or name lists.
 
-### 4. Entlang stabiler Verantwortlichkeiten aufteilen
+### 4. Split along stable responsibilities
 
-Empfohlene Zielstruktur:
+Recommended target layout:
 
 ```text
 CritLog/
 ├── CritLog.toc
-├── Core.lua          # Addon-Namespace, Initialisierung, Event-Dispatch
-├── Data.lua          # Spell-/NPC-IDs, Defaults, Soundkatalog
-├── Database.lua      # Defaults, Schema und Migrationen
-├── Sounds.lua        # Auflösen und Abspielen von Sound-IDs
-├── CombatLog.lua     # Crits, Auren und Todesfälle
-├── ChatTriggers.lua  # Raidleiter-Phrasen
-├── Commands.lua      # Slash-Commands
-└── Options.lua       # Spätere Einstellungsoberfläche
+├── Core.lua          # Namespace, initialization, and event dispatch
+├── Data.lua          # Spell/NPC IDs, defaults, and sound catalog
+├── Database.lua      # Defaults, schema, and migrations
+├── Sounds.lua        # Resolve and play logical sound IDs
+├── CombatLog.lua     # Crits, auras, and deaths
+├── ChatTriggers.lua  # Raid-leader phrases
+├── Commands.lua      # Slash commands
+└── Options.lua       # Future options UI
 ```
 
-Die Dateien werden in dieser Reihenfolge in `CritLog.toc` geladen. Gemeinsamer
-Zustand gehört in einen Addon-Namespace, nicht in neue globale Variablen.
+Load the files in this order from `CritLog.toc`. Shared state belongs in one
+addon namespace, not in new globals.
 
-**Abnahme:** Jede Datei hat eine klar benennbare Verantwortung; das beobachtete
-Verhalten aus Schritt 1 bleibt gleich.
+**Acceptance:** Every file has one clear responsibility and behavior from step
+1 remains unchanged.
 
-### 5. Konfiguration professionalisieren
+### 5. Professionalize configuration
 
-- versioniertes SavedVariables-Schema
-- UI für globale Soundgruppen, Lautstärke/Kanal und Spielerrollen
-- Auswahl beziehungsweise Vorschau der Clips
-- konfigurierbare Chat-Trigger
-- sinnvolle Profile: Standard und Toni statt Pfadumschaltung
+- versioned SavedVariables schema
+- UI for sound groups, audio channel/volume, and player roles
+- clip selection and preview
+- configurable chat triggers
+- explicit sound profiles instead of switching a raw directory path
 
-### 6. Qualität und Release-Prozess
+### 6. Add quality and release automation
 
-- Lua-Linter und Formatierung
-- kleine Tests für reine Funktionen, Migrationen und Trigger-Matching
-- Paketierung, die nur tatsächlich benötigte Assets ausliefert
-- Versionsnummer aus einer Quelle ableiten
-- Changelog und versionierte Releases
+- Lua linting and formatting
+- focused tests for pure functions, migrations, and trigger matching
+- packaging that contains only used assets
+- one source of truth for the version number
+- changelog and versioned releases
 
-## Erster Refactoring-Branch
+## First structural refactoring branch
 
-Der erste Code-Branch sollte daher nicht „Datei aufteilen“, sondern
-`refactor/catalog-and-safety` heißen und ausschließlich Folgendes enthalten:
+The first structural branch should be named `refactor/catalog-and-safety`, not
+“split files”. It should contain only:
 
-1. zentrale Sound-/Triggertabellen,
-2. Schutz vor fehlenden Sounddateien,
-3. lokale temporäre Variablen,
-4. Reset-/Ausgabefehler,
-5. keine bewusst sichtbare Funktionsänderung.
+1. centralized sound and trigger tables
+2. protection from unavailable sounds
+3. the remaining small verified defects
+4. no intentional user-visible behavior change
 
-Danach ist das mechanische Aufteilen deutlich sicherer und reviewbarer.
+After that, splitting files becomes substantially safer and easier to review.

@@ -1,57 +1,56 @@
-# CritLog-Wiki
+# CritLog Wiki
 
-Diese Dokumentation beschreibt den vorhandenen Stand von CritLog `0.1.1`. Sie
-trennt bestätigtes Laufzeitverhalten, statisch aus dem Code abgeleitetes
-Verhalten und noch offene Prüfungen.
+This documentation describes the current state of CritLog `0.1.1`. It
+distinguishes user-confirmed runtime behavior, behavior derived from static code
+review, and checks that are still outstanding.
 
-## Zielsystem
+## Target environment
 
-- **Spielmodus:** Season of Discovery
-- **Clientfamilie:** WoW Classic Era
-- **Clientstand:** `1.15.9`
-- **TOC-Interface:** `11509`
-- **Praxistest:** Das Addon funktioniert nach Angabe des aktuellen Nutzers in
-  diesem Client.
+- **Game mode:** Season of Discovery
+- **Client family:** WoW Classic Era
+- **Client version:** `1.15.9`
+- **TOC interface:** `11509`
+- **Runtime status:** The current user confirms that the addon works in this
+  client.
 
-Die Interface-Nummer verhindert primär die Einstufung als „veraltet“. Sie ist
-für sich allein kein Nachweis, dass jede verwendete API korrekt arbeitet.
+The interface number primarily prevents the client from marking the addon as
+out of date. It does not by itself prove that every API call behaves correctly.
 
-### Verifikation des Interface-Stands
+### Interface-version verification
 
-Der Stand `11509` wurde am 31. August 2026 gegen mehrere aktuell gepflegte
-Classic-Era-Addons abgeglichen:
+`11509` was cross-checked on August 31, 2026 against multiple actively
+maintained Classic Era addons:
 
 - [MoveAny `MoveAny_Vanilla.toc`](https://github.com/d4kir92/MoveAny/blob/main/MoveAny_Vanilla.toc)
-- [ApogeePartyHealthBars-Kompatibilitätsangabe](https://github.com/notify353/ApogeePartyHealthBars)
-- [BetterBags-Fehlerbericht mit Classic Era/SoD 1.15.9](https://github.com/Cidan/BetterBags/issues/1053)
+- [ApogeePartyHealthBars compatibility statement](https://github.com/notify353/ApogeePartyHealthBars)
+- [BetterBags report using Classic Era/SoD 1.15.9](https://github.com/Cidan/BetterBags/issues/1053)
 
-Für künftige Client-Patches muss der Wert erneut gegen den installierten Client
-oder aktuelle Classic-Era-TOCs geprüft werden.
+Recheck this value against the installed client or current Classic Era TOCs
+after future client patches.
 
-## Seiten
+## Pages
 
-| Seite | Inhalt |
+| Page | Content |
 | --- | --- |
-| [Verhalten und Auslöser](BEHAVIOR.md) | Was passiert bei welchem Event, welche Bedingungen gelten und welche Sounds können abgespielt werden? |
-| [Soundkatalog](SOUNDS.md) | Alle 68 Audiodateien, Code-Verwendung, Varianten, Lücken und Dubletten. |
-| [Refactoring-Plan](REFACTORING.md) | Empfohlene Reihenfolge, Modulgrenzen und Abnahmekriterien. |
-| [Projekt-README](../README.md) | Installation, Commands, Struktur und bekannte Risiken. |
+| [Behavior and triggers](BEHAVIOR.md) | Which event and condition cause which state change or sound? |
+| [Sound catalog](SOUNDS.md) | All 68 audio files, code usage, variants, gaps, and duplicates. |
+| [Refactoring plan](REFACTORING.md) | Recommended order, module boundaries, and acceptance criteria. |
+| [Project README](../README.md) | Installation, commands, layout, and known risks. |
 
-## Dokumentationsstatus
+## Documentation status
 
-| Bereich | Status |
+| Area | Status |
 | --- | --- |
-| Events und registrierte Handler | Aus Code inventarisiert |
-| Slash-Commands | Aus Code inventarisiert |
-| Sounddateien und technische Metadaten | Vollständig inventarisiert |
-| Dateidubletten | Per SHA-256-Inhaltsvergleich geprüft |
-| Tatsächliche Wiedergabe aller Trigger in SoD | Noch nicht als Testmatrix protokolliert |
-| Inhaltliche Hörprüfung jedes Clips | Offen |
-| Urheber- und Nutzungsrechte aller Clips | Offen |
+| Registered events and handlers | Inventoried from code |
+| Slash commands | Inventoried from code |
+| Sound files and technical metadata | Fully inventoried |
+| Byte-identical duplicates | Verified through SHA-256 comparison |
+| In-game playback of every trigger on SoD | Not yet recorded as a test matrix |
+| Listening review of every clip | Outstanding |
+| Copyright and redistribution rights | Outstanding |
 
-## Pflegegrundsatz
+## Maintenance rule
 
-Bei Verhaltensänderungen müssen die betreffende Matrix in `BEHAVIOR.md` und der
-Katalog in `SOUNDS.md` im selben Commit aktualisiert werden. Beobachtetes
-Verhalten im Spiel sollte mit Clientversion, Charakterklasse und Testschritten
-dokumentiert werden.
+Any behavior change must update the relevant matrix in `BEHAVIOR.md` and the
+catalog in `SOUNDS.md` in the same commit. Observed in-game behavior should be
+recorded with the client version, character class, and reproduction steps.

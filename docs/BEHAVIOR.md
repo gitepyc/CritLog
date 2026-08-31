@@ -1,111 +1,110 @@
-# Verhalten und Auslöser
+# Behavior and Triggers
 
-Diese Seite beschreibt, wann CritLog aktiv wird und welche Sounddateien der
-aktuelle Code anfordert. „Normal“ bezeichnet `CritLog/sounds/`, „Toni“ das mit
-`/cl toni` aktivierte Verzeichnis `CritLog/sounds/assi/`.
+This page describes when CritLog reacts and which sound files the current code
+requests. “Default” refers to `CritLog/sounds/`; “Toni” refers to the alternate
+`CritLog/sounds/assi/` directory selected by `/cl toni`.
 
-## Ereignisfluss
+## Event flow
 
 ```text
-WoW-Event
-  -> registrierter CritLog-Handler
-  -> Konfigurationsschalter und fest codierte Bedingung
-  -> Datenbankänderung und/oder Chat-Ausgabe
-  -> PlaySoundFile(<aktiver Soundpfad>/<Dateiname>, "Master")
+WoW event
+  -> registered CritLog handler
+  -> configuration flag and hard-coded condition
+  -> database change and/or chat output
+  -> PlaySoundFile(<active sound directory>/<filename>, "Master")
 ```
 
-Alle Sounds werden über den `Master`-Audiokanal abgespielt. CritLog regelt keine
-eigene Lautstärke.
+All sounds use the `Master` audio channel. CritLog has no independent volume
+control.
 
-## Login und Ready Check
+## Login and ready check
 
-| Event | Bedingung | Wirkung | Sound normal | Sound Toni |
+| Event | Condition | Effect | Default sound | Toni sound |
 | --- | --- | --- | --- | --- |
-| `PLAYER_LOGIN` | Immer | Initialisiert/migriert `CritLogDB` und zeigt Rekorde. | Kein Sound; Code für `Login.mp3` ist auskommentiert und die Datei fehlt im normalen Set. | Kein Sound; `Login.mp3` existiert, der Code ist aber auskommentiert. |
-| `READY_CHECK` | `ReadySoundFlag = true` | Keine Datenänderung. | `Ready.mp3` | `Ready.mp3` (inhaltlich identisch) |
+| `PLAYER_LOGIN` | Always | Initializes/migrates `CritLogDB` and prints records. | None. The `Login.mp3` call is commented out and the default file is absent. | None. `Login.mp3` exists, but the call is commented out. |
+| `READY_CHECK` | `ReadySoundFlag = true` | No state change. | `Ready.mp3` | `Ready.mp3` (byte-identical) |
 
-## Kritische Treffer und Heilungen
+## Critical hits and heals
 
-Die Erkennung läuft über `COMBAT_LOG_EVENT_UNFILTERED`. Schadensereignisse
-müssen vom eigenen Spieler stammen. Der Level-Filter vergleicht allerdings das
-aktuell ausgewählte Ziel und nicht zuverlässig das Ziel des Combat-Log-Events.
+Detection runs through `COMBAT_LOG_EVENT_UNFILTERED`. Damage events must
+originate from the player. The level filter currently checks the selected target
+rather than reliably checking the combat-log destination.
 
-| Combat-Log-Typ | Bedingung | Datenänderung | Soundbedingung | Sound |
+| Combat-log type | Condition | State change | Sound condition | Sound |
 | --- | --- | --- | --- | --- |
-| `SPELL_DAMAGE` | Eigener Spieler, kritischer Treffer, Level-Filter erfüllt | Aktualisiert höchsten Fähigkeits-Crit, Fähigkeit und Ziel. | Bei jedem Crit, wenn `/cl allcrits` aktiv ist; zusätzlich bei neuem Rekord. | `at_bam_babam.mp3` |
-| `SWING_DAMAGE` | Eigener Spieler, kritischer Treffer, Level-Filter erfüllt | Aktualisiert höchsten White-Hit-Crit und Ziel. | Bei jedem Crit, wenn `/cl allcrits` und `/cl whitehit` aktiv sind; bei neuem Rekord, wenn `/cl whitehit` aktiv ist. | `at_bam_babam.mp3` |
-| `RANGE_DAMAGE` | Eigener Spieler, kritischer Treffer, Level-Filter erfüllt | Wird im White-Hit-Rekord gespeichert. | Bei jedem Crit mit `/cl allcrits`; bei neuem Rekord mit `/cl whitehit`. | `at_bam_babam.mp3` |
-| `SPELL_HEAL` | Kritische Heilung; aufgrund der aktuellen Verzweigung potenziell vom Ziellevel abhängig | Aktualisiert höchsten Heil-Crit, Fähigkeit und Ziel. | Bei jedem Crit mit `/cl allcrits`; zusätzlich bei neuem Rekord. | `at_bam_babam.mp3` |
+| `SPELL_DAMAGE` | Player source, critical hit, level filter passes | Updates highest ability crit, ability, and target. | Every crit when `/cl allcrits` is enabled; also every new record. | `at_bam_babam.mp3` |
+| `SWING_DAMAGE` | Player source, critical hit, level filter passes | Updates highest white-hit crit and target. | Every crit when both `/cl allcrits` and `/cl whitehit` are enabled; new records when `/cl whitehit` is enabled. | `at_bam_babam.mp3` |
+| `RANGE_DAMAGE` | Player source, critical hit, level filter passes | Stores the result in the white-hit record. | Every crit with `/cl allcrits`; new records with `/cl whitehit`. | `at_bam_babam.mp3` |
+| `SPELL_HEAL` | Critical heal; current branch structure may make this depend on target level | Updates highest heal crit, ability, and target. | Every crit with `/cl allcrits`; also every new record. | `at_bam_babam.mp3` |
 
-`/cl sound` ist der Hauptschalter für `at_bam_babam.mp3`. Er unterdrückt den
-Clip auch dann, wenn die oben genannten Einzelbedingungen erfüllt sind.
+`/cl sound` is the master switch for `at_bam_babam.mp3` and suppresses the
+clip even when the individual conditions above are met.
 
-## Auren und Fähigkeiten
+## Auras and abilities
 
-Diese Gruppe ist nur aktiv, wenn `/cl aura` eingeschaltet ist. Der Code erkennt
-ausgeschriebene deutsche oder englische Zaubernamen, keine Spell-IDs.
+This group requires `/cl aura` to be enabled. The current implementation
+matches displayed English or German spell names rather than spell IDs.
 
-| Auslöser | Ziel-/Quellenbedingung | Erkannte Namen | Gewählter Sound |
+| Trigger | Source/destination condition | Matched names | Selected sound |
 | --- | --- | --- | --- |
-| Mana Tide Totem beschworen (`SPELL_SUMMON`) | Quelle wird als Gruppen- oder Raidmitglied erkannt. | `Mana Tide Totem`, `Totem der Manaflut` | `Manatide.mp3` |
-| Bloodlust/Heroism erhalten (`SPELL_AURA_APPLIED`) | Ziel ist der eigene Spieler. | `Bloodlust`, `Heroism`, `Blutrausch`, `Heldentum` | `Bloodlust.mp3` |
-| Innervate erhalten | Ziel ist der eigene Spieler. | `Innervate`, `Anregen` | Zufällig `Inervate1.mp3` oder `Inervate2.mp3` |
-| Power Infusion erhalten | Ziel ist der eigene Spieler. | `Power Infusion`, `Seele der Macht` | Zufällig `Surprise.mp3`, `Surprise2.mp3` oder `Surprise3.mp3` |
-| Blessing of Protection erhalten | Ziel ist der eigene Spieler. | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
-| Divine Intervention erhalten | Ziel ist der eigene Spieler. | `Divine Intervention`, `Göttliches Eingreifen` | Zufällig `divineInt.mp3` oder das fehlende `divineInt2.mp3` |
-| Soulstone Resurrection erhalten | Ziel ist der eigene Spieler. | `Soulstone Resurrection`, `Seelenstein Auferstehung` | Zufällig `soulstone.mp3` oder `soulstone2.mp3`; `soulstone3.mp3` steht zwar in der Liste, wird wegen `math.random(1, 2)` nie gewählt. |
+| Mana Tide Totem summoned (`SPELL_SUMMON`) | Source is recognized as a party or raid member. | `Mana Tide Totem`, `Totem der Manaflut` | `Manatide.mp3` |
+| Bloodlust/Heroism received (`SPELL_AURA_APPLIED`) | Destination is the player. | `Bloodlust`, `Heroism`, `Blutrausch`, `Heldentum` | `Bloodlust.mp3` |
+| Innervate received | Destination is the player. | `Innervate`, `Anregen` | Randomly `Inervate1.mp3` or `Inervate2.mp3` |
+| Power Infusion received | Destination is the player. | `Power Infusion`, `Seele der Macht` | Randomly `Surprise.mp3`, `Surprise2.mp3`, or `Surprise3.mp3` |
+| Blessing of Protection received | Destination is the player. | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
+| Divine Intervention received | Destination is the player. | `Divine Intervention`, `Göttliches Eingreifen` | Randomly `divineInt.mp3` or missing `divineInt2.mp3` |
+| Soulstone Resurrection received | Destination is the player. | `Soulstone Resurrection`, `Seelenstein Auferstehung` | Randomly `soulstone.mp3` or `soulstone2.mp3`. `soulstone3.mp3` is listed but never selected because the code uses `math.random(1, 2)`. |
 
-## Todesfälle
+## Deaths
 
-Alle folgenden Reaktionen benötigen `DeadSoundFlag = true` (`/cl dead`). Die
-jeweilige Untergruppe hat zusätzlich einen eigenen Schalter.
+All reactions below require `DeadSoundFlag = true` (`/cl dead`). Each group
+also has its own feature flag.
 
-| Verstorbenes Ziel | Weitere Bedingung | Sound normal | Sound Toni |
+| Dead unit | Additional condition | Default sound | Toni sound |
 | --- | --- | --- | --- |
-| Eigener Spieler | `/cl player` aktiv | `MarioDeath.mp3` | `MarioDeath.mp3` |
-| Charakter `Schnutz` | `/cl melee` aktiv | `schnutz.mp3` | `schnutz.mp3` |
-| Anderer Name aus `MELEE_NAMES` | `/cl melee` aktiv | `wilhelm.ogg` | `wilhelm.ogg` |
-| Englischer/deutscher Name aus der TBC-Bossliste | `/cl boss` aktiv | Zufällig `FFX.mp3` oder `Zelda.mp3` | Dieselben Dateien |
-| Name aus `TANK_NAMES` | `/cl tank` aktiv | Zufällig `Tank.mp3` oder `Tank2.mp3` | `Tank2.mp3` funktioniert; `Tank.mp3` fehlt, weil dort nur `Tank1.mp3` vorhanden ist. |
-| Name aus `HEALPRIEST_NAMES` | `/cl priest` aktiv | Zufällig `Angels1.mp3` oder `Angels2.mp3` | Dieselben Dateien |
+| Player | `/cl player` enabled | `MarioDeath.mp3` | `MarioDeath.mp3` |
+| Character `Schnutz` | `/cl melee` enabled | `schnutz.mp3` | `schnutz.mp3` |
+| Another name in `MELEE_NAMES` | `/cl melee` enabled | `wilhelm.ogg` | `wilhelm.ogg` |
+| English/German name in the TBC boss list | `/cl boss` enabled | Randomly `FFX.mp3` or `Zelda.mp3` | Same files |
+| Name in `TANK_NAMES` | `/cl tank` enabled | Randomly `Tank.mp3` or `Tank2.mp3` | `Tank.mp3` or `Tank2.mp3`; both currently contain the same audio |
+| Name in `HEALPRIEST_NAMES` | `/cl priest` enabled | Randomly `Angels1.mp3` or `Angels2.mp3` | Same files |
 
-Die Namenslisten sind fest im Lua-Code hinterlegt. Rollen werden nicht aus der
-Gruppe oder dem Raid ermittelt.
+The player lists are hard-coded. Roles are not derived from the current party or
+raid.
 
-## Raidleiter-Chat
+## Raid-leader chat
 
-Der Absender muss lediglich über `CHAT_MSG_RAID_LEADER` eintreffen. Eine früher
-vorgesehene Prüfung auf einen bestimmten Namen ist auskommentiert.
+The message only needs to arrive through `CHAT_MSG_RAID_LEADER`. An earlier
+check for a specific sender is commented out.
 
-| Nachricht, ohne Beachtung der Groß-/Kleinschreibung | Reaktion |
+| Case-insensitive message | Reaction |
 | --- | --- |
-| `raid ende` oder `raid end` | Startet unmittelbar nacheinander `bye.mp3` und `end.mp3`. Die Clips können sich überlagern. |
-| `shit show` oder `wipe` | Spielt `wipe.mp3`. |
+| `raid ende` or `raid end` | Starts `bye.mp3` and immediately starts `end.mp3`. The clips may overlap. |
+| `shit show` or `wipe` | Plays `wipe.mp3`. |
 
-Diese Chat-Sounds haben keinen eigenen Konfigurationsschalter und werden auch
-nicht durch `/cl sound` oder `/cl dead` deaktiviert.
+These chat sounds have no feature flag. Neither `/cl sound` nor `/cl dead`
+disables them.
 
-## Sonstige Codepfade
+## Other code paths
 
-| Funktion | Status |
+| Function | Status |
 | --- | --- |
-| Boss-Killing-Blow-Ausgabe | Bei einem passenden Bossnamen und einem `_DAMAGE`-Event mit positivem fünften Payload-Wert wird eine Chatzeile ausgegeben. Die positionsabhängige Auswertung ist je nach Eventtyp fragil. |
-| Login-Sound | Auskommentiert. |
-| „Über 9k“-Sound `Xtreme.mp3` | Vollständig auskommentiert; im normalen Soundset fehlt die Datei. |
-| Zone-Logging | Handler vorhanden, Event nicht registriert. |
-| Spirit of Redemption | Testcode auskommentiert und als nicht funktionierend kommentiert. |
+| Boss killing-blow output | Prints a chat line for a matching boss name and a `_DAMAGE` event with a positive fifth payload value. The positional payload check is fragile across event types. |
+| Login sound | Commented out. |
+| “Over 9k” sound `Xtreme.mp3` | Fully commented out; the file is absent from the default profile. |
+| Zone logging | Handler exists, but the event is not registered. |
+| Spirit of Redemption | Test code is commented out and labeled as not working. |
 
-## Gespeicherte Daten
+## Stored data
 
-`CritLogDB` wird pro Charakter gespeichert:
+`CritLogDB` is stored per character:
 
-- höchster Fähigkeits-Schadens-Crit mit Fähigkeit und Ziel
-- höchster White-Hit-/Distanz-Crit mit Ziel
-- höchster Heil-Crit mit Fähigkeit und Ziel
-- alle Command-Schalter
-- aktiver Soundpfad
-- interne Addon-Version
+- highest ability-damage crit, including ability and target
+- highest white-hit/ranged crit, including target
+- highest healing crit, including ability and target
+- all command toggles
+- active sound directory
+- internal addon version
 
-Die aktuellen Probleme bei Reset, Versionswechsel und Ausgabe sind in der
-[Projekt-README](../README.md#bekannte-technische-probleme-und-risiken)
-inventarisiert.
+Known storage and event-handling issues are listed in the
+[project README](../README.md#known-technical-issues-and-risks).
