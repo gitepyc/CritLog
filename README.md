@@ -29,7 +29,14 @@ World of Warcraft/
         └── AddOns/
             └── CritLog/
                 ├── CritLog.toc
-                ├── CritLog.lua
+                ├── Core.lua
+                ├── Data.lua
+                ├── Database.lua
+                ├── Sounds.lua
+                ├── ChatTriggers.lua
+                ├── CombatLog.lua
+                ├── Commands.lua
+                ├── Events.lua
                 └── sounds/
 ```
 
@@ -94,7 +101,14 @@ critlog/
 ├── .pkgmeta              # BigWigsMods/packager config, verified locally (not yet wired into CI)
 ├── .github/workflows/    # CI (runs against the GitHub push mirror; Gitea has no runner yet)
 ├── CritLog.toc           # WoW metadata and SavedVariables declaration
-├── CritLog.lua           # Current event, storage, sound, and command logic
+├── Core.lua              # Addon namespace and version
+├── Data.lua              # Sound, trigger, boss, spell, and roster catalog
+├── Database.lua          # SavedVariables defaults and record reset
+├── Sounds.lua            # Sound playback helpers
+├── ChatTriggers.lua       # Raid-leader phrase handling
+├── CombatLog.lua          # Crit, aura, death, and boss-kill handling
+├── Commands.lua           # Slash commands and chat output
+├── Events.lua             # Frame registration and event dispatch
 ├── README.txt            # Historical minimal readme
 └── sounds/
 ```
@@ -106,7 +120,7 @@ above does by hand.
 
 ## Hard-coded data inventory
 
-The following data is embedded directly in `CritLog.lua` and cannot currently
+The following data is centralized in `Data.lua` and cannot currently
 be managed through an options UI or configuration file:
 
 - installation paths and filenames for every requested sound
@@ -145,17 +159,17 @@ This is a static inventory, not a complete in-game verification:
 
 ## Next steps
 
-The recommended sequence is documented in the [Refactoring plan](docs/REFACTORING.md):
-freeze behavior with reproducible checks, centralize trigger and sound data,
-fix verified defects, and only then split the code along stable boundaries.
-Mechanically splitting the current file first would distribute the existing
-hard-coded data and bugs across several files.
+The behavioral inventory, safe cleanup, data catalog, and module split are now
+complete. The recommended next steps are documented in the
+[Refactoring plan](docs/REFACTORING.md): replace localized name matching with
+verified IDs, professionalize configuration and migrations, and add focused
+tests for pure matching and migration logic.
 
 ## Development
 
-There are no external dependencies or build steps. Changes are made directly in
-`CritLog.lua` and must be tested in the target client. Until a release
-pipeline exists, the versions in `CritLog.lua` and `CritLog.toc` must be kept
+There are no runtime dependencies or build steps. Changes are made in the
+focused Lua modules listed above and must be tested in the target client.
+Until a release pipeline exists, the versions in `Core.lua` and `CritLog.toc` must be kept
 in sync manually.
 
 ## Testing

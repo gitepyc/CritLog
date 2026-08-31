@@ -2,12 +2,12 @@
 --
 -- WoW's client runs Lua 5.1 with a sandboxed standard library plus its own
 -- large C API. Rather than importing a generic multi-thousand-entry globals
--- list, `stds.wow` below only lists the API surface CritLog actually calls,
--- cross-checked against CritLog.lua. Extend it when new API calls are added.
+-- list, `stds.wow` below only lists the API surface CritLog actually calls.
+-- Extend it when new API calls are added.
 
 stds.wow = {
     read_globals = {
-        -- WoW client API used by CritLog.lua
+        -- WoW client API used by the addon modules
         "CreateFrame",
         "CombatLogGetCurrentEventInfo",
         "PlaySoundFile",
@@ -36,12 +36,18 @@ max_line_length = false
 -- event-dispatch-style methods, not a defect to fix line by line.
 self = false
 
-files["CritLog.lua"] = {
-    -- SavedVariables and the slash-command hook are required by Blizzard's
-    -- addon conventions and must be real globals, not locals.
+globals = {
+    "SlashCmdList",
+    -- Every module contributes fields/methods to these two shared tables
+    -- (the addon namespace and its SavedVariables), so both need to be
+    -- mutable everywhere, not just in the one file that first creates them.
+    "CritLog",
+    "CritLogDB",
+}
+
+files["Commands.lua"] = {
+    -- Slash-command names are required globals under Blizzard's convention.
     globals = {
-        "CritLog",
-        "CritLogDB",
         "SLASH_CRITLOG1",
         "SLASH_CRITLOG2",
     },
