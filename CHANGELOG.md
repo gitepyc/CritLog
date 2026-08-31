@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+- Revived the "over 9000 damage" sound as a real feature: added
+  `XtremeSoundFlag`/`/cl xtreme`, off by default, using the same
+  `sourceGUID == UnitGUID("Player")` check already used elsewhere instead of
+  the original's fragile `Split()`-based string parsing.
+- Removed the login-sound feature entirely (it had a live `/cl login`
+  toggle, but no code path ever played anything): `LOGIN_SOUND`,
+  `LoginSoundFlag`, the `/cl login` command, its `help`/`config` lines, and
+  `Login.mp3`.
+- Removed dead code with no live surface: the unreachable `ZONE_CHANGED`
+  handler (its `RegisterEvent` call was already commented out) and
+  `Split()` (only ever referenced inside a commented-out debug condition).
+- Removed `CritLog/sounds/more sounds/` (14 files) — never referenced by
+  any trigger.
+- Left Spirit of Redemption's commented-out test code untouched,
+  deliberately — may get a real fix later.
+- `CritLogDB` migration verified again for all of the above:
+  `CRITLOG_VERSION` unchanged, so `LoginSoundFlag` simply stops being
+  read/written for existing characters, and the new `XtremeSoundFlag` reads
+  as `nil` (falsy) for anyone who doesn't have it yet — off by default with
+  no explicit migration step needed.
+- Sound catalog is now 24 files, all in active use (down from 39; the very
+  first count in this cleanup was 69). See docs/SOUNDS.md and
+  docs/CLEANUP-REVIEW.md.
 - Made the Toni sound set the addon's only profile and removed the old
   default-only clips (25 active files now, down from 53, ~4.18 MB →
   ~3.13 MB). `/cl toni`, `ToniFlag`, `SoundFile`, and the whole

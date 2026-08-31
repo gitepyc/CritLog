@@ -73,7 +73,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl allcrits` | Toggles sounds for every critical hit. |
 | `/cl whitehit` | Toggles critical auto-attack/ranged-attack handling. |
 | `/cl level` | Toggles the level filter for damage records. |
-| `/cl login` | Toggles the login-sound setting; playback is currently commented out. |
+| `/cl xtreme` | Toggles the sound for hits over 9000 damage. Off by default. |
 | `/cl ready` | Toggles the ready-check sound. |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl dead` | Master switch for death sounds. |
@@ -102,7 +102,6 @@ wow-addons/
     ├── CritLog.lua       # Current event, storage, sound, and command logic
     ├── README.txt        # Historical minimal readme
     └── sounds/
-        └── more sounds/  # Unused candidate sound files
 ```
 
 ## Hard-coded data inventory
@@ -135,8 +134,9 @@ This is a static inventory, not a complete in-game verification:
    English/German names instead of stable spell and NPC IDs.
 4. **Destructive version upgrades:** Any change to `CRITLOG_VERSION` replaces
    the complete per-character database instead of migrating it.
-5. **Unused or disabled assets/code:** Login sound, zone handler, the “over 9k”
-   sound, and the complete `more sounds/` directory are inactive.
+5. **Spirit of Redemption:** Test code is commented out and marked "not
+   working" by the original author. Deliberately left as-is for now — see
+   [docs/CLEANUP-REVIEW.md](docs/CLEANUP-REVIEW.md).
 6. **Packaging and releases not yet automated:** Static linting runs via
    `tests/lint/` and CI (see [Testing](#testing)), but there is no packaged
    release build, versioned release process, or CurseForge/Wago project yet.
