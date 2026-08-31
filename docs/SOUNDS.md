@@ -41,7 +41,7 @@ Windows did not expose the value.
 
 See [BEHAVIOR.md](BEHAVIOR.md) for the complete conditions.
 
-## Catalog (`CritLog/sounds/`)
+## Catalog (`sounds/`)
 
 | File | Duration | Bitrate | Size | Used by |
 | --- | ---: | ---: | ---: | --- |

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Split CritLog out of the former `wow-addons` monorepo into its own
+  repository (`critlog`), with full commit history preserved. The addon's
+  files (`CritLog.toc`, `CritLog.lua`, `README.txt`, `sounds/`) moved from
+  the `CritLog/` subdirectory up to the repository root; everything else
+  (`docs/`, `tests/`, `scripts/`, `.luacheckrc`, `.pkgmeta`, CI workflow)
+  already lived at root and is unchanged in content beyond path references.
+  No addon behavior changed. This also fixes a latent mismatch: `.pkgmeta`
+  already assumed `CritLog.toc` lived at the repository root (standard for
+  a single-addon repo), which only became true with this move.
 - Revived the "over 9000 damage" sound as a real feature: added
   `XtremeSoundFlag`/`/cl xtreme`, off by default, using the same
   `sourceGUID == UnitGUID("Player")` check already used elsewhere instead of

@@ -1,7 +1,7 @@
 # Behavior and Triggers
 
 This page describes when CritLog reacts and which sound file the current
-code requests. All sounds live under `CritLog/sounds/`.
+code requests. All sounds live under `sounds/`.
 
 > **History:** CritLog used to ship two interchangeable sound profiles
 > (default and an alternate "Toni" set, switchable with `/cl toni`). The
