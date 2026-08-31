@@ -9,3 +9,68 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.0.1](https://github.com/gitepyc/CritLog/tree/0.2.0.1) (2026-08-31)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.0...0.2.0.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** adopt git-cliff for automated changelog and release-note generation
+
+- **chore:** remove README.txt (superseded by README.md/docs/), read the addon version from CritLog.toc instead of duplicating it in code
+
+- **fix:** damage-crit level filter checked the UI-selected target's level instead of the actual hit unit's
+
+## [0.2.0](https://github.com/gitepyc/CritLog/tree/0.2.0) (2026-08-31)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/legacy-0.1.4.2...0.2.0) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** add repository scaffolding (LICENSE, .gitignore/.editorconfig, .pkgmeta draft, CHANGELOG.md) and a containerized luacheck + CI lint workflow
+
+- **chore:** clean up lint noise without changing addon behavior
+
+- **chore:** credit Epyc as current author, Chabo as original creator
+
+- **chore:** adapt scaffolding and docs to the flattened, single-addon repo layout
+
+- **chore:** add .gitattributes, normalize remaining CRLF files to LF
+
+- **chore:** add release.yml, build and publish a GitHub Release with the packaged zip on every tag push
+
+- **docs:** document CritLog inventory and modernization risks
+
+- **docs:** document CritLog behavior and sound inventory
+
+- **docs:** translate documentation to English
+
+- **docs:** fix stale CritLog.lua reference in REFACTORING.md after the module split
+
+- **feature:** revive the over-9000 extreme-hit sound (XtremeSoundFlag/`/cl xtreme`); remove the login-sound feature and other dead code (ZONE_CHANGED, Split()), delete orphaned assets
+
+- **fix:** /cl reset wiped the sound-profile and custom sound-path fields instead of preserving them; damage/heal highscore output printed the ability name instead of the target's name
+
+- **fix:** Divine Intervention referenced a missing sound file, Soulstone random range didn't cover all clips and one clip was missing from the Toni profile, heal crits wrongly subject to the damage-only enemy-level filter
+
+- **fix:** make version upgrades migration-safe - SetDefaults() no longer wipes existing highscores/toggles on a version change
+
+- **fix:** .pkgmeta packager was shipping its own auto-generated changelog instead of ours
+
+- **fix:** restore content dropped during the module split, correct .luacheckrc globals
+
+- **refactor:** deduplicate byte-identical sound files to shrink the package (69 -> 53 files)
+
+- **refactor:** make Toni the only sound profile, drop the old default clips and the /cl toni command
+
+- **refactor:** centralize hardcoded sound/spell/boss/roster data into CritLogData
+
+- **refactor:** split CritLog into focused modules
+
+- **tweak:** allow manual CI runs, only fail the lint workflow on real errors (not warnings)
+
+## [legacy-0.1.4.2](https://github.com/gitepyc/CritLog/tree/legacy-0.1.4.2) (2022-02-10)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.1.1...legacy-0.1.4.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** archive original-author CritLog 0.1.4.2 (Kîtten aka Chabo) for reference
+
+## [0.1.1](https://github.com/gitepyc/CritLog/tree/0.1.1) (2026-08-31)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/legacy-0.1.4.2...0.1.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** import CritLog 0.1.1 baseline
+
+
