@@ -62,18 +62,21 @@ enough" alert. Toggle with `/cl xtreme`.
 
 ## Auras and abilities
 
-This group requires `/cl aura` to be enabled. The current implementation
-matches displayed English or German spell names rather than spell IDs.
+This group requires `/cl aura` to be enabled. Each trigger matches by spell
+ID first; if the ID doesn't hit, it falls back to matching the displayed
+English/German spell name. The name fallback exists because the IDs are
+Wowhead-Classic-sourced but not yet in-game verified — see
+docs/REFACTORING.md.
 
-| Trigger | Source/destination condition | Matched names | Sound |
-| --- | --- | --- | --- |
-| Mana Tide Totem summoned (`SPELL_SUMMON`) | Source is recognized as a party or raid member. | `Mana Tide Totem`, `Totem der Manaflut` | `Manatide.mp3` |
-| Bloodlust/Heroism received (`SPELL_AURA_APPLIED`) | Destination is the player. | `Bloodlust`, `Heroism`, `Blutrausch`, `Heldentum` | `Bloodlust.mp3` |
-| Innervate received | Destination is the player. | `Innervate`, `Anregen` | Randomly `Inervate1.mp3` or `Inervate2.mp3` |
-| Power Infusion received | Destination is the player. | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
-| Blessing of Protection received | Destination is the player. | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
-| Divine Intervention received | Destination is the player. | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
-| Soulstone Resurrection received | Destination is the player. | `Soulstone Resurrection`, `Seelenstein Auferstehung` | Randomly `soulstone.mp3`, `soulstone2.mp3`, or `soulstone3.mp3` |
+| Trigger | Source/destination condition | Spell ID(s) | Name fallback | Sound |
+| --- | --- | --- | --- | --- |
+| Mana Tide Totem summoned (`SPELL_SUMMON`) | Source is recognized as a party or raid member. | `16190` | `Mana Tide Totem`, `Totem der Manaflut` | `Manatide.mp3` |
+| Bloodlust/Heroism received (`SPELL_AURA_APPLIED`) | Destination is the player. | `27689` (Horde), `23682` (Alliance) | `Bloodlust`, `Heroism`, `Blutrausch`, `Heldentum` | `Bloodlust.mp3` |
+| Innervate received | Destination is the player. | `29166` | `Innervate`, `Anregen` | Randomly `Inervate1.mp3` or `Inervate2.mp3` |
+| Power Infusion received | Destination is the player. | `10060` | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
+| Blessing of Protection received | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
+| Divine Intervention received | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
+| Soulstone Resurrection received | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | Randomly `soulstone.mp3`, `soulstone2.mp3`, or `soulstone3.mp3` |
 
 ## Deaths
 

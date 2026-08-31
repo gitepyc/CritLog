@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+- Aura/ability triggers (Bloodlust/Heroism, Innervate, Power Infusion,
+  Mana Tide Totem, Blessing of Protection, Divine Intervention, Soulstone
+  Resurrection) now match by spell ID first, falling back to the
+  English/German display name if the ID doesn't hit. IDs sourced from
+  Wowhead's current Classic database, cross-checked against multiple
+  expansion pages where available:
+  - Bloodlust (Horde) `27689`, Heroism (Alliance) `23682`
+  - Innervate `29166`
+  - Power Infusion `10060`
+  - Mana Tide Totem `16190`
+  - Blessing of Protection `1022`
+  - Divine Intervention `19752`
+  - Soulstone Resurrection `20707`
+
+  Not in-game verified — that's exactly why the name fallback exists,
+  since a wrong ID fails silently while a wrong name costs nothing extra
+  to keep around. Boss/NPC matching is untouched, still name-only.
+
 ## 0.2.1
 
 - Fixed the damage-crit level filter checking the currently selected UI

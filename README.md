@@ -138,8 +138,10 @@ This is a static inventory, not a complete in-game verification:
 1. **Legacy implementation:** The addon works in the current Season of
    Discovery test environment, but its combat-log handling has not yet been
    systematically verified for every relevant SoD event.
-2. **Name-based localization:** Abilities and bosses are matched by displayed
-   English/German names instead of stable spell and NPC IDs.
+2. **Name-based boss matching:** Bosses are still matched by displayed
+   English/German names instead of stable NPC IDs. (Aura/ability triggers
+   now match by spell ID first, with the name kept as a fallback — see
+   docs/REFACTORING.md.)
 3. **Spirit of Redemption:** Test code is commented out and marked "not
    working" by the original author. Deliberately left as-is for now — see
    [docs/CLEANUP-REVIEW.md](docs/CLEANUP-REVIEW.md).
