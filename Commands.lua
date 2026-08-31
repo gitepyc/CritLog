@@ -14,6 +14,7 @@ local function printHelp()
     print("/cl allcrits: turns BÄM sound on/off for all crits")
     print("/cl whitehit: turns BÄM sound on/off for all WHITEHIT crits")
     print("/cl xtreme: turns sound for hits over 9000 damage on/off (off by default)")
+    print("/cl debug: turns diagnostic chat output on/off (off by default)")
     print("/cl ready: turns ReadyCheck Sound on/off")
     print("/cl aura: turns Aura/Spell Sound on/off")
     print("------------")
@@ -34,6 +35,7 @@ local function printConfig()
     print("/cl allcrits: "..tostring(CritLogDB.AllCritFlag))
     print("/cl whitehit: "..tostring(CritLogDB.WhiteHitFlag))
     print("/cl xtreme: "..tostring(CritLogDB.XtremeSoundFlag))
+    print("/cl debug: "..tostring(CritLogDB.DebugFlag))
     print("/cl ready: "..tostring(CritLogDB.ReadySoundFlag))
     print("/cl aura: "..tostring(CritLogDB.AuraSoundFlag))
     print("------------")
@@ -141,6 +143,12 @@ function CritLog:PrintCritLogs(message)
             "XtremeSoundFlag",
             "CritLog XtremeSound On",
             "CritLog XtremeSound Off"
+        )
+    elseif command == "debug" then
+        toggle(
+            "DebugFlag",
+            "CritLog Debug Mode On",
+            "CritLog Debug Mode Off"
         )
     elseif command == "level" then
         CritLogDB.AllLevel = not CritLogDB.AllLevel

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Added a debug mode: `/cl debug` toggles `DebugFlag` (off by default,
+  standard migration-safe new field - existing characters just get it
+  backfilled as `false`). `CritLog:Debug(...)` in Core.lua prints only
+  when enabled, prefixed so it's easy to spot in chat. Wired into the two
+  areas most likely to need diagnosing right now: every `SPELL_AURA_APPLIED`
+  on the player and every `SPELL_SUMMON` by a group member logs the raw
+  spell ID/name seen (directly useful for verifying the not-yet-verified
+  spell IDs from the previous change), and the level filter logs which
+  unit token it resolved and the resulting level/classification check.
 - Aura/ability triggers (Bloodlust/Heroism, Innervate, Power Infusion,
   Mana Tide Totem, Blessing of Protection, Divine Intervention, Soulstone
   Resurrection) now match by spell ID first, falling back to the
