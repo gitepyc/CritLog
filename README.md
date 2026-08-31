@@ -1,34 +1,33 @@
 # WoW Addons
 
-Dieses Repository enthält private World-of-Warcraft-Addons. Derzeit ist nur
-**CritLog** enthalten.
+This repository contains private World of Warcraft addons. It currently hosts
+one addon: **CritLog**.
 
-> **Projektstatus:** Funktionierender Legacy-Code / Bestandsaufnahme. CritLog
-> wird aktuell mit Season of Discovery im Classic-Era-Client getestet. Version
-> `0.1.1` deklariert nun Classic Era `1.15.9` (Interface `11509`).
+> **Project status:** Working legacy addon under active documentation and
+> modernization. CritLog `0.1.1` is currently tested with Season of Discovery
+> on Classic Era `1.15.9` (Interface `11509`).
 
-## Dokumentation
+## Documentation
 
-- [Wiki-Startseite](docs/README.md)
-- [Verhalten und Auslöser](docs/BEHAVIOR.md)
-- [Vollständiger Soundkatalog](docs/SOUNDS.md)
-- [Refactoring-Plan](docs/REFACTORING.md)
+- [Wiki home](docs/README.md)
+- [Behavior and triggers](docs/BEHAVIOR.md)
+- [Complete sound catalog](docs/SOUNDS.md)
+- [Refactoring plan](docs/REFACTORING.md)
 
-## Enthaltene Addons
+## Included addons
 
-| Addon | Zweck | Status |
+| Addon | Purpose | Status |
 | --- | --- | --- |
-| [CritLog](CritLog/) | Protokolliert persönliche Höchstwerte für kritische Treffer und Heilungen und spielt ereignisabhängige Sounds ab. | Legacy, Refactoring geplant |
+| [CritLog](CritLog/) | Records personal critical-hit and critical-heal highscores and plays event-driven sounds. | Working legacy addon; modernization planned |
 
-## CritLog installieren
+## Install CritLog
 
-Es gibt aktuell keinen Build- oder Release-Prozess. Für eine manuelle
-Installation muss der Ordner `CritLog` direkt im Addon-Verzeichnis des
-verwendeten WoW-Clients liegen:
+There is no build or release pipeline yet. Copy the `CritLog` directory directly
+into the addon directory of the Classic Era client:
 
 ```text
 World of Warcraft/
-└── <Client>/
+└── _classic_era_/
     └── Interface/
         └── AddOns/
             └── CritLog/
@@ -37,144 +36,127 @@ World of Warcraft/
                 └── sounds/
 ```
 
-Anschließend CritLog in der Addon-Auswahl des Charakters aktivieren. Der aktuell
-bestätigte Zielclient ist Season of Discovery auf Classic Era `1.15.9`.
+Enable CritLog in the character selection addon list. The currently confirmed
+target is Season of Discovery on Classic Era `1.15.9`.
 
-## Aktuelles Verhalten (Kurzfassung)
+## Current behavior at a glance
 
-CritLog registriert vier Ereignisse:
+CritLog listens for four events:
 
-| WoW-Ereignis | Reaktion |
+| WoW event | Reaction |
 | --- | --- |
-| `PLAYER_LOGIN` | Initialisiert die charakterbezogenen Einstellungen und zeigt die gespeicherten Rekorde an. |
-| `COMBAT_LOG_EVENT_UNFILTERED` | Erkennt kritischen Zauber-, Distanz- und Nahkampfschaden, kritische Heilungen, ausgewählte Auren sowie Todesfälle. |
-| `READY_CHECK` | Spielt bei aktiviertem Schalter einen Sound ab. |
-| `CHAT_MSG_RAID_LEADER` | Reagiert auf fest definierte Raidleiter-Phrasen wie `raid end`, `raid ende`, `wipe` und `shit show`. |
+| `PLAYER_LOGIN` | Initializes per-character settings and prints stored records. |
+| `COMBAT_LOG_EVENT_UNFILTERED` | Detects critical spell, ranged, and melee damage; critical healing; selected auras; and deaths. |
+| `READY_CHECK` | Plays a sound when enabled. |
+| `CHAT_MSG_RAID_LEADER` | Reacts to hard-coded raid-leader phrases such as `raid end`, `raid ende`, `wipe`, and `shit show`. |
 
-Die Höchstwerte und Einstellungen werden pro Charakter in `CritLogDB`
-gespeichert (`SavedVariablesPerCharacter`). Standardmäßig sind die meisten
-Soundgruppen aktiv. Kritischer Schaden wird nur für das aktuelle Ziel in einem
-bestimmten Levelbereich berücksichtigt; `/cl level` deaktiviert diesen Filter.
-Die vollständige Matrix aus Ereignis, Bedingung, Einstellung und möglicher
-Sounddatei steht unter [Verhalten und Auslöser](docs/BEHAVIOR.md).
+Highscores and settings are stored per character in `CritLogDB` through
+`SavedVariablesPerCharacter`. Most sound groups are enabled by default. Damage
+crits are filtered using the current target's level unless `/cl level` disables
+that filter.
 
-### Slash-Commands
+See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → condition
+→ setting → sound matrix.
 
-Beide Präfixe sind gleichwertig: `/cl` und `/critlog`.
+## Slash commands
 
-| Command | Aktuelles Verhalten |
+`/cl` and `/critlog` are equivalent command prefixes.
+
+| Command | Current behavior |
 | --- | --- |
-| `/cl` | Zeigt die gespeicherten Höchstwerte an. |
-| `/cl help` | Listet die verfügbaren Befehle im Chat auf. |
-| `/cl config` | Zeigt die aktuellen Schalter an. |
-| `/cl reset` | Setzt die gespeicherten Höchstwerte zurück und versucht, die Schalter beizubehalten. Siehe bekannte Probleme. |
-| `/cl sound` | Schaltet den Sound bei einem neuen Höchstwert um. |
-| `/cl allcrits` | Schaltet Sounds für jeden kritischen Treffer um. |
-| `/cl whitehit` | Schaltet die Behandlung kritischer Auto-/Distanzangriffe um. |
-| `/cl level` | Schaltet den Level-Filter für Schadensrekorde um. |
-| `/cl login` | Schaltet den Login-Sound um; die Wiedergabe ist im Code derzeit auskommentiert. |
-| `/cl ready` | Schaltet den Ready-Check-Sound um. |
-| `/cl aura` | Schaltet Sounds für ausgewählte Auren und Fähigkeiten um. |
-| `/cl dead` | Hauptschalter für Todes-Sounds. |
-| `/cl player` | Schaltet den Sound beim eigenen Tod um. |
-| `/cl melee` | Schaltet Todes-Sounds für hart codierte Nahkämpfer um. |
-| `/cl tank` | Schaltet Todes-Sounds für hart codierte Tanks um. |
-| `/cl priest` | Schaltet Todes-Sounds für hart codierte Heilpriester um. |
-| `/cl boss` | Schaltet Todes-Sounds für hart codierte Bosse um. |
-| `/cl toni` | Wechselt auf ein alternatives Sound-Verzeichnis. Die vorhandenen Dateien sind dort nicht vollständig deckungsgleich. |
+| `/cl` | Prints stored highscores. |
+| `/cl help` | Lists all commands in chat. |
+| `/cl config` | Prints the current toggles. |
+| `/cl reset` | Resets highscores while retaining the current configuration. |
+| `/cl sound` | Toggles the sound for a new highscore. |
+| `/cl allcrits` | Toggles sounds for every critical hit. |
+| `/cl whitehit` | Toggles critical auto-attack/ranged-attack handling. |
+| `/cl level` | Toggles the level filter for damage records. |
+| `/cl login` | Toggles the login-sound setting; playback is currently commented out. |
+| `/cl ready` | Toggles the ready-check sound. |
+| `/cl aura` | Toggles sounds for selected auras and abilities. |
+| `/cl dead` | Master switch for death sounds. |
+| `/cl player` | Toggles the player's own death sound. |
+| `/cl melee` | Toggles death sounds for a hard-coded melee roster. |
+| `/cl tank` | Toggles death sounds for a hard-coded tank roster. |
+| `/cl priest` | Toggles death sounds for a hard-coded healer-priest roster. |
+| `/cl boss` | Toggles death sounds for a hard-coded boss roster. |
+| `/cl toni` | Switches between the default and alternate sound directories. The alternate set is still incomplete. |
 
-## Repository-Struktur
+## Repository layout
 
 ```text
 wow-addons/
 ├── README.md
-├── docs/                # Wiki: Verhalten, Sounds und Refactoring
+├── docs/                # Behavior, sounds, and refactoring wiki
 └── CritLog/
-    ├── CritLog.toc       # WoW-Metadaten und SavedVariables-Deklaration
-    ├── CritLog.lua       # Gesamte Ereignis-, Speicher- und Command-Logik
-    ├── README.txt        # Historischer Minimalhinweis
+    ├── CritLog.toc       # WoW metadata and SavedVariables declaration
+    ├── CritLog.lua       # Current event, storage, sound, and command logic
+    ├── README.txt        # Historical minimal readme
     └── sounds/
-        ├── assi/         # Alternative Soundauswahl
-        └── more sounds/  # Derzeit nicht vom Code verwendete Sounddateien
+        ├── assi/         # Alternate sound set
+        └── more sounds/  # Unused candidate sound files
 ```
 
-## Inventar der fest verdrahteten Daten
+## Hard-coded data inventory
 
-Die folgenden Informationen stehen derzeit direkt in `CritLog.lua` und können
-nicht über eine Benutzeroberfläche oder Konfigurationsdatei gepflegt werden:
+The following data is embedded directly in `CritLog.lua` and cannot currently
+be managed through an options UI or configuration file:
 
-- Installationspfade und Dateinamen aller verwendeten Sounds
-- englische und deutsche Namen ausgewählter Fähigkeiten und Auren
-- englische und deutsche Bossnamen aus The Burning Crusade
-- Charakternamen für Nahkämpfer, Tanks und Heilpriester
-- Sonderbehandlung für den Charakter `Schnutz`
-- Raidleiter-Phrasen, die Sounds auslösen
-- Grenzwert von neun Leveln für relevante Schadensziele
-- Standardwerte aller Funktionsschalter
-- Addon-Version, zusätzlich und unabhängig von der TOC-Version
+- installation paths and filenames for every requested sound
+- English and German names for selected abilities and auras
+- English and German Burning Crusade boss names
+- character names grouped into melee, tank, and healer-priest rosters
+- special-case behavior for the character `Schnutz`
+- raid-leader phrases that trigger sounds
+- a nine-level threshold for relevant damage targets
+- defaults for all feature toggles
+- the addon version, independently duplicated in the TOC file
 
-## Bekannte technische Probleme und Risiken
+## Known technical issues and risks
 
-Diese Liste ist eine statische Bestandsaufnahme des aktuellen Codes, keine
-vollständige Laufzeitprüfung:
+This is a static inventory, not a complete in-game verification:
 
-1. **Legacy-Implementierung:** Das Addon funktioniert laut aktuellem Praxistest
-   in Season of Discovery. Die Combat-Log-Auswertung stammt dennoch aus einem
-   älteren Entwicklungsstand und ist noch nicht systematisch gegen alle
-   relevanten SoD-Ereignisse geprüft.
-2. **Fehlende Sounddatei:** `divineInt2.mp3` wird in beiden Soundvarianten
-   referenziert, ist im Repository aber nicht vorhanden.
-3. **Unvollständige alternative Soundauswahl:** `/cl toni` ändert den Basispfad
-   für alle Sounds. Im alternativen Ordner fehlen jedoch mehrere der erwarteten
-   Dateinamen, darunter `Tank.mp3`, `soulstone2.mp3` und
-   `divineInt2.mp3`.
-4. **Reset verliert die Schema-Version:** `/cl reset` erstellt `CritLogDB` ohne
-   `Version`. Beim nächsten Login erkennt `SetDefaults()` die Daten deshalb als
-   veraltet und setzt auch die Konfiguration auf Standardwerte zurück.
-5. **Falsche Rekordausgabe:** Bei Zauberschaden und Heilung wird in der
-   Zusammenfassung der Fähigkeitsname auch an der Stelle des Zielnamens
-   ausgegeben, obwohl separate Zielfelder gespeichert werden.
-6. **Zielprüfung ist fragil:** Der Level-Filter verwendet immer das aktuell
-   ausgewählte `target`, nicht zwingend das Ziel des Combat-Log-Ereignisses.
-   Ohne gültiges Ziel sind außerdem ungültige oder fehlende Levelwerte möglich.
-7. **Heilungszweig ist strukturell verdächtig:** Der `SPELL_HEAL`-Zweig hängt
-   syntaktisch am Level-Filter statt an der Ereignistyp-Verzweigung. Dadurch
-   kann die Erfassung kritischer Heilungen vom aktuellen Ziellevel abhängen.
-8. **Globale temporäre Variablen:** Mehrere Hilfswerte (`tmpRNDM`, `result` und
-   Reset-Zwischenwerte) werden unbeabsichtigt global angelegt und können mit
-   anderem Addon-Code kollidieren.
-9. **Lokalisierung über sichtbare Namen:** Fähigkeiten und Bosse werden anhand
-   ausgeschriebener deutscher/englischer Namen erkannt. Andere Sprachen,
-   Schreibweisen und Clientänderungen werden nicht abgedeckt; Spell-/NPC-IDs
-   wären robuster.
-10. **Versionsmigration löscht Daten:** Jede Änderung von `CRITLOG_VERSION`
-    ersetzt die komplette charakterbezogene Datenbank, statt ein Schema zu
-    migrieren.
-11. **Unbenutzte und deaktivierte Bestandteile:** Der Login-Sound, Zone-Handler
-    und „über 9k“-Sound sind deaktiviert; `more sounds/` wird nicht verwendet.
-12. **Keine Qualitätssicherung:** Es existieren bislang keine automatisierten
-    Tests, Linter, Paketierung, Releases oder CI-Prüfungen.
-13. **Asset-Rechte ungeklärt:** Herkunft und Nutzungsrechte der mitgelieferten
-    Audio-Dateien sind nicht dokumentiert. Vor einer öffentlichen
-    Veröffentlichung sollte das geklärt werden.
+1. **Legacy implementation:** The addon works in the current Season of
+   Discovery test environment, but its combat-log handling has not yet been
+   systematically verified for every relevant SoD event.
+2. **Missing sound:** `divineInt2.mp3` is requested by both sound profiles but
+   does not exist.
+3. **Incomplete alternate profile:** The alternate profile still lacks
+   `soulstone2.mp3` and `divineInt2.mp3`.
+4. **Fragile target check:** The level filter uses the currently selected
+   `target`, which is not guaranteed to be the combat-log destination. Missing
+   or invalid target levels are possible.
+5. **Suspicious healing branch:** `SPELL_HEAL` is syntactically attached to the
+   target-level condition rather than the event-type branch, so healing records
+   may depend on the current target level.
+6. **Name-based localization:** Abilities and bosses are matched by displayed
+   English/German names instead of stable spell and NPC IDs.
+7. **Destructive version upgrades:** Any change to `CRITLOG_VERSION` replaces
+   the complete per-character database instead of migrating it.
+8. **Unused or disabled assets/code:** Login sound, zone handler, the “over 9k”
+   sound, and the complete `more sounds/` directory are inactive.
+9. **No automated quality gates:** There are no tests, linter, packaging,
+   releases, or CI checks yet.
+10. **Unclear asset rights:** Audio-file origin and redistribution rights are
+    undocumented and must be reviewed before public distribution.
 
-## Sinnvolle nächste Schritte
+## Next steps
 
-Der empfohlene Ablauf steht im [Refactoring-Plan](docs/REFACTORING.md). Kurz:
-Zuerst Verhalten mit Tests beziehungsweise reproduzierbaren Checks absichern,
-dann Daten und Soundkatalog aus dem Code ziehen, anschließend entlang dieser
-Grenzen in Module aufteilen. Nur die bestehende 758-Zeilen-Datei mechanisch zu
-zerlegen würde die Hardcodings und Fehler lediglich auf mehrere Dateien
-verteilen.
+The recommended sequence is documented in the [Refactoring plan](docs/REFACTORING.md):
+freeze behavior with reproducible checks, centralize trigger and sound data,
+fix verified defects, and only then split the code along stable boundaries.
+Mechanically splitting the current file first would distribute the existing
+hard-coded data and bugs across several files.
 
-## Entwicklung
+## Development
 
-Es gibt aktuell keine externen Abhängigkeiten und keinen Build-Schritt. Änderungen
-werden direkt in `CritLog/CritLog.lua` vorgenommen und müssen im Zielclient
-getestet werden. Vor einem Release müssen die Versionen in `CritLog.lua` und
-`CritLog.toc` derzeit manuell synchron gehalten werden.
+There are no external dependencies or build steps. Changes are made directly in
+`CritLog/CritLog.lua` and must be tested in the target client. Until a release
+pipeline exists, the versions in `CritLog.lua` and `CritLog.toc` must be kept
+in sync manually.
 
-## Lizenz
+## License
 
-Für Quellcode und Audio-Assets ist derzeit keine Lizenz angegeben. Bis dies
-geklärt ist, dürfen daraus keine Nutzungsrechte abgeleitet werden.
+No license is currently declared for the source code or audio assets. No usage
+or redistribution rights should be inferred until this has been resolved.
