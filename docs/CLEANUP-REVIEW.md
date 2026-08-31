@@ -26,7 +26,7 @@ genuinely different clip.
 | 7 | Party/raid member summons Mana Tide Totem | `/cl aura` | `Manatide.mp3` | different clip |
 | 8 | Player receives Bloodlust/Heroism | `/cl aura` | `Bloodlust.mp3` | different clip |
 | 9 | Player receives Innervate | `/cl aura` | `Inervate1.mp3` / `Inervate2.mp3` (random) | different clips (both) |
-| 10 | Player receives Power Infusion | `/cl aura` | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random, 3 **distinct** clips) | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random, but all 3 are **byte-identical** — the "randomness" plays the same clip every time) |
+| 10 | Player receives Power Infusion | `/cl aura` | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random, 3 **distinct** clips) | `Surprise.mp3` / `Surprise2.mp3` / `Surprise3.mp3` (random, but `Surprise2.mp3`/`Surprise3.mp3` were byte-identical copies and have been removed — `ResolveSound()` redirects all three picks to the one remaining `Surprise.mp3`) |
 | 11 | Player receives Blessing of Protection | `/cl aura` | `Bubble.mp3` | different clip |
 | 12 | Player receives Divine Intervention | `/cl aura` | `divineInt.mp3` | `= default` |
 | 13 | Player receives Soulstone Resurrection | `/cl aura` | `soulstone.mp3` / `soulstone2.mp3` / `soulstone3.mp3` (random) | `= default` for all three (we copied `soulstone2.mp3` in to close a prior gap) |
@@ -34,7 +34,7 @@ genuinely different clip.
 | 15 | Hardcoded roster member "Schnutz" dies (special case) | `/cl melee` + `/cl dead` | `schnutz.mp3` | different clip |
 | 16 | Any other hardcoded `MELEE_NAMES` roster member dies | `/cl melee` + `/cl dead` | `wilhelm.ogg` | `= default` |
 | 17 | Hardcoded EN/DE TBC boss list — boss dies | `/cl boss` + `/cl dead` | `FFX.mp3` / `Zelda.mp3` (random) | `= default` for both |
-| 18 | Hardcoded `TANK_NAMES` roster member dies | `/cl tank` + `/cl dead` | `Tank.mp3` / `Tank2.mp3` (random, 2 **distinct** clips) | `Tank.mp3` / `Tank2.mp3` (random, but both are **byte-identical** — same clip every time) |
+| 18 | Hardcoded `TANK_NAMES` roster member dies | `/cl tank` + `/cl dead` | `Tank.mp3` / `Tank2.mp3` (random, 2 **distinct** clips) | `Tank.mp3` / `Tank2.mp3` (random, but `Tank2.mp3` was a byte-identical copy and has been removed — `ResolveSound()` redirects both picks to the one remaining `Tank.mp3`) |
 | 19 | Hardcoded `HEALPRIEST_NAMES` roster member dies | `/cl priest` + `/cl dead` | `Angels1.mp3` / `Angels2.mp3` (random) | `= default` for both |
 | 20 | Raid leader says "raid end" / "raid ende" in chat | none — always active | `bye.mp3` then `end.mp3` (may overlap) | different clips (both) |
 | 21 | Raid leader says "wipe" / "shit show" in chat | none — always active | `wipe.mp3` | `= default` |
@@ -76,10 +76,12 @@ Notes worth weighing while deciding:
 
 ## Sounds
 
-"Used by" references the trigger numbers above. "`= file`" means
-byte-identical to a file already listed — you only need to listen to one of
-each identical group (see [SOUNDS.md](SOUNDS.md#byte-identical-files) for
-the full duplicate list).
+"Used by" references the trigger numbers above. Files that were
+byte-identical to another file already in the catalog have since been
+deleted — `CritLog.lua`'s `ResolveSound()` transparently redirects to the
+one physical copy that's left, so playback is unaffected. "`→ file`" marks
+where that redirect points (see [SOUNDS.md](SOUNDS.md#deduplication) for the
+full mechanism).
 
 ### Default profile (`CritLog/sounds/`)
 
@@ -114,36 +116,35 @@ the full duplicate list).
 
 ### Toni / "assi" profile (`CritLog/sounds/assi/`, `/cl toni`)
 
-| File | Used by | Decision |
+Rows marked "→ default/…" no longer have a physical file in this folder —
+they were removed as duplicates. Everything else is a real file here.
+
+| File on disk here? | Used by | Decision |
 | --- | --- | --- |
-| `Angels1.mp3` | 19 | `= default/Angels1.mp3` |
-| `Angels2.mp3` | 19 | `= default/Angels2.mp3` |
-| `at_bam_babam.mp3` | 3, 4, 5, 6 | `= default/at_bam_babam.mp3` |
-| `Bloodlust.mp3` | 8 | alternate clip |
-| `Bubble.mp3` | 11 | alternate clip |
-| `bye.mp3` | 20 | alternate clip |
-| `divineInt.mp3` | 12 | `= default/divineInt.mp3` |
-| `end.mp3` | 20 | alternate clip |
-| `FFX.mp3` | 17 | `= default/FFX.mp3` |
-| `Inervate1.mp3` | 9 | alternate clip |
-| `Inervate2.mp3` | 9 | alternate clip |
-| `Login.mp3` | 24 (inactive) | unreachable — the code path that would play it is commented out |
-| `Manatide.mp3` | 7 | alternate clip |
-| `MarioDeath.mp3` | 14 | alternate clip |
-| `Ready.mp3` | 2 | `= default/Ready.mp3` |
-| `schnutz.mp3` | 15 | alternate clip |
-| `soulstone.mp3` | 13 | `= default/soulstone.mp3` |
-| `soulstone2.mp3` | 13 | `= default/soulstone2.mp3` (we copied this file in to close a gap — see CHANGELOG) |
-| `soulstone3.mp3` | 13 | `= default/soulstone3.mp3` |
-| `Surprise.mp3` | 10 | `= Surprise2.mp3` / `Surprise3.mp3` (all three identical within this profile) |
-| `Surprise2.mp3` | 10 | `= Surprise.mp3` |
-| `Surprise3.mp3` | 10 | `= Surprise.mp3` |
-| `Tank.mp3` | 18 | `= Tank2.mp3` (identical within this profile) |
-| `Tank2.mp3` | 18 | `= Tank.mp3` |
-| `wilhelm.ogg` | 16 | `= default/wilhelm.ogg` |
-| `wipe.mp3` | 21 | `= default/wipe.mp3` |
-| `Xtreme.mp3` | 25 (inactive) | unreachable — the code path that would play it is commented out |
-| `Zelda.mp3` | 17 | `= default/Zelda.mp3` |
+| `Angels1.mp3` — no, → `default/Angels1.mp3` | 19 | |
+| `Angels2.mp3` — no, → `default/Angels2.mp3` | 19 | |
+| `at_bam_babam.mp3` — no, → `default/at_bam_babam.mp3` | 3, 4, 5, 6 | |
+| `Bloodlust.mp3` — yes | 8 | alternate clip |
+| `Bubble.mp3` — yes | 11 | alternate clip |
+| `bye.mp3` — yes | 20 | alternate clip |
+| `divineInt.mp3` — no, → `default/divineInt.mp3` | 12 | |
+| `end.mp3` — yes | 20 | alternate clip |
+| `FFX.mp3` — no, → `default/FFX.mp3` | 17 | |
+| `Inervate1.mp3` — yes | 9 | alternate clip |
+| `Inervate2.mp3` — yes | 9 | alternate clip |
+| `Login.mp3` — yes | 24 (inactive) | unreachable — the code path that would play it is commented out |
+| `Manatide.mp3` — yes | 7 | alternate clip |
+| `MarioDeath.mp3` — yes | 14 | alternate clip |
+| `Ready.mp3` — no, → `default/Ready.mp3` | 2 | |
+| `schnutz.mp3` — yes | 15 | alternate clip |
+| `soulstone.mp3` — no, → `default/soulstone.mp3` | 13 | |
+| `soulstone2.mp3` — no, → `default/soulstone2.mp3` | 13 | |
+| `soulstone3.mp3` — no, → `default/soulstone3.mp3` | 13 | |
+| `Surprise.mp3` — yes | 10 | also stands in for `Surprise2.mp3`/`Surprise3.mp3` via `TONI_ALIASES` |
+| `Tank.mp3` — yes | 18 | also stands in for `Tank2.mp3` via `TONI_ALIASES` |
+| `wilhelm.ogg` — no, → `default/wilhelm.ogg` | 16 | |
+| `Xtreme.mp3` — yes | 25 (inactive) | unreachable — the code path that would play it is commented out |
+| `Zelda.mp3` — no, → `default/Zelda.mp3` | 17 | |
 
 ### Unused candidates (`CritLog/sounds/more sounds/`)
 
@@ -164,8 +165,10 @@ Not referenced by any trigger today — nothing currently plays these.
 | `luffy-senpai.mp3` | |
 | `m1.mp3` | |
 | `m2.mp3` | |
-| `wipe.mp3` | `= default/wipe.mp3` |
 | `Wololooo.mp3` | |
+
+(`wipe.mp3` was also in this folder, byte-identical to `default/wipe.mp3` —
+already deleted, nothing referenced it here.)
 
 If nothing here ends up wired to a trigger, this entire folder is a
 straightforward first cut — it adds to package size and review burden for

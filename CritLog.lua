@@ -58,6 +58,50 @@ local INNERVATE_SOUND_LIST = {INNERVATE1, INNERVATE2}
 local POWERINFUSION_LIST = { POWERINFUSION1, POWERINFUSION2, POWERINFUSION3 }
 local SOULSTONE_SOUND_LIST = { SOULSTONE_SOUND, SOULSTONE_SOUND2, SOULSTONE_SOUND3 }
 
+--
+-- Sound files that are byte-identical between the default and Toni profile
+-- only exist once on disk, under the default folder, to keep the packaged
+-- addon smaller. ResolveSound() always loads them from there regardless of
+-- the active profile.
+--
+local SHARED_WITH_DEFAULT = {
+    ['Angels1.mp3'] = true,
+    ['Angels2.mp3'] = true,
+    ['at_bam_babam.mp3'] = true,
+    ['divineInt.mp3'] = true,
+    ['FFX.mp3'] = true,
+    ['Ready.mp3'] = true,
+    ['soulstone.mp3'] = true,
+    ['soulstone2.mp3'] = true,
+    ['soulstone3.mp3'] = true,
+    ['wilhelm.ogg'] = true,
+    ['wipe.mp3'] = true,
+    ['Zelda.mp3'] = true,
+}
+
+--
+-- Within the Toni profile, Surprise2.mp3/Surprise3.mp3 and Tank2.mp3 were
+-- byte-identical to Surprise.mp3/Tank.mp3 respectively, so only one physical
+-- copy of each is kept. This redirects the "random" pick to the file that
+-- is actually still on disk; the default profile keeps its distinct clips
+-- and is unaffected.
+--
+local TONI_ALIASES = {
+    ['Surprise2.mp3'] = 'Surprise.mp3',
+    ['Surprise3.mp3'] = 'Surprise.mp3',
+    ['Tank2.mp3'] = 'Tank.mp3',
+}
+
+local function ResolveSound(filename)
+    if SHARED_WITH_DEFAULT[filename] then
+        return SOUNDPATH..filename
+    end
+    if CritLogDB.SoundFile == ASSISOUND and TONI_ALIASES[filename] then
+        return ASSISOUND..TONI_ALIASES[filename]
+    end
+    return CritLogDB.SoundFile..filename
+end
+
 -----------
 --NAMES
 -----------
@@ -142,11 +186,11 @@ function CritLog:CHAT_MSG_RAID_LEADER(...)
     --string.lower(myString)
     --print(message,author)
     if string.lower(message) =="raid ende" or string.lower(message) =="raid end"  then -- and Split(author, "-")[1] == "Kîtten" then
-        PlaySoundFile(CritLogDB.SoundFile..'bye.mp3', 'Master')
-        PlaySoundFile(CritLogDB.SoundFile..'end.mp3', 'Master')
+        PlaySoundFile(ResolveSound('bye.mp3'), 'Master')
+        PlaySoundFile(ResolveSound('end.mp3'), 'Master')
     end
     if string.lower(message) =="shit show" or string.lower(message) =="wipe"  then -- and Split(author, "-")[1] == "Kîtten" then
-        PlaySoundFile(CritLogDB.SoundFile..'wipe.mp3', 'Master')
+        PlaySoundFile(ResolveSound('wipe.mp3'), 'Master')
     end
 
 end
@@ -158,7 +202,7 @@ function CritLog:READY_CHECK()
 
     -- Plays Ready Check Sound
     if CritLogDB.ReadySoundFlag then
-        PlaySoundFile(CritLogDB.SoundFile..READY_CHECK_SOUND, 'Master')
+        PlaySoundFile(ResolveSound(READY_CHECK_SOUND), 'Master')
     end
 
 end
@@ -193,7 +237,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
                 if sv2 ~= nil and tContains( MANATIDE_NAMES, sv2 ) then
                     --print("MANA TIDE TOTEM SCRIPT WORKING")
                     --print(subevent)
-                    PlaySoundFile(CritLogDB.SoundFile..MANATIDESOUND, 'Master')
+                    PlaySoundFile(ResolveSound(MANATIDESOUND), 'Master')
                 end
             end
         end
@@ -203,7 +247,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             --
             if subevent == "SPELL_AURA_APPLIED" then
                 if tContains( BLOODLUST_NAMES, sv2 ) then
-                    PlaySoundFile(CritLogDB.SoundFile..BLOODLUS_SOUND, 'Master')
+                    PlaySoundFile(ResolveSound(BLOODLUS_SOUND), 'Master')
                 end
                 --
                 -- Inervate Sound
@@ -211,33 +255,33 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
                 if tContains( INERVATE_NAMES, sv2 ) then
                     local tmpRNDM = math.random(1, 2)
                     --print(CritLogDB.SoundFile..INNERVATE_SOUND_LIST[tmpRNDM])
-                    PlaySoundFile(CritLogDB.SoundFile..INNERVATE_SOUND_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(ResolveSound(INNERVATE_SOUND_LIST[tmpRNDM]), 'Master')
                 end
                 --
                 -- Power Word Infusion Sound
                 --
                 if tContains( POWERINFUSION_NAMES, sv2 ) then
                     local tmpRNDM = math.random(1, 3)
-                    PlaySoundFile(CritLogDB.SoundFile..POWERINFUSION_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(ResolveSound(POWERINFUSION_LIST[tmpRNDM]), 'Master')
                 end
                 --
                 -- Blessing of Protection Sound
                 --
                 if tContains( BOB_NAMES, sv2 ) then
-                    PlaySoundFile(CritLogDB.SoundFile..BUBBLE_BOB, 'Master')
+                    PlaySoundFile(ResolveSound(BUBBLE_BOB), 'Master')
                 end
                 --
                 -- Divine Intervention Sound
                 --
                 if tContains( DIVINE_INT, sv2 ) then
-                    PlaySoundFile(CritLogDB.SoundFile..DIVINE_INT_SOUND, 'Master')
+                    PlaySoundFile(ResolveSound(DIVINE_INT_SOUND), 'Master')
                 end
                 --
                 -- Soulstone Sound
                 --
                 if tContains( SOULSTONE_NAMES, sv2 ) then
                     local tmpRNDM = math.random(1, 3)
-                    PlaySoundFile(CritLogDB.SoundFile..SOULSTONE_SOUND_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(ResolveSound(SOULSTONE_SOUND_LIST[tmpRNDM]), 'Master')
                 end
             end
         end
@@ -370,7 +414,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
         --
         if destGUID == UnitGUID("Player") then
             if CritLogDB.PlayerSoundFlag then
-                PlaySoundFile(CritLogDB.SoundFile..YOU_DEAD, 'Master')
+                PlaySoundFile(ResolveSound(YOU_DEAD), 'Master')
             end
         else
             --
@@ -379,9 +423,9 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             if  CritLogDB.MeleeSoundFlag then
                 if tContains( MELEE_NAMES, destName ) then
                    if destName == "Schnutz" then
-                        PlaySoundFile(CritLogDB.SoundFile..MELEE_DEAD_SCHNUTZ, 'Master')
+                        PlaySoundFile(ResolveSound(MELEE_DEAD_SCHNUTZ), 'Master')
                     else
-                        PlaySoundFile(CritLogDB.SoundFile..MELEE_DEAD, 'Master')
+                        PlaySoundFile(ResolveSound(MELEE_DEAD), 'Master')
                     end
                 end
             end
@@ -391,7 +435,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             if CritLogDB.BossSoundFlag then
                 if tContains( BOSS_NAMES, destName ) or tContains( BOSS_NAMES_GERMAN, destName ) then
                     local tmpRNDM = math.random(1, 2)
-                    PlaySoundFile(CritLogDB.SoundFile..BOSS_DEAD_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(ResolveSound(BOSS_DEAD_LIST[tmpRNDM]), 'Master')
                 end
             end
             --
@@ -399,7 +443,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             --
             if tContains( TANK_NAMES, destName ) and CritLogDB.TankSoundFlag then
                 local tmpRNDM = math.random(1, 2)
-                PlaySoundFile(CritLogDB.SoundFile..TANK_DEAD_LIST[tmpRNDM], 'Master')
+                PlaySoundFile(ResolveSound(TANK_DEAD_LIST[tmpRNDM]), 'Master')
                 --print("wtf2")
             end
             --
@@ -408,7 +452,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
             if tContains( HEALPRIEST_NAMES, destName ) and CritLogDB.PriestSoundFlag then
                 local tmpRNDM = math.random(1, 2)
                 --print(tmpRNDM)
-                PlaySoundFile(CritLogDB.SoundFile..ANGEL_LIST[tmpRNDM], 'Master')
+                PlaySoundFile(ResolveSound(ANGEL_LIST[tmpRNDM]), 'Master')
             end
         end
     end
@@ -417,7 +461,7 @@ end
 --plays sound file for crits
 function CritLog:PlaySoundFile()
     if CritLogDB.SoundFlag then
-        PlaySoundFile(CritLogDB.SoundFile..BAM_SOUND, 'Master')
+        PlaySoundFile(ResolveSound(BAM_SOUND), 'Master')
     end
 end
 
