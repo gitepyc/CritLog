@@ -88,7 +88,15 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 ```text
 wow-addons/
 ├── README.md
-├── docs/                # Behavior, sounds, and refactoring wiki
+├── LICENSE               # MIT, code only — see License section below
+├── CHANGELOG.md
+├── docs/                 # Behavior, sounds, and refactoring wiki
+├── tests/                # How to verify changes — see tests/README.md
+│   └── lint/Dockerfile   # Containerized luacheck (Lua 5.1 + WoW globals)
+├── scripts/lint.sh        # Convenience wrapper to build and run the lint container
+├── .luacheckrc           # luacheck config; stds.wow lists only the WoW API CritLog calls
+├── .pkgmeta              # Draft BigWigsMods/packager config (not yet wired into CI)
+├── .github/workflows/    # CI (runs against the GitHub push mirror; Gitea has no runner yet)
 └── CritLog/
     ├── CritLog.toc       # WoW metadata and SavedVariables declaration
     ├── CritLog.lua       # Current event, storage, sound, and command logic
@@ -130,8 +138,10 @@ This is a static inventory, not a complete in-game verification:
    the complete per-character database instead of migrating it.
 5. **Unused or disabled assets/code:** Login sound, zone handler, the “over 9k”
    sound, and the complete `more sounds/` directory are inactive.
-6. **No automated quality gates:** There are no tests, linter, packaging,
-   releases, or CI checks yet.
+6. **Packaging and releases not yet automated:** Static linting runs via
+   `tests/lint/` and CI (see [Testing](#testing)), but there is no packaged
+   release build, versioned release process, or CurseForge/Wago project yet.
+   `.pkgmeta` exists as an unverified first draft.
 7. **Unclear asset rights:** Audio-file origin and redistribution rights are
    undocumented and must be reviewed before public distribution.
 
@@ -150,7 +160,18 @@ There are no external dependencies or build steps. Changes are made directly in
 pipeline exists, the versions in `CritLog.lua` and `CritLog.toc` must be kept
 in sync manually.
 
+## Testing
+
+See [tests/README.md](tests/README.md) for how to run static analysis
+(`scripts/lint.sh`, a containerized `luacheck`) and the manual in-game
+verification checklist. There is no headless way to execute WoW addon code
+or render UI outside the real game client, so behavior changes still require
+manual in-game testing.
+
 ## License
 
-No license is currently declared for the source code or audio assets. No usage
-or redistribution rights should be inferred until this has been resolved.
+The Lua source code is MIT-licensed — see [LICENSE](LICENSE). The audio
+files under `CritLog/sounds/` are **not** covered by that license: their
+origin and redistribution rights are undocumented and must be reviewed
+before public distribution — see
+[docs/SOUNDS.md](docs/SOUNDS.md#required-human-review).

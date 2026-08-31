@@ -1,0 +1,14 @@
+# Packager output
+.release/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Lint container
+tests/lint/*.log
