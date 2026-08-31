@@ -39,7 +39,6 @@ local POWERINFUSION2 = 'Surprise2.mp3'
 local POWERINFUSION3 = 'Surprise3.mp3'
 local BUBBLE_BOB = 'Bubble.mp3'
 local DIVINE_INT_SOUND = 'divineInt.mp3'
-local DIVINE_INT_SOUND2 = 'divineInt2.mp3'
 local SOULSTONE_SOUND = 'soulstone.mp3'
 local SOULSTONE_SOUND2 = 'soulstone2.mp3'
 local SOULSTONE_SOUND3 = 'soulstone3.mp3'
@@ -57,7 +56,6 @@ local BOSS_DEAD_LIST = {BOSS_DEAD, BOSS_DEAD2}
 local ANGEL_LIST = { ANGELS1, ANGELS2 }
 local INNERVATE_SOUND_LIST = {INNERVATE1, INNERVATE2}
 local POWERINFUSION_LIST = { POWERINFUSION1, POWERINFUSION2, POWERINFUSION3 }
-local DIVINE_INT_SOUND_LIST = { DIVINE_INT_SOUND, DIVINE_INT_SOUND2 }
 local SOULSTONE_SOUND_LIST = { SOULSTONE_SOUND, SOULSTONE_SOUND2, SOULSTONE_SOUND3 }
 
 -----------
@@ -232,14 +230,13 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                 -- Divine Intervention Sound
                 --
                 if tContains( DIVINE_INT, sv2 ) then
-                    local tmpRNDM = math.random(1, 2)
-                    PlaySoundFile(CritLogDB.SoundFile..DIVINE_INT_SOUND_LIST[tmpRNDM], 'Master')
+                    PlaySoundFile(CritLogDB.SoundFile..DIVINE_INT_SOUND, 'Master')
                 end
                 --
                 -- Soulstone Sound
                 --
                 if tContains( SOULSTONE_NAMES, sv2 ) then
-                    local tmpRNDM = math.random(1, 2)
+                    local tmpRNDM = math.random(1, 3)
                     PlaySoundFile(CritLogDB.SoundFile..SOULSTONE_SOUND_LIST[tmpRNDM], 'Master')
                 end
             end
@@ -328,11 +325,12 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                         end
                     end                
                 end
-            end            
+            end
+        end
     --
-    --  Plays Sound and Logs on Heal Crits
+    --  Plays Sound and Logs on Heal Crits (independent of enemy target level)
     --
-        elseif subevent == "SPELL_HEAL" then
+        if subevent == "SPELL_HEAL" then
             if sv7 == true then
                 if CritLogDB.AllCritFlag then
                      self:PlaySoundFile()
@@ -343,8 +341,8 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                     CritLogDB.HAC_Tar = destName
                     print("HEAL Crit "..sv2..": "..sv4.." ("..destName..")")
                     self:PlaySoundFile()
-                end                
-            end       
+                end
+            end
         end
     end
 

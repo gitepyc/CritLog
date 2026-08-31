@@ -120,26 +120,20 @@ This is a static inventory, not a complete in-game verification:
 1. **Legacy implementation:** The addon works in the current Season of
    Discovery test environment, but its combat-log handling has not yet been
    systematically verified for every relevant SoD event.
-2. **Missing sound:** `divineInt2.mp3` is requested by both sound profiles but
-   does not exist.
-3. **Incomplete alternate profile:** The alternate profile still lacks
-   `soulstone2.mp3` and `divineInt2.mp3`.
-4. **Fragile target check:** The level filter uses the currently selected
+2. **Fragile target check:** The level filter uses the currently selected
    `target`, which is not guaranteed to be the combat-log destination. Missing
-   or invalid target levels are possible.
-5. **Suspicious healing branch:** `SPELL_HEAL` is syntactically attached to the
-   target-level condition rather than the event-type branch, so healing records
-   may depend on the current target level.
-6. **Name-based localization:** Abilities and bosses are matched by displayed
+   or invalid target levels are possible. It now correctly applies only to
+   damage crits, not to healing crits.
+3. **Name-based localization:** Abilities and bosses are matched by displayed
    English/German names instead of stable spell and NPC IDs.
-7. **Destructive version upgrades:** Any change to `CRITLOG_VERSION` replaces
+4. **Destructive version upgrades:** Any change to `CRITLOG_VERSION` replaces
    the complete per-character database instead of migrating it.
-8. **Unused or disabled assets/code:** Login sound, zone handler, the “over 9k”
+5. **Unused or disabled assets/code:** Login sound, zone handler, the “over 9k”
    sound, and the complete `more sounds/` directory are inactive.
-9. **No automated quality gates:** There are no tests, linter, packaging,
+6. **No automated quality gates:** There are no tests, linter, packaging,
    releases, or CI checks yet.
-10. **Unclear asset rights:** Audio-file origin and redistribution rights are
-    undocumented and must be reviewed before public distribution.
+7. **Unclear asset rights:** Audio-file origin and redistribution rights are
+   undocumented and must be reviewed before public distribution.
 
 ## Next steps
 

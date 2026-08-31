@@ -29,16 +29,15 @@ Already completed on `fix/safe-cleanups`:
 - highscore output uses the stored target names
 - known temporary values are local instead of global
 - the alternate tank clip uses the filename requested by the code
-
-Still outstanding:
-
-- make the `divineInt2.mp3` selection safe or add the intended clip
-- resolve missing `soulstone2.mp3` in the alternate profile
-- correct the Soulstone random range
-- verify and correct the healing-event branch
+- the `divineInt2.mp3` selection was made safe by dropping it; Divine
+  Intervention now always plays the one clip that actually exists
+- `soulstone2.mp3` was copied into the alternate profile, closing the gap
+- the Soulstone random range now covers all three listed clips
+- the healing-event branch no longer depends on the enemy target's level
 
 **Acceptance:** No reachable sound selection points to a missing file, reset
 retains settings after `/reload`, and record output shows the correct target.
+Met on `fix/safe-cleanups`.
 
 ### 3. Extract data from control flow
 
