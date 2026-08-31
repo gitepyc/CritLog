@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+- Added a standalone in-game options panel (`Options.lua`, loaded last per
+  `docs/REFACTORING.md`'s step-4 layout), opened/closed with `/cl options`.
+  Shows the current highscores (damage/white-hit/heal crit records, same
+  data `/cl` already prints via `printHighscores()`), `CritLog.version`, and
+  a checkbox for every one of the 14 `CritLogDB` toggle fields, labeled with
+  wording lifted from `Commands.lua`'s `printHelp()`/`printConfig()` so no
+  new terminology is introduced. Checkboxes read their state on every
+  `OnShow` (highscores and toggles can change from chat commands while the
+  panel is closed) and write straight back to `CritLogDB` on click - no new
+  `CritLogDB` fields, no changes to trigger/combat-log/sound logic.
+  Deliberately built with only stock Blizzard templates
+  (`BasicFrameTemplateWithInset`, `UICheckButtonTemplate`) and default
+  styling - "erstmal Default Styling, dann schauen wir mal": this is a
+  first draft for visual review, not a finished panel. No minimap button,
+  no Interface Options/Settings integration - out of scope for this pass.
+  Added `UIParent` to `.luacheckrc`'s curated globals list for the new
+  frame parent. Not tested in a real WoW client - there's no headless mode
+  to verify `CreateFrame`/frame layout with here (see `tests/README.md`);
+  needs an in-game check of both visuals and each checkbox's read/write
+  round-trip before merge.
 - Added a debug mode: `/cl debug` toggles `DebugFlag` (off by default,
   standard migration-safe new field - existing characters just get it
   backfilled as `false`). `CritLog:Debug(...)` in Core.lua prints only
