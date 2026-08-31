@@ -3,9 +3,16 @@
 Dieses Repository enthält private World-of-Warcraft-Addons. Derzeit ist nur
 **CritLog** enthalten.
 
-> **Projektstatus:** Legacy-Code / Bestandsaufnahme. CritLog ist auf dem Stand
-> `0.1.1` und deklariert WoW-Interface `20502`. Kompatibilität mit aktuellen
-> WoW-Clients ist bislang weder hergestellt noch getestet.
+> **Projektstatus:** Funktionierender Legacy-Code / Bestandsaufnahme. CritLog
+> wird aktuell mit Season of Discovery im Classic-Era-Client getestet. Version
+> `0.1.1` deklariert nun Classic Era `1.15.9` (Interface `11509`).
+
+## Dokumentation
+
+- [Wiki-Startseite](docs/README.md)
+- [Verhalten und Auslöser](docs/BEHAVIOR.md)
+- [Vollständiger Soundkatalog](docs/SOUNDS.md)
+- [Refactoring-Plan](docs/REFACTORING.md)
 
 ## Enthaltene Addons
 
@@ -30,11 +37,10 @@ World of Warcraft/
                 └── sounds/
 ```
 
-Anschließend CritLog in der Addon-Auswahl des Charakters aktivieren. Wegen des
-alten Interface-Standes kann je nach Client zusätzlich „Veraltete Addons
-laden“ erforderlich sein. Das ist keine Garantie für API-Kompatibilität.
+Anschließend CritLog in der Addon-Auswahl des Charakters aktivieren. Der aktuell
+bestätigte Zielclient ist Season of Discovery auf Classic Era `1.15.9`.
 
-## Aktuelles Verhalten
+## Aktuelles Verhalten (Kurzfassung)
 
 CritLog registriert vier Ereignisse:
 
@@ -49,6 +55,8 @@ Die Höchstwerte und Einstellungen werden pro Charakter in `CritLogDB`
 gespeichert (`SavedVariablesPerCharacter`). Standardmäßig sind die meisten
 Soundgruppen aktiv. Kritischer Schaden wird nur für das aktuelle Ziel in einem
 bestimmten Levelbereich berücksichtigt; `/cl level` deaktiviert diesen Filter.
+Die vollständige Matrix aus Ereignis, Bedingung, Einstellung und möglicher
+Sounddatei steht unter [Verhalten und Auslöser](docs/BEHAVIOR.md).
 
 ### Slash-Commands
 
@@ -80,6 +88,7 @@ Beide Präfixe sind gleichwertig: `/cl` und `/critlog`.
 ```text
 wow-addons/
 ├── README.md
+├── docs/                # Wiki: Verhalten, Sounds und Refactoring
 └── CritLog/
     ├── CritLog.toc       # WoW-Metadaten und SavedVariables-Deklaration
     ├── CritLog.lua       # Gesamte Ereignis-, Speicher- und Command-Logik
@@ -109,9 +118,10 @@ nicht über eine Benutzeroberfläche oder Konfigurationsdatei gepflegt werden:
 Diese Liste ist eine statische Bestandsaufnahme des aktuellen Codes, keine
 vollständige Laufzeitprüfung:
 
-1. **Veraltete Client-API:** `Interface: 20502` und die Combat-Log-Auswertung
-   zielen auf einen älteren TBC-Client. Ereignisargumente und APIs müssen gegen
-   den gewünschten aktuellen Client geprüft werden.
+1. **Legacy-Implementierung:** Das Addon funktioniert laut aktuellem Praxistest
+   in Season of Discovery. Die Combat-Log-Auswertung stammt dennoch aus einem
+   älteren Entwicklungsstand und ist noch nicht systematisch gegen alle
+   relevanten SoD-Ereignisse geprüft.
 2. **Fehlende Sounddatei:** `divineInt2.mp3` wird in beiden Soundvarianten
    referenziert, ist im Repository aber nicht vorhanden.
 3. **Unvollständige alternative Soundauswahl:** `/cl toni` ändert den Basispfad
@@ -150,20 +160,12 @@ vollständige Laufzeitprüfung:
 
 ## Sinnvolle nächste Schritte
 
-Eine risikoarme Modernisierung kann in dieser Reihenfolge erfolgen:
-
-1. Ziel-Client und unterstützte WoW-Version eindeutig festlegen.
-2. Aktuelles Verhalten im Spiel reproduzieren und eine kleine manuelle
-   Testmatrix dokumentieren.
-3. Fehlende beziehungsweise unbenutzte Sounds bereinigen und Asset-Rechte
-   klären.
-4. Code in Event-Handling, Konfiguration, Datenspeicher, Soundkatalog und
-   Commands aufteilen.
-5. Namen durch stabile Spell-/NPC-IDs ersetzen und konfigurierbare
-   Spielergruppen einführen.
-6. Versionierte SavedVariables-Migrationen implementieren.
-7. Einstellungen über eine WoW-konforme Optionsoberfläche zugänglich machen.
-8. Linting, Paketierung und einen nachvollziehbaren Release-Prozess ergänzen.
+Der empfohlene Ablauf steht im [Refactoring-Plan](docs/REFACTORING.md). Kurz:
+Zuerst Verhalten mit Tests beziehungsweise reproduzierbaren Checks absichern,
+dann Daten und Soundkatalog aus dem Code ziehen, anschließend entlang dieser
+Grenzen in Module aufteilen. Nur die bestehende 758-Zeilen-Datei mechanisch zu
+zerlegen würde die Hardcodings und Fehler lediglich auf mehrere Dateien
+verteilen.
 
 ## Entwicklung
 
