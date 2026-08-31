@@ -211,7 +211,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                 -- Inervate Sound
                 --
                 if tContains( INERVATE_NAMES, sv2 ) then
-                    tmpRNDM = math.random(1, 2)
+                    local tmpRNDM = math.random(1, 2)
                     --print(CritLogDB.SoundFile..INNERVATE_SOUND_LIST[tmpRNDM])
                     PlaySoundFile(CritLogDB.SoundFile..INNERVATE_SOUND_LIST[tmpRNDM], 'Master')                
                 end
@@ -219,7 +219,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                 -- Power Word Infusion Sound
                 --
                 if tContains( POWERINFUSION_NAMES, sv2 ) then
-                    tmpRNDM = math.random(1, 3)
+                    local tmpRNDM = math.random(1, 3)
                     PlaySoundFile(CritLogDB.SoundFile..POWERINFUSION_LIST[tmpRNDM], 'Master')
                 end
                 --
@@ -232,14 +232,14 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
                 -- Divine Intervention Sound
                 --
                 if tContains( DIVINE_INT, sv2 ) then
-                    tmpRNDM = math.random(1, 2)
+                    local tmpRNDM = math.random(1, 2)
                     PlaySoundFile(CritLogDB.SoundFile..DIVINE_INT_SOUND_LIST[tmpRNDM], 'Master')
                 end
                 --
                 -- Soulstone Sound
                 --
                 if tContains( SOULSTONE_NAMES, sv2 ) then
-                    tmpRNDM = math.random(1, 2)
+                    local tmpRNDM = math.random(1, 2)
                     PlaySoundFile(CritLogDB.SoundFile..SOULSTONE_SOUND_LIST[tmpRNDM], 'Master')
                 end
             end
@@ -392,7 +392,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
             -- 
             if CritLogDB.BossSoundFlag then
                 if tContains( BOSS_NAMES, destName ) or tContains( BOSS_NAMES_GERMAN, destName ) then
-                    tmpRNDM = math.random(1, 2)
+                    local tmpRNDM = math.random(1, 2)
                     PlaySoundFile(CritLogDB.SoundFile..BOSS_DEAD_LIST[tmpRNDM], 'Master')
                 end
             end
@@ -400,7 +400,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
             -- Tank died
             --
             if tContains( TANK_NAMES, destName ) and CritLogDB.TankSoundFlag then
-                tmpRNDM = math.random(1, 2)
+                local tmpRNDM = math.random(1, 2)
                 PlaySoundFile(CritLogDB.SoundFile..TANK_DEAD_LIST[tmpRNDM], 'Master')
                 --print("wtf2")
             end
@@ -408,7 +408,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED(...)
             -- Heal Priest died
             --
             if tContains( HEALPRIEST_NAMES, destName ) and CritLogDB.PriestSoundFlag then
-                tmpRNDM = math.random(1, 2)
+                local tmpRNDM = math.random(1, 2)
                 --print(tmpRNDM) 
                 PlaySoundFile(CritLogDB.SoundFile..ANGEL_LIST[tmpRNDM], 'Master')
             end
@@ -476,7 +476,7 @@ end
 --  Split String Functions
 ---------------------------------------------------
 function Split(s, delimiter)
-    result = {};
+    local result = {};
     for match in (s..delimiter):gmatch("(.-)"..delimiter) do
         table.insert(result, match);
     end
@@ -497,22 +497,25 @@ function PrintCritLogs(msg)
     -- reset crits
     --
     if msg == "reset" then
-        tmpSoundFlag = CritLogDB.SoundFlag
-        tmpAllLevel = CritLogDB.AllLevel
-        tmpAllCritFlag = CritLogDB.AllCritFlag
-        tmpWhiteHitFlag = CritLogDB.WhiteHitFlag
-        tmpLoginSoundFlag = CritLogDB.LoginSoundFlag
-        tmpReadySoundFlag = CritLogDB.ReadySoundFlag
-        tmpAuraSoundFlag = CritLogDB.AuraSoundFlag
-        tmpPriestSoundFlag = CritLogDB.PriestSoundFlag
-        tmpTankSoundFlag = CritLogDB.TankSoundFlag
-        tmpMeleeSoundFlag = CritLogDB.MeleeSoundFlag
-        tmpPlayerSoundFlag = CritLogDB.PlayerSoundFlag
-        tmpBossSoundFlag = CritLogDB.BossSoundFlag
-        tmpDeadSoundFlag = CritLogDB.DeadSoundFlag
+        local tmpSoundFlag = CritLogDB.SoundFlag
+        local tmpAllLevel = CritLogDB.AllLevel
+        local tmpAllCritFlag = CritLogDB.AllCritFlag
+        local tmpWhiteHitFlag = CritLogDB.WhiteHitFlag
+        local tmpLoginSoundFlag = CritLogDB.LoginSoundFlag
+        local tmpReadySoundFlag = CritLogDB.ReadySoundFlag
+        local tmpAuraSoundFlag = CritLogDB.AuraSoundFlag
+        local tmpPriestSoundFlag = CritLogDB.PriestSoundFlag
+        local tmpTankSoundFlag = CritLogDB.TankSoundFlag
+        local tmpMeleeSoundFlag = CritLogDB.MeleeSoundFlag
+        local tmpPlayerSoundFlag = CritLogDB.PlayerSoundFlag
+        local tmpBossSoundFlag = CritLogDB.BossSoundFlag
+        local tmpDeadSoundFlag = CritLogDB.DeadSoundFlag
+        local tmpToniFlag = CritLogDB.ToniFlag
+        local tmpSoundFile = CritLogDB.SoundFile
         
         --Character specifc Database:
         CritLogDB = {
+            Version = CRITLOG_VERSION,
             DamageAbilityCrit = 0,
             DAC_Name = "",
             DAC_Tar = "",
@@ -534,8 +537,8 @@ function PrintCritLogs(msg)
             BossSoundFlag = tmpBossSoundFlag,
             PlayerSoundFlag = tmpPlayerSoundFlag,
             DeadSoundFlag = tmpDeadSoundFlag,
-            ToniFlag = false,
-            SoundFile = SOUNDPATH
+            ToniFlag = tmpToniFlag,
+            SoundFile = tmpSoundFile
         }
         PrintCritLogs()
     --    
@@ -742,9 +745,9 @@ function PrintCritLogs(msg)
     -- Prints Highest Crits 
     --
     else
-        print("DAMAGE Crit "..CritLogDB.DAC_Name..": "..CritLogDB.DamageAbilityCrit.." ("..CritLogDB.DAC_Name..")")
+        print("DAMAGE Crit "..CritLogDB.DAC_Name..": "..CritLogDB.DamageAbilityCrit.." ("..CritLogDB.DAC_Tar..")")
         print("DAMAGE Crit WhiteHit: "..CritLogDB.WhiteHitCrit.." ("..CritLogDB.WHC_Tar..")")
-        print("HEAL Crit "..CritLogDB.HAC_Name..": "..CritLogDB.HealAbilityCrit.." ("..CritLogDB.HAC_Name..")")
+        print("HEAL Crit "..CritLogDB.HAC_Name..": "..CritLogDB.HealAbilityCrit.." ("..CritLogDB.HAC_Tar..")")
         print("/cl help for list of commands")
     end
 end
