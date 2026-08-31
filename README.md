@@ -138,21 +138,17 @@ This is a static inventory, not a complete in-game verification:
 1. **Legacy implementation:** The addon works in the current Season of
    Discovery test environment, but its combat-log handling has not yet been
    systematically verified for every relevant SoD event.
-2. **Fragile target check:** The level filter uses the currently selected
-   `target`, which is not guaranteed to be the combat-log destination. Missing
-   or invalid target levels are possible. It now correctly applies only to
-   damage crits, not to healing crits.
-3. **Name-based localization:** Abilities and bosses are matched by displayed
+2. **Name-based localization:** Abilities and bosses are matched by displayed
    English/German names instead of stable spell and NPC IDs.
-4. **Spirit of Redemption:** Test code is commented out and marked "not
+3. **Spirit of Redemption:** Test code is commented out and marked "not
    working" by the original author. Deliberately left as-is for now — see
    [docs/CLEANUP-REVIEW.md](docs/CLEANUP-REVIEW.md).
-5. **Packaging and releases not yet automated:** Static linting runs via
+4. **Packaging and releases not yet automated:** Static linting runs via
    `tests/lint/` and CI (see [Testing](#testing)), but there is no packaged
    release build, versioned release process, or CurseForge/Wago project yet.
    `.pkgmeta` is verified locally (`release.sh -d -z` produces a clean
    `CritLog/` package directory) but not wired into CI or upload automation.
-6. **Unclear asset rights:** Audio-file origin and redistribution rights are
+5. **Unclear asset rights:** Audio-file origin and redistribution rights are
    undocumented and must be reviewed before public distribution.
 
 ## Next steps

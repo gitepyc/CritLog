@@ -15,10 +15,46 @@ local function isPlayerSource(sourceGUID)
     return sourceGUID == UnitGUID("Player")
 end
 
-local function targetPassesLevelFilter()
-    return UnitLevel("target") > UnitLevel("player") - 9
-        or UnitClassification("target") == "worldboss"
-        or CritLogDB.AllLevel
+-- Finds a live unit token for a combat-log GUID. The combat log only gives
+-- us a GUID, but UnitLevel/UnitClassification need an actual unit token
+-- (target, mouseover, a nameplate, ...) - there's no UnitLevel(GUID). Checks
+-- the current target first (cheap, no allocation), then falls back to
+-- scanning visible nameplates.
+local function findUnitToken(guid)
+    if UnitGUID("target") == guid then
+        return "target"
+    end
+
+    if C_NamePlate and C_NamePlate.GetNamePlates then
+        for _, plate in ipairs(C_NamePlate.GetNamePlates()) do
+            local token = plate.namePlateUnitToken
+            if token and UnitGUID(token) == guid then
+                return token
+            end
+        end
+    end
+
+    return nil
+end
+
+-- Excludes crits against trivial ("grey") enemies from counting as
+-- highscores, so a one-shot on low-level content doesn't overwrite a real
+-- record from relevant content. If the hit target's unit token can't be
+-- resolved (e.g. no nameplate on screen), the crit is allowed through
+-- rather than silently dropped, since that's rare and losing a real record
+-- is worse than occasionally counting an unverified one.
+local function targetPassesLevelFilter(destGUID)
+    if CritLogDB.AllLevel then
+        return true
+    end
+
+    local token = findUnitToken(destGUID)
+    if not token then
+        return true
+    end
+
+    return UnitLevel(token) > UnitLevel("player") - 9
+        or UnitClassification(token) == "worldboss"
 end
 
 function CritLog:HandleAuraSounds(subevent, sourceName, destGUID, spellName)
@@ -75,12 +111,13 @@ end
 
 function CritLog:HandleDamageCrit(
     subevent,
+    destGUID,
     destName,
     amount,
     spellName,
     isCritical
 )
-    if not targetPassesLevelFilter() then
+    if not targetPassesLevelFilter(destGUID) then
         return
     end
 
@@ -230,9 +267,9 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
 
     if isPlayerSource(sourceGUID) then
         if subevent == "SWING_DAMAGE" then
-            self:HandleDamageCrit(subevent, destName, sv1, nil, sv7)
+            self:HandleDamageCrit(subevent, destGUID, destName, sv1, nil, sv7)
         else
-            self:HandleDamageCrit(subevent, destName, sv4, sv2, sv10)
+            self:HandleDamageCrit(subevent, destGUID, destName, sv4, sv2, sv10)
         end
         self:HandleHealCrit(subevent, destName, sv4, sv2, sv7)
     end

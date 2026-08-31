@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Fixed the damage-crit level filter checking the currently selected UI
+  target instead of the actual combat-log destination — a crit against one
+  enemy could be filtered using a different enemy's level if your target
+  didn't match. Added `findUnitToken()`, which resolves the hit unit's own
+  token (target, or a matching visible nameplate) before checking its
+  level/classification; if no token can be resolved, the crit is allowed
+  through rather than silently dropped. Only affects damage crits (heal
+  crits were already exempt from this filter); crit detection itself was
+  never affected, since that comes straight from the combat log's own
+  critical-hit flag. Needs in-game verification — not something lint can
+  confirm.
 - Removed `README.txt`, the 3-line legacy readme fully superseded by
   `README.md`/`docs/`. One readme instead of two.
 - `Core.lua` now reads the version from `CritLog.toc` via

@@ -32,10 +32,13 @@ control.
 ## Critical hits and heals
 
 Detection runs through `COMBAT_LOG_EVENT_UNFILTERED`. Damage and heal events
-must originate from the player. The level filter currently checks the
-selected target rather than reliably checking the combat-log destination,
-and only applies to damage events; healing crits are always recorded
-regardless of the current target's level.
+must originate from the player. The level filter resolves a live unit token
+for the actual combat-log destination — the current target if it matches,
+otherwise a visible nameplate with a matching GUID — rather than assuming
+the currently selected target is the unit that was hit. If no token can be
+resolved (e.g. no nameplate on screen), the crit is allowed through rather
+than silently dropped. The filter only applies to damage events; healing
+crits are always recorded regardless of the target's level.
 
 | Combat-log type | Condition | State change | Sound condition | Sound |
 | --- | --- | --- | --- | --- |
