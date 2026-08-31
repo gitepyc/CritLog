@@ -93,11 +93,20 @@ addon namespace, not in new globals.
 
 ### 6. Add quality and release automation
 
-- Lua linting and formatting
-- focused tests for pure functions, migrations, and trigger matching
-- packaging that contains only used assets
-- one source of truth for the version number
-- changelog and versioned releases
+- Lua linting: done. `tests/lint/` containerizes `luacheck` against Lua 5.1
+  with a curated WoW API globals list (`.luacheckrc`); `scripts/lint.sh` runs
+  it locally, `.github/workflows/lint.yml` runs it in CI against the GitHub
+  push mirror (Gitea has no Actions runner registered yet). 79 pre-existing
+  warnings remain unaddressed — mostly unused combat-log fields, unused dead
+  sound constants, and the global-pollution items already tracked in step 4.
+- focused tests for pure functions, migrations, and trigger matching — still
+  outstanding; no runtime/unit-test harness exists because the WoW client has
+  no supported headless mode (see [tests/README.md](../tests/README.md))
+- packaging that contains only used assets — `.pkgmeta` exists as a first
+  draft (`package-as: CritLog`), not yet run end-to-end or wired into CI
+- one source of truth for the version number — still outstanding
+- changelog and versioned releases — `CHANGELOG.md` started; no tagged
+  releases yet
 
 ## First structural refactoring branch
 

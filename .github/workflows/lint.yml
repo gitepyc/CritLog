@@ -1,0 +1,17 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  luacheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build lint image
+        run: docker build -t wow-addons-luacheck:5.1 -f tests/lint/Dockerfile tests/lint
+
+      - name: Run luacheck
+        run: docker run --rm -v "$PWD":/addon:ro wow-addons-luacheck:5.1 .
