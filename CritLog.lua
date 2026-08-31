@@ -43,7 +43,6 @@ local SOULSTONE_SOUND3 = 'soulstone3.mp3'
 -- other sounds:
 --------------------
 local READY_CHECK_SOUND = 'Ready.mp3'
-local LOGIN_SOUND = 'Login.mp3'
 
 
 --SoundLists:
@@ -83,7 +82,6 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("READY_CHECK")
---frame:RegisterEvent("ZONE_CHANGED")
 frame:RegisterEvent("CHAT_MSG_RAID_LEADER")
 
 frame:SetScript("OnEvent", function(_, event, ...)
@@ -99,29 +97,6 @@ function CritLog:PLAYER_LOGIN()
     self:SetDefaults()
 
     PrintCritLogs()
-
-    -- Plays Login Sound
---    if CritLogDB.LoginSoundFlag then
---        PlaySoundFile(SOUNDPATH..LOGIN_SOUND, 'Master')
---    end
-
-end
-
----------------------------------------------------
--- Function is triggert at Zone Change
---
--- Event NOT REGISTERED ATM
----------------------------------------------------
-function CritLog:ZONE_CHANGED()
-
-    --possible events:
-    --ZONE_CHANGED_NEW_AREA
-    --CHAT_MSG_RAID#
-    --CHAT_MSG_RAID_LEADER
-
-    print(GetSubZoneText())
-    print(GetRealZoneText())
-
 
 end
 
@@ -236,21 +211,18 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
         end
     end
     --
-    --  Plays Sound if OVER 9k DMG :D
-    --    testphase should be working
+    --  Plays a sound if a single SPELL_DAMAGE hit exceeds 9000 damage.
+    --  Off by default; enable with /cl xtreme.
+    --
+    if sourceGUID == UnitGUID("Player") and subevent == "SPELL_DAMAGE" then
+        if CritLogDB.XtremeSoundFlag and tonumber(sv4) > 9000 then
+            PlaySoundFile(SOUNDPATH..XTREME_DMG, 'Master')
+        end
+    end
+    --
+    -- Spirit of Redemtption TEST ------not working
     --
     --if Split(sourceGUID, "-")[1] == "Player" then
-    --    if subevent == "SPELL_DAMAGE" then
-            --print("shit: "..sv4)
-    --        if tonumber(sv4) > 9000 then
-                --print(sv4)
-     --           PlaySoundFile(SOUNDPATH..XTREME_DMG, 'Master')
-                --print("working")
-     --       end
-    --    end
-        --
-        -- Spirit of Redemtption TEST ------not working
-        --
     --    if subevent == "SPELL_AURA_APPLIED" then
     --        if tContains( SREDEMPTION_NAMES, sv2 ) then
     --            tmpRNDM = math.random(1, 2)
@@ -440,7 +412,6 @@ function CritLog:SetDefaults()
             AllLevel = false,
             AllCritFlag = false,
             WhiteHitFlag = true,
-            LoginSoundFlag = true,
             ReadySoundFlag = true,
             AuraSoundFlag = true,
             PriestSoundFlag = true,
@@ -449,6 +420,7 @@ function CritLog:SetDefaults()
             PlayerSoundFlag = true,
             BossSoundFlag = true,
             DeadSoundFlag = true,
+            XtremeSoundFlag = false,
         }
 
         print("CritLog Initialized")
@@ -461,16 +433,8 @@ end
 
 
 ---------------------------------------------------
---  Split String Functions
+--  String helper functions
 ---------------------------------------------------
-function Split(s, delimiter)
-    local result = {};
-    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
-        table.insert(result, match);
-    end
-    return result;
-end
-
 function ends_with(str, ending)
   return ending == "" or str:sub(-#ending) == ending
 end
@@ -489,7 +453,6 @@ function PrintCritLogs(msg)
         local tmpAllLevel = CritLogDB.AllLevel
         local tmpAllCritFlag = CritLogDB.AllCritFlag
         local tmpWhiteHitFlag = CritLogDB.WhiteHitFlag
-        local tmpLoginSoundFlag = CritLogDB.LoginSoundFlag
         local tmpReadySoundFlag = CritLogDB.ReadySoundFlag
         local tmpAuraSoundFlag = CritLogDB.AuraSoundFlag
         local tmpPriestSoundFlag = CritLogDB.PriestSoundFlag
@@ -498,6 +461,7 @@ function PrintCritLogs(msg)
         local tmpPlayerSoundFlag = CritLogDB.PlayerSoundFlag
         local tmpBossSoundFlag = CritLogDB.BossSoundFlag
         local tmpDeadSoundFlag = CritLogDB.DeadSoundFlag
+        local tmpXtremeSoundFlag = CritLogDB.XtremeSoundFlag
 
         --Character specifc Database:
         CritLogDB = {
@@ -514,7 +478,6 @@ function PrintCritLogs(msg)
             AllLevel = tmpAllLevel,
             AllCritFlag = tmpAllCritFlag,
             WhiteHitFlag = tmpWhiteHitFlag,
-            LoginSoundFlag = tmpLoginSoundFlag,
             ReadySoundFlag = tmpReadySoundFlag,
             AuraSoundFlag = tmpAuraSoundFlag,
             PriestSoundFlag = tmpPriestSoundFlag,
@@ -523,6 +486,7 @@ function PrintCritLogs(msg)
             BossSoundFlag = tmpBossSoundFlag,
             PlayerSoundFlag = tmpPlayerSoundFlag,
             DeadSoundFlag = tmpDeadSoundFlag,
+            XtremeSoundFlag = tmpXtremeSoundFlag,
         }
         PrintCritLogs()
     --
@@ -557,17 +521,6 @@ function PrintCritLogs(msg)
         else
             CritLogDB.WhiteHitFlag = true
             print("Sound for whitehit crits On("..tostring(CritLogDB.WhiteHitFlag)..")")
-        end
-    --
-    -- Config for Login Sound
-    --
-    elseif msg == "login" then
-        if CritLogDB.LoginSoundFlag then
-            CritLogDB.LoginSoundFlag = false
-            print("CritLog LoginSound Off ("..tostring(CritLogDB.LoginSoundFlag)..")")
-        else
-            CritLogDB.LoginSoundFlag = true
-            print("CritLog LoginSound On ("..tostring(CritLogDB.LoginSoundFlag)..")")
         end
     --
     -- Config for ReadyCheck Sound
@@ -658,6 +611,17 @@ function PrintCritLogs(msg)
             print("CritLog DeathSound On ("..tostring(CritLogDB.DeadSoundFlag)..")")
         end
     --
+    -- Config for "over 9000 damage" Sound (off by default)
+    --
+    elseif msg == "xtreme" then
+        if CritLogDB.XtremeSoundFlag then
+            CritLogDB.XtremeSoundFlag = false
+            print("CritLog XtremeSound Off ("..tostring(CritLogDB.XtremeSoundFlag)..")")
+        else
+            CritLogDB.XtremeSoundFlag = true
+            print("CritLog XtremeSound On ("..tostring(CritLogDB.XtremeSoundFlag)..")")
+        end
+    --
     -- Config for Level-Range on crits
     --
     elseif msg == "level" then
@@ -677,7 +641,7 @@ function PrintCritLogs(msg)
         print("/cl sound: turns BÄM sound on/off (highscore sound)")
         print("/cl allcrits: turns BÄM sound on/off for all crits")
         print("/cl whitehit: turns BÄM sound on/off for all WHITEHIT crits")
-        print("/cl login: turns Login Sound on/off")
+        print("/cl xtreme: turns sound for hits over 9000 damage on/off (off by default)")
         print("/cl ready: turns ReadyCheck Sound on/off")
         print("/cl aura: turns Aura/Spell Sound on/off")
         print("------------")
@@ -698,7 +662,7 @@ function PrintCritLogs(msg)
         print("/cl sound: " .. tostring(CritLogDB.SoundFlag))
         print("/cl allcrits: " .. tostring(CritLogDB.AllCritFlag))
         print("/cl whitehit: " .. tostring(CritLogDB.WhiteHitFlag))
-        print("/cl login: " .. tostring(CritLogDB.LoginSoundFlag))
+        print("/cl xtreme: " .. tostring(CritLogDB.XtremeSoundFlag))
         print("/cl ready: " .. tostring(CritLogDB.ReadySoundFlag))
         print("/cl aura: " .. tostring(CritLogDB.AuraSoundFlag))
         print("------------")

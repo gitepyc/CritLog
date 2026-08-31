@@ -11,8 +11,6 @@ stds.wow = {
         "CreateFrame",
         "CombatLogGetCurrentEventInfo",
         "PlaySoundFile",
-        "GetRealZoneText",
-        "GetSubZoneText",
         "UnitClassification",
         "UnitGUID",
         "UnitInParty",

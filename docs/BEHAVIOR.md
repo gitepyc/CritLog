@@ -26,7 +26,7 @@ control.
 
 | Event | Condition | Effect | Sound |
 | --- | --- | --- | --- |
-| `PLAYER_LOGIN` | Always | Initializes/migrates `CritLogDB` and prints records. | None. The `Login.mp3` call is commented out; see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
+| `PLAYER_LOGIN` | Always | Initializes/migrates `CritLogDB` and prints records. | None. The login-sound feature was removed entirely, along with `Login.mp3`; see `CHANGELOG.md`. |
 | `READY_CHECK` | `ReadySoundFlag = true` | No state change. | `Ready.mp3` |
 
 ## Critical hits and heals
@@ -46,6 +46,16 @@ regardless of the current target's level.
 
 `/cl sound` is the master switch for `at_bam_babam.mp3` and suppresses the
 clip even when the individual conditions above are met.
+
+## Extreme hits
+
+| Combat-log type | Condition | Sound |
+| --- | --- | --- |
+| `SPELL_DAMAGE` | Player source, `sv4 > 9000` | `Xtreme.mp3`, only if `/cl xtreme` is enabled |
+
+Off by default (`XtremeSoundFlag = false`). Unlike the crit tracking above,
+this has no level filter and no state change — it's a standalone "hit hard
+enough" alert. Toggle with `/cl xtreme`.
 
 ## Auras and abilities
 
@@ -98,10 +108,7 @@ disables them.
 | Function | Status |
 | --- | --- |
 | Boss killing-blow output | Prints a chat line for a matching boss name and a `_DAMAGE` event with a positive fifth payload value. The positional payload check is fragile across event types. |
-| Login sound | Commented out; see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
-| "Over 9k" sound `Xtreme.mp3` | Fully commented out; see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
-| Zone logging | Handler exists, but the event is not registered; see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
-| Spirit of Redemption | Test code is commented out and labeled as not working; see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
+| Spirit of Redemption | Test code is commented out and labeled as not working. Deliberately left as-is for now — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
 
 ## Stored data
 
