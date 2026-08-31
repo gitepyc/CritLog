@@ -5,7 +5,7 @@ critical-heal highscores and plays event-driven sounds for crits, deaths,
 auras, and raid-leader chat triggers.
 
 > **Project status:** Working legacy addon under active documentation and
-> modernization. CritLog `0.2.0` is currently tested with Season of Discovery
+> modernization. CritLog `0.2.1` is currently tested with Season of Discovery
 > on Classic Era `1.15.9` (Interface `11509`).
 
 ## Documentation
@@ -98,7 +98,7 @@ critlog/
 │   └── lint/Dockerfile   # Containerized luacheck (Lua 5.1 + WoW globals)
 ├── scripts/lint.sh        # Convenience wrapper to build and run the lint container
 ├── .luacheckrc           # luacheck config; stds.wow lists only the WoW API CritLog calls
-├── .pkgmeta              # BigWigsMods/packager config, verified locally (not yet wired into CI)
+├── .pkgmeta              # BigWigsMods/packager config, used by release.yml on tag push
 ├── .github/workflows/    # CI (runs against the GitHub push mirror; Gitea has no runner yet)
 ├── CritLog.toc           # WoW metadata and SavedVariables declaration
 ├── Core.lua              # Addon namespace and version
@@ -113,9 +113,9 @@ critlog/
 ```
 
 This repository's root doubles as the addon's own folder content: the
-`package-as: CritLog` rule in `.pkgmeta` (once wired into a build) packages it
-into a `CritLog/` folder for distribution, matching what manual installation
-above does by hand.
+`package-as: CritLog` rule in `.pkgmeta` packages it into a `CritLog/` folder
+for distribution — `.github/workflows/release.yml` does this automatically
+on every tag push, matching what manual installation above does by hand.
 
 ## Hard-coded data inventory
 
@@ -143,11 +143,11 @@ This is a static inventory, not a complete in-game verification:
 3. **Spirit of Redemption:** Test code is commented out and marked "not
    working" by the original author. Deliberately left as-is for now — see
    [docs/CLEANUP-REVIEW.md](docs/CLEANUP-REVIEW.md).
-4. **Packaging and releases not yet automated:** Static linting runs via
-   `tests/lint/` and CI (see [Testing](#testing)), but there is no packaged
-   release build, versioned release process, or CurseForge/Wago project yet.
-   `.pkgmeta` is verified locally (`release.sh -d -z` produces a clean
-   `CritLog/` package directory) but not wired into CI or upload automation.
+4. **No CurseForge/Wago project yet:** Static linting runs via `tests/lint/`
+   and CI (see [Testing](#testing)), and `.github/workflows/release.yml`
+   builds and publishes a GitHub Release with a packaged zip on every tag
+   push. There is no CurseForge/WoWInterface/Wago project id or upload
+   automation configured yet, so releases only reach GitHub for now.
 5. **Unclear asset rights:** Audio-file origin and redistribution rights are
    undocumented and must be reviewed before public distribution.
 

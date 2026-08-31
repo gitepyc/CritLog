@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.2.1
+
 - Fixed the damage-crit level filter checking the currently selected UI
   target instead of the actual combat-log destination — a crit against one
   enemy could be filtered using a different enemy's level if your target
@@ -20,8 +22,15 @@
   `C_AddOns.GetAddOnMetadata` if the plain global isn't available on a
   given client) instead of duplicating the version string. `CritLog.toc`'s
   `## Version:` is now the single source of truth. No `CritLogDB` migration
-  impact: `CritLog.version` still resolves to the same `"0.2.0"` string,
-  just read from a different place.
+  impact beyond the version bump itself: `SetDefaults()` only back-fills
+  missing fields on a version change, nothing is reset.
+- Documented two roadmap decisions without implementing them yet:
+  replacing the hardcoded player-name death rosters with class-based
+  matching, and giving Spirit of Redemption a real fix or removing it
+  outright. See docs/REFACTORING.md and docs/CLEANUP-REVIEW.md.
+
+## 0.2.0
+
 - Added `.github/workflows/release.yml`: on a tag push, runs the
   BigWigsMods packager and creates a GitHub Release with the built zip
   attached. No CurseForge/WoWInterface/Wago project id or API keys are
@@ -36,9 +45,7 @@
   `sounds/`, `README.txt`, and this changelog — no repo scaffolding. Added
   `manual-changelog: CHANGELOG.md` so the packager ships this hand-maintained
   changelog instead of auto-generating one from raw git log messages, and
-  added `.gitattributes` to the ignore list (it isn't an addon file). Still
-  not wired into CI, and no CurseForge/Wago project id is configured for
-  actual uploads yet.
+  added `.gitattributes` to the ignore list (it isn't an addon file).
 - Split the former monolithic `CritLog.lua` into focused modules for core
   state, data, SavedVariables, sounds, chat triggers, combat-log handling,
   commands, and event dispatch. The TOC defines their dependency order and
@@ -48,9 +55,6 @@
 - Centralized sounds, spells, bosses, player rosters, and chat-trigger
   phrases in `CritLog.Data` instead of scattered constants and sound lists.
   No intentional user-visible behavior change; see docs/REFACTORING.md.
-
-## 0.2.0
-
 - `CritLogDB` version upgrades no longer reset existing data. Previously,
   any `CRITLOG_VERSION` change rebuilt the whole per-character database from
   scratch (documented as a known risk). `SetDefaults()` now only back-fills
