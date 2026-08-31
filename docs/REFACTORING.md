@@ -62,12 +62,22 @@ filename in code against every file in `sounds/` (24/24 match both ways).
 `SREDEMPTION_NAMES` was deliberately left out of the catalog and untouched,
 per the standing decision to leave Spirit of Redemption as-is for now.
 
-Two things from the original version of this step are still open, not part
-of this pass:
+Two things from the original version of this step were still open after
+this pass; one is now also done:
 
-- Replacing displayed English/German names with stable spell and NPC IDs.
-  Riskier than the data move above — needs verified IDs and in-game testing
-  per trigger, since a wrong ID fails silently. A separate follow-up.
+- ~~Replacing displayed English/German names with stable spell IDs~~ — done
+  for the 7 aura triggers (`CritLog.Data.spells`): each entry now has an
+  `ids` list matched first, falling back to the `names` list if the ID
+  doesn't hit. IDs are Wowhead-Classic-sourced, cross-checked against
+  multiple expansion pages where possible (see CHANGELOG.md) but not
+  in-game verified — the name fallback exists specifically so a wrong ID
+  doesn't silently kill a trigger. Boss/NPC matching is unaffected and
+  still name-only; matching those by NPC ID would need parsing the ID out
+  of `destGUID`, which is more work than the spell-ID change above. An
+  alternative worth considering there instead of an ID list: filtering by
+  `UnitClassification` (e.g. "worldboss"/"elite") rather than a hardcoded,
+  expansion-specific boss roster that goes stale every content patch —
+  not decided yet.
 - Player rosters (`playerGroups`) are still hardcoded names, not
   SavedVariables configuration. Tracked under step 5.
 

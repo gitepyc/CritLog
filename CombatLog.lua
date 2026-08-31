@@ -11,6 +11,12 @@ local function randomEntry(values)
     return values[math.random(1, #values)]
 end
 
+-- Matches a spell entry from Data.lua (see the comment there) by ID first,
+-- falling back to the display name if the ID doesn't hit.
+local function matchesSpell(spell, spellId, spellName)
+    return tContains(spell.ids, spellId) or tContains(spell.names, spellName)
+end
+
 local function isPlayerSource(sourceGUID)
     return sourceGUID == UnitGUID("Player")
 end
@@ -57,7 +63,13 @@ local function targetPassesLevelFilter(destGUID)
         or UnitClassification(token) == "worldboss"
 end
 
-function CritLog:HandleAuraSounds(subevent, sourceName, destGUID, spellName)
+function CritLog:HandleAuraSounds(
+    subevent,
+    sourceName,
+    destGUID,
+    spellId,
+    spellName
+)
     if not CritLogDB.AuraSoundFlag then
         return
     end
@@ -65,7 +77,7 @@ function CritLog:HandleAuraSounds(subevent, sourceName, destGUID, spellName)
     if (UnitInParty(sourceName) or UnitInRaid(sourceName))
         and subevent == "SPELL_SUMMON"
         and spellName ~= nil
-        and tContains(self.Data.spells.manaTide, spellName)
+        and matchesSpell(self.Data.spells.manaTide, spellId, spellName)
     then
         self:PlaySound(self.Data.sounds.manaTide)
     end
@@ -74,27 +86,27 @@ function CritLog:HandleAuraSounds(subevent, sourceName, destGUID, spellName)
         return
     end
 
-    if tContains(self.Data.spells.bloodlust, spellName) then
+    if matchesSpell(self.Data.spells.bloodlust, spellId, spellName) then
         self:PlaySound(self.Data.sounds.bloodlust)
     end
 
-    if tContains(self.Data.spells.innervate, spellName) then
+    if matchesSpell(self.Data.spells.innervate, spellId, spellName) then
         self:PlaySound(randomEntry(self.Data.sounds.innervate))
     end
 
-    if tContains(self.Data.spells.powerInfusion, spellName) then
+    if matchesSpell(self.Data.spells.powerInfusion, spellId, spellName) then
         self:PlaySound(self.Data.sounds.powerInfusion)
     end
 
-    if tContains(self.Data.spells.blessingOfProtection, spellName) then
+    if matchesSpell(self.Data.spells.blessingOfProtection, spellId, spellName) then
         self:PlaySound(self.Data.sounds.blessingOfProtection)
     end
 
-    if tContains(self.Data.spells.divineIntervention, spellName) then
+    if matchesSpell(self.Data.spells.divineIntervention, spellId, spellName) then
         self:PlaySound(self.Data.sounds.divineIntervention)
     end
 
-    if tContains(self.Data.spells.soulstone, spellName) then
+    if matchesSpell(self.Data.spells.soulstone, spellId, spellName) then
         self:PlaySound(randomEntry(self.Data.sounds.soulstone))
     end
 end
@@ -262,7 +274,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
         _, _, sv1, sv2, _, sv4, sv5, _, sv7, _, _, sv10 =
         CombatLogGetCurrentEventInfo()
 
-    self:HandleAuraSounds(subevent, sourceName, destGUID, sv2)
+    self:HandleAuraSounds(subevent, sourceName, destGUID, sv1, sv2)
     self:HandleXtremeDamage(subevent, sourceGUID, sv4)
 
     if isPlayerSource(sourceGUID) then

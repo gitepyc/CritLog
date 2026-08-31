@@ -54,22 +54,39 @@ CritLog.Data = {
         tank = { "Truby", "Ketamartin", "Hïnatahÿuuga", "Kîtten" },
         priest = { "Ilenkov", "Epyç" },
     },
+    -- Matched by spell ID first (Season of Discovery, cross-checked against
+    -- Wowhead's current Classic database - see CHANGELOG.md), with the
+    -- English/German display name kept as a fallback in case an ID turns
+    -- out to be wrong: a wrong ID fails silently, a wrong name doesn't cost
+    -- anything extra to keep around.
     spells = {
-        bloodlust = { "Bloodlust", "Heroism", "Blutrausch", "Heldentum" },
-        innervate = { "Innervate", "Anregen" },
-        powerInfusion = { "Power Infusion", "Seele der Macht" },
-        manaTide = { "Mana Tide Totem", "Totem der Manaflut" },
+        bloodlust = {
+            ids = { 27689, 23682 }, -- Bloodlust (Horde), Heroism (Alliance)
+            names = { "Bloodlust", "Heroism", "Blutrausch", "Heldentum" },
+        },
+        innervate = {
+            ids = { 29166 },
+            names = { "Innervate", "Anregen" },
+        },
+        powerInfusion = {
+            ids = { 10060 },
+            names = { "Power Infusion", "Seele der Macht" },
+        },
+        manaTide = {
+            ids = { 16190 },
+            names = { "Mana Tide Totem", "Totem der Manaflut" },
+        },
         blessingOfProtection = {
-            "Blessing of Protection",
-            "Segen des Schutzes",
+            ids = { 1022 },
+            names = { "Blessing of Protection", "Segen des Schutzes" },
         },
         divineIntervention = {
-            "Göttliches Eingreifen",
-            "Divine Intervention",
+            ids = { 19752 },
+            names = { "Göttliches Eingreifen", "Divine Intervention" },
         },
         soulstone = {
-            "Seelenstein Auferstehung",
-            "Soulstone Resurrection",
+            ids = { 20707 },
+            names = { "Seelenstein Auferstehung", "Soulstone Resurrection" },
         },
     },
     chatTriggers = {
