@@ -21,3 +21,31 @@ jobs:
 
       - name: Package and release
         uses: BigWigsMods/packager@v2
+
+      # packager's manual-changelog (.pkgmeta) dumps the entire CHANGELOG.md
+      # into the release body it just created - every -dev iteration ever
+      # tagged, not just this one. Overwrites that body with just this tag's
+      # own section (header incl. date/compare-link, stripped, via
+      # cliff.toml - see scripts/update-changelog.sh for the doc-comment
+      # explaining why). Derived directly from commit messages, independent
+      # of whatever CHANGELOG.md on disk happens to contain - can't drift
+      # out of sync with it the way the old awk-based extraction could.
+      - name: Format release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          REPO="${{ github.repository }}"
+
+          docker run --rm -v "$PWD":/repo -w /repo orhunp/git-cliff:latest \
+            --config cliff.toml --current --strip header -o release-notes.md
+
+          MAX_CHARS=4000
+          if [ "$(wc -c < release-notes.md)" -gt "$MAX_CHARS" ]; then
+            head -c "$MAX_CHARS" release-notes.md > release-notes.trunc.md
+            printf '\n\n…truncated - see the full changelog: %s/blob/main/CHANGELOG.md\n' \
+              "${{ github.server_url }}/${{ github.repository }}" >> release-notes.trunc.md
+            mv release-notes.trunc.md release-notes.md
+          fi
+          gh release edit "$TAG" --notes-file release-notes.md --repo "$REPO"
+          rm -f release-notes.md
