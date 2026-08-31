@@ -56,11 +56,19 @@ local function targetPassesLevelFilter(destGUID)
 
     local token = findUnitToken(destGUID)
     if not token then
+        CritLog:Debug("Level filter: no unit token found for", destGUID, "- allowing crit through")
         return true
     end
 
-    return UnitLevel(token) > UnitLevel("player") - 9
+    local passes = UnitLevel(token) > UnitLevel("player") - 9
         or UnitClassification(token) == "worldboss"
+    CritLog:Debug(
+        "Level filter: token", token,
+        "level", UnitLevel(token),
+        "classification", UnitClassification(token),
+        "passes:", passes
+    )
+    return passes
 end
 
 function CritLog:HandleAuraSounds(
@@ -77,14 +85,18 @@ function CritLog:HandleAuraSounds(
     if (UnitInParty(sourceName) or UnitInRaid(sourceName))
         and subevent == "SPELL_SUMMON"
         and spellName ~= nil
-        and matchesSpell(self.Data.spells.manaTide, spellId, spellName)
     then
-        self:PlaySound(self.Data.sounds.manaTide)
+        self:Debug("SPELL_SUMMON by group member - id:", spellId, "name:", spellName)
+        if matchesSpell(self.Data.spells.manaTide, spellId, spellName) then
+            self:PlaySound(self.Data.sounds.manaTide)
+        end
     end
 
     if destGUID ~= UnitGUID("Player") or subevent ~= "SPELL_AURA_APPLIED" then
         return
     end
+
+    self:Debug("SPELL_AURA_APPLIED on player - id:", spellId, "name:", spellName)
 
     if matchesSpell(self.Data.spells.bloodlust, spellId, spellName) then
         self:PlaySound(self.Data.sounds.bloodlust)

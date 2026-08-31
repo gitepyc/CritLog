@@ -77,6 +77,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl whitehit` | Toggles critical auto-attack/ranged-attack handling. |
 | `/cl level` | Toggles the level filter for damage records. |
 | `/cl xtreme` | Toggles the sound for hits over 9000 damage. Off by default. |
+| `/cl debug` | Toggles diagnostic chat output (spell ID/name seen by aura triggers, level-filter decisions). Off by default. |
 | `/cl ready` | Toggles the ready-check sound. |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl dead` | Master switch for death sounds. |

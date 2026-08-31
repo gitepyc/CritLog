@@ -20,6 +20,7 @@ local DEFAULTS = {
     BossSoundFlag = true,
     DeadSoundFlag = true,
     XtremeSoundFlag = false,
+    DebugFlag = false,
 }
 
 local RECORD_DEFAULTS = {
