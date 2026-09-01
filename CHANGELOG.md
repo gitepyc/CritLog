@@ -131,6 +131,43 @@
   whether `findUnitToken()` reliably resolves a token for a dying player in
   practice, and whether the melee/tank heuristics above produce acceptable
   results for an actual roster. This needs in-game testing before merge.
+- Boss/NPC death and killing-blow detection is now classification-first,
+  with the hardcoded name lists kept as a fallback (previously name-only,
+  see the `docs/REFACTORING.md` note added in the previous release about
+  considering `UnitClassification()`). Only the `"worldboss"` classification
+  is accepted - the "Level ?? (Boss)" rank that covers 40-man raid bosses,
+  outdoor world bosses, and SoD's new level-60 raid encounters. Deliberately
+  narrow: `"elite"`/`"rareelite"` match ordinary dungeon trash and 5-man end
+  bosses, `"rare"` matches leveling rare spawns, and accepting those would
+  fire the boss sound/kill message on most pulls. The name lists remain the
+  mechanism for boss NPCs that aren't classified `"worldboss"` (5-man end
+  bosses, SoD's Blackfathom Deeps/Gnomeregan raid bosses) - they're not
+  being retired, just demoted to fallback.
+
+  Implementation note: `UnitClassification()` needs a live unit token, and
+  by the time `UNIT_DIED` fires the unit's nameplate is usually already
+  gone. So classification isn't looked up at death - it's captured and
+  cached by GUID while the NPC is still alive and in combat (from both
+  the attacker and target side of every combat-log event), and the death
+  handler and killing-blow print just read the cache. The cache is a
+  plain runtime table (not `CritLogDB`/SavedVariables) since it only
+  describes the current fight; capped at 200 tracked GUIDs with a retry
+  limit per unresolved GUID, and cache entries are dropped once their
+  unit dies so a long raid doesn't accumulate dead GUIDs.
+
+  Also fixes a latent bug found along the way: `PrintBossKillingBlow`
+  compared `overkill` (read positionally off the combat log) directly
+  against `0` without checking it was actually a number first - not every
+  `_DAMAGE`-suffixed subevent guarantees a numeric `overkill` argument, so
+  this could throw a Lua error. Now guarded with `type(overkill) ~=
+  "number"`.
+
+  **Needs in-game verification before this is trusted**: neither the
+  classify-while-alive caching timing nor the `"worldboss"`-only allowlist
+  have been tested against a real client. Please verify against at least
+  one real dungeon/raid boss (kill message + death sound both fire) and a
+  random non-boss elite or rare mob (neither fires - false positive check)
+  before merging.
 - Added a debug mode: `/cl debug` toggles `DebugFlag` (off by default,
   standard migration-safe new field - existing characters just get it
   backfilled as `false`). `CritLog:Debug(...)` in Core.lua prints only
