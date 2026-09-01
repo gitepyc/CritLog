@@ -3,9 +3,9 @@
 ## Overview
 
 The catalog contains **24 files** totaling approximately **1.71 MB**. As of
-the random-pick removal below, **19 are in active use**; the other 5
-(`Inervate1.mp3`, `Angels2.mp3`, `Zelda.mp3`, `soulstone2.mp3`,
-`soulstone3.mp3`) are the alternates that were dropped and are now unused —
+the random-pick removal and the `Schnutz` special case removal below,
+**18 are in active use**; the other 6 (`Inervate1.mp3`, `Angels2.mp3`,
+`Zelda.mp3`, `soulstone2.mp3`, `soulstone3.mp3`, `schnutz.mp3`) are unused —
 kept on disk, not wired into any code path.
 
 > **History:** CritLog used to ship two profiles (default and an alternate
@@ -34,8 +34,7 @@ Windows did not expose the value.
 | Divine Intervention | `divineInt.mp3` | Player receives Divine Intervention | Fixed |
 | Soulstone | `soulstone.mp3` | Player receives Soulstone Resurrection | Fixed (was random 1/3 with `soulstone2.mp3`/`soulstone3.mp3`, see CHANGELOG.md) |
 | Player death | `MarioDeath.mp3` | Player dies | Fixed |
-| Special melee death | `schnutz.mp3` | `Schnutz` dies | Fixed |
-| Other melee death | `wilhelm.ogg` | Hard-coded melee-roster member dies | Fixed |
+| Melee death | `wilhelm.ogg` | Hard-coded melee-roster member dies (`Schnutz`'s special-case clip removed, see CHANGELOG.md) | Fixed |
 | Tank death | `Tank.mp3` | Hard-coded tank-roster member dies | Fixed |
 | Healer-priest death | `Angels1.mp3` | Hard-coded healer-priest member dies | Fixed (was random 1/2 with `Angels2.mp3`, see CHANGELOG.md) |
 | Boss death | `FFX.mp3` | Hard-coded boss dies | Fixed (was random 1/2 with `Zelda.mp3`, see CHANGELOG.md) |
@@ -62,7 +61,7 @@ See [BEHAVIOR.md](BEHAVIOR.md) for the complete conditions.
 | `Manatide.mp3` | 2 s | 320 kbps | 82,684 B | Mana Tide Totem |
 | `MarioDeath.mp3` | 2 s | 128 kbps | 37,305 B | player death |
 | `Ready.mp3` | 1 s | 128 kbps | 30,336 B | ready check |
-| `schnutz.mp3` | 1 s | 128 kbps | 22,676 B | special-case death |
+| `schnutz.mp3` | 1 s | 128 kbps | 22,676 B | *unused* (former `Schnutz` special-case death clip) |
 | `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | Soulstone |
 | `soulstone2.mp3` | 6 s | 128 kbps | 97,939 B | *unused* (former Soulstone alternate) |
 | `soulstone3.mp3` | 2 s | 192 kbps | 52,402 B | *unused* (former Soulstone alternate) |

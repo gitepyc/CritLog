@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Removed the special-cased `"Schnutz"` death sound (`meleeDeathSchnutz` /
+  `schnutz.mp3`): that character is already in the standard
+  `playerGroups.melee` roster, so they now get the regular melee death
+  sound (`wilhelm.ogg`) like everyone else instead of a personal clip.
+  `schnutz.mp3` stays on disk, unused, pending the deferred asset-rights
+  review.
 - Removed random multi-clip selection: every logical sound now plays exactly
   one fixed file instead of picking randomly between two or three each time.
   Affected `CritLog.Data.sounds` entries and the file now kept (the others
