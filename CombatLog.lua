@@ -7,10 +7,6 @@ end
 -- untouched until that feature gets a real fix.
 local SREDEMPTION_NAMES = {"Spirit of Redemption", "Geist der Erlösung"}
 
-local function randomEntry(values)
-    return values[math.random(1, #values)]
-end
-
 -- Matches a spell entry from Data.lua (see the comment there) by ID first,
 -- falling back to the display name if the ID doesn't hit.
 local function matchesSpell(spell, spellId, spellName)
@@ -254,7 +250,7 @@ function CritLog:HandleAuraSounds(
     end
 
     if matchesSpell(self.Data.spells.innervate, spellId, spellName) then
-        self:PlaySound(randomEntry(self.Data.sounds.innervate))
+        self:PlaySound(self.Data.sounds.innervate)
     end
 
     if matchesSpell(self.Data.spells.powerInfusion, spellId, spellName) then
@@ -270,7 +266,7 @@ function CritLog:HandleAuraSounds(
     end
 
     if matchesSpell(self.Data.spells.soulstone, spellId, spellName) then
-        self:PlaySound(randomEntry(self.Data.sounds.soulstone))
+        self:PlaySound(self.Data.sounds.soulstone)
     end
 end
 
@@ -453,7 +449,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
             or tContains(self.Data.bosses.german, destName)
         )
     then
-        self:PlaySound(randomEntry(self.Data.sounds.bossDeath))
+        self:PlaySound(self.Data.sounds.bossDeath)
     end
 
     if CritLogDB.TankSoundFlag
@@ -471,7 +467,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
             or tContains(self.Data.playerGroups.priest, destName)
         )
     then
-        self:PlaySound(randomEntry(self.Data.sounds.priestDeath))
+        self:PlaySound(self.Data.sounds.priestDeath)
     end
 
     -- The classification (if any) has now been read for the boss check

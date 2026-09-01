@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+- Removed random multi-clip selection: every logical sound now plays exactly
+  one fixed file instead of picking randomly between two or three each time.
+  Affected `CritLog.Data.sounds` entries and the file now kept (the others
+  stay on disk, unused, pending the deferred asset-rights review):
+  `bossDeath` → `FFX.mp3` (was random with `Zelda.mp3`), `priestDeath` →
+  `Angels1.mp3` (was random with `Angels2.mp3`), `innervate` → `Inervate2.mp3`
+  (was random with `Inervate1.mp3`), `soulstone` → `soulstone.mp3` (was
+  random with `soulstone2.mp3`/`soulstone3.mp3`). Which file to keep for
+  each was the user's call, not derivable from the code. Removed the now-dead
+  `randomEntry()` helper in `CombatLog.lua` and the matching
+  `type(sound) == "table"` branch in `Options.lua`'s preview handler, since
+  no `CritLog.Data.sounds` entry is a table anymore.
+- Added TOOLTIP frame strata + `SetToplevel(true)` to the options panel so it
+  renders above other addon UI (was getting covered by a WeakAuras display).
+- Options panel: added a short hover tooltip to every toggle explaining what
+  it does, and marked the four toggles that rely on the new class/role/
+  classification detection (Priest/Melee/Tank/Boss death sounds) as
+  "(Experimental)" in their labels, since only crit and aura sounds have
+  been in-game verified so far.
 - Added a master sound switch: `CritLogDB.MasterSoundFlag` (`/cl mute`, on
   by default - migration-safe, back-fills to `true` so existing characters
   keep hearing sounds exactly as before until they explicitly mute).

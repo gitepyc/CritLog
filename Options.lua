@@ -84,19 +84,9 @@ end
 -- CritLog:PlaySound(), bypassing CritLogDB flags entirely (so a preview
 -- works even while the toggle is off - the whole point is deciding whether
 -- to turn it on) and bypassing the real trigger logic in CombatLog.lua
--- (so no highscore/state is touched). For multi-variant entries this picks
--- one at random each click, the same way CombatLog.lua's local
--- randomEntry() does for the real in-game trigger - a preview should sound
--- like what you'd actually hear, including the randomness. Cycling through
--- variants instead would need extra per-sound state for no real benefit in
--- a first draft.
+-- (so no highscore/state is touched).
 local function previewSound(soundKey)
-    local sound = CritLog.Data.sounds[soundKey]
-    if type(sound) == "table" then
-        CritLog:PlaySound(sound[math.random(1, #sound)])
-    else
-        CritLog:PlaySound(sound)
-    end
+    CritLog:PlaySound(CritLog.Data.sounds[soundKey])
 end
 
 local function createPreviewButton(parent, soundKey, width)
