@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Deleted the 6 sound files that became unused once random multi-clip
+  selection and the `Schnutz` special case were removed: `Inervate1.mp3`,
+  `Angels2.mp3`, `Zelda.mp3`, `soulstone2.mp3`, `soulstone3.mp3`,
+  `schnutz.mp3`. Renamed the two survivors that still carried a stale
+  variant-number suffix now that they're the only file for their sound:
+  `Angels1.mp3` → `Angels.mp3`, `Inervate2.mp3` → `Innervate.mp3` (also
+  fixing the long-standing "Inervate" typo). `Data.lua` and
+  `docs/SOUNDS.md`/`docs/BEHAVIOR.md` updated to match; the sound catalog
+  is now 18 files instead of 24.
 - Removed the special-cased `"Schnutz"` death sound (`meleeDeathSchnutz` /
   `schnutz.mp3`): that character is already in the standard
   `playerGroups.melee` roster, so they now get the regular melee death

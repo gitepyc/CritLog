@@ -33,7 +33,7 @@ after future client patches.
 | Page | Content |
 | --- | --- |
 | [Behavior and triggers](BEHAVIOR.md) | Which event and condition cause which state change or sound? |
-| [Sound catalog](SOUNDS.md) | All 68 audio files, code usage, variants, gaps, and duplicates. |
+| [Sound catalog](SOUNDS.md) | All 18 audio files and their code usage. |
 | [Refactoring plan](REFACTORING.md) | Recommended order, module boundaries, and acceptance criteria. |
 | [Cleanup review checklist](CLEANUP-REVIEW.md) | Condensed trigger and sound lists for deciding what to keep, replace, or cut. |
 | [Project README](../README.md) | Installation, commands, layout, and known risks. |
