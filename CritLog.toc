@@ -2,7 +2,7 @@
 ## Title: CritLog
 ## Note: #CrimeTime #420 #gtrkt
 ## Author: Epyc (original by Kîtten aka Chabo)
-## Version: 0.2.1
+## Version: 0.3.0-dev
 
 ## SavedVariablesPerCharacter: CritLogDB
 
