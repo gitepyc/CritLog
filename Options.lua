@@ -136,7 +136,12 @@ local function buildFrame()
     f.TitleText:SetText("CritLog Options")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    highscoresHeading:SetPoint("TOPLEFT", f.Inset, "TOPLEFT", 10, -10)
+    -- Anchored directly to the frame rather than f.Inset: that child region
+    -- isn't guaranteed to exist on every BasicFrameTemplateWithInset variant
+    -- (SoD's client doesn't expose it), and a nil relativeTo here silently
+    -- anchors everything downstream - the whole checkbox chain included -
+    -- to the screen instead of the panel. -30 clears the title bar.
+    highscoresHeading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     highscoresHeading:SetText("Highscores")
 
     f.dacText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
