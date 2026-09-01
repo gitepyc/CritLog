@@ -62,4 +62,7 @@ files["Commands.lua"] = {
 
 exclude_files = {
     "tests/lint/*",
+    -- Nested agent worktrees can end up inside the repo directory during
+    -- development; never part of the project itself.
+    ".claude/*",
 }
