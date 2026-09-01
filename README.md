@@ -5,8 +5,11 @@ critical-heal highscores and plays event-driven sounds for crits, deaths,
 auras, and raid-leader chat triggers.
 
 > **Project status:** Working legacy addon under active documentation and
-> modernization. CritLog `0.2.1` is currently tested with Season of Discovery
-> on Classic Era `1.15.9` (Interface `11509`).
+> modernization. CritLog `0.3.2-dev` targets Season of Discovery on Classic
+> Era `1.15.9` (Interface `11509`). The last in-game-verified release is
+> `0.2.1`; the options panel, class/role-based death sounds, and the master
+> mute/debug toggles added since then are first drafts pending in-game
+> verification — see the `Unreleased` section of [CHANGELOG.md](CHANGELOG.md).
 
 ## Documentation
 
@@ -37,6 +40,7 @@ World of Warcraft/
                 ├── CombatLog.lua
                 ├── Commands.lua
                 ├── Events.lua
+                ├── Options.lua
                 └── sounds/
 ```
 
@@ -79,14 +83,15 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl level` | Toggles the level filter for damage records. |
 | `/cl xtreme` | Toggles the sound for hits over 9000 damage. Off by default. |
 | `/cl debug` | Toggles diagnostic chat output (spell ID/name seen by aura triggers, level-filter decisions). Off by default. |
+| `/cl options` | Opens/closes the in-game options panel (checkboxes for every toggle above, plus preview buttons for triggerable sounds). First draft, not yet in-game verified — see [CHANGELOG.md](CHANGELOG.md). |
 | `/cl ready` | Toggles the ready-check sound. |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl dead` | Master switch for death sounds. |
 | `/cl player` | Toggles the player's own death sound. |
-| `/cl melee` | Toggles death sounds for a hard-coded melee roster. |
-| `/cl tank` | Toggles death sounds for a hard-coded tank roster. |
-| `/cl priest` | Toggles death sounds for a hard-coded healer-priest roster. |
-| `/cl boss` | Toggles death sounds for a hard-coded boss roster. |
+| `/cl melee` | **(Experimental)** Toggles the melee death sound. Matched by class/assigned role first (melee-capable class, not flagged Healer), falling back to a hard-coded melee roster. |
+| `/cl tank` | **(Experimental)** Toggles the tank death sound. Matched by assigned raid Tank role first, falling back to a hard-coded tank roster. |
+| `/cl priest` | **(Experimental)** Toggles the priest death sound. Matched by class (`PRIEST`) first, falling back to a hard-coded healer-priest roster. |
+| `/cl boss` | **(Experimental)** Toggles the boss death sound. Matched by live `UnitClassification` (`worldboss`) first, falling back to a hard-coded English/German boss-name list. |
 
 ## Repository layout
 
@@ -111,6 +116,7 @@ critlog/
 ├── CombatLog.lua          # Crit, aura, death, and boss-kill handling
 ├── Commands.lua           # Slash commands and chat output
 ├── Events.lua             # Frame registration and event dispatch
+├── Options.lua            # In-game options panel (/cl options), first draft
 └── sounds/
 ```
 
@@ -121,14 +127,18 @@ on every tag push, matching what manual installation above does by hand.
 
 ## Hard-coded data inventory
 
-The following data is centralized in `Data.lua` and cannot currently
-be managed through an options UI or configuration file:
+The following data is centralized in `Data.lua`. The options panel
+(`/cl options`) can toggle whether each feature fires at all, but none of
+this underlying data is itself editable through the panel or a
+configuration file:
 
 - installation paths and filenames for every requested sound
-- English and German names for selected abilities and auras
-- English and German Burning Crusade boss names
-- character names grouped into melee, tank, and healer-priest rosters
-- special-case behavior for the character `Schnutz`
+- spell IDs for selected abilities and auras, with English/German display
+  names kept as a fallback if an ID doesn't match
+- English and German Burning Crusade boss names, used as a fallback for NPCs
+  that live `UnitClassification` doesn't identify as `worldboss`
+- character names grouped into melee, tank, and healer-priest rosters, used
+  as a fallback for players that live class/role detection doesn't match
 - raid-leader phrases that trigger sounds
 - a nine-level threshold for relevant damage targets
 - defaults for all feature toggles
@@ -140,10 +150,15 @@ This is a static inventory, not a complete in-game verification:
 1. **Legacy implementation:** The addon works in the current Season of
    Discovery test environment, but its combat-log handling has not yet been
    systematically verified for every relevant SoD event.
-2. **Name-based boss matching:** Bosses are still matched by displayed
-   English/German names instead of stable NPC IDs. (Aura/ability triggers
-   now match by spell ID first, with the name kept as a fallback — see
-   docs/REFACTORING.md.)
+2. **Name-based boss/death matching, mostly a fallback now:** Aura/ability
+   triggers match by spell ID first, with the display name as a fallback.
+   Boss detection and the melee/tank/priest death sounds now check live
+   `UnitClassification`/`UnitClass`/`UnitGroupRolesAssigned` first, falling
+   back to the hard-coded English/German boss list or player-name rosters
+   only when no live unit token is available or the check doesn't match.
+   None of this class/role/classification detection has been in-game
+   verified yet — see the `Unreleased` section of `CHANGELOG.md` and
+   docs/REFACTORING.md.
 3. **Spirit of Redemption:** Test code is commented out and marked "not
    working" by the original author. Deliberately left as-is for now — see
    [docs/CLEANUP-REVIEW.md](docs/CLEANUP-REVIEW.md).
@@ -157,10 +172,12 @@ This is a static inventory, not a complete in-game verification:
 
 ## Next steps
 
-The behavioral inventory, safe cleanup, data catalog, and module split are now
-complete. The recommended next steps are documented in the
-[Refactoring plan](docs/REFACTORING.md): replace localized name matching with
-verified IDs, professionalize configuration and migrations, and add focused
+The behavioral inventory, safe cleanup, data catalog, module split, spell-ID
+matching, class/role-based death-sound detection, and a first-draft options
+panel are now in place. The recommended next steps are documented in the
+[Refactoring plan](docs/REFACTORING.md): in-game verification of everything
+still marked "(Experimental)"/first-draft, NPC-ID-based matching for bosses
+that aren't classified `worldboss`, audio channel/volume control, and focused
 tests for pure matching and migration logic.
 
 ## Development
