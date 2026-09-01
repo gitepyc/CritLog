@@ -76,11 +76,11 @@ docs/REFACTORING.md.
 | --- | --- | --- | --- | --- |
 | Mana Tide Totem summoned (`SPELL_SUMMON`) | Source is recognized as a party or raid member. | `16190` | `Mana Tide Totem`, `Totem der Manaflut` | `Manatide.mp3` |
 | Bloodlust/Heroism received (`SPELL_AURA_APPLIED`) | Destination is the player. | `27689` (Horde), `23682` (Alliance) | `Bloodlust`, `Heroism`, `Blutrausch`, `Heldentum` | `Bloodlust.mp3` |
-| Innervate received | Destination is the player. | `29166` | `Innervate`, `Anregen` | Randomly `Inervate1.mp3` or `Inervate2.mp3` |
+| Innervate received | Destination is the player. | `29166` | `Innervate`, `Anregen` | `Inervate2.mp3` (fixed — see CHANGELOG.md, previously a random pick between `Inervate1.mp3`/`Inervate2.mp3`) |
 | Power Infusion received | Destination is the player. | `10060` | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
 | Blessing of Protection received | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
 | Divine Intervention received | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
-| Soulstone Resurrection received | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | Randomly `soulstone.mp3`, `soulstone2.mp3`, or `soulstone3.mp3` |
+| Soulstone Resurrection received | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` (fixed — see CHANGELOG.md, previously a random pick between `soulstone.mp3`/`soulstone2.mp3`/`soulstone3.mp3`) |
 
 ## Deaths
 
@@ -92,9 +92,9 @@ also has its own feature flag.
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
 | Character `Schnutz` | `/cl melee` enabled | `schnutz.mp3` |
 | Another name in `MELEE_NAMES` | `/cl melee` enabled | `wilhelm.ogg` |
-| English/German name in the TBC boss list | `/cl boss` enabled | Randomly `FFX.mp3` or `Zelda.mp3` |
+| English/German name in the TBC boss list | `/cl boss` enabled | `FFX.mp3` (fixed — see CHANGELOG.md, previously a random pick between `FFX.mp3`/`Zelda.mp3`) |
 | Name in `TANK_NAMES` | `/cl tank` enabled | `Tank.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
-| Name in `HEALPRIEST_NAMES` | `/cl priest` enabled | Randomly `Angels1.mp3` or `Angels2.mp3` |
+| Name in `HEALPRIEST_NAMES` | `/cl priest` enabled | `Angels1.mp3` (fixed — see CHANGELOG.md, previously a random pick between `Angels1.mp3`/`Angels2.mp3`) |
 
 The player lists are hard-coded to one specific historical raid roster. Roles
 are not derived from the current party or raid — see
