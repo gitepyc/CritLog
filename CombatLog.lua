@@ -98,6 +98,102 @@ local function isPriestClass(token)
     return class ~= nil and tContains(CritLog.Data.deathClasses.priest, class)
 end
 
+-- Boss detection, part 1: remembering what a unit is while it still exists.
+--
+-- UnitClassification() needs a live unit token, and by the time UNIT_DIED
+-- fires the unit is dead: its nameplate is gone or going, and it is only
+-- still your target if you happened to be targeting it. Looking the
+-- classification up at the moment of death would therefore fail most of the
+-- time. Instead every NPC seen in the combat log is classified once while it
+-- is still alive and fighting, keyed by GUID, and the death handler reads
+-- that cache.
+--
+-- The cache is a plain runtime table, not SavedVariables: it describes the
+-- current fight and is worthless across a reload.
+local MAX_CLASSIFICATION_ATTEMPTS = 3
+local CLASSIFICATION_CACHE_LIMIT = 200
+
+local classifications = {}
+local resolveAttempts = {}
+local trackedGuids = 0
+
+local function isNpcGUID(guid)
+    if type(guid) ~= "string" then
+        return false
+    end
+
+    return guid:sub(1, 8) == "Creature" or guid:sub(1, 7) == "Vehicle"
+end
+
+local function resetClassificationCache()
+    classifications = {}
+    resolveAttempts = {}
+    trackedGuids = 0
+end
+
+local function forgetClassification(guid)
+    if classifications[guid] ~= nil or resolveAttempts[guid] ~= nil then
+        classifications[guid] = nil
+        resolveAttempts[guid] = nil
+        trackedGuids = trackedGuids - 1
+    end
+end
+
+-- Classifies an NPC GUID once and caches the result. A GUID whose token
+-- can't be resolved yet (no nameplate on screen, not targeted) is retried on
+-- later combat-log events, but only a few times - otherwise every event from
+-- an off-screen mob would rescan all nameplates for the rest of the fight.
+local function rememberClassification(guid)
+    if not isNpcGUID(guid) or classifications[guid] then
+        return
+    end
+
+    local attempts = resolveAttempts[guid] or 0
+    if attempts >= MAX_CLASSIFICATION_ATTEMPTS then
+        return
+    end
+
+    if trackedGuids >= CLASSIFICATION_CACHE_LIMIT then
+        CritLog:Debug("Classification cache full - wiping", trackedGuids, "entries")
+        resetClassificationCache()
+        attempts = 0
+    end
+
+    if attempts == 0 then
+        trackedGuids = trackedGuids + 1
+    end
+
+    local token = findUnitToken(guid)
+    if not token then
+        resolveAttempts[guid] = attempts + 1
+        return
+    end
+
+    resolveAttempts[guid] = nil
+    classifications[guid] = UnitClassification(token)
+    CritLog:Debug("Classified", guid, "as", classifications[guid], "via token", token)
+end
+
+-- Cached classification first, live lookup as a last chance (the unit may
+-- still be targeted, and for a killing blow it is by definition still
+-- around). nil means "couldn't tell" - never treated as a boss.
+local function classificationFor(guid)
+    local cached = classifications[guid]
+    if cached then
+        return cached
+    end
+
+    local token = findUnitToken(guid)
+    return token and UnitClassification(token) or nil
+end
+
+local function isClassifiedBoss(guid)
+    local classification = classificationFor(guid)
+
+    return classification ~= nil
+        and tContains(CritLog.Data.bosses.classifications, classification)
+end
+
 -- Excludes crits against trivial ("grey") enemies from counting as
 -- highscores, so a one-shot on low-level content doesn't overwrite a real
 -- record from relevant content. If the hit target's unit token can't be
@@ -280,20 +376,43 @@ end
 function CritLog:PrintBossKillingBlow(
     subevent,
     sourceName,
+    destGUID,
     destName,
     overkill
 )
-    if tContains(self.Data.bosses.english, destName)
-        and endsWith(subevent, "_DAMAGE")
-        and overkill
-        and overkill > 0
+    -- Cheap checks first: this runs on every combat-log event, and the boss
+    -- check below can scan nameplates. The type() guard is new - `overkill`
+    -- is read positionally and isn't guaranteed to be a number for every
+    -- subevent ending in "_DAMAGE" (see docs/BEHAVIOR.md), and comparing a
+    -- non-number to 0 is a Lua error.
+    if not endsWith(subevent, "_DAMAGE")
+        or type(overkill) ~= "number"
+        or overkill <= 0
+    then
+        return
+    end
+
+    -- Pre-existing asymmetry, deliberately kept: the name fallback here
+    -- checks the English list only, while the death sound checks both
+    -- languages. The classification check is language-independent, so on a
+    -- German client this now fires for worldboss NPCs where it previously
+    -- never could.
+    if isClassifiedBoss(destGUID)
+        or tContains(self.Data.bosses.english, destName)
     then
         print(sourceName.." killed "..destName)
     end
 end
 
 function CritLog:HandleDeath(subevent, destGUID, destName)
-    if subevent ~= "UNIT_DIED" or not CritLogDB.DeadSoundFlag then
+    if subevent ~= "UNIT_DIED" then
+        return
+    end
+
+    if not CritLogDB.DeadSoundFlag then
+        -- Sounds are off, but the GUID is still done for classification
+        -- purposes: drop it now instead of leaving it in the cache.
+        forgetClassification(destGUID)
         return
     end
 
@@ -329,7 +448,8 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
 
     if CritLogDB.BossSoundFlag
         and (
-            tContains(self.Data.bosses.english, destName)
+            isClassifiedBoss(destGUID)
+            or tContains(self.Data.bosses.english, destName)
             or tContains(self.Data.bosses.german, destName)
         )
     then
@@ -353,12 +473,26 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     then
         self:PlaySound(randomEntry(self.Data.sounds.priestDeath))
     end
+
+    -- The classification (if any) has now been read for the boss check
+    -- above; the GUID belongs to a dead unit and won't be looked up again.
+    forgetClassification(destGUID)
 end
 
 function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
     local _, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName,
         _, _, sv1, sv2, _, sv4, sv5, _, sv7, _, _, sv10 =
         CombatLogGetCurrentEventInfo()
+
+    -- Boss detection, part 2: feed the cache from both sides of every
+    -- combat-log event, not just NPCs the player is hitting. A boss that is
+    -- only ever attacking (not being attacked by the player, e.g. it's
+    -- fighting another party member) still needs to end up classified
+    -- before it dies. rememberClassification() is cheap once a GUID is
+    -- cached or has exhausted its retry attempts, so calling it twice per
+    -- event here doesn't add meaningful overhead to this hot path.
+    rememberClassification(sourceGUID)
+    rememberClassification(destGUID)
 
     self:HandleAuraSounds(subevent, sourceName, destGUID, sv1, sv2)
     self:HandleXtremeDamage(subevent, sourceGUID, sv4)
@@ -372,7 +506,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
         self:HandleHealCrit(subevent, destName, sv4, sv2, sv7)
     end
 
-    self:PrintBossKillingBlow(subevent, sourceName, destName, sv5)
+    self:PrintBossKillingBlow(subevent, sourceName, destGUID, destName, sv5)
     self:HandleDeath(subevent, destGUID, destName)
 end
 

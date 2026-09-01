@@ -22,7 +22,26 @@ CritLog.Data = {
         raidEndFinal = "end.mp3",
         wipe = "wipe.mp3",
     },
+    -- Boss detection is classification-first with the name lists as a
+    -- fallback, mirroring the spells table below: the primary signal is the
+    -- game's own data, the hardcoded names catch what that signal misses.
     bosses = {
+        -- Accepted UnitClassification() values. "worldboss" is creature
+        -- rank 3 - the "Level ?? (Boss)" tooltip - which in the Classic
+        -- database covers the 40-man raid bosses (Lucifron, Ragnaros,
+        -- Onyxia, Nefarian, ...), the outdoor world bosses, and SoD's new
+        -- level-60 raid encounters. Deliberately nothing else: "elite" and
+        -- "rareelite" are ordinary dungeon trash and 5-man end bosses,
+        -- "rare" is a leveling rare spawn - accepting those would fire the
+        -- boss sound on most pulls. The known gap this leaves is documented
+        -- in CHANGELOG.md and is exactly why the name lists below stay.
+        classifications = { "worldboss" },
+        -- Fallback allowlist for bosses the classification check can't see.
+        -- This is still the original Burning Crusade roster and therefore
+        -- matches nothing in Classic Era/SoD; it is kept as the mechanism
+        -- for "boss NPCs that aren't flagged worldboss" (5-man end bosses,
+        -- SoD's Blackfathom Deeps/Gnomeregan raid bosses) rather than for
+        -- its current contents, which are due for replacement.
         english = {
             "Lady Vashj", "Kael'thas Sunstrider", "Hydross the Unstable",
             "The Lurker Below", "Leotheras the Blind",
