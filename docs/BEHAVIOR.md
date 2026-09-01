@@ -90,8 +90,7 @@ also has its own feature flag.
 | Dead unit | Additional condition | Sound |
 | --- | --- | --- |
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
-| Character `Schnutz` | `/cl melee` enabled | `schnutz.mp3` |
-| Another name in `MELEE_NAMES` | `/cl melee` enabled | `wilhelm.ogg` |
+| Name in `MELEE_NAMES` (`Schnutz` included) | `/cl melee` enabled | `wilhelm.ogg` (Schnutz's own `schnutz.mp3` special case removed, see CHANGELOG.md) |
 | English/German name in the TBC boss list | `/cl boss` enabled | `FFX.mp3` (fixed — see CHANGELOG.md, previously a random pick between `FFX.mp3`/`Zelda.mp3`) |
 | Name in `TANK_NAMES` | `/cl tank` enabled | `Tank.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
 | Name in `HEALPRIEST_NAMES` | `/cl priest` enabled | `Angels1.mp3` (fixed — see CHANGELOG.md, previously a random pick between `Angels1.mp3`/`Angels2.mp3`) |

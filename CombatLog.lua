@@ -426,20 +426,13 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- class/role check itself doesn't match.
     local token = findUnitToken(destGUID)
 
-    if CritLogDB.MeleeSoundFlag then
-        -- "Schnutz" is a personal in-joke tied to one specific character,
-        -- not a generalizable class/role rule, so it stays a standalone
-        -- name check rather than being folded into the class-based melee
-        -- detection or the legacy roster fallback below. Flagged as an
-        -- open decision point in the PR rather than silently dropped or
-        -- silently kept — see CHANGELOG.md.
-        if destName == "Schnutz" then
-            self:PlaySound(self.Data.sounds.meleeDeathSchnutz)
-        elseif (token and isMeleeClass(token))
+    if CritLogDB.MeleeSoundFlag
+        and (
+            (token and isMeleeClass(token))
             or tContains(self.Data.playerGroups.melee, destName)
-        then
-            self:PlaySound(self.Data.sounds.meleeDeath)
-        end
+        )
+    then
+        self:PlaySound(self.Data.sounds.meleeDeath)
     end
 
     if CritLogDB.BossSoundFlag

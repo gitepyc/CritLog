@@ -5,7 +5,6 @@ CritLog.Data = {
         crit = "at_bam_babam.mp3",
         xtremeDamage = "Xtreme.mp3",
         meleeDeath = "wilhelm.ogg",
-        meleeDeathSchnutz = "schnutz.mp3",
         playerDeath = "MarioDeath.mp3",
         bossDeath = "FFX.mp3",
         tankDeath = "Tank.mp3",
