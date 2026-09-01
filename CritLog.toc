@@ -1,6 +1,6 @@
 ## Interface: 11509
-## Title: CritLog AriZoNa!
-## Note: gtrkt
+## Title: CritLog
+## Note: #CrimeTime #420 #gtrkt
 ## Author: Epyc (original by Kîtten aka Chabo)
 ## Version: 0.2.1
 
