@@ -23,7 +23,7 @@ local CHECKBOXES = {
     { field = "AllCritFlag", label = "Sound for all crits",
       hint = "Plays on every crit, not just new highscores." },
     { field = "WhiteHitFlag", label = "Sound for white hit crits",
-      hint = "Also plays for white hit (auto-attack) crits." },
+      hint = "White-hit highscores need this; ability crits don't." },
     { field = "AllLevel", label = "Ignore enemy level requirement",
       hint = "Counts highscores from enemies of any level." },
     { field = "XtremeSoundFlag", label = "Xtreme damage sound (over 9000)", sound = "xtremeDamage",
