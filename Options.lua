@@ -122,7 +122,10 @@ end
 
 local function buildFrame()
     local f = CreateFrame("Frame", "CritLogOptionsFrame", UIParent, "BasicFrameTemplateWithInset")
-    f:SetSize(440, 660)
+    -- Tall enough for the header block plus all 15 toggle rows plus the
+    -- aura preview grid; 660 was too short and let the bottom rows render
+    -- past the frame's own border.
+    f:SetSize(440, 860)
     f:SetPoint("CENTER")
     f:SetMovable(true)
     f:EnableMouse(true)
@@ -158,9 +161,14 @@ local function buildFrame()
     togglesHeading:SetText("Toggles")
 
     local previous = togglesHeading
+    -- buildAuraPreviewGrid's returned anchor sits 20px right of the checkbox
+    -- column (to line the grid up under its label); this offset cancels
+    -- that back out so the next real checkbox stays in the same column
+    -- instead of drifting right for the rest of the list.
+    local previousXOffset = 0
     for _, entry in ipairs(CHECKBOXES) do
         local check = CreateFrame("CheckButton", "CritLogOptions"..entry.field, f, "UICheckButtonTemplate")
-        check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -4)
+        check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -4)
         -- Hook rather than replace OnClick, so the template's default click
         -- sound still plays; GetChecked() returns 1/nil on some clients, so
         -- normalize to a real boolean before writing it back to the DB.
@@ -180,10 +188,13 @@ local function buildFrame()
             local previewButton = createPreviewButton(f, entry.sound)
             previewButton:SetPoint("LEFT", check, "LEFT", 290, 0)
             previous = check
+            previousXOffset = 0
         elseif entry.auraPreviews then
             previous = buildAuraPreviewGrid(f, check)
+            previousXOffset = -20
         else
             previous = check
+            previousXOffset = 0
         end
     end
 
