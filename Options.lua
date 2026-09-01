@@ -17,24 +17,26 @@
 -- AURA_PREVIEWS below instead.
 local CHECKBOXES = {
     { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)",
-      tooltip = "Mutes every CritLog sound when off, without changing any of the individual settings below - turning it back on restores them exactly as they were." },
+      hint = "Mutes everything below without changing individual settings." },
     { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
-      tooltip = "Plays a sound whenever you set a new personal highscore (damage crit, white hit crit, or heal crit)." },
+      hint = "Plays on a new personal highscore." },
     { field = "AllCritFlag", label = "Sound for all crits",
-      tooltip = "Plays the highscore sound on every crit, not just when it's a new highscore." },
+      hint = "Plays on every crit, not just new highscores." },
     { field = "WhiteHitFlag", label = "Sound for white hit crits",
-      tooltip = "Also plays the highscore sound for white hit crits (auto-attacks), not just ability crits." },
+      hint = "Also plays for white hit (auto-attack) crits." },
     { field = "AllLevel", label = "Ignore enemy level requirement",
-      tooltip = "Counts crits toward highscores regardless of the target's level, instead of only ones that pass CritLog's normal enemy level check." },
+      hint = "Counts highscores from enemies of any level." },
     { field = "XtremeSoundFlag", label = "Xtreme damage sound (over 9000)", sound = "xtremeDamage",
-      tooltip = "Plays an extra sound whenever a single hit deals more than 9000 damage, on top of the normal highscore sound." },
+      hint = "Extra sound when a hit deals over 9000 damage." },
     { field = "DebugFlag", label = "Debug mode (diagnostic chat output)",
-      tooltip = "Prints diagnostic chat messages for troubleshooting - spell-ID matching, the level filter, and aura detection." },
+      hint = "Prints diagnostic chat messages for troubleshooting." },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
-      tooltip = "Plays a sound whenever a ready check starts." },
+      hint = "Plays when a ready check starts." },
     { field = "AuraSoundFlag", label = "Aura/spell sound", auraPreviews = true,
-      tooltip = "Master switch for the 7 tracked spell sounds below - Bloodlust, Innervate, Power Infusion, Blessing of Protection, Divine Intervention, Mana Tide, and Soulstone." },
-    -- These four (unlike PlayerSoundFlag) rely on the new class/role/
+      hint = "Master switch for the 7 spell sounds below." },
+    { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
+      hint = "Plays when you yourself die." },
+    -- These four (unlike PlayerSoundFlag above) rely on the new class/role/
     -- classification detection added this session (isMeleeClass,
     -- isAssignedTank, isPriestClass, isClassifiedBoss in CombatLog.lua) -
     -- not yet in-game verified, hence "(Experimental)". Untested here
@@ -42,17 +44,15 @@ local CHECKBOXES = {
     -- name roster whenever the live class/role/classification check
     -- doesn't resolve or doesn't match.
     { field = "PriestSoundFlag", label = "Priest death sound (Experimental)", sound = "priestDeath",
-      tooltip = "Plays a sound when a Priest dies. Detects Priests by class first, falls back to a hardcoded name list if that check doesn't resolve." },
+      hint = "By class first, name list fallback." },
     { field = "MeleeSoundFlag", label = "Melee death sound (Experimental)", sound = "meleeDeath",
-      tooltip = "Plays a sound when a melee-capable class dies. Detects the class directly first, falls back to a hardcoded name list if that check doesn't resolve." },
+      hint = "By class first, name list fallback." },
     { field = "TankSoundFlag", label = "Tank death sound (Experimental)", sound = "tankDeath",
-      tooltip = "Plays a sound when the group's assigned tank dies. Detects the tank via assigned raid role first, falls back to a hardcoded name list if that check doesn't resolve." },
-    { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
-      tooltip = "Plays a sound when you yourself die." },
+      hint = "By assigned raid role first, name list fallback." },
     { field = "BossSoundFlag", label = "Boss death sound (Experimental)", sound = "bossDeath",
-      tooltip = "Plays a sound when a boss dies. Detects world bosses via live classification first, falls back to a hardcoded boss name list if that check doesn't resolve." },
+      hint = "By live classification first, name list fallback." },
     { field = "DeadSoundFlag", label = "Death sounds (enables the five above)",
-      tooltip = "Master switch for the five death sounds above (Priest/Melee/Tank/Player/Boss) - they only fire while this is on." },
+      hint = "Master switch for the five death sounds above." },
 }
 
 -- AuraSoundFlag gates all seven of these individually (CombatLog.lua's
@@ -93,7 +93,14 @@ local function createPreviewButton(parent, soundKey, width)
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetSize(width or 70, 20)
     button:SetText("Preview")
-    button:GetFontString():SetFontObject("GameFontHighlightSmall")
+    -- SetNormalFontObject/SetHighlightFontObject (not a direct
+    -- GetFontString():SetFontObject() call) so the button's own built-in
+    -- mouseover handling still switches between them correctly. Calling
+    -- SetFontObject() directly on the shared FontString bypassed that
+    -- state machine and left the text stuck yellow (the hover color)
+    -- after the mouse left the button.
+    button:SetNormalFontObject("GameFontNormalSmall")
+    button:SetHighlightFontObject("GameFontHighlightSmall")
     button:SetScript("OnClick", function()
         previewSound(soundKey)
     end)
@@ -110,7 +117,10 @@ local function buildAuraPreviewGrid(parent, anchorTo)
         local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
         button:SetSize(112, 20)
         button:SetText(entry.label)
-        button:GetFontString():SetFontObject("GameFontHighlightSmall")
+        -- See createPreviewButton's comment: SetNormalFontObject/
+        -- SetHighlightFontObject, not a direct SetFontObject() call.
+        button:SetNormalFontObject("GameFontNormalSmall")
+        button:SetHighlightFontObject("GameFontHighlightSmall")
         button:SetScript("OnClick", function()
             previewSound(entry.sound)
         end)
@@ -134,12 +144,11 @@ end
 
 local function buildFrame()
     local f = CreateFrame("Frame", "CritLogOptionsFrame", UIParent, "BasicFrameTemplateWithInset")
-    -- Tall enough for the header block plus all 15 toggle rows plus the
-    -- aura preview grid; 660 was too short and let the bottom rows render
-    -- past the frame's own border.
+    -- Tall enough for the header block, all 15 toggle rows (each now with
+    -- its own hint line underneath), and the aura preview grid.
     -- Widened from 440: the "(Experimental)" suffix on four labels needs
     -- more room before the preview button column.
-    f:SetSize(490, 860)
+    f:SetSize(490, 1080)
     f:SetPoint("CENTER")
     -- TOOLTIP is the highest frame strata WoW exposes; other addons
     -- (WeakAuras displays included) commonly sit at MEDIUM/HIGH/DIALOG,
@@ -187,10 +196,10 @@ local function buildFrame()
     togglesHeading:SetText("Toggles")
 
     local previous = togglesHeading
-    -- buildAuraPreviewGrid's returned anchor sits 20px right of the checkbox
-    -- column (to line the grid up under its label); this offset cancels
-    -- that back out so the next real checkbox stays in the same column
-    -- instead of drifting right for the rest of the list.
+    -- buildAuraPreviewGrid's returned anchor sits 24px right of the checkbox
+    -- column (hint is +4 from check, then the grid itself adds another +20
+    -- to line up under it); this offset cancels that back out so the next
+    -- real checkbox stays in the same column instead of drifting right.
     local previousXOffset = 0
     for _, entry in ipairs(CHECKBOXES) do
         local check = CreateFrame("CheckButton", "CritLogOptions"..entry.field, f, "UICheckButtonTemplate")
@@ -203,16 +212,6 @@ local function buildFrame()
         end)
         checkboxesByField[entry.field] = check
 
-        if entry.tooltip then
-            check:SetScript("OnEnter", function(self)
-                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                GameTooltip:SetText(entry.label, 1, 1, 1)
-                GameTooltip:AddLine(entry.tooltip, nil, nil, nil, true)
-                GameTooltip:Show()
-            end)
-            check:SetScript("OnLeave", GameTooltip_Hide)
-        end
-
         local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         label:SetPoint("LEFT", check, "RIGHT", 2, 1)
         label:SetText(entry.label)
@@ -223,13 +222,20 @@ local function buildFrame()
             -- long a given label happens to be.
             local previewButton = createPreviewButton(f, entry.sound)
             previewButton:SetPoint("LEFT", check, "LEFT", 340, 0)
-            previous = check
-            previousXOffset = 0
-        elseif entry.auraPreviews then
-            previous = buildAuraPreviewGrid(f, check)
-            previousXOffset = -20
+        end
+
+        -- A static line instead of a hover tooltip: GameTooltip on the
+        -- checkbox didn't reliably show in-game (small hit area, easy to
+        -- miss), so the explanation is just always visible instead.
+        local hint = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+        hint:SetPoint("TOPLEFT", check, "BOTTOMLEFT", 4, -2)
+        hint:SetText(entry.hint)
+
+        if entry.auraPreviews then
+            previous = buildAuraPreviewGrid(f, hint)
+            previousXOffset = -24
         else
-            previous = check
+            previous = hint
             previousXOffset = 0
         end
     end

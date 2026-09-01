@@ -24,9 +24,6 @@ stds.wow = {
         "C_NamePlate",
         -- Options.lua: parent frame for the standalone options panel
         "UIParent",
-        -- Options.lua: toggle tooltips
-        "GameTooltip",
-        "GameTooltip_Hide",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned
