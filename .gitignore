@@ -10,5 +10,8 @@ Thumbs.db
 .idea/
 *.swp
 
+# Nested agent worktrees (harness-managed, not part of the project)
+.claude/
+
 # Lint container
 tests/lint/*.log
