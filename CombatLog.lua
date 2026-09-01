@@ -316,15 +316,20 @@ function CritLog:HandleDamageCrit(
             return
         end
 
+        -- Played at most once per event: without this flag, a white hit
+        -- that both passes the "every crit" check below and turns out to
+        -- be a new highscore played the same sound twice in a row.
+        local alreadyPlayed = false
         if CritLogDB.AllCritFlag and CritLogDB.WhiteHitFlag then
             self:PlayCritSound()
+            alreadyPlayed = true
         end
 
         if amount > CritLogDB.WhiteHitCrit then
             CritLogDB.WhiteHitCrit = amount
             CritLogDB.WHC_Tar = destName
             print("DAMAGE Crit WhiteHit: "..amount.." ("..destName..")")
-            if CritLogDB.WhiteHitFlag then
+            if CritLogDB.WhiteHitFlag and not alreadyPlayed then
                 self:PlayCritSound()
             end
         end
@@ -332,15 +337,20 @@ function CritLog:HandleDamageCrit(
     end
 
     if subevent == "RANGE_DAMAGE" and isCritical then
+        -- Same double-play fix as SWING_DAMAGE above.
+        local alreadyPlayed = false
         if CritLogDB.AllCritFlag then
             self:PlayCritSound()
+            alreadyPlayed = true
         end
 
         if amount > CritLogDB.WhiteHitCrit and CritLogDB.WhiteHitFlag then
             CritLogDB.WhiteHitCrit = amount
             CritLogDB.WHC_Tar = destName
             print("DAMAGE Crit WhiteHit: "..amount.." ("..destName..")")
-            self:PlayCritSound()
+            if not alreadyPlayed then
+                self:PlayCritSound()
+            end
         end
     end
 end

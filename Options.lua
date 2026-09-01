@@ -80,13 +80,17 @@ local function anchorBelow(region, previous, yGap)
     region:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -(yGap or 6))
 end
 
--- Plays a CritLog.Data.sounds entry directly through the addon's own
--- CritLog:PlaySound(), bypassing CritLogDB flags entirely (so a preview
--- works even while the toggle is off - the whole point is deciding whether
--- to turn it on) and bypassing the real trigger logic in CombatLog.lua
--- (so no highscore/state is touched).
+-- Plays a CritLog.Data.sounds entry directly via PlaySoundFile, bypassing
+-- CritLogDB flags entirely - including MasterSoundFlag - so a preview
+-- works even while sound is muted or the specific toggle is off (the whole
+-- point is deciding whether to turn it on) and bypassing the real trigger
+-- logic in CombatLog.lua (so no highscore/state is touched). Deliberately
+-- not routed through CritLog:PlaySound(): that function is the mute
+-- switch's single choke point, which would otherwise make every preview
+-- silently do nothing whenever MasterSoundFlag is off - exactly backwards
+-- for a button whose purpose is letting you hear a sound before enabling it.
 local function previewSound(soundKey)
-    CritLog:PlaySound(CritLog.Data.sounds[soundKey])
+    PlaySoundFile(CritLog.soundPath..CritLog.Data.sounds[soundKey], "Master")
 end
 
 local function createPreviewButton(parent, soundKey, width)
