@@ -85,19 +85,35 @@ docs/REFACTORING.md.
 ## Deaths
 
 All reactions below require `DeadSoundFlag = true` (`/cl dead`). Each group
-also has its own feature flag.
+also has its own feature flag. The player's own death sound
+(`PlayerSoundFlag`) is unchanged, long-standing behavior. The other four
+groups (Melee/Tank/Priest/Boss) are marked **"(Experimental)"** in the
+options panel: their primary detection is live class/role/classification
+matching, added this session and not yet in-game verified, with the
+original hard-coded name rosters kept as a fallback for whenever no live
+unit token is available or the live check doesn't match — same
+ID-first-then-name-fallback pattern used for spells above.
 
 | Dead unit | Additional condition | Sound |
 | --- | --- | --- |
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
-| Name in `MELEE_NAMES` (`Schnutz` included) | `/cl melee` enabled | `wilhelm.ogg` |
-| English/German name in the TBC boss list | `/cl boss` enabled | `FFX.mp3` |
-| Name in `TANK_NAMES` | `/cl tank` enabled | `Tank.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
-| Name in `HEALPRIEST_NAMES` | `/cl priest` enabled | `Angels.mp3` |
+| Melee-capable class not flagged Healer (`isMeleeClass`), or a name in `CritLog.Data.playerGroups.melee` | `/cl melee` enabled | `wilhelm.ogg` |
+| Live classification `worldboss` (`isClassifiedBoss`), or an English/German name in `CritLog.Data.bosses` | `/cl boss` enabled | `FFX.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
+| Assigned raid role Tank (`isAssignedTank`), or a name in `CritLog.Data.playerGroups.tank` | `/cl tank` enabled | `Tank.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
+| Class `PRIEST` (`isPriestClass`), or a name in `CritLog.Data.playerGroups.priest` | `/cl priest` enabled | `Angels.mp3` |
 
-The player lists are hard-coded to one specific historical raid roster. Roles
-are not derived from the current party or raid — see
-[CLEANUP-REVIEW.md](CLEANUP-REVIEW.md).
+The live checks need a resolved unit token for the dying player (the current
+target, or a matching visible nameplate) — see `findUnitToken()` in
+`CombatLog.lua`. When no token resolves, or the token resolves but the
+class/role/classification check doesn't match, the legacy name-roster check
+still applies. The `"Schnutz"` character no longer has a separate special
+case (removed — see `CHANGELOG.md`); they are simply one more name in
+`playerGroups.melee` like everyone else, and get the regular melee death
+sound. Boss detection accepts only the `"worldboss"` classification
+(40-man raid bosses, outdoor world bosses, SoD's level-60 raids); the name
+lists remain the only way 5-man end bosses and similarly-ranked NPCs are
+detected. The name rosters themselves are still hard-coded to one specific
+historical raid group — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md).
 
 ## Raid-leader chat
 
@@ -116,7 +132,7 @@ disables them.
 
 | Function | Status |
 | --- | --- |
-| Boss killing-blow output | Prints a chat line for a matching boss name and a `_DAMAGE` event with a positive fifth payload value. The positional payload check is fragile across event types. |
+| Boss killing-blow output | Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is either live-classified `worldboss` or its name is in the English boss list (German name matching relies on the classification check here — pre-existing asymmetry, not extended to the German list, unlike the death-sound check below which checks both languages). |
 | Spirit of Redemption | Test code is commented out and labeled as not working. Deliberately left as-is for now — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
 
 ## Stored data

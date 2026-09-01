@@ -40,31 +40,38 @@ is falsy in the `if CritLogDB.XtremeSoundFlag` check — so it's "off by
 default" automatically, for old and new characters alike, without any
 explicit default-writing step.
 
-The sound catalog is now 24 files, all in active use — see
-[SOUNDS.md](SOUNDS.md).
+The sound catalog is now 18 files, all in active use — see
+[SOUNDS.md](SOUNDS.md). (It was 24 immediately after this dead-weight pass;
+a later pass removed random multi-clip selection and the `Schnutz` special
+case, which left 6 more files unused and unreachable from any code path —
+those were deleted and two renamed to drop stale variant suffixes. See
+`CHANGELOG.md`.)
 
-## Still open: needs a decision, not just deletion
+## Still open: needs in-game verification, not just deletion
 
-These aren't unreachable code — they run every time, they just encode
-choices specific to one historical raid group. Deliberately left in for
-now; a later refactor, not a cleanup pass:
+These aren't unreachable code — they run every time, and they still encode
+choices specific to one historical raid group. Deliberately left in for now:
 
 | # | What | Where |
 | ---: | --- | --- |
-| 1 | Hardcoded melee/tank/healer-priest death rosters (`MELEE_NAMES`, `TANK_NAMES`, `HEALPRIEST_NAMES`) | Death-sound triggers — see [BEHAVIOR.md](BEHAVIOR.md#deaths) |
+| 1 | Hardcoded melee/tank/healer-priest death-sound name rosters (`CritLog.Data.playerGroups.melee`/`tank`/`priest`) | Death-sound triggers — see [BEHAVIOR.md](BEHAVIOR.md#deaths) |
 
-For anyone who isn't in that original roster, the melee/tank/priest death
-sounds simply never fire today — dead weight in practice, but removing it
-changes what the addon does for you specifically, so it's a product
-decision (keep as-is for nostalgia, make it configurable, or cut it), not a
-pure cleanup.
-
-**Direction decided, not yet scheduled:** the long-term replacement is
-class-based matching (e.g. "a Warrior tank died" instead of a hardcoded
-character name) instead of a fixed name list — see
-[REFACTORING.md](REFACTORING.md#5-professionalize-configuration) for why
-that's real design work, not a quick swap, and is parked as a roadmap item
-rather than done alongside this cleanup pass.
+**Direction decided, and since implemented as a first draft, not yet
+in-game verified:** live class/role detection (`UnitClass`,
+`UnitGroupRolesAssigned`) is now the *primary* check for melee/tank/priest
+death sounds (boss death and the boss-kill chat line use live
+`UnitClassification` the same way) — see
+[REFACTORING.md](REFACTORING.md#5-professionalize-configuration) for the
+implementation and its known blind spots. The name rosters above are no
+longer the only mechanism; they're kept as a fallback for whenever no live
+unit token is available (not guaranteed — the dying player might not be
+targeted or on a visible nameplate) or the live check doesn't match. For
+anyone who isn't in the roster *and* isn't correctly identified by the live
+check (e.g. an unassigned real tank, or a caster-spec hybrid class
+misidentified as melee), the corresponding death sound still won't fire —
+narrower than before, but not eliminated, and this is exactly the gap the
+in-game verification pass still needs to characterize before this can be
+called done.
 
 ## Reminder
 

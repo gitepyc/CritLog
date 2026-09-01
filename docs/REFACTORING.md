@@ -71,15 +71,24 @@ this pass; one is now also done:
   doesn't hit. IDs are Wowhead-Classic-sourced, cross-checked against
   multiple expansion pages where possible (see CHANGELOG.md) but not
   in-game verified — the name fallback exists specifically so a wrong ID
-  doesn't silently kill a trigger. Boss/NPC matching is unaffected and
-  still name-only; matching those by NPC ID would need parsing the ID out
-  of `destGUID`, which is more work than the spell-ID change above. An
-  alternative worth considering there instead of an ID list: filtering by
-  `UnitClassification` (e.g. "worldboss"/"elite") rather than a hardcoded,
-  expansion-specific boss roster that goes stale every content patch —
-  not decided yet.
-- Player rosters (`playerGroups`) are still hardcoded names, not
-  SavedVariables configuration. Tracked under step 5.
+  doesn't silently kill a trigger.
+- ~~Boss/NPC matching by NPC ID or classification instead of hardcoded
+  names~~ — the classification alternative considered here was implemented,
+  not the NPC-ID one: boss/NPC death and killing-blow detection now check
+  live `UnitClassification()` for `"worldboss"` first (see `isClassifiedBoss`
+  in `CombatLog.lua`), falling back to the English/German boss name lists
+  for NPCs that classification doesn't catch (5-man end bosses and similar).
+  Matching by NPC ID parsed out of `destGUID` was not pursued — the
+  classification check covers the highest-value case (raid/world bosses)
+  with much less code. Not yet in-game verified — see CHANGELOG.md.
+- ~~Player rosters (`playerGroups`) are still hardcoded names, not
+  SavedVariables configuration~~ — partially superseded: melee/tank/priest
+  death sounds now check live class (`UnitClass`) and assigned raid role
+  (`UnitGroupRolesAssigned`) as the primary match, with `playerGroups` kept
+  as a fallback for when no live unit token is available or the live check
+  doesn't match. The rosters themselves are still hardcoded, not
+  SavedVariables configuration — see step 5's note on this below. Not yet
+  in-game verified — see CHANGELOG.md.
 
 **Acceptance:** Event handlers no longer contain long filename or name
 lists. Met.
@@ -99,7 +108,7 @@ CritLog/
 ├── ChatTriggers.lua  # Raid-leader phrases
 ├── Commands.lua      # Slash commands
 ├── Events.lua        # Frame registration and event dispatch
-└── Options.lua       # Future options UI (not implemented)
+└── Options.lua       # In-game options panel (/cl options), first draft
 ```
 
 Load the files in this order from `CritLog.toc`. Shared state belongs in one
@@ -112,20 +121,35 @@ manual in-game behavior checklist remains required before merge.
 ### 5. Professionalize configuration
 
 - versioned SavedVariables schema
-- UI for sound groups, audio channel/volume, and player roles
-- clip selection and preview
-- configurable chat triggers
+- ~~UI for sound groups~~ — done, first draft: `Options.lua` (`/cl options`)
+  has a checkbox for every one of the 15 `CritLogDB` toggle fields plus a
+  "Preview" button for every toggle with a sound of its own. Not yet
+  in-game verified — see CHANGELOG.md.
+- audio channel/volume — still outstanding. All sounds play on the fixed
+  `Master` channel via `PlaySoundFile`; there is no per-sound or overall
+  volume control beyond `MasterSoundFlag`'s on/off mute.
+- UI for player roles — still outstanding: the options panel can only
+  toggle whether the melee/tank/priest/boss death sounds fire, not edit the
+  underlying `playerGroups`/`bosses` name rosters. See the roster item
+  below.
+- ~~clip selection~~ — moot: every `CritLog.Data.sounds` entry is a single
+  fixed file now (see CHANGELOG.md's random-multi-clip removal), so there's
+  nothing left to select between. Preview is done (see above).
+- configurable chat triggers — still outstanding
 - ~~explicit sound profiles instead of switching a raw directory path~~ —
   moot: the addon now ships a single sound profile, see CHANGELOG.md and
   [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md)
-- replace the hardcoded melee/tank/priest death rosters with class-based
-  matching (e.g. "a Warrior tank died" instead of a fixed character-name
-  list) — direction decided, deliberately not scheduled yet. Nontrivial:
-  correlating a combat-log `destGUID` to a class requires either a live
-  unit token (target/nameplate/group member — not guaranteed available)
-  or GUID parsing, and role (tank/melee/priest) isn't 1:1 with class, so
-  this needs actual design work, not just a data-structure change. See
-  [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for the current state.
+- ~~replace the hardcoded melee/tank/priest death rosters with class-based
+  matching~~ — implemented as a first draft: `CombatLog.lua`'s `HandleDeath`
+  now checks live class (`UnitClass`)/assigned role (`UnitGroupRolesAssigned`)
+  for melee/tank/priest and live `UnitClassification` (`"worldboss"`) for
+  bosses as the primary match, falling back to the original hardcoded
+  `playerGroups`/`bosses` name lists when no live unit token is available or
+  the live check doesn't match. The name rosters themselves are unchanged
+  and not yet SavedVariables-configurable. **Not yet in-game verified** —
+  see CHANGELOG.md for the known blind spots accepted in this first draft
+  (e.g. an unassigned real tank, or a ranged-spec hybrid class flagged as
+  melee).
 - give Spirit of Redemption a real, working implementation, or remove
   `SREDEMPTION_NAMES` and the disabled test block entirely — currently
   parked, not scheduled
@@ -158,8 +182,13 @@ manual in-game behavior checklist remains required before merge.
 
 ## Current refactoring status
 
-The catalog-and-safety work and the responsibility-based file split are
-complete. The next refactoring branch should focus on one independently
-testable concern, preferably stable spell/NPC identifiers or extraction of
-pure trigger-matching functions, rather than combining configuration UI,
-schema changes, and combat-log behavior in one review.
+The catalog-and-safety work, the responsibility-based file split, spell-ID
+matching (with name fallback), classification-based boss detection, and a
+first-draft options panel are all complete. None of the class/role/
+classification detection or the options panel has been in-game verified
+yet — that verification, not further refactoring, is the immediate next
+step. Once verified, the next refactoring branch should focus on one
+independently testable concern — audio volume control, SavedVariables-backed
+player-roster configuration, or NPC-ID-based matching for bosses that aren't
+classified `worldboss` — rather than combining configuration UI, schema
+changes, and combat-log behavior in one review.
