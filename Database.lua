@@ -21,6 +21,7 @@ local DEFAULTS = {
     DeadSoundFlag = true,
     XtremeSoundFlag = false,
     DebugFlag = false,
+    MasterSoundFlag = true,
 }
 
 local RECORD_DEFAULTS = {
@@ -54,7 +55,6 @@ function CritLog:SetDefaults()
     if initialized then
         print("CritLog Initialized")
         print("/cl help for list of commands")
-        --message('\n Kîtten is DruidLord \n\n Pappi is ShamanKing \n') -- IMPORTANT DO NOT DELETE :D !!!11!1!11
     elseif upgraded then
         print("CritLog updated to "..self.version.." (existing data kept)")
         print("/cl help for list of commands")

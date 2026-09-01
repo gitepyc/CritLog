@@ -2,6 +2,69 @@
 
 ## Unreleased
 
+- Added a master sound switch: `CritLogDB.MasterSoundFlag` (`/cl mute`, on
+  by default - migration-safe, back-fills to `true` so existing characters
+  keep hearing sounds exactly as before until they explicitly mute).
+  Checked inside `CritLog:PlaySound()` in `Sounds.lua`, the single function
+  every sound in the addon already routes through (crits, auras, deaths,
+  ready check, chat triggers, and the options panel's preview buttons) -
+  so one flag mutes everything, without needing to touch each trigger or
+  split sound logic into a separate module. Considered and rejected a
+  larger split of the addon into a "crit tracking core" and a fully
+  separate "sound module": `Sounds.lua` already is that boundary
+  file-wise, and `CritLogDB` state updates already happen independently
+  of whether a sound plays, so the only thing actually missing was this
+  one global toggle - a full architectural split would have added an
+  event-dispatch layer for no real benefit at this addon's size. Added a
+  checkbox for it (no preview button - muting has no sound of its own) at
+  the top of the options panel's toggle list, and `/cl mute` to
+  `printHelp()`/`printConfig()`.
+- Added a standalone in-game options panel (`Options.lua`, loaded last per
+  `docs/REFACTORING.md`'s step-4 layout), opened/closed with `/cl options`.
+  Shows the current highscores (damage/white-hit/heal crit records, same
+  data `/cl` already prints via `printHighscores()`), `CritLog.version`, and
+  a checkbox for every one of the 14 `CritLogDB` toggle fields, labeled with
+  wording lifted from `Commands.lua`'s `printHelp()`/`printConfig()` so no
+  new terminology is introduced. Checkboxes read their state on every
+  `OnShow` (highscores and toggles can change from chat commands while the
+  panel is closed) and write straight back to `CritLogDB` on click - no new
+  `CritLogDB` fields, no changes to trigger/combat-log/sound logic.
+  Deliberately built with only stock Blizzard templates
+  (`BasicFrameTemplateWithInset`, `UICheckButtonTemplate`,
+  `UIPanelButtonTemplate`) and default styling - "erstmal Default Styling,
+  dann schauen wir mal": this is a first draft for visual review, not a
+  finished panel. No minimap button, no Interface Options/Settings
+  integration - out of scope for this pass. Added `UIParent` to
+  `.luacheckrc`'s curated globals list for the new frame parent. Not tested
+  in a real WoW client - there's no headless mode to verify
+  `CreateFrame`/frame layout with here (see `tests/README.md`); needs an
+  in-game check of both visuals and each checkbox's read/write round-trip
+  before merge.
+  Every toggle with a sound of its own (highscore/xtreme/ready/priest/
+  melee/tank/player/boss) also got a "Preview" button that plays the
+  clip directly through the existing `CritLog:PlaySound()`
+  (`Sounds.lua`), bypassing both the `CritLogDB` flag and the real
+  combat-log/event trigger entirely, so you can hear a sound while
+  deciding whether to enable it. `AuraSoundFlag` alone gates seven
+  distinct spell sounds (Bloodlust, Innervate, Power Infusion, Blessing
+  of Protection, Divine Intervention, Mana Tide, Soulstone), too many
+  for one row, so it gets a small button grid instead of a single
+  preview button. Multi-variant sounds (priest/boss death, Innervate,
+  Soulstone) preview a random pick each click via the same
+  `math.random`-based selection `CombatLog.lua`'s local `randomEntry()`
+  already uses for the real trigger, rather than cycling through
+  variants, so a preview sounds like what actually plays in game.
+  Flags with no sound of their own - `AllCritFlag`/`WhiteHitFlag` (they
+  only change *when* the shared highscore sound plays, already
+  previewable from the `SoundFlag` row), `AllLevel`/`DebugFlag` (no
+  sound at all), `DeadSoundFlag` (a master switch already covered by
+  the five death-sound rows it gates) - don't get a button, to keep a
+  first-draft panel from getting more cluttered than the 14 checkboxes
+  already make it. No new `CritLogDB` fields - preview buttons only play
+  sounds, nothing is persisted. Verified all sound keys referenced from
+  `Options.lua` exist in `CritLog.Data.sounds` and re-ran the
+  filename-vs-`sounds/`-directory cross-check from `docs/REFACTORING.md`
+  step 3 (still 24/24 both ways).
 - Added a debug mode: `/cl debug` toggles `DebugFlag` (off by default,
   standard migration-safe new field - existing characters just get it
   backfilled as `false`). `CritLog:Debug(...)` in Core.lua prints only

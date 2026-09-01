@@ -20,6 +20,8 @@ stds.wow = {
         "GetAddOnMetadata",
         "C_AddOns",
         "C_NamePlate",
+        -- Options.lua: parent frame for the standalone options panel
+        "UIParent",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned
