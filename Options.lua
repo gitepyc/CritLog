@@ -16,15 +16,24 @@
 -- over seven distinct spell sounds, too many for a single row - see
 -- AURA_PREVIEWS below instead.
 local CHECKBOXES = {
-    { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)" },
-    { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit" },
-    { field = "AllCritFlag", label = "Sound for all crits" },
-    { field = "WhiteHitFlag", label = "Sound for white hit crits" },
-    { field = "AllLevel", label = "Ignore enemy level requirement" },
-    { field = "XtremeSoundFlag", label = "Xtreme damage sound (over 9000)", sound = "xtremeDamage" },
-    { field = "DebugFlag", label = "Debug mode (diagnostic chat output)" },
-    { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck" },
-    { field = "AuraSoundFlag", label = "Aura/spell sound", auraPreviews = true },
+    { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)",
+      tooltip = "Mutes every CritLog sound when off, without changing any of the individual settings below - turning it back on restores them exactly as they were." },
+    { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
+      tooltip = "Plays a sound whenever you set a new personal highscore (damage crit, white hit crit, or heal crit)." },
+    { field = "AllCritFlag", label = "Sound for all crits",
+      tooltip = "Plays the highscore sound on every crit, not just when it's a new highscore." },
+    { field = "WhiteHitFlag", label = "Sound for white hit crits",
+      tooltip = "Also plays the highscore sound for white hit crits (auto-attacks), not just ability crits." },
+    { field = "AllLevel", label = "Ignore enemy level requirement",
+      tooltip = "Counts crits toward highscores regardless of the target's level, instead of only ones that pass CritLog's normal enemy level check." },
+    { field = "XtremeSoundFlag", label = "Xtreme damage sound (over 9000)", sound = "xtremeDamage",
+      tooltip = "Plays an extra sound whenever a single hit deals more than 9000 damage, on top of the normal highscore sound." },
+    { field = "DebugFlag", label = "Debug mode (diagnostic chat output)",
+      tooltip = "Prints diagnostic chat messages for troubleshooting - spell-ID matching, the level filter, and aura detection." },
+    { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
+      tooltip = "Plays a sound whenever a ready check starts." },
+    { field = "AuraSoundFlag", label = "Aura/spell sound", auraPreviews = true,
+      tooltip = "Master switch for the 7 tracked spell sounds below - Bloodlust, Innervate, Power Infusion, Blessing of Protection, Divine Intervention, Mana Tide, and Soulstone." },
     -- These four (unlike PlayerSoundFlag) rely on the new class/role/
     -- classification detection added this session (isMeleeClass,
     -- isAssignedTank, isPriestClass, isClassifiedBoss in CombatLog.lua) -
@@ -32,12 +41,18 @@ local CHECKBOXES = {
     -- doesn't mean broken: each one falls back to the legacy hardcoded
     -- name roster whenever the live class/role/classification check
     -- doesn't resolve or doesn't match.
-    { field = "PriestSoundFlag", label = "Priest death sound (Experimental)", sound = "priestDeath" },
-    { field = "MeleeSoundFlag", label = "Melee death sound (Experimental)", sound = "meleeDeath" },
-    { field = "TankSoundFlag", label = "Tank death sound (Experimental)", sound = "tankDeath" },
-    { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath" },
-    { field = "BossSoundFlag", label = "Boss death sound (Experimental)", sound = "bossDeath" },
-    { field = "DeadSoundFlag", label = "Death sounds (enables the five above)" },
+    { field = "PriestSoundFlag", label = "Priest death sound (Experimental)", sound = "priestDeath",
+      tooltip = "Plays a sound when a Priest dies. Detects Priests by class first, falls back to a hardcoded name list if that check doesn't resolve." },
+    { field = "MeleeSoundFlag", label = "Melee death sound (Experimental)", sound = "meleeDeath",
+      tooltip = "Plays a sound when a melee-capable class dies. Detects the class directly first, falls back to a hardcoded name list if that check doesn't resolve." },
+    { field = "TankSoundFlag", label = "Tank death sound (Experimental)", sound = "tankDeath",
+      tooltip = "Plays a sound when the group's assigned tank dies. Detects the tank via assigned raid role first, falls back to a hardcoded name list if that check doesn't resolve." },
+    { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
+      tooltip = "Plays a sound when you yourself die." },
+    { field = "BossSoundFlag", label = "Boss death sound (Experimental)", sound = "bossDeath",
+      tooltip = "Plays a sound when a boss dies. Detects world bosses via live classification first, falls back to a hardcoded boss name list if that check doesn't resolve." },
+    { field = "DeadSoundFlag", label = "Death sounds (enables the five above)",
+      tooltip = "Master switch for the five death sounds above (Priest/Melee/Tank/Player/Boss) - they only fire while this is on." },
 }
 
 -- AuraSoundFlag gates all seven of these individually (CombatLog.lua's
@@ -197,6 +212,16 @@ local function buildFrame()
             CritLogDB[entry.field] = self:GetChecked() and true or false
         end)
         checkboxesByField[entry.field] = check
+
+        if entry.tooltip then
+            check:SetScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:SetText(entry.label, 1, 1, 1)
+                GameTooltip:AddLine(entry.tooltip, nil, nil, nil, true)
+                GameTooltip:Show()
+            end)
+            check:SetScript("OnLeave", GameTooltip_Hide)
+        end
 
         local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         label:SetPoint("LEFT", check, "RIGHT", 2, 1)
