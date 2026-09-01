@@ -25,11 +25,18 @@ local CHECKBOXES = {
     { field = "DebugFlag", label = "Debug mode (diagnostic chat output)" },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck" },
     { field = "AuraSoundFlag", label = "Aura/spell sound", auraPreviews = true },
-    { field = "PriestSoundFlag", label = "Priest death sound", sound = "priestDeath" },
-    { field = "MeleeSoundFlag", label = "Melee death sound", sound = "meleeDeath" },
-    { field = "TankSoundFlag", label = "Tank death sound", sound = "tankDeath" },
+    -- These four (unlike PlayerSoundFlag) rely on the new class/role/
+    -- classification detection added this session (isMeleeClass,
+    -- isAssignedTank, isPriestClass, isClassifiedBoss in CombatLog.lua) -
+    -- not yet in-game verified, hence "(Experimental)". Untested here
+    -- doesn't mean broken: each one falls back to the legacy hardcoded
+    -- name roster whenever the live class/role/classification check
+    -- doesn't resolve or doesn't match.
+    { field = "PriestSoundFlag", label = "Priest death sound (Experimental)", sound = "priestDeath" },
+    { field = "MeleeSoundFlag", label = "Melee death sound (Experimental)", sound = "meleeDeath" },
+    { field = "TankSoundFlag", label = "Tank death sound (Experimental)", sound = "tankDeath" },
     { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath" },
-    { field = "BossSoundFlag", label = "Boss death sound", sound = "bossDeath" },
+    { field = "BossSoundFlag", label = "Boss death sound (Experimental)", sound = "bossDeath" },
     { field = "DeadSoundFlag", label = "Death sounds (enables the five above)" },
 }
 
@@ -125,8 +132,17 @@ local function buildFrame()
     -- Tall enough for the header block plus all 15 toggle rows plus the
     -- aura preview grid; 660 was too short and let the bottom rows render
     -- past the frame's own border.
-    f:SetSize(440, 860)
+    -- Widened from 440: the "(Experimental)" suffix on four labels needs
+    -- more room before the preview button column.
+    f:SetSize(490, 860)
     f:SetPoint("CENTER")
+    -- TOOLTIP is the highest frame strata WoW exposes; other addons
+    -- (WeakAuras displays included) commonly sit at MEDIUM/HIGH/DIALOG,
+    -- so this keeps the options panel on top of them without needing to
+    -- know what strata any specific one uses. SetToplevel raises it above
+    -- same-strata siblings whenever it's clicked, same as other dialogs.
+    f:SetFrameStrata("TOOLTIP")
+    f:SetToplevel(true)
     f:SetMovable(true)
     f:EnableMouse(true)
     f:SetClampedToScreen(true)
@@ -191,7 +207,7 @@ local function buildFrame()
             -- than to the label, so button position doesn't depend on how
             -- long a given label happens to be.
             local previewButton = createPreviewButton(f, entry.sound)
-            previewButton:SetPoint("LEFT", check, "LEFT", 290, 0)
+            previewButton:SetPoint("LEFT", check, "LEFT", 340, 0)
             previous = check
             previousXOffset = 0
         elseif entry.auraPreviews then
