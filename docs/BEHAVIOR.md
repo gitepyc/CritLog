@@ -20,7 +20,11 @@ WoW event
 ```
 
 All sounds use the `Master` audio channel. CritLog has no independent volume
-control.
+control. `CritLogDB.MasterSoundFlag` (`/cl mute`, on by default) is checked
+inside `CritLog:PlaySound()` in `Sounds.lua` — every sound in the addon
+(crits, auras, deaths, ready check, chat triggers) routes through that one
+function, so this one flag mutes everything regardless of the individual
+toggles below.
 
 ## Login and ready check
 

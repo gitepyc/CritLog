@@ -72,6 +72,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl help` | Lists all commands in chat. |
 | `/cl config` | Prints the current toggles. |
 | `/cl reset` | Resets highscores while retaining the current configuration. |
+| `/cl mute` | Master switch: turns all sounds on/off, overriding every other sound toggle. On by default. |
 | `/cl sound` | Toggles the sound for a new highscore. |
 | `/cl allcrits` | Toggles sounds for every critical hit. |
 | `/cl whitehit` | Toggles critical auto-attack/ranged-attack handling. |
