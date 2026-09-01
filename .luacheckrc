@@ -11,8 +11,10 @@ stds.wow = {
         "CreateFrame",
         "CombatLogGetCurrentEventInfo",
         "PlaySoundFile",
+        "UnitClass", -- class/role-based death-sound matching (feature/class-based-death-sounds)
         "UnitClassification",
         "UnitGUID",
+        "UnitGroupRolesAssigned", -- class/role-based death-sound matching (feature/class-based-death-sounds)
         "UnitInParty",
         "UnitInRaid",
         "UnitLevel",

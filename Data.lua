@@ -45,6 +45,15 @@ CritLog.Data = {
             "Illidan Sturmgrimm",
         },
     },
+    -- Legacy name-based death rosters, tied to one specific historical raid
+    -- group. As of the class/role-based matching added in CombatLog.lua
+    -- (see deathClasses below), these are no longer the primary check —
+    -- they're kept as a fallback, same ID-first-then-name-fallback pattern
+    -- already used for spells above: class/role detection needs a live
+    -- unit token and (for tank) an explicitly assigned raid role, neither
+    -- of which is guaranteed available, so a name still in this list keeps
+    -- firing even when the live check can't. See CHANGELOG.md for the
+    -- decision to keep rather than delete these.
     playerGroups = {
         melee = {
             "Schnutz", "Synday", "Kamicaze", "Alcira", "Shocksx",
@@ -53,6 +62,24 @@ CritLog.Data = {
         },
         tank = { "Truby", "Ketamartin", "Hïnatahÿuuga", "Kîtten" },
         priest = { "Ilenkov", "Epyç" },
+    },
+    -- Class/role rules for death-sound matching, used as the primary check
+    -- (see CombatLog.lua's isMeleeClass/isAssignedTank/isPriestClass and
+    -- HandleDeath) before falling back to playerGroups above. See
+    -- CHANGELOG.md for the reasoning and known trade-offs behind each rule.
+    deathClasses = {
+        -- Priest maps 1:1 onto WoW's class system, so this is a plain
+        -- UnitClass check — no ambiguity like melee/tank below.
+        priest = { "PRIEST" },
+        -- Classes with at least one melee-capable spec in Season of
+        -- Discovery. Hunter is deliberately excluded (functionally a
+        -- ranged class even though it can equip melee weapons); Mage and
+        -- Warlock are never melee. Paladin, Shaman, and Druid are hybrids —
+        -- narrowed further by assigned role in isMeleeClass().
+        meleeCapable = { "WARRIOR", "ROGUE", "PALADIN", "SHAMAN", "DRUID" },
+        -- Subset of meleeCapable with no ranged/caster spec at all, so
+        -- assigned role doesn't need to be checked for these two.
+        alwaysMelee = { "WARRIOR", "ROGUE" },
     },
     -- Matched by spell ID first (Season of Discovery, cross-checked against
     -- Wowhead's current Classic database - see CHANGELOG.md), with the
