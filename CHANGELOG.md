@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- Added a master sound switch: `CritLogDB.MasterSoundFlag` (`/cl mute`, on
+  by default - migration-safe, back-fills to `true` so existing characters
+  keep hearing sounds exactly as before until they explicitly mute).
+  Checked inside `CritLog:PlaySound()` in `Sounds.lua`, the single function
+  every sound in the addon already routes through (crits, auras, deaths,
+  ready check, chat triggers, and the options panel's preview buttons) -
+  so one flag mutes everything, without needing to touch each trigger or
+  split sound logic into a separate module. Considered and rejected a
+  larger split of the addon into a "crit tracking core" and a fully
+  separate "sound module": `Sounds.lua` already is that boundary
+  file-wise, and `CritLogDB` state updates already happen independently
+  of whether a sound plays, so the only thing actually missing was this
+  one global toggle - a full architectural split would have added an
+  event-dispatch layer for no real benefit at this addon's size. Added a
+  checkbox for it (no preview button - muting has no sound of its own) at
+  the top of the options panel's toggle list, and `/cl mute` to
+  `printHelp()`/`printConfig()`.
 - Added a standalone in-game options panel (`Options.lua`, loaded last per
   `docs/REFACTORING.md`'s step-4 layout), opened/closed with `/cl options`.
   Shows the current highscores (damage/white-hit/heal crit records, same

@@ -8,13 +8,15 @@
 -- the panel doesn't introduce new terminology for the same settings.
 --
 -- `sound` is a key into CritLog.Data.sounds and gets a "Preview" button on
--- that row; flags with no sound of their own (AllCritFlag/WhiteHitFlag only
--- modify *when* the shared crit sound plays, AllLevel/DebugFlag don't play
+-- that row; flags with no sound of their own (MasterSoundFlag mutes
+-- everything but plays nothing itself, AllCritFlag/WhiteHitFlag only modify
+-- *when* the shared crit sound plays, AllLevel/DebugFlag don't play
 -- anything, DeadSoundFlag is a master switch already covered by the five
 -- death-sound rows below it) get none. AuraSoundFlag is a master switch
 -- over seven distinct spell sounds, too many for a single row - see
 -- AURA_PREVIEWS below instead.
 local CHECKBOXES = {
+    { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)" },
     { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit" },
     { field = "AllCritFlag", label = "Sound for all crits" },
     { field = "WhiteHitFlag", label = "Sound for white hit crits" },

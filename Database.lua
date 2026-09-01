@@ -21,6 +21,7 @@ local DEFAULTS = {
     DeadSoundFlag = true,
     XtremeSoundFlag = false,
     DebugFlag = false,
+    MasterSoundFlag = true,
 }
 
 local RECORD_DEFAULTS = {

@@ -10,6 +10,7 @@ end
 local function printHelp()
     print("/cl reset: sets all Logs to 0")
     print("/cl level: changes level requirements for crit logs")
+    print("/cl mute: turns ALL sounds on/off, overriding every sound toggle below")
     print("/cl sound: turns BÄM sound on/off (highscore sound)")
     print("/cl allcrits: turns BÄM sound on/off for all crits")
     print("/cl whitehit: turns BÄM sound on/off for all WHITEHIT crits")
@@ -32,6 +33,7 @@ end
 
 local function printConfig()
     print("/cl level: "..tostring(CritLogDB.AllLevel))
+    print("/cl mute: "..tostring(CritLogDB.MasterSoundFlag))
     print("/cl sound: "..tostring(CritLogDB.SoundFlag))
     print("/cl allcrits: "..tostring(CritLogDB.AllCritFlag))
     print("/cl whitehit: "..tostring(CritLogDB.WhiteHitFlag))
@@ -70,6 +72,12 @@ function CritLog:PrintCritLogs(message)
     if command == "reset" then
         self:ResetRecords()
         printHighscores()
+    elseif command == "mute" then
+        toggle(
+            "MasterSoundFlag",
+            "CritLog: all sounds enabled",
+            "CritLog: all sounds muted"
+        )
     elseif command == "sound" then
         CritLogDB.SoundFlag = not CritLogDB.SoundFlag
         if CritLogDB.SoundFlag then
