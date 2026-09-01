@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Options panel: fixed preview button text getting stuck on the yellow
+  hover color permanently after the first mouseover — the code called
+  `button:GetFontString():SetFontObject()` directly, which bypasses the
+  button widget's own Normal/Highlight font state machine, so nothing told
+  it to revert on mouse-out. Switched to `SetNormalFontObject`/
+  `SetHighlightFontObject`, which let the button handle the swap itself.
+  Moved `PlayerSoundFlag` above the four experimental toggles (it isn't
+  experimental, so it shouldn't visually read as part of that group).
+  Replaced the checkbox hover tooltips with a static hint line under every
+  toggle: `GameTooltip` on the checkbox didn't reliably show in-game (small
+  hit area), so the explanation is now always visible instead of depending
+  on a precise hover; `GameTooltip`/`GameTooltip_Hide` removed from
+  `.luacheckrc` accordingly. Frame height increased to fit the extra line
+  under all 15 rows. No `CritLogDB` schema impact.
 - Deleted the 6 sound files that became unused once random multi-clip
   selection and the `Schnutz` special case were removed: `Inervate1.mp3`,
   `Angels2.mp3`, `Zelda.mp3`, `soulstone2.mp3`, `soulstone3.mp3`,
