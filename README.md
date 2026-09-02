@@ -32,15 +32,23 @@ World of Warcraft/
         └── AddOns/
             └── CritLog/
                 ├── CritLog.toc
-                ├── Core.lua
-                ├── Data.lua
-                ├── Database.lua
+                ├── CritLog.lua
+                ├── Core/
+                │   ├── Constants.lua
+                │   ├── Filters.lua
+                │   ├── Records.lua
+                │   └── CombatLog.lua
+                ├── Persistence/
+                │   └── Database.lua
+                ├── UI/
+                │   ├── Shared.lua
+                │   ├── MainPanel.lua
+                │   ├── SoundPanel.lua
+                │   └── RosterPanel.lua
                 ├── Sounds.lua
                 ├── ChatTriggers.lua
-                ├── CombatLog.lua
                 ├── Commands.lua
                 ├── Events.lua
-                ├── Options.lua
                 └── sounds/
 ```
 
@@ -108,17 +116,33 @@ critlog/
 ├── .pkgmeta              # BigWigsMods/packager config, used by release.yml on tag push
 ├── .github/workflows/    # CI (runs against the GitHub push mirror; Gitea has no runner yet)
 ├── CritLog.toc           # WoW metadata and SavedVariables declaration
-├── Core.lua              # Addon namespace and version
-├── Data.lua              # Sound, trigger, boss, spell, and roster catalog
-├── Database.lua          # SavedVariables defaults and record reset
+├── CritLog.lua           # Addon namespace and version
+├── Core/                 # Domain logic - matching rules and event decoding
+│   ├── Constants.lua     # Sound, trigger, boss, spell, and roster-label catalog
+│   ├── Filters.lua       # Pure eligibility rules (no WoW API calls) - see below
+│   ├── Records.lua       # Pure highscore-record rules (no WoW API calls)
+│   └── CombatLog.lua     # Combat-log capture/decoding; the "impure shell" around Filters/Records
+├── Persistence/          # CritLogDB reads/writes
+│   └── Database.lua      # Defaults, migrations, record reset, roster CRUD
+├── UI/                   # In-game options panels (/cl options), first draft
+│   ├── Shared.lua        # Frame/checkbox-row helpers, Escape-key stack
+│   ├── MainPanel.lua     # Crit-tracking panel + Highscore List popup
+│   ├── SoundPanel.lua    # Sound Settings panel
+│   └── RosterPanel.lua   # Roster Settings panel
 ├── Sounds.lua            # Sound playback helpers
 ├── ChatTriggers.lua       # Raid-leader phrase handling
-├── CombatLog.lua          # Crit, aura, death, and boss-kill handling
 ├── Commands.lua           # Slash commands and chat output
 ├── Events.lua             # Frame registration and event dispatch
-├── Options.lua            # In-game options panels (/cl options, Sound/Roster Settings), first draft
 └── sounds/
 ```
+
+`Core/Filters.lua` and `Core/Records.lua` take already-resolved values (a
+class, a role, an amount) and return a decision - no `Unit*`/`PlaySoundFile`
+calls anywhere in either file. `Core/CombatLog.lua` is what resolves live
+unit state from a combat-log GUID and calls into them. This split exists so
+the actual matching/highscore rules can eventually get real Lua unit tests
+outside the game client, closing the gap described in
+[tests/README.md](tests/README.md) - not done yet, just made possible.
 
 This repository's root doubles as the addon's own folder content: the
 `package-as: CritLog` rule in `.pkgmeta` packages it into a `CritLog/` folder
@@ -127,7 +151,7 @@ on every tag push, matching what manual installation above does by hand.
 
 ## Hard-coded data inventory
 
-The following data is centralized in `Data.lua`. The options panel
+The following data is centralized in `Core/Constants.lua`. The options panel
 (`/cl options`) can toggle whether each feature fires at all, and the
 melee/tank/priest name rosters are now editable too (see below) — everything
 else in this list is still code-only, not editable through the panel or a
@@ -143,8 +167,9 @@ configuration file:
 - a nine-level threshold for relevant damage targets
 - defaults for all feature toggles
 
-The melee/tank/priest death-sound rosters are seeded from `Data.lua` once,
-then live in `CritLogDB.playerGroups` per character — editable via
+The melee/tank/priest death-sound rosters are seeded from
+`Persistence/Database.lua` once, then live in `CritLogDB.playerGroups` per
+character — editable via
 `/cl options` → "Roster Settings..." (Add/Remove per category), not just a
 fallback for the live class/role check anymore.
 
@@ -163,7 +188,7 @@ Full prioritized list: [Roadmap](docs/ROADMAP.md).
 There are no runtime dependencies or build steps. Changes are made in the
 focused Lua modules listed above and must be tested in the target client.
 `CritLog.toc`'s `## Version:` is the single source of truth for the version
-number — `Core.lua` reads it via `GetAddOnMetadata`/`C_AddOns.GetAddOnMetadata`
+number — `CritLog.lua` reads it via `GetAddOnMetadata`/`C_AddOns.GetAddOnMetadata`
 at load time instead of duplicating it.
 
 ## Testing

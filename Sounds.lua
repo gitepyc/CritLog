@@ -13,6 +13,6 @@ end
 
 function CritLog:PlayCritSound()
     if CritLogDB.SoundFlag then
-        self:PlaySound(self.Data.sounds.crit)
+        self:PlaySound(self.Constants.sounds.crit)
     end
 end

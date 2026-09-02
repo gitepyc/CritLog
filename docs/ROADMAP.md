@@ -17,14 +17,14 @@ done is in `CHANGELOG.md` and git history, not repeated here.
 3. ~~SavedVariables-backed player-role configuration~~ - done for the
    melee/tank/priest rosters: `CritLogDB.playerGroups`, editable via
    `/cl options` → "Roster Settings..." (Add/Remove per category). Not
-   yet in-game verified. The boss name lists (`CritLog.Data.bosses`) are
+   yet in-game verified. The boss name lists (`CritLog.Constants.bosses`) are
    still code-only, not scoped for this pass - those rosters are still an
    intentional fallback for the live class/role/classification checks,
    not scheduled for removal.
 4. Audio volume/channel control - all sounds play on the fixed `Master`
    channel via `PlaySoundFile`; no volume control beyond `MasterSoundFlag`'s
    on/off mute.
-5. Configurable chat-trigger phrases (`CritLog.Data.chatTriggers` is still
+5. Configurable chat-trigger phrases (`CritLog.Constants.chatTriggers` is still
    hardcoded).
 6. Boss name-list presets per expansion (SoD/TBC/WotLK/...), selectable or
    combinable, instead of one static list. Parked, not started - needs

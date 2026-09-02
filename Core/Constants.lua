@@ -1,6 +1,6 @@
 CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 
-CritLog.Data = {
+CritLog.Constants = {
     -- One entry per highscore record CritLog tracks, so a single false-
     -- positive record (e.g. a buggy value from some other addon reporting
     -- damage) can be cleared without wiping the other two. `name` is nil
@@ -22,7 +22,7 @@ CritLog.Data = {
         -- Reuses priestDeath's file - no dedicated asset yet, same precedent
         -- as the shared `crit` sound above. Kept as its own catalog key
         -- since it's a logically distinct trigger (see HandleDeath in
-        -- CombatLog.lua), just sharing a file for now.
+        -- Core/CombatLog.lua), just sharing a file for now.
         spiritOfRedemption = "Angels.mp3",
         innervate = "Innervate.mp3",
         manaTide = "Manatide.mp3",
@@ -78,39 +78,19 @@ CritLog.Data = {
             "Illidan Sturmgrimm",
         },
     },
-    -- Display labels for the three roster categories - Options.lua's
-    -- Roster Settings panel and Database.lua's migration both need a
-    -- consistent name/order for them.
+    -- Display labels for the three roster categories - Persistence's
+    -- migration and UI/RosterPanel.lua both need a consistent name/order
+    -- for them.
     rosterKinds = {
         melee = { label = "Melee" },
         tank = { label = "Tank" },
         priest = { label = "Priest" },
     },
-    -- Default seed for CritLogDB.playerGroups (Database.lua migrates a copy
-    -- of this into SavedVariables on first load; from then on CombatLog.lua
-    -- reads only the CritLogDB copy, never this table). Originally a fixed,
-    -- code-only roster tied to one specific historical raid group; now
-    -- editable per character via the options panel. As of the class/role-
-    -- based matching added in CombatLog.lua (see deathClasses below), these
-    -- are no longer the primary check — they're kept as a fallback, same
-    -- ID-first-then-name-fallback pattern already used for spells above:
-    -- class/role detection needs a live unit token and (for tank) an
-    -- explicitly assigned raid role, neither of which is guaranteed
-    -- available, so a name still in this list keeps firing even when the
-    -- live check can't.
-    playerGroups = {
-        melee = {
-            "Schnutz", "Synday", "Kamicaze", "Alcira", "Shocksx",
-            "Dripperx", "Enry", "Feniara", "Lemonsoda", "Cindarr",
-            "Truffi", "Gradba", "Zoiy",
-        },
-        tank = { "Truby", "Ketamartin", "Hïnatahÿuuga", "Kîtten" },
-        priest = { "Ilenkov", "Epyç" },
-    },
     -- Class/role rules for death-sound matching, used as the primary check
-    -- (see CombatLog.lua's isMeleeClass/isAssignedTank/isPriestClass and
-    -- HandleDeath) before falling back to playerGroups above. See
-    -- CHANGELOG.md for the reasoning and known trade-offs behind each rule.
+    -- (see Core/Filters.lua's isMeleeClass/isAssignedTank/isPriestClass and
+    -- Core/CombatLog.lua's HandleDeath) before falling back to
+    -- CritLogDB.playerGroups. See CHANGELOG.md for the reasoning and known
+    -- trade-offs behind each rule.
     deathClasses = {
         -- Priest maps 1:1 onto WoW's class system, so this is a plain
         -- UnitClass check — no ambiguity like melee/tank below.
