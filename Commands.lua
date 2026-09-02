@@ -33,7 +33,7 @@ local function printHelp()
     print("/cl whitehit: turns BÄM sound on/off for all WHITEHIT crits")
     print("/cl xtreme: turns sound for hits over 9000 damage on/off (off by default)")
     print("/cl debug: turns diagnostic chat output on/off (off by default)")
-    print("/cl options: opens/closes the CritLog options panel")
+    print("/cl options (or /cl opt): opens/closes the CritLog options panel")
     print("/cl ready: turns ReadyCheck Sound on/off")
     print("/cl aura: turns Aura/Spell Sound on/off")
     print("------------")
@@ -170,7 +170,7 @@ function CritLog:PrintCritLogs(message)
         else
             print("CritLog: Enemy Level + 9 < Player Level to log DAMAGE Crits (GREEN Level Units) only")
         end
-    elseif command == "options" then
+    elseif command == "options" or command == "opt" then
         self:ShowOptions()
     elseif command == "help" then
         printHelp()
