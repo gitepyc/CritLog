@@ -3,21 +3,9 @@
 ## Overview
 
 The catalog contains **18 files**, all in active use, totaling approximately
-**1.24 MB**. The 6 former multi-variant/special-case alternates
-(`Inervate1.mp3`, `Angels2.mp3`, `Zelda.mp3`, `soulstone2.mp3`,
-`soulstone3.mp3`, `schnutz.mp3`) were deleted once random selection and the
-`Schnutz` special case were removed (see `CHANGELOG.md`); the two survivors
-that used to carry a `1`/`2` variant suffix were renamed to drop it
-(`Angels1.mp3` → `Angels.mp3`, `Inervate2.mp3` → `Innervate.mp3`, also fixing
-the "Inervate" typo along the way).
-
-> **History:** CritLog used to ship two profiles (default and an alternate
-> "Toni" set), plus a `more sounds/` folder of never-wired-up candidates and
-> a couple of sounds tied to disabled features. Byte-identical files were
-> deduplicated, the Toni set was promoted to be the only profile, and the
-> unused/orphaned material was removed in a follow-up pass. See
-> `CHANGELOG.md` for the exact steps and [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md)
-> for what (if anything) is still left to review.
+**1.24 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
+consolidation, random-pick removal); [ROADMAP.md](ROADMAP.md) for what's
+still outstanding — the asset-rights review below is the big one.
 
 Duration and bitrate values come from Windows audio metadata; `n/a` means
 Windows did not expose the value.

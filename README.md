@@ -16,8 +16,7 @@ auras, and raid-leader chat triggers.
 - [Wiki home](docs/README.md)
 - [Behavior and triggers](docs/BEHAVIOR.md)
 - [Complete sound catalog](docs/SOUNDS.md)
-- [Refactoring plan](docs/REFACTORING.md)
-- [Cleanup review checklist](docs/CLEANUP-REVIEW.md)
+- [Roadmap](docs/ROADMAP.md)
 
 ## Install
 
@@ -145,40 +144,12 @@ configuration file:
 
 ## Known technical issues and risks
 
-This is a static inventory, not a complete in-game verification:
-
-1. **Legacy implementation:** The addon works in the current Season of
-   Discovery test environment, but its combat-log handling has not yet been
-   systematically verified for every relevant SoD event.
-2. **Name-based boss/death matching, mostly a fallback now:** Aura/ability
-   triggers match by spell ID first, with the display name as a fallback.
-   Boss detection and the melee/tank/priest death sounds now check live
-   `UnitClassification`/`UnitClass`/`UnitGroupRolesAssigned` first, falling
-   back to the hard-coded English/German boss list or player-name rosters
-   only when no live unit token is available or the check doesn't match.
-   None of this class/role/classification detection has been in-game
-   verified yet — see the `Unreleased` section of `CHANGELOG.md` and
-   docs/REFACTORING.md.
-3. **Spirit of Redemption:** Test code is commented out and marked "not
-   working" by the original author. Deliberately left as-is for now — see
-   [docs/CLEANUP-REVIEW.md](docs/CLEANUP-REVIEW.md).
-4. **No CurseForge/Wago project yet:** Static linting runs via `tests/lint/`
-   and CI (see [Testing](#testing)), and `.github/workflows/release.yml`
-   builds and publishes a GitHub Release with a packaged zip on every tag
-   push. There is no CurseForge/WoWInterface/Wago project id or upload
-   automation configured yet, so releases only reach GitHub for now.
-5. **Unclear asset rights:** Audio-file origin and redistribution rights are
-   undocumented and must be reviewed before public distribution.
-
-## Next steps
-
-The behavioral inventory, safe cleanup, data catalog, module split, spell-ID
-matching, class/role-based death-sound detection, and a first-draft options
-panel are now in place. The recommended next steps are documented in the
-[Refactoring plan](docs/REFACTORING.md): in-game verification of everything
-still marked "(Experimental)"/first-draft, NPC-ID-based matching for bosses
-that aren't classified `worldboss`, audio channel/volume control, and focused
-tests for pure matching and migration logic.
+Not yet in-game verified: the options panel, class/role/classification-based
+death-sound detection, and spell-ID aura matching (all fall back to the old
+name-based matching when the live check doesn't resolve). No CurseForge/Wago
+project configured yet - releases only reach GitHub for now. Audio-file
+rights are undocumented and must be reviewed before public distribution.
+Full prioritized list: [Roadmap](docs/ROADMAP.md).
 
 ## Development
 

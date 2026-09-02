@@ -2,7 +2,7 @@
 -- only built-in Blizzard templates (BasicFrameTemplateWithInset,
 -- UICheckButtonTemplate, UIPanelButtonTemplate), no custom textures or
 -- third-party UI libs. Visual polish is a follow-up once the layout itself
--- is reviewed - see docs/REFACTORING.md step 5.
+-- is reviewed - see docs/ROADMAP.md.
 
 -- Label wording is lifted from Commands.lua's printHelp()/printConfig() so
 -- the panel doesn't introduce new terminology for the same settings.
