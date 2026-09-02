@@ -95,7 +95,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl ready` | Toggles the ready-check sound. |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl player` | Toggles the player's own death sound. |
-| `/cl melee` | Toggles the melee death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: class/assigned role (melee-capable class, not flagged Healer). |
+| `/cl melee` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: melee-capable class, not flagged Healer - the roster/name-list side isn't melee-only, ranged DPS names belong there too. |
 | `/cl tank` | Same toggle, for the tank death sound. Live check: assigned raid Tank role. |
 | `/cl priest` | Same toggle, for the priest death sound (and Spirit of Redemption). Live check: class `PRIEST`. |
 | `/cl boss` | Same toggle, for the boss death sound. Live check: `UnitClassification` (`worldboss`). |

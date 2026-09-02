@@ -103,7 +103,12 @@ CritLog.Constants = {
     -- migration and UI/RosterPanel.lua both need a consistent name/order
     -- for them.
     rosterKinds = {
-        melee = { label = "Melee" },
+        -- Labeled "Damage Dealer" rather than "Melee" so it's clear ranged
+        -- DPS names belong here too - the roster is a free-form name list,
+        -- unrelated to the live "melee-capable class" check in deathClasses
+        -- below (that stays melee-specific; the roster/name-list fallback
+        -- was never actually restricted to melee, just mislabeled).
+        melee = { label = "Damage Dealer" },
         tank = { label = "Tank" },
         priest = { label = "Priest" },
     },

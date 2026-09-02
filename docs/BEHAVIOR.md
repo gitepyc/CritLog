@@ -90,7 +90,7 @@ Wowhead-Classic-sourced but not yet in-game verified — see
 
 The player's own death sound (`PlayerSoundFlag`, `/cl player`) is a plain
 on/off flag, unchanged, long-standing behavior. The other four groups
-(Melee/Tank/Priest/Boss) each have a **detection mode** instead - there is
+(Damage Dealer/Tank/Priest/Boss) each have a **detection mode** instead - there is
 no separate master switch over just these four anymore (there used to be
 one, `DeadSoundFlag`); setting all four modes to `none` is equivalent
 (`CritLogDB.<Kind>DetectionMode`, a dropdown in the Sound Settings panel,
