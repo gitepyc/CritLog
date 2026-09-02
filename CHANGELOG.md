@@ -6,6 +6,17 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.13-dev
+
+- Added a Help panel (`/cl options` -> "Help...", new `UI/HelpPanel.lua`)
+  listing every slash command in-game, instead of only via `/cl help`
+  printing to chat. Both now read from one shared list
+  (`CritLog.Constants.helpLines`) so they can't drift apart.
+- Renamed the `/cl melee` command to `/cl dps`, matching the earlier
+  Damage Dealer wording rename - the underlying field
+  (`CritLogDB.MeleeDetectionMode`) is unchanged, only the typed command
+  word changed.
+
 ## 0.5.12-dev
 
 - Wording: "Soulstone Resurrection" renamed to "Soulstone Applied" - the

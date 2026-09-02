@@ -217,10 +217,10 @@ end
 local function buildFrame()
     -- Tall enough for the header block, the Highscore List button, the 2
     -- crit-tracking toggle rows (each with its own hint line underneath),
-    -- and the Sound Settings button. Widened from 420 so a long
-    -- spell/target name in a highscore line has room before running into
-    -- that row's Reset button.
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 470)
+    -- and the Sound Settings/Roster Settings/Help button row. Widened from
+    -- 420 so a long spell/target name in a highscore line has room before
+    -- running into that row's Reset button.
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 500)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -292,6 +292,19 @@ local function buildFrame()
     rosterButton:SetPoint("LEFT", soundButton, "RIGHT", 8, 0)
     rosterButton:SetScript("OnClick", function()
         CritLog:ShowRoster()
+    end)
+
+    -- Own row below Sound/Roster Settings rather than a third button
+    -- squeezed into the same row - two 140px buttons already use most of
+    -- this panel's 470px width.
+    local helpButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    helpButton:SetSize(140, 24)
+    helpButton:SetText("Help...")
+    helpButton:SetNormalFontObject("GameFontNormalSmall")
+    helpButton:SetHighlightFontObject("GameFontHighlightSmall")
+    helpButton:SetPoint("TOPLEFT", soundButton, "BOTTOMLEFT", 0, -8)
+    helpButton:SetScript("OnClick", function()
+        CritLog:ShowHelp()
     end)
 
     return f

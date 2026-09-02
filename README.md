@@ -44,7 +44,8 @@ World of Warcraft/
                 │   ├── Shared.lua
                 │   ├── MainPanel.lua
                 │   ├── SoundPanel.lua
-                │   └── RosterPanel.lua
+                │   ├── RosterPanel.lua
+                │   └── HelpPanel.lua
                 ├── Sounds.lua
                 ├── ChatTriggers.lua
                 ├── Commands.lua
@@ -81,7 +82,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | Command | Current behavior |
 | --- | --- |
 | `/cl` | Prints stored highscores. |
-| `/cl help` | Lists all commands in chat. |
+| `/cl help` | Lists all commands in chat; the same list is also available in-game via `/cl options` -> "Help..." (a panel, not chat spam). |
 | `/cl config` | Prints the current toggles. |
 | `/cl reset` | Resets highscores while retaining the current configuration. |
 | `/cl mute` | Master switch: turns all sounds on/off, overriding every other sound toggle. On by default. |
@@ -95,7 +96,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl ready` | Toggles the ready-check sound. |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl player` | Toggles the player's own death sound. |
-| `/cl melee` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: melee-capable class, not flagged Healer - the roster/name-list side isn't melee-only, ranged DPS names belong there too. |
+| `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: melee-capable class, not flagged Healer - the roster/name-list side isn't melee-only, ranged DPS names belong there too. |
 | `/cl tank` | Same toggle, for the tank death sound. Live check: assigned raid Tank role. |
 | `/cl priest` | Same toggle, for the priest death sound (and Spirit of Redemption). Live check: class `PRIEST`. |
 | `/cl boss` | Same toggle, for the boss death sound. Live check: `UnitClassification` (`worldboss`). |
@@ -127,7 +128,8 @@ critlog/
 │   ├── Shared.lua        # Frame/checkbox-row helpers, Escape-key stack
 │   ├── MainPanel.lua     # Crit-tracking panel + Highscore List popup
 │   ├── SoundPanel.lua    # Sound Settings panel
-│   └── RosterPanel.lua   # Roster Settings panel
+│   ├── RosterPanel.lua   # Roster Settings panel
+│   └── HelpPanel.lua     # Help panel - lists every slash command
 ├── Sounds.lua            # Sound playback helpers
 ├── ChatTriggers.lua       # Raid-leader phrase handling
 ├── Commands.lua           # Slash commands and chat output

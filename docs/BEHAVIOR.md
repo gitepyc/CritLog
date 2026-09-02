@@ -103,7 +103,7 @@ one of `CritLog.Constants.detectionModes`):
 | `roster` | Only a name in `CritLogDB.playerGroups.<kind>` (or the boss name lists) counts; the live check is ignored even if it matches. |
 | `both` | Either one counts - the original, still-default behavior. |
 
-`/cl priest`/`melee`/`tank`/`boss` only toggle between `none` and `both`;
+`/cl priest`/`dps`/`tank`/`boss` only toggle between `none` and `both`;
 `experimental`/`roster` need the options panel dropdown. The live checks
 are not yet in-game verified for tank/boss/priest specifically (melee's
 false-positive bug is fixed and confirmed) - see
