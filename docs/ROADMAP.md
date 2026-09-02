@@ -35,9 +35,11 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    would mainly matter for 5-man dungeon end-bosses, which aren't
    classified `worldboss` and are the only thing the name-list fallback
    still does real work for.
-7. Spirit of Redemption - give it a real, working implementation, or remove
-   `SREDEMPTION_NAMES` and the disabled test block entirely. Parked, not
-   scheduled either way.
+7. ~~Spirit of Redemption~~ - done: the priest death sound now specifically
+   detects a Spirit-of-Redemption-delayed death (buff spell id `27827`
+   cached on apply, consumed on the later real `UNIT_DIED`), not just any
+   priest dying. Reuses the plain priest-death file for now (no dedicated
+   asset), see [BEHAVIOR.md](BEHAVIOR.md). Not yet in-game verified.
 8. CurseForge/Wago publishing - no project id configured yet; `.pkgmeta`
    packaging itself is done and verified.
 9. **Asset/audio rights review** - none of the shipped sound files have a

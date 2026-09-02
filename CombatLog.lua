@@ -2,11 +2,6 @@ local function endsWith(value, ending)
     return ending == "" or value:sub(-#ending) == ending
 end
 
--- Spirit of Redemption is a disabled test feature (see the commented-out
--- block at the bottom of this file); its name list is kept separate and
--- untouched until that feature gets a real fix.
-local SREDEMPTION_NAMES = {"Spirit of Redemption", "Geist der Erlösung"}
-
 -- Matches a spell entry from Data.lua (see the comment there) by ID first,
 -- falling back to the display name if the ID doesn't hit.
 local function matchesSpell(spell, spellId, spellName)
@@ -15,6 +10,22 @@ end
 
 local function isPlayerSource(sourceGUID)
     return sourceGUID == UnitGUID("Player")
+end
+
+-- Spirit of Redemption negates the killing blow: the priest's death is
+-- delayed 15s (spirit form), so the eventual UNIT_DIED has no signal of its
+-- own tying it back to the talent - the buff application is the only
+-- moment the game tells us this death is coming. Cached by GUID here (not
+-- restricted to the player - any priest in the raid can proc it) and read
+-- back once in HandleDeath, then cleared.
+local spiritOfRedemptionGuids = {}
+
+local function rememberSpiritOfRedemption(subevent, destGUID, spellId, spellName)
+    if subevent == "SPELL_AURA_APPLIED"
+        and matchesSpell(CritLog.Data.spells.spiritOfRedemption, spellId, spellName)
+    then
+        spiritOfRedemptionGuids[destGUID] = true
+    end
 end
 
 -- Finds a live unit token for a combat-log GUID. The combat log only gives
@@ -474,14 +485,20 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         self:PlaySound(self.Data.sounds.tankDeath)
     end
 
-    if CritLogDB.PriestSoundFlag
-        and (
-            (token and isPriestClass(token))
+    if CritLogDB.PriestSoundFlag then
+        -- Spirit of Redemption is checked first and is exclusive with the
+        -- plain priest-death sound below - both currently point at the same
+        -- file (see Data.lua), so playing both back to back would just
+        -- double the same clip.
+        if spiritOfRedemptionGuids[destGUID] then
+            self:PlaySound(self.Data.sounds.spiritOfRedemption)
+        elseif (token and isPriestClass(token))
             or tContains(CritLogDB.playerGroups.priest, destName)
-        )
-    then
-        self:PlaySound(self.Data.sounds.priestDeath)
+        then
+            self:PlaySound(self.Data.sounds.priestDeath)
+        end
     end
+    spiritOfRedemptionGuids[destGUID] = nil
 
     -- The classification (if any) has now been read for the boss check
     -- above; the GUID belongs to a dead unit and won't be looked up again.
@@ -505,6 +522,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
 
     self:HandleAuraSounds(subevent, sourceName, destGUID, sv1, sv2)
     self:HandleXtremeDamage(subevent, sourceGUID, sv4)
+    rememberSpiritOfRedemption(subevent, destGUID, sv1, sv2)
 
     if isPlayerSource(sourceGUID) then
         if subevent == "SWING_DAMAGE" then
@@ -518,15 +536,3 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
     self:PrintBossKillingBlow(subevent, sourceName, destGUID, destName, sv5)
     self:HandleDeath(subevent, destGUID, destName)
 end
-
---
--- Spirit of Redemtption TEST ------not working
---
---if Split(sourceGUID, "-")[1] == "Player" then
---    if subevent == "SPELL_AURA_APPLIED" then
---        if tContains( SREDEMPTION_NAMES, sv2 ) then
---            tmpRNDM = math.random(1, 2)
---            print("SPIRIT OF REDEMPTION SCRIPT WORKING----- TELL ME IF IT DOES Cause i thinks it's not")
---        end
---    end
---end

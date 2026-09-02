@@ -19,6 +19,11 @@ CritLog.Data = {
         bossDeath = "FFX.mp3",
         tankDeath = "Tank.mp3",
         priestDeath = "Angels.mp3",
+        -- Reuses priestDeath's file - no dedicated asset yet, same precedent
+        -- as the shared `crit` sound above. Kept as its own catalog key
+        -- since it's a logically distinct trigger (see HandleDeath in
+        -- CombatLog.lua), just sharing a file for now.
+        spiritOfRedemption = "Angels.mp3",
         innervate = "Innervate.mp3",
         manaTide = "Manatide.mp3",
         bloodlust = "Bloodlust.mp3",
@@ -153,6 +158,10 @@ CritLog.Data = {
         soulstone = {
             ids = { 20707 },
             names = { "Seelenstein Auferstehung", "Soulstone Resurrection" },
+        },
+        spiritOfRedemption = {
+            ids = { 27827 },
+            names = { "Spirit of Redemption", "Geist der Erlösung" },
         },
     },
     chatTriggers = {

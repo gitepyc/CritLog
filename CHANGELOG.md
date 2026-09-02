@@ -7,6 +7,19 @@ full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.4.5-dev
+
+- Gave Spirit of Redemption a real, working implementation, replacing the
+  disabled/broken test code (`SREDEMPTION_NAMES`, commented-out block) that
+  never actually played a sound. The Priest talent negates the killing blow
+  and delays the real death 15s, so the eventual `UNIT_DIED` has nothing on
+  it tying it back to the talent - the fix caches the buff's
+  `SPELL_AURA_APPLIED` (spell id `27827`) by GUID when it's applied to any
+  priest in the raid, and reads it back once that priest's real death
+  arrives, instead of just firing on every priest death. Reuses the
+  existing priest-death sound file for now (no dedicated asset yet). Not
+  yet in-game verified.
+
 ## 0.4.4-dev
 
 - Made the melee/tank/priest death-sound name rosters editable per
