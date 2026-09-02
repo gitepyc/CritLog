@@ -21,6 +21,25 @@ local RECORD_ORDER = { "damage", "whiteHit", "heal" }
 local frame
 local highscoreListFrame
 
+-- A "reset everything at once" action (unlike a single category's Reset or
+-- a single entry's Delete, both one click, no confirmation) needs a
+-- confirmation dialog - it's the one highscore action that can't be
+-- undone by re-adding a single entry. Registered once at file scope, the
+-- standard StaticPopupDialogs convention.
+StaticPopupDialogs["CRITLOG_RESET_ALL_HIGHSCORES"] = {
+    text = "Delete ALL highscore entries in every category? This cannot be undone.",
+    button1 = "Delete All",
+    button2 = "Cancel",
+    OnAccept = function()
+        CritLog:ResetRecords()
+        CritLog:RefreshOptionsPanel()
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
 -- Deletes just entry `index` (1 = current best) from a category's list.
 -- `index` is captured once at row-creation time in getOrCreateHighscoreRow
 -- below, not recomputed per click - valid forever because a given pool
@@ -168,6 +187,16 @@ local function buildHighscoreListFrame()
     f.heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     f.heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     f.heading:SetText("Highscores")
+
+    local resetAllButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    resetAllButton:SetSize(90, 20)
+    resetAllButton:SetText("Reset All")
+    resetAllButton:SetNormalFontObject("GameFontNormalSmall")
+    resetAllButton:SetHighlightFontObject("GameFontHighlightSmall")
+    resetAllButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -14, -28)
+    resetAllButton:SetScript("OnClick", function()
+        StaticPopup_Show("CRITLOG_RESET_ALL_HIGHSCORES")
+    end)
 
     f.categoryHeadings = {}
     f.columnHeaders = {}

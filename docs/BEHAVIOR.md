@@ -189,8 +189,12 @@ disables them.
   Only the top `Constants.maxDisplayEntries` (5) are shown in the options
   panel's Highscore List popup - the rest exist so deleting a bad entry
   from the visible list doesn't need a new crit to refill it. Individually
-  deletable there, or clearable a whole category at a time via
-  `/cl reset damage|whitehit|heal`.
+  deletable there (no confirmation - one entry is easy to lose and easy to
+  re-earn), or clearable a whole category at a time via
+  `/cl reset damage|whitehit|heal`. The popup's "Reset All" button clears
+  every category at once and is the one highscore action that asks for
+  confirmation first (`StaticPopupDialogs`) - it's the only one that can't
+  be undone by just waiting for a new crit.
 - the legacy single-value fields (`DamageAbilityCrit`, `DAC_Name`, ...) -
   no longer read or written, kept only so an old SavedVariables file never
   produces a nil field if something still reads them

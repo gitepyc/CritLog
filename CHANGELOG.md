@@ -6,6 +6,16 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.8-dev
+
+- Added a "Reset All" button to the Highscore List popup that clears every
+  category's list at once, gated behind a confirmation dialog
+  (`StaticPopupDialogs`) since it's the only highscore action that can't
+  be undone by just waiting for a new crit. Established as the general
+  rule going forward: any future "reset/delete everything at once" action
+  needs a confirmation; single-entry/single-category actions (already
+  easy to recover from) don't.
+
 ## 0.5.7-dev
 
 - Main panel's topmost highscore Reset button now reads "Reset all"

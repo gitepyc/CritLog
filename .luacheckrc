@@ -35,11 +35,16 @@ stds.wow = {
         "UIDropDownMenu_AddButton",
         "UIDropDownMenu_SetText",
         "CloseDropDownMenus",
+        -- UI/MainPanel.lua: confirmation dialog before Reset All
+        "StaticPopup_Show",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned
         -- global table that addons register new keys into.
         "SlashCmdList",
+        -- Same convention: StaticPopupDialogs is a client-owned global
+        -- table that addons register new dialog definitions into.
+        "StaticPopupDialogs",
     },
 }
 
