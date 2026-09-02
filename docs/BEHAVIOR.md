@@ -92,14 +92,14 @@ ID-first-then-name-fallback pattern used for spells above.
 | --- | --- | --- |
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
 | Melee-capable class not flagged Healer (`isMeleeClass`), or a name in `CritLogDB.playerGroups.melee` | `/cl melee` enabled | `wilhelm.ogg` |
-| Live classification `worldboss` (`isClassifiedBoss`), or an English/German name in `CritLog.Data.bosses` | `/cl boss` enabled | `FFX.mp3` |
+| Live classification `worldboss` (`isClassifiedBoss`), or an English/German name in `CritLog.Constants.bosses` | `/cl boss` enabled | `FFX.mp3` |
 | Assigned raid role Tank (`isAssignedTank`), or a name in `CritLogDB.playerGroups.tank` | `/cl tank` enabled | `Tank.mp3` |
 | Class `PRIEST` (`isPriestClass`), or a name in `CritLogDB.playerGroups.priest` | `/cl priest` enabled | `Angels.mp3` |
 | Priest death preceded by the Spirit of Redemption buff (spell id `27827`) | `/cl priest` enabled | `Angels.mp3` (same file as the plain priest death sound for now, see `CHANGELOG.md`) |
 
 The live checks (melee/tank/priest, not boss) need a resolved unit token
 for the dying player (the current target, or a matching visible nameplate)
-— see `findUnitToken()` in `CombatLog.lua` — and that token must pass
+— see `findUnitToken()` in `Core/CombatLog.lua` — and that token must pass
 `UnitIsPlayer()`, discarded otherwise: some enemy NPCs carry a class
 internally, so `UnitClass()`/`UnitGroupRolesAssigned()` aren't reliably
 `nil` for them, which let enemy deaths in instances wrongly trigger these
@@ -116,8 +116,8 @@ detected (that boss list is still code-only, not editable). The three
 death-sound name rosters (melee/tank/priest) are editable per character:
 `/cl options` → "Roster Settings..." shows each one with Add/Remove
 controls. `CritLogDB.playerGroups` is a per-character copy, migrated once
-from `CritLog.Data.playerGroups` on first load after upgrading (see
-`Database.lua`'s `migratePlayerGroups()`) - from then on only the
+from a code-only seed on first load after upgrading (see
+`Persistence/Database.lua`'s `migratePlayerGroups()`) - from then on only the
 `CritLogDB` copy is read or written, so removing a name that used to be a
 hard-coded default works the same as removing one you added yourself.
 Spirit of Redemption (the Priest talent that turns the killing blow into a
@@ -125,7 +125,7 @@ Spirit of Redemption (the Priest talent that turns the killing blow into a
 fires once the buff expires, with nothing on that event itself to tie it
 back to the talent, so the buff's `SPELL_AURA_APPLIED` (spell id `27827`,
 matched the same ID-first-then-name pattern as the spells table above) is
-cached by GUID (`CombatLog.lua`'s `rememberSpiritOfRedemption` /
+cached by GUID (`Core/CombatLog.lua`'s `rememberSpiritOfRedemption` /
 `spiritOfRedemptionGuids`, any priest in the raid, not just the player) and
 consumed once the matching death arrives. This branch is exclusive with the
 plain priest-class check right above it, not additive - both currently play

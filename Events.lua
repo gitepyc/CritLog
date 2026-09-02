@@ -16,6 +16,6 @@ end
 
 function CritLog:READY_CHECK()
     if CritLogDB.ReadySoundFlag then
-        self:PlaySound(self.Data.sounds.readyCheck)
+        self:PlaySound(self.Constants.sounds.readyCheck)
     end
 end

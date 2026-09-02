@@ -7,6 +7,26 @@ full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.4.6-dev
+
+- Restructured the file layout - no behavior change, pure code organization.
+  Was 9 flat files; now `Core/` (domain logic: `Constants.lua`, the new
+  `Filters.lua`/`Records.lua`, `CombatLog.lua`), `Persistence/`
+  (`Database.lua`), and `UI/` (`Options.lua` split into `Shared.lua`,
+  `MainPanel.lua`, `SoundPanel.lua`, `RosterPanel.lua`), plus a few files
+  that stayed at the root (`CritLog.lua`, renamed from `Core.lua` to avoid
+  clashing with the new `Core/` folder; `Sounds.lua`; `ChatTriggers.lua`;
+  `Commands.lua`; `Events.lua`). `Data.lua` became `Core/Constants.lua`
+  (`CritLog.Data` renamed to `CritLog.Constants` throughout); the
+  `playerGroups` roster seed moved out of it into `Persistence/Database.lua`
+  as `PLAYER_GROUPS_DEFAULTS`, next to the scalar `DEFAULTS` it already had.
+  The new `Filters.lua`/`Records.lua` hold pure matching/highscore rules
+  (no WoW API calls) pulled out of `CombatLog.lua`, which now only resolves
+  live unit state and calls into them - the point being that those pure
+  rules can eventually get real Lua unit tests outside the game client,
+  closing the gap described in `tests/README.md` (not done yet, just made
+  possible). See [README.md](README.md) for the full new layout.
+
 ## 0.4.5-dev
 
 - Gave Spirit of Redemption a real, working implementation, replacing the

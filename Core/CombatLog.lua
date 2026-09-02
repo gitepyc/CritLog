@@ -1,11 +1,10 @@
+-- Combat-log event capture and decoding: reads CombatLogGetCurrentEventInfo,
+-- resolves live unit state (tokens, class, role, classification), and
+-- dispatches into the pure rules in Filters.lua/Records.lua. This file is
+-- the "impure shell" - anything that touches the WoW API lives here, not in
+-- those two.
 local function endsWith(value, ending)
     return ending == "" or value:sub(-#ending) == ending
-end
-
--- Matches a spell entry from Data.lua (see the comment there) by ID first,
--- falling back to the display name if the ID doesn't hit.
-local function matchesSpell(spell, spellId, spellName)
-    return tContains(spell.ids, spellId) or tContains(spell.names, spellName)
 end
 
 local function isPlayerSource(sourceGUID)
@@ -22,7 +21,7 @@ local spiritOfRedemptionGuids = {}
 
 local function rememberSpiritOfRedemption(subevent, destGUID, spellId, spellName)
     if subevent == "SPELL_AURA_APPLIED"
-        and matchesSpell(CritLog.Data.spells.spiritOfRedemption, spellId, spellName)
+        and CritLog.Filters.matchesSpell(CritLog.Constants.spells.spiritOfRedemption, spellId, spellName)
     then
         spiritOfRedemptionGuids[destGUID] = true
     end
@@ -48,61 +47,6 @@ local function findUnitToken(guid)
     end
 
     return nil
-end
-
--- Returns true if the unit's class is melee-capable, per the rules in
--- Data.lua's deathClasses.meleeCapable/alwaysMelee. Warrior and Rogue have
--- no ranged/caster spec at all, so class alone identifies them. The
--- remaining hybrid classes (Paladin, Shaman, Druid) are narrowed by
--- assigned raid role: a Healer-flagged member of one of those classes is
--- excluded, since a Holy Paladin/Restoration Shaman/Restoration Druid is
--- never in melee.
---
--- Known blind spot, accepted rather than solved: this does NOT exclude
--- ranged-caster DPS specs of those same hybrid classes (Elemental Shaman,
--- Balance Druid, ...), which will still be flagged as "melee" here. There
--- is no reliable API to tell a melee spec from a caster spec of the same
--- class for another player without inspecting talents, which isn't always
--- possible. See CHANGELOG.md.
-local function isMeleeClass(token)
-    local _, class = UnitClass(token)
-    if not class then
-        return false
-    end
-
-    if tContains(CritLog.Data.deathClasses.alwaysMelee, class) then
-        return true
-    end
-
-    if not tContains(CritLog.Data.deathClasses.meleeCapable, class) then
-        return false
-    end
-
-    return UnitGroupRolesAssigned(token) ~= "HEALER"
-end
-
--- Returns true only if the unit currently has the Tank role explicitly
--- assigned (raid-frame role icons, or equivalent). Tank is a raid role,
--- not a class — a Warrior/Paladin/Druid can each be a tank or something
--- else — and UnitGroupRolesAssigned only reflects a role someone actually
--- set, which is not guaranteed. It commonly reports "NONE" for a real tank
--- who was never manually flagged, especially outside a raid.
---
--- Known blind spot, accepted rather than solved: an unassigned real tank
--- is not detected here. Deliberately not falling back to a class-based
--- guess (e.g. "Warrior with no Healer role") — that would also flag every
--- non-tanking Warrior/Paladin/Druid, trading one gap for a worse one. The
--- playerGroups.tank name-roster fallback in HandleDeath covers this gap
--- for the same handful of characters it always has. See CHANGELOG.md.
-local function isAssignedTank(token)
-    return UnitGroupRolesAssigned(token) == "TANK"
-end
-
--- Straightforward class check — Priest has no role ambiguity like
--- melee/tank above.
-local function isPriestClass(token)
-    local _, class = UnitClass(token)
-    return class ~= nil and tContains(CritLog.Data.deathClasses.priest, class)
 end
 
 -- Boss detection, part 1: remembering what a unit is while it still exists.
@@ -195,10 +139,7 @@ local function classificationFor(guid)
 end
 
 local function isClassifiedBoss(guid)
-    local classification = classificationFor(guid)
-
-    return classification ~= nil
-        and tContains(CritLog.Data.bosses.classifications, classification)
+    return CritLog.Filters.isBossClassification(classificationFor(guid))
 end
 
 -- Excludes crits against trivial ("grey") enemies from counting as
@@ -218,8 +159,9 @@ local function targetPassesLevelFilter(destGUID)
         return true
     end
 
-    local passes = UnitLevel(token) > UnitLevel("player") - 9
-        or UnitClassification(token) == "worldboss"
+    local passes = CritLog.Filters.passesLevelFilter(
+        UnitLevel(token), UnitClassification(token), UnitLevel("player"), CritLogDB.AllLevel
+    )
     CritLog:Debug(
         "Level filter: token", token,
         "level", UnitLevel(token),
@@ -240,13 +182,15 @@ function CritLog:HandleAuraSounds(
         return
     end
 
+    local matchesSpell = CritLog.Filters.matchesSpell
+
     if (UnitInParty(sourceName) or UnitInRaid(sourceName))
         and subevent == "SPELL_SUMMON"
         and spellName ~= nil
     then
         self:Debug("SPELL_SUMMON by group member - id:", spellId, "name:", spellName)
-        if matchesSpell(self.Data.spells.manaTide, spellId, spellName) then
-            self:PlaySound(self.Data.sounds.manaTide)
+        if matchesSpell(self.Constants.spells.manaTide, spellId, spellName) then
+            self:PlaySound(self.Constants.sounds.manaTide)
         end
     end
 
@@ -256,28 +200,28 @@ function CritLog:HandleAuraSounds(
 
     self:Debug("SPELL_AURA_APPLIED on player - id:", spellId, "name:", spellName)
 
-    if matchesSpell(self.Data.spells.bloodlust, spellId, spellName) then
-        self:PlaySound(self.Data.sounds.bloodlust)
+    if matchesSpell(self.Constants.spells.bloodlust, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.bloodlust)
     end
 
-    if matchesSpell(self.Data.spells.innervate, spellId, spellName) then
-        self:PlaySound(self.Data.sounds.innervate)
+    if matchesSpell(self.Constants.spells.innervate, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.innervate)
     end
 
-    if matchesSpell(self.Data.spells.powerInfusion, spellId, spellName) then
-        self:PlaySound(self.Data.sounds.powerInfusion)
+    if matchesSpell(self.Constants.spells.powerInfusion, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.powerInfusion)
     end
 
-    if matchesSpell(self.Data.spells.blessingOfProtection, spellId, spellName) then
-        self:PlaySound(self.Data.sounds.blessingOfProtection)
+    if matchesSpell(self.Constants.spells.blessingOfProtection, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.blessingOfProtection)
     end
 
-    if matchesSpell(self.Data.spells.divineIntervention, spellId, spellName) then
-        self:PlaySound(self.Data.sounds.divineIntervention)
+    if matchesSpell(self.Constants.spells.divineIntervention, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.divineIntervention)
     end
 
-    if matchesSpell(self.Data.spells.soulstone, spellId, spellName) then
-        self:PlaySound(self.Data.sounds.soulstone)
+    if matchesSpell(self.Constants.spells.soulstone, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.soulstone)
     end
 end
 
@@ -287,7 +231,7 @@ function CritLog:HandleXtremeDamage(subevent, sourceGUID, amount)
         and CritLogDB.XtremeSoundFlag
         and tonumber(amount) > 9000
     then
-        self:PlaySound(self.Data.sounds.xtremeDamage)
+        self:PlaySound(self.Constants.sounds.xtremeDamage)
     end
 end
 
@@ -312,7 +256,7 @@ function CritLog:HandleDamageCrit(
             self:PlayCritSound()
         end
 
-        if amount > CritLogDB.DamageAbilityCrit then
+        if CritLog.Records.isNewHighscore(amount, CritLogDB.DamageAbilityCrit) then
             CritLogDB.DamageAbilityCrit = amount
             CritLogDB.DAC_Name = spellName
             CritLogDB.DAC_Tar = destName
@@ -336,7 +280,7 @@ function CritLog:HandleDamageCrit(
             alreadyPlayed = true
         end
 
-        if amount > CritLogDB.WhiteHitCrit then
+        if CritLog.Records.isNewHighscore(amount, CritLogDB.WhiteHitCrit) then
             CritLogDB.WhiteHitCrit = amount
             CritLogDB.WHC_Tar = destName
             print("DAMAGE Crit WhiteHit: "..amount.." ("..destName..")")
@@ -355,7 +299,7 @@ function CritLog:HandleDamageCrit(
             alreadyPlayed = true
         end
 
-        if amount > CritLogDB.WhiteHitCrit and CritLogDB.WhiteHitFlag then
+        if CritLog.Records.isNewHighscore(amount, CritLogDB.WhiteHitCrit) and CritLogDB.WhiteHitFlag then
             CritLogDB.WhiteHitCrit = amount
             CritLogDB.WHC_Tar = destName
             print("DAMAGE Crit WhiteHit: "..amount.." ("..destName..")")
@@ -381,7 +325,7 @@ function CritLog:HandleHealCrit(
         self:PlayCritSound()
     end
 
-    if amount > CritLogDB.HealAbilityCrit then
+    if CritLog.Records.isNewHighscore(amount, CritLogDB.HealAbilityCrit) then
         CritLogDB.HealAbilityCrit = amount
         CritLogDB.HAC_Name = spellName
         CritLogDB.HAC_Tar = destName
@@ -413,8 +357,8 @@ function CritLog:PrintBossKillingBlow(
     -- check below - was English-only, a pre-existing asymmetry with no
     -- reason behind it (both lists have always existed side by side).
     if isClassifiedBoss(destGUID)
-        or tContains(self.Data.bosses.english, destName)
-        or tContains(self.Data.bosses.german, destName)
+        or tContains(self.Constants.bosses.english, destName)
+        or tContains(self.Constants.bosses.german, destName)
     then
         print(sourceName.." killed "..destName)
     end
@@ -434,7 +378,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
 
     if destGUID == UnitGUID("Player") then
         if CritLogDB.PlayerSoundFlag then
-            self:PlaySound(self.Data.sounds.playerDeath)
+            self:PlaySound(self.Constants.sounds.playerDeath)
         end
         return
     end
@@ -457,45 +401,54 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         token = nil
     end
 
+    -- Resolved once and reused by all three checks below instead of each
+    -- one independently calling UnitClass/UnitGroupRolesAssigned again.
+    local class, role
+    if token then
+        local _, unitClass = UnitClass(token)
+        class = unitClass
+        role = UnitGroupRolesAssigned(token)
+    end
+
     if CritLogDB.MeleeSoundFlag
         and (
-            (token and isMeleeClass(token))
+            (token and CritLog.Filters.isMeleeClass(class, role))
             or tContains(CritLogDB.playerGroups.melee, destName)
         )
     then
-        self:PlaySound(self.Data.sounds.meleeDeath)
+        self:PlaySound(self.Constants.sounds.meleeDeath)
     end
 
     if CritLogDB.BossSoundFlag
         and (
             isClassifiedBoss(destGUID)
-            or tContains(self.Data.bosses.english, destName)
-            or tContains(self.Data.bosses.german, destName)
+            or tContains(self.Constants.bosses.english, destName)
+            or tContains(self.Constants.bosses.german, destName)
         )
     then
-        self:PlaySound(self.Data.sounds.bossDeath)
+        self:PlaySound(self.Constants.sounds.bossDeath)
     end
 
     if CritLogDB.TankSoundFlag
         and (
-            (token and isAssignedTank(token))
+            (token and CritLog.Filters.isAssignedTank(role))
             or tContains(CritLogDB.playerGroups.tank, destName)
         )
     then
-        self:PlaySound(self.Data.sounds.tankDeath)
+        self:PlaySound(self.Constants.sounds.tankDeath)
     end
 
     if CritLogDB.PriestSoundFlag then
         -- Spirit of Redemption is checked first and is exclusive with the
         -- plain priest-death sound below - both currently point at the same
-        -- file (see Data.lua), so playing both back to back would just
-        -- double the same clip.
+        -- file (see Core/Constants.lua), so playing both back to back would
+        -- just double the same clip.
         if spiritOfRedemptionGuids[destGUID] then
-            self:PlaySound(self.Data.sounds.spiritOfRedemption)
-        elseif (token and isPriestClass(token))
+            self:PlaySound(self.Constants.sounds.spiritOfRedemption)
+        elseif (token and CritLog.Filters.isPriestClass(class))
             or tContains(CritLogDB.playerGroups.priest, destName)
         then
-            self:PlaySound(self.Data.sounds.priestDeath)
+            self:PlaySound(self.Constants.sounds.priestDeath)
         end
     end
     spiritOfRedemptionGuids[destGUID] = nil

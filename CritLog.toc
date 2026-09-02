@@ -2,16 +2,21 @@
 ## Title: CritLog
 ## Note: #CrimeTime #420 #gtrkt
 ## Author: Epyc (original by Kîtten aka Chabo)
-## Version: 0.4.5-dev
+## Version: 0.4.6-dev
 
 ## SavedVariablesPerCharacter: CritLogDB
 
-Core.lua
-Data.lua
-Database.lua
+CritLog.lua
+Core/Constants.lua
+Core/Filters.lua
+Core/Records.lua
+Core/CombatLog.lua
+Persistence/Database.lua
 Sounds.lua
 ChatTriggers.lua
-CombatLog.lua
+UI/Shared.lua
+UI/MainPanel.lua
+UI/SoundPanel.lua
+UI/RosterPanel.lua
 Commands.lua
 Events.lua
-Options.lua

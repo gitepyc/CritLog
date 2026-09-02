@@ -1,0 +1,85 @@
+-- Pure eligibility/matching rules: given already-resolved values (a class,
+-- a role, a classification, ...), decide yes/no. No WoW API calls in this
+-- file - resolving those values from a live unit token is Core/CombatLog.lua's
+-- job, since that's what actually needs the game client to exist. Splitting
+-- it this way is what makes these rules testable outside the game (plain
+-- Lua, no client) - see tests/README.md for the standing gap this closes.
+CritLog.Filters = {}
+
+-- Matches a spell entry from Core/Constants.lua by ID first, falling back
+-- to the display name if the ID doesn't hit.
+function CritLog.Filters.matchesSpell(spell, spellId, spellName)
+    return tContains(spell.ids, spellId) or tContains(spell.names, spellName)
+end
+
+-- Per Core/Constants.lua's deathClasses.meleeCapable/alwaysMelee. Warrior
+-- and Rogue have no ranged/caster spec at all, so class alone identifies
+-- them. The remaining hybrid classes (Paladin, Shaman, Druid) are narrowed
+-- by assigned raid role: a Healer-flagged member of one of those classes is
+-- excluded, since a Holy Paladin/Restoration Shaman/Restoration Druid is
+-- never in melee.
+--
+-- Known blind spot, accepted rather than solved: this does NOT exclude
+-- ranged-caster DPS specs of those same hybrid classes (Elemental Shaman,
+-- Balance Druid, ...), which will still be flagged as "melee" here. There
+-- is no reliable API to tell a melee spec from a caster spec of the same
+-- class for another player without inspecting talents, which isn't always
+-- possible. See CHANGELOG.md.
+function CritLog.Filters.isMeleeClass(class, role)
+    if not class then
+        return false
+    end
+
+    if tContains(CritLog.Constants.deathClasses.alwaysMelee, class) then
+        return true
+    end
+
+    if not tContains(CritLog.Constants.deathClasses.meleeCapable, class) then
+        return false
+    end
+
+    return role ~= "HEALER"
+end
+
+-- True only if the unit currently has the Tank role explicitly assigned
+-- (raid-frame role icons, or equivalent). Tank is a raid role, not a class
+-- — a Warrior/Paladin/Druid can each be a tank or something else — and
+-- assigned role only reflects a role someone actually set, which is not
+-- guaranteed. It commonly reports "NONE" for a real tank who was never
+-- manually flagged, especially outside a raid.
+--
+-- Known blind spot, accepted rather than solved: an unassigned real tank
+-- is not detected here. Deliberately not falling back to a class-based
+-- guess (e.g. "Warrior with no Healer role") — that would also flag every
+-- non-tanking Warrior/Paladin/Druid, trading one gap for a worse one. The
+-- playerGroups.tank name-roster fallback in HandleDeath covers this gap
+-- for the same handful of characters it always has. See CHANGELOG.md.
+function CritLog.Filters.isAssignedTank(role)
+    return role == "TANK"
+end
+
+-- Straightforward class check — Priest has no role ambiguity like
+-- melee/tank above.
+function CritLog.Filters.isPriestClass(class)
+    return class ~= nil and tContains(CritLog.Constants.deathClasses.priest, class)
+end
+
+-- True if a classification (already read via UnitClassification, or nil if
+-- it couldn't be determined) counts as a boss per Core/Constants.lua.
+function CritLog.Filters.isBossClassification(classification)
+    return classification ~= nil
+        and tContains(CritLog.Constants.bosses.classifications, classification)
+end
+
+-- Excludes crits against trivial ("grey") enemies from counting as
+-- highscores, so a one-shot on low-level content doesn't overwrite a real
+-- record from relevant content. `targetLevel`/`targetClassification` are
+-- already-resolved values (nil handling for "no unit token" is the caller's
+-- job, since that's a WoW-API concern, not a rule).
+function CritLog.Filters.passesLevelFilter(targetLevel, targetClassification, playerLevel, allLevel)
+    if allLevel then
+        return true
+    end
+
+    return targetLevel > playerLevel - 9 or targetClassification == "worldboss"
+end

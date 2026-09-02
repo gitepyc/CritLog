@@ -24,21 +24,40 @@ local DEFAULTS = {
     MasterSoundFlag = true,
 }
 
--- One-time migration: copies CritLog.Data.playerGroups (melee/tank/priest
--- name rosters, previously code-only) into CritLogDB, so they're editable
--- per character via the options panel. Guarded on CritLogDB.playerGroups
--- itself (not the schema version) so it runs exactly once regardless of
--- which version a character upgrades from - same pattern as the DEFAULTS
+-- Seed for CritLogDB.playerGroups on first install (migratePlayerGroups
+-- below copies from this once; from then on only the CritLogDB copy is
+-- read or written - see Core/CombatLog.lua). Originally a fixed, code-only
+-- roster tied to one specific historical raid group; now editable per
+-- character via the options panel. As of the class/role-based matching in
+-- Core/CombatLog.lua (see Core/Constants.lua's deathClasses), these are no
+-- longer the primary check — they're kept as a fallback, same
+-- ID-first-then-name-fallback pattern used for spells in Core/Constants.lua:
+-- class/role detection needs a live unit token and (for tank) an explicitly
+-- assigned raid role, neither of which is guaranteed available, so a name
+-- still in this list keeps firing even when the live check can't.
+local PLAYER_GROUPS_DEFAULTS = {
+    melee = {
+        "Schnutz", "Synday", "Kamicaze", "Alcira", "Shocksx",
+        "Dripperx", "Enry", "Feniara", "Lemonsoda", "Cindarr",
+        "Truffi", "Gradba", "Zoiy",
+    },
+    tank = { "Truby", "Ketamartin", "Hïnatahÿuuga", "Kîtten" },
+    priest = { "Ilenkov", "Epyç" },
+}
+
+-- One-time migration: copies PLAYER_GROUPS_DEFAULTS (melee/tank/priest name
+-- rosters, previously code-only) into CritLogDB, so they're editable per
+-- character via the options panel. Guarded on CritLogDB.playerGroups itself
+-- (not the schema version) so it runs exactly once regardless of which
+-- version a character upgrades from - same pattern as the DEFAULTS
 -- back-fill above, just for a nested table instead of scalar fields.
--- CombatLog.lua reads only the CritLogDB copy from here on; Data.lua's
--- table is just the seed for a first-time install.
 local function migratePlayerGroups()
     if CritLogDB.playerGroups then
         return
     end
 
     CritLogDB.playerGroups = {}
-    for kind, names in pairs(CritLog.Data.playerGroups) do
+    for kind, names in pairs(PLAYER_GROUPS_DEFAULTS) do
         local copy = {}
         for _, name in ipairs(names) do
             table.insert(copy, name)
@@ -79,7 +98,7 @@ end
 -- target), leaving the other two untouched - for clearing a single
 -- false-positive record instead of wiping everything via ResetRecords().
 function CritLog:ResetRecord(kind)
-    local fields = self.Data.records[kind]
+    local fields = self.Constants.records[kind]
     CritLogDB[fields.value] = 0
     if fields.name then
         CritLogDB[fields.name] = ""
@@ -88,7 +107,7 @@ function CritLog:ResetRecord(kind)
 end
 
 function CritLog:ResetRecords()
-    for kind in pairs(self.Data.records) do
+    for kind in pairs(self.Constants.records) do
         self:ResetRecord(kind)
     end
 end

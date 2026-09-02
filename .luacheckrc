@@ -23,9 +23,9 @@ stds.wow = {
         "GetAddOnMetadata",
         "C_AddOns",
         "C_NamePlate",
-        -- Options.lua: parent frame for the standalone options panel
+        -- UI/Shared.lua: parent frame for the standalone options panels
         "UIParent",
-        -- Options.lua: registers both panels so Escape closes them
+        -- UI/Shared.lua: registers panels so Escape closes them
         "UISpecialFrames",
         "tinsert",
     },
