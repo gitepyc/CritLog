@@ -195,6 +195,8 @@ local function buildRosterFrame()
 
     layoutRosterList(f)
 
+    CritLog.UI.createCloseButton(f)
+
     return f
 end
 

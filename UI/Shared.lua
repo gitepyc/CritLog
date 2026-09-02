@@ -42,6 +42,24 @@ function CritLog.UI.createResetButton(parent, kind, label)
     return button
 end
 
+-- Bottom-center "Close" button - the built-in corner X and Escape (via
+-- createPanelFrame's escape-stack registration) already close every
+-- panel, but a corner X alone wasn't obvious enough (in-game reported for
+-- the Help panel); added here as a shared helper so the Highscore List
+-- and Roster Settings popups get the same, not just Help.
+function CritLog.UI.createCloseButton(parent)
+    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    button:SetSize(90, 22)
+    button:SetText("Close")
+    button:SetNormalFontObject("GameFontNormalSmall")
+    button:SetHighlightFontObject("GameFontHighlightSmall")
+    button:SetPoint("BOTTOM", parent, "BOTTOM", 0, 14)
+    button:SetScript("OnClick", function()
+        parent:Hide()
+    end)
+    return button
+end
+
 function CritLog.UI.createPreviewButton(parent, soundKey, width)
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetSize(width or 70, 20)
@@ -119,16 +137,18 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     label:SetText(entry.label)
 
     if entry.sound then
-        -- Anchored to the label's own right edge, not a fixed offset from
-        -- the dropdown (like the checkbox rows' Preview buttons are) - the
-        -- dropdown control itself is much wider than a checkbox, leaving
-        -- far less room before a fixed column would sit, and the longest
-        -- label here ("Damage Dealer death sound") ran straight into the
-        -- button at the old fixed offset (in-game reported/screenshotted).
-        -- Trades a neat shared column across rows for never overlapping,
-        -- regardless of how long a label is.
+        -- 340 relative to the checkbox rows' own baseline, same column as
+        -- their Preview buttons - but this dropdown sits 16px left of that
+        -- baseline (see the -16 nudge above), so +16 on top of 340 lands
+        -- back in the same column instead of 16px short of it. Labels here
+        -- are kept close in length to each other (see the DPS/"Damage
+        -- Dealer" comment in UI/SoundPanel.lua) specifically so this fixed
+        -- column doesn't run into any of them - it did once, when one
+        -- label was much longer than the rest (in-game
+        -- reported/screenshotted, fixed by shortening the label instead of
+        -- abandoning the shared column).
         local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
-        previewButton:SetPoint("LEFT", label, "RIGHT", 12, -2)
+        previewButton:SetPoint("LEFT", dropdown, "LEFT", 340 + 16, 0)
     end
 
     local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")

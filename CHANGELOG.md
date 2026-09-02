@@ -6,6 +6,23 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.6-dev
+
+- Moved the Help panel's "Close" button from top-right to bottom-center
+  (in-game reported as being in the wrong spot), and added the same
+  bottom-center "Close" button to the Highscore List and Roster Settings
+  popups too, via a new shared `CritLog.UI.createCloseButton` helper.
+- Moved the None/Experimental/Roster/Both note back below the four
+  detection-mode dropdowns instead of above them (requested - reads better
+  that way).
+- Fixed the detection-mode dropdowns' Preview buttons not lining up with
+  each other (in-game reported): shortened "Damage Dealer death sound" to
+  "DPS death sound" so all four labels are close enough in length to share
+  one aligned Preview column again (the `0.6.3-dev` fix for this same row
+  had abandoned the shared column instead, anchoring Preview to each
+  label's own end - worked but no longer looked consistent with the
+  checkbox rows' column above it).
+
 ## 0.6.5-dev
 
 - Moved the None/Experimental/Roster/Both mode explanation off the Priest

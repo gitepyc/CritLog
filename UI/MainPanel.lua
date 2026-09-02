@@ -198,6 +198,8 @@ local function buildHighscoreListFrame()
         StaticPopup_Show("CRITLOG_RESET_ALL_HIGHSCORES")
     end)
 
+    CritLog.UI.createCloseButton(f)
+
     f.categoryHeadings = {}
     f.columnHeaders = {}
     f.rowPool = {}
