@@ -5,12 +5,12 @@ critical-heal highscores and plays event-driven sounds for crits, deaths,
 auras, and raid-leader chat triggers.
 
 > **Project status:** Working legacy addon under active documentation and
-> modernization. CritLog `0.4.5-dev` targets Season of Discovery on Classic
-> Era `1.15.9` (Interface `11509`). The last in-game-verified release is
-> `0.2.1`; the options panel, class/role-based death sounds, editable
-> melee/tank/priest rosters, Spirit of Redemption detection, and the master
-> mute/debug toggles added since then are first drafts pending in-game
-> verification — see [CHANGELOG.md](CHANGELOG.md) for the versioned list.
+> modernization. CritLog `0.5.0` targets Season of Discovery on Classic Era
+> `1.15.9` (Interface `11509`). The options panel, the Escape-key behavior,
+> and editable melee/tank/priest rosters are now in-game confirmed; the
+> class/role-based death-sound detection for tank/boss specifically and
+> Spirit of Redemption are not yet — see [CHANGELOG.md](CHANGELOG.md) for
+> the versioned list.
 
 ## Documentation
 
@@ -175,12 +175,14 @@ fallback for the live class/role check anymore.
 
 ## Known technical issues and risks
 
-Not yet in-game verified: the options panel, class/role/classification-based
-death-sound detection, spell-ID aura matching (all fall back to the old
-name-based matching when the live check doesn't resolve), roster editing,
-and Spirit of Redemption detection. No CurseForge/Wago project configured
-yet - releases only reach GitHub for now. Audio-file rights are undocumented
-and must be reviewed before public distribution.
+The options panel (including Escape-key behavior) and roster editing are
+now in-game confirmed. Still not in-game verified: class/role/
+classification-based death-sound detection for tank and boss specifically
+(melee's false-positive bug is fixed and confirmed), spell-ID aura matching
+(all fall back to the old name-based matching when the live check doesn't
+resolve), and Spirit of Redemption detection. No CurseForge/Wago project
+configured yet - releases only reach GitHub for now. Audio-file rights are
+undocumented and must be reviewed before public distribution.
 Full prioritized list: [Roadmap](docs/ROADMAP.md).
 
 ## Development

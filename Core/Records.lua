@@ -6,27 +6,26 @@ function CritLog.Records.isNewHighscore(amount, current)
     return amount > current
 end
 
--- One line of "<label> (<ability>): <amount> (<target>)", or without the
--- ability part for white-hit crits (no named ability to show). Reads
--- CritLogDB directly (the current stored value), but makes no WoW API calls
--- and writes nothing - used by both the options panel and could be reused
--- anywhere else that needs the same display text.
+-- One line of "<label> (<ability>): <amount> (<target>)" for the entry at
+-- `index` (1 = highest) in a category's list, or without the ability part
+-- for white-hit crits (no named ability to show). Reads CritLogDB
+-- directly, but makes no WoW API calls and writes nothing - used by both
+-- Commands.lua's chat printout and the options panel so both describe a
+-- record the same way.
 --
--- Before any crit of that kind has ever been recorded, the value is DEFAULTS'
--- 0 and the name/target fields are "" - showing those raw would print
--- "Damage crit (): 0 ()", empty parens and all. A placeholder line reads
--- better than that for every kind, not just the two with a name field.
-function CritLog.Records.formatRecordText(kind)
-    local fields = CritLog.Constants.records[kind]
-    local amount = CritLogDB[fields.value]
+-- A slot with no entry yet (e.g. index 3 before a character has 3 crits of
+-- that kind recorded) gets a placeholder line instead of erroring on a nil
+-- table index.
+function CritLog.Records.formatRecordText(kind, index)
+    local fields = CritLog.Constants.recordKinds[kind]
+    local entry = CritLogDB.records[kind][index]
 
-    if amount == 0 then
-        return fields.label..": no crit recorded yet"
+    if not entry then
+        return fields.label..": no record yet"
     end
 
-    if fields.name then
-        return fields.label.." ("..CritLogDB[fields.name].."): "
-            ..amount.." ("..CritLogDB[fields.target]..")"
+    if fields.hasName then
+        return fields.label.." ("..entry.name.."): "..entry.amount.." ("..entry.target..")"
     end
-    return fields.label..": "..amount.." ("..CritLogDB[fields.target]..")"
+    return fields.label..": "..entry.amount.." ("..entry.target..")"
 end

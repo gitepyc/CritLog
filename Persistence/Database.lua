@@ -1,3 +1,8 @@
+-- DamageAbilityCrit/DAC_Name/DAC_Tar etc. below are the old single-value
+-- highscore fields, superseded by the CritLogDB.records lists (see
+-- migrateToRecordLists below) but kept in DEFAULTS - and never actively
+-- written again after migration - purely so an old SavedVariables file
+-- never produces a nil field if something still reads them.
 local DEFAULTS = {
     DamageAbilityCrit = 0,
     DAC_Name = "",
@@ -66,6 +71,40 @@ local function migratePlayerGroups()
     end
 end
 
+-- One-time migration: seeds CritLogDB.records from the old single-value
+-- fields, so existing highscores survive the switch to list-based storage.
+-- Guarded on CritLogDB.records itself (not the schema version) so it runs
+-- exactly once per character regardless of how many versions they skip -
+-- same pattern as migratePlayerGroups above.
+local function migrateToRecordLists()
+    if CritLogDB.records then
+        return
+    end
+
+    CritLogDB.records = { damage = {}, whiteHit = {}, heal = {} }
+
+    if CritLogDB.DamageAbilityCrit and CritLogDB.DamageAbilityCrit > 0 then
+        table.insert(CritLogDB.records.damage, {
+            amount = CritLogDB.DamageAbilityCrit,
+            name = CritLogDB.DAC_Name,
+            target = CritLogDB.DAC_Tar,
+        })
+    end
+    if CritLogDB.WhiteHitCrit and CritLogDB.WhiteHitCrit > 0 then
+        table.insert(CritLogDB.records.whiteHit, {
+            amount = CritLogDB.WhiteHitCrit,
+            target = CritLogDB.WHC_Tar,
+        })
+    end
+    if CritLogDB.HealAbilityCrit and CritLogDB.HealAbilityCrit > 0 then
+        table.insert(CritLogDB.records.heal, {
+            amount = CritLogDB.HealAbilityCrit,
+            name = CritLogDB.HAC_Name,
+            target = CritLogDB.HAC_Tar,
+        })
+    end
+end
+
 function CritLog:SetDefaults()
     local initialized = not CritLogDB
     local upgraded = not initialized and CritLogDB.Version ~= self.version
@@ -84,6 +123,7 @@ function CritLog:SetDefaults()
     end
 
     migratePlayerGroups()
+    migrateToRecordLists()
 
     if initialized then
         print("CritLog Initialized")
@@ -94,20 +134,35 @@ function CritLog:SetDefaults()
     end
 end
 
--- Clears one highscore record back to its default (0 / no name / no
--- target), leaving the other two untouched - for clearing a single
--- false-positive record instead of wiping everything via ResetRecords().
-function CritLog:ResetRecord(kind)
-    local fields = self.Constants.records[kind]
-    CritLogDB[fields.value] = 0
-    if fields.name then
-        CritLogDB[fields.name] = ""
+-- Inserts a new crit into a category's list, sorted highest-first, capped
+-- at Constants.maxRecordEntries. Always attempted (not just for a new #1),
+-- so a crit that only beats the 3rd-best still earns its spot - the caller
+-- checks list[1] before/after to detect an actual new highscore itself
+-- (see Core.CombatLog's HandleDamageCrit/HandleHealCrit).
+function CritLog:AddRecord(kind, amount, name, target)
+    local list = CritLogDB.records[kind]
+    table.insert(list, { amount = amount, name = name, target = target })
+    table.sort(list, function(a, b) return a.amount > b.amount end)
+    while #list > self.Constants.maxRecordEntries do
+        table.remove(list)
     end
-    CritLogDB[fields.target] = ""
+end
+
+-- Removes a single entry from a category's list by its position (1 =
+-- highest) - for discarding one false positive without touching the rest.
+function CritLog:RemoveRecordEntry(kind, index)
+    table.remove(CritLogDB.records[kind], index)
+end
+
+-- Clears an entire category's list - for `/cl reset damage|whitehit|heal`
+-- and the main panel's per-category Reset button. Individual-entry
+-- removal is RemoveRecordEntry above.
+function CritLog:ResetRecord(kind)
+    CritLogDB.records[kind] = {}
 end
 
 function CritLog:ResetRecords()
-    for kind in pairs(self.Constants.records) do
+    for kind in pairs(CritLogDB.records) do
         self:ResetRecord(kind)
     end
 end

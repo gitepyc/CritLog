@@ -17,11 +17,13 @@ local rosterFrame
 -- every focus loss (an earlier version did that, but clicking elsewhere on
 -- the panel - e.g. a different row's Remove button - counts as focus loss
 -- too, so it could commit a half-finished edit by accident) - a rename only
--- takes effect on Enter or the confirm (✓) button, same as the Add box's
--- explicit Add button. A rejected rename (empty/duplicate) snaps the box
--- back to the stored value instead of leaving the rejected text in place -
--- unlike the Add box, which leaves rejected text so it can be corrected,
--- there's already a known-good value here to fall back to.
+-- takes effect on Enter or the OK button, same as the Add box's explicit
+-- Add button. A rejected rename (empty/duplicate) snaps the box back to
+-- the stored value instead of leaving the rejected text in place - unlike
+-- the Add box, which leaves rejected text so it can be corrected, there's
+-- already a known-good value here to fall back to. Reset does the same
+-- snap-back but as an explicit action, for discarding an in-progress edit
+-- without committing anything first.
 local function getOrCreateRosterRow(f, kind, index)
     f.rowPool[kind] = f.rowPool[kind] or {}
     local row = f.rowPool[kind][index]
@@ -51,6 +53,19 @@ local function getOrCreateRosterRow(f, kind, index)
         confirmButton:SetHighlightFontObject("GameFontHighlightSmall")
         confirmButton:SetScript("OnClick", commitRename)
 
+        -- Discards whatever's currently typed and puts the stored value
+        -- back, without touching CritLogDB - a pure "undo my edit" action,
+        -- distinct from the auto snap-back a rejected OK does.
+        local resetButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+        resetButton:SetSize(50, 18)
+        resetButton:SetText("Reset")
+        resetButton:SetNormalFontObject("GameFontNormalSmall")
+        resetButton:SetHighlightFontObject("GameFontHighlightSmall")
+        resetButton:SetScript("OnClick", function()
+            nameBox:SetText(CritLogDB.playerGroups[kind][index] or "")
+            nameBox:ClearFocus()
+        end)
+
         local removeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
         removeButton:SetSize(60, 18)
         removeButton:SetText("Remove")
@@ -60,7 +75,12 @@ local function getOrCreateRosterRow(f, kind, index)
             CritLog:RemoveRosterName(kind, index)
             CritLog:RefreshOptionsPanel()
         end)
-        row = { nameBox = nameBox, confirmButton = confirmButton, removeButton = removeButton }
+        row = {
+            nameBox = nameBox,
+            confirmButton = confirmButton,
+            resetButton = resetButton,
+            removeButton = removeButton,
+        }
         f.rowPool[kind][index] = row
     end
     return row
@@ -118,6 +138,7 @@ local function layoutRosterList(f)
             if index > #list then
                 row.nameBox:Hide()
                 row.confirmButton:Hide()
+                row.resetButton:Hide()
                 row.removeButton:Hide()
             else
                 -- Skip overwriting the text if this box is mid-edit: a
@@ -130,12 +151,17 @@ local function layoutRosterList(f)
                 end
                 row.nameBox:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -4)
                 row.nameBox:Show()
+                -- OK and Reset sit directly beside the input box (the
+                -- actions that act on what's currently typed); Remove stays
+                -- pinned to the panel's right edge, same as every other
+                -- Remove button in this panel.
+                row.confirmButton:SetPoint("TOPLEFT", row.nameBox, "TOPRIGHT", 6, 0)
+                row.confirmButton:Show()
+                row.resetButton:SetPoint("TOPLEFT", row.confirmButton, "TOPRIGHT", 6, 0)
+                row.resetButton:Show()
                 row.removeButton:SetPoint("TOP", row.nameBox, "TOP", 0, 0)
                 row.removeButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
                 row.removeButton:Show()
-                row.confirmButton:SetPoint("TOP", row.nameBox, "TOP", 0, 0)
-                row.confirmButton:SetPoint("RIGHT", row.removeButton, "LEFT", -6, 0)
-                row.confirmButton:Show()
                 previous = row.nameBox
             end
         end

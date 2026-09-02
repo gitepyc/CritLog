@@ -40,13 +40,19 @@ crits are always recorded regardless of the target's level.
 
 | Combat-log type | Condition | State change | Sound condition | Sound |
 | --- | --- | --- | --- | --- |
-| `SPELL_DAMAGE` | Player source, critical hit, level filter passes | Updates highest ability crit, ability, and target. | Every crit when `/cl allcrits` is enabled; also every new record. | `at_bam_babam.mp3` |
-| `SWING_DAMAGE` | Player source, critical hit, level filter passes | Updates highest white-hit crit and target. | Every crit when both `/cl allcrits` and `/cl whitehit` are enabled; new records when `/cl whitehit` is enabled. | `at_bam_babam.mp3` |
-| `RANGE_DAMAGE` | Player source, critical hit, level filter passes | Stores the result in the white-hit record. | Every crit with `/cl allcrits`; new records with `/cl whitehit`. | `at_bam_babam.mp3` |
-| `SPELL_HEAL` | Player source, critical heal | Updates highest heal crit, ability, and target. | Every crit with `/cl allcrits`; also every new record. | `at_bam_babam.mp3` |
+| `SPELL_DAMAGE` | Player source, critical hit, level filter passes | Inserted into the damage-crit list (see below). | Every crit when `/cl allcrits` is enabled; also every new #1. | `at_bam_babam.mp3` |
+| `SWING_DAMAGE` | Player source, critical hit, level filter passes | Inserted into the white-hit list only if it beats the current #1. | Every crit when both `/cl allcrits` and `/cl whitehit` are enabled; a new #1 when `/cl whitehit` is enabled. | `at_bam_babam.mp3` |
+| `RANGE_DAMAGE` | Player source, critical hit, level filter passes | Inserted into the white-hit list only if it beats the current #1 **and** `/cl whitehit` is enabled (pre-existing asymmetry vs. `SWING_DAMAGE`, not fixed). | Every crit with `/cl allcrits`; a new #1 with `/cl whitehit`. | `at_bam_babam.mp3` |
+| `SPELL_HEAL` | Player source, critical heal | Inserted into the heal-crit list. | Every crit with `/cl allcrits`; also every new #1. | `at_bam_babam.mp3` |
 
 `/cl sound` is the master switch for `at_bam_babam.mp3` and suppresses the
-clip even when the individual conditions above are met.
+clip even when the individual conditions above are met. "Inserted into the
+list" means `CritLog:AddRecord()` (`Persistence/Database.lua`) attempts to
+add the crit regardless of whether it's a new #1 - a crit that only beats
+the 3rd-best still earns a spot in the top `Constants.maxRecordEntries` (5).
+The sound/print trigger is a separate check against the list's current #1
+before the insert, so "new highscore" behavior is unchanged from the old
+single-value tracking.
 
 ## Extreme hits
 
@@ -155,9 +161,14 @@ disables them.
 
 `CritLogDB` is stored per character:
 
-- highest ability-damage crit, including ability and target
-- highest white-hit/ranged crit, including target
-- highest healing crit, including ability and target
+- `records.damage`/`records.whiteHit`/`records.heal`: up to
+  `Constants.maxRecordEntries` (5) entries each, sorted highest-first, each
+  with an amount, target, and (except white-hit) the ability name.
+  Individually deletable in the options panel's Highscore List popup, or
+  clearable a whole category at a time via `/cl reset damage|whitehit|heal`.
+- the legacy single-value fields (`DamageAbilityCrit`, `DAC_Name`, ...) -
+  no longer read or written, kept only so an old SavedVariables file never
+  produces a nil field if something still reads them
 - all command toggles
 
 Known storage and event-handling issues are listed in the
