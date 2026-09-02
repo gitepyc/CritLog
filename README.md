@@ -5,11 +5,12 @@ critical-heal highscores and plays event-driven sounds for crits, deaths,
 auras, and raid-leader chat triggers.
 
 > **Project status:** Working legacy addon under active documentation and
-> modernization. CritLog `0.3.2-dev` targets Season of Discovery on Classic
+> modernization. CritLog `0.4.5-dev` targets Season of Discovery on Classic
 > Era `1.15.9` (Interface `11509`). The last in-game-verified release is
-> `0.2.1`; the options panel, class/role-based death sounds, and the master
+> `0.2.1`; the options panel, class/role-based death sounds, editable
+> melee/tank/priest rosters, Spirit of Redemption detection, and the master
 > mute/debug toggles added since then are first drafts pending in-game
-> verification — see the `Unreleased` section of [CHANGELOG.md](CHANGELOG.md).
+> verification — see [CHANGELOG.md](CHANGELOG.md) for the versioned list.
 
 ## Documentation
 
@@ -115,7 +116,7 @@ critlog/
 ├── CombatLog.lua          # Crit, aura, death, and boss-kill handling
 ├── Commands.lua           # Slash commands and chat output
 ├── Events.lua             # Frame registration and event dispatch
-├── Options.lua            # In-game options panel (/cl options), first draft
+├── Options.lua            # In-game options panels (/cl options, Sound/Roster Settings), first draft
 └── sounds/
 ```
 
@@ -127,28 +128,34 @@ on every tag push, matching what manual installation above does by hand.
 ## Hard-coded data inventory
 
 The following data is centralized in `Data.lua`. The options panel
-(`/cl options`) can toggle whether each feature fires at all, but none of
-this underlying data is itself editable through the panel or a
+(`/cl options`) can toggle whether each feature fires at all, and the
+melee/tank/priest name rosters are now editable too (see below) — everything
+else in this list is still code-only, not editable through the panel or a
 configuration file:
 
 - installation paths and filenames for every requested sound
 - spell IDs for selected abilities and auras, with English/German display
   names kept as a fallback if an ID doesn't match
 - English and German Burning Crusade boss names, used as a fallback for NPCs
-  that live `UnitClassification` doesn't identify as `worldboss`
-- character names grouped into melee, tank, and healer-priest rosters, used
-  as a fallback for players that live class/role detection doesn't match
+  that live `UnitClassification` doesn't identify as `worldboss` — this list
+  is still code-only, not editable through the panel
 - raid-leader phrases that trigger sounds
 - a nine-level threshold for relevant damage targets
 - defaults for all feature toggles
 
+The melee/tank/priest death-sound rosters are seeded from `Data.lua` once,
+then live in `CritLogDB.playerGroups` per character — editable via
+`/cl options` → "Roster Settings..." (Add/Remove per category), not just a
+fallback for the live class/role check anymore.
+
 ## Known technical issues and risks
 
 Not yet in-game verified: the options panel, class/role/classification-based
-death-sound detection, and spell-ID aura matching (all fall back to the old
-name-based matching when the live check doesn't resolve). No CurseForge/Wago
-project configured yet - releases only reach GitHub for now. Audio-file
-rights are undocumented and must be reviewed before public distribution.
+death-sound detection, spell-ID aura matching (all fall back to the old
+name-based matching when the live check doesn't resolve), roster editing,
+and Spirit of Redemption detection. No CurseForge/Wago project configured
+yet - releases only reach GitHub for now. Audio-file rights are undocumented
+and must be reviewed before public distribution.
 Full prioritized list: [Roadmap](docs/ROADMAP.md).
 
 ## Development
