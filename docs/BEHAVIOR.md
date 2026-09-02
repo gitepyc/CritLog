@@ -49,10 +49,11 @@ crits are always recorded regardless of the target's level.
 clip even when the individual conditions above are met. "Inserted into the
 list" means `CritLog:AddRecord()` (`Persistence/Database.lua`) attempts to
 add the crit regardless of whether it's a new #1 - a crit that only beats
-the 3rd-best still earns a spot in the top `Constants.maxRecordEntries` (5).
-The sound/print trigger is a separate check against the list's current #1
-before the insert, so "new highscore" behavior is unchanged from the old
-single-value tracking.
+the 3rd-best still earns a spot in the top `Constants.maxTrackedEntries`
+(10, more than the `Constants.maxDisplayEntries` (5) actually shown - see
+below). The sound/print trigger is a separate check against the list's
+current #1 before the insert, so "new highscore" behavior is unchanged
+from the old single-value tracking.
 
 ## Extreme hits
 
@@ -162,10 +163,13 @@ disables them.
 `CritLogDB` is stored per character:
 
 - `records.damage`/`records.whiteHit`/`records.heal`: up to
-  `Constants.maxRecordEntries` (5) entries each, sorted highest-first, each
-  with an amount, target, and (except white-hit) the ability name.
-  Individually deletable in the options panel's Highscore List popup, or
-  clearable a whole category at a time via `/cl reset damage|whitehit|heal`.
+  `Constants.maxTrackedEntries` (10) entries each, sorted highest-first,
+  each with an amount, target, and (except white-hit) the ability name.
+  Only the top `Constants.maxDisplayEntries` (5) are shown in the options
+  panel's Highscore List popup - the rest exist so deleting a bad entry
+  from the visible list doesn't need a new crit to refill it. Individually
+  deletable there, or clearable a whole category at a time via
+  `/cl reset damage|whitehit|heal`.
 - the legacy single-value fields (`DamageAbilityCrit`, `DAC_Name`, ...) -
   no longer read or written, kept only so an old SavedVariables file never
   produces a nil field if something still reads them

@@ -13,10 +13,13 @@ CritLog.Constants = {
     },
     -- Top-N per highscore category instead of a single value, so
     -- highscores are a real list (each entry individually deletable in the
-    -- options panel) rather than just the current best. 5 keeps the
-    -- options panel's list popup a reasonable size; raise this if that
-    -- turns out to be too few in practice.
-    maxRecordEntries = 5,
+    -- options panel) rather than just the current best. Tracked and
+    -- displayed counts are deliberately different: tracking more than is
+    -- shown means deleting a couple of bad entries (e.g. false positives)
+    -- doesn't need brand new crits to refill the visible list - the
+    -- next-best already-tracked entries just shift into view immediately.
+    maxTrackedEntries = 10,
+    maxDisplayEntries = 5,
     sounds = {
         crit = "at_bam_babam.mp3",
         xtremeDamage = "Xtreme.mp3",
