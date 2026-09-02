@@ -4,6 +4,14 @@
 and the remaining unverified death-sound/Spirit of Redemption detection.
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
+### Unreleased (not yet tagged)
+
+## 0.6.1-dev
+
+- Wording: the White Hit crit and Heal crit Reset buttons on the main
+  panel now also read "Reset all", matching the Damage crit one - still
+  wording only, each button still only clears its own category.
+
 ## 0.6.0-dev
 
 Snapshot tag for review, not a consolidated stable release - everything

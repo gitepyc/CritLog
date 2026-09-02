@@ -240,13 +240,13 @@ local function buildFrame()
 
     f.whcText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     CritLog.UI.anchorBelow(f.whcText, f.dacText)
-    local whcReset = CritLog.UI.createResetButton(f, "whiteHit")
+    local whcReset = CritLog.UI.createResetButton(f, "whiteHit", "Reset all")
     whcReset:SetPoint("TOP", f.whcText, "TOP", 0, 0)
     whcReset:SetPoint("RIGHT", f, "RIGHT", -14, 0)
 
     f.hacText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     CritLog.UI.anchorBelow(f.hacText, f.whcText)
-    local hacReset = CritLog.UI.createResetButton(f, "heal")
+    local hacReset = CritLog.UI.createResetButton(f, "heal", "Reset all")
     hacReset:SetPoint("TOP", f.hacText, "TOP", 0, 0)
     hacReset:SetPoint("RIGHT", f, "RIGHT", -14, 0)
 
