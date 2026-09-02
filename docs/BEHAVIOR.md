@@ -67,21 +67,24 @@ enough" alert. Toggle with `/cl xtreme`.
 
 ## Auras and abilities
 
-This group requires `/cl aura` to be enabled. Each trigger matches by spell
-ID first; if the ID doesn't hit, it falls back to matching the displayed
+This group requires `/cl aura` (`AuraSoundFlag`) to be enabled - a master
+switch over all 7 triggers below, each of which also has its own flag
+(e.g. `BloodlustSoundFlag`), individually toggleable in the Sound Settings
+panel instead of all-or-nothing. Each trigger matches by spell ID first;
+if the ID doesn't hit, it falls back to matching the displayed
 English/German spell name. The name fallback exists because the IDs are
 Wowhead-Classic-sourced but not yet in-game verified — see
 [ROADMAP.md](ROADMAP.md).
 
-| Trigger | Source/destination condition | Spell ID(s) | Name fallback | Sound |
-| --- | --- | --- | --- | --- |
-| Mana Tide Totem summoned (`SPELL_SUMMON`) | Source is recognized as a party or raid member. | `16190` | `Mana Tide Totem`, `Totem der Manaflut` | `Manatide.mp3` |
-| Bloodlust/Heroism received (`SPELL_AURA_APPLIED`) | Destination is the player. | `27689` (Horde), `23682` (Alliance) | `Bloodlust`, `Heroism`, `Blutrausch`, `Heldentum` | `Bloodlust.mp3` |
-| Innervate received | Destination is the player. | `29166` | `Innervate`, `Anregen` | `Innervate.mp3` |
-| Power Infusion received | Destination is the player. | `10060` | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` |
-| Blessing of Protection received | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
-| Divine Intervention received | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
-| Soulstone Resurrection received | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
+| Trigger | Own flag | Source/destination condition | Spell ID(s) | Name fallback | Sound |
+| --- | --- | --- | --- | --- | --- |
+| Mana Tide Totem summoned (`SPELL_SUMMON`) | `ManaTideSoundFlag` | Source is recognized as a party or raid member. | `16190` | `Mana Tide Totem`, `Totem der Manaflut` | `Manatide.mp3` |
+| Bloodlust/Heroism received (`SPELL_AURA_APPLIED`) | `BloodlustSoundFlag` | Destination is the player. | `27689` (Horde), `23682` (Alliance) | `Bloodlust`, `Heroism`, `Blutrausch`, `Heldentum` | `Bloodlust.mp3` |
+| Innervate received | `InnervateSoundFlag` | Destination is the player. | `29166` | `Innervate`, `Anregen` | `Innervate.mp3` |
+| Power Infusion received | `PowerInfusionSoundFlag` | Destination is the player. | `10060` | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` |
+| Blessing of Protection received | `BlessingOfProtectionSoundFlag` | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
+| Divine Intervention received | `DivineInterventionSoundFlag` | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
+| Soulstone Resurrection received | `SoulstoneSoundFlag` | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
 
 ## Deaths
 

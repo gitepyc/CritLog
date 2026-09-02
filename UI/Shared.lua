@@ -58,57 +58,6 @@ function CritLog.UI.createPreviewButton(parent, soundKey, width)
     return button
 end
 
--- AuraSoundFlag gates seven distinct spell sounds individually
--- (Core/CombatLog.lua's HandleAuraSounds); each gets its own small preview
--- button in a compact grid instead of a full checkbox row of its own,
--- since none of them are separately toggleable.
-local AURA_PREVIEWS = {
-    { sound = "bloodlust", label = "Bloodlust" },
-    { sound = "innervate", label = "Innervate" },
-    { sound = "powerInfusion", label = "Power Infusion" },
-    { sound = "blessingOfProtection", label = "Bless. of Prot." },
-    { sound = "divineIntervention", label = "Divine Int." },
-    { sound = "manaTide", label = "Mana Tide" },
-    { sound = "soulstone", label = "Soulstone" },
-}
-
-local AURA_BUTTONS_PER_ROW = 3
-
--- Lays out AURA_PREVIEWS as a compact button grid under the AuraSoundFlag
--- row and returns the last button, so the caller can keep chaining the
--- next checkbox row below it.
-local function buildAuraPreviewGrid(parent, anchorTo)
-    local rowStart, previousButton
-
-    for i, entry in ipairs(AURA_PREVIEWS) do
-        local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-        button:SetSize(112, 20)
-        button:SetText(entry.label)
-        -- See createPreviewButton's comment: SetNormalFontObject/
-        -- SetHighlightFontObject, not a direct SetFontObject() call.
-        button:SetNormalFontObject("GameFontNormalSmall")
-        button:SetHighlightFontObject("GameFontHighlightSmall")
-        button:SetScript("OnClick", function()
-            CritLog.UI.previewSound(entry.sound)
-        end)
-
-        if (i - 1) % AURA_BUTTONS_PER_ROW == 0 then
-            if rowStart then
-                button:SetPoint("TOPLEFT", rowStart, "BOTTOMLEFT", 0, -4)
-            else
-                button:SetPoint("TOPLEFT", anchorTo, "BOTTOMLEFT", 20, -4)
-            end
-            rowStart = button
-        else
-            button:SetPoint("LEFT", previousButton, "RIGHT", 4, 0)
-        end
-
-        previousButton = button
-    end
-
-    return rowStart
-end
-
 -- Every checkbox created by buildToggleRows across all panels, keyed by
 -- CritLogDB field name - RefreshOptionsPanel below re-syncs all of them on
 -- every panel OnShow, regardless of which panel actually owns a given row.
@@ -122,8 +71,6 @@ local checkboxesByField = {}
 --
 -- `sound` on an entry is a key into CritLog.Constants.sounds and gets a
 -- "Preview" button on that row; flags with no sound of their own get none.
--- `auraPreviews = true` renders AURA_PREVIEWS as a compact grid instead
--- (too many distinct sounds for a single row).
 function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     local previous = startAnchor
     -- 0 for the first row: startAnchor (a section heading) has no x-indent
@@ -131,9 +78,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     -- hint line, which sits +4px right of its own checkbox - so from the
     -- second row on this needs to be -4, or each row would drift 4px
     -- further right than the last (a growing staircase, not a one-time
-    -- shift). buildAuraPreviewGrid's returned anchor is an extra 20px
-    -- right on top of that (hint's +4, then the grid's own +20 to line up
-    -- under it), so that branch below cancels -24 instead.
+    -- shift).
     local previousXOffset = 0
 
     for _, entry in ipairs(checkboxes) do
@@ -163,13 +108,8 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
         hint:SetPoint("TOPLEFT", check, "BOTTOMLEFT", 4, -2)
         hint:SetText(entry.hint)
 
-        if entry.auraPreviews then
-            previous = buildAuraPreviewGrid(parent, hint)
-            previousXOffset = -24
-        else
-            previous = hint
-            previousXOffset = -4
-        end
+        previous = hint
+        previousXOffset = -4
     end
 
     return previous, previousXOffset
