@@ -1,5 +1,9 @@
 # Changelog
 
+**Next up:** finish in-game verification of the options panel and the
+experimental class/role-based death-sound detection - see
+[docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
+
 ### Unreleased (not yet tagged)
 
 ## 0.4.2-dev
