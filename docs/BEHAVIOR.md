@@ -3,12 +3,6 @@
 This page describes when CritLog reacts and which sound file the current
 code requests. All sounds live under `sounds/`.
 
-> **History:** CritLog used to ship two interchangeable sound profiles
-> (default and an alternate "Toni" set, switchable with `/cl toni`). The
-> Toni set was promoted to be the only profile and the command was removed;
-> see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for what that changed and what
-> is still worth stripping as dead weight.
-
 ## Event flow
 
 ```text
@@ -70,14 +64,14 @@ This group requires `/cl aura` to be enabled. Each trigger matches by spell
 ID first; if the ID doesn't hit, it falls back to matching the displayed
 English/German spell name. The name fallback exists because the IDs are
 Wowhead-Classic-sourced but not yet in-game verified — see
-docs/REFACTORING.md.
+[ROADMAP.md](ROADMAP.md).
 
 | Trigger | Source/destination condition | Spell ID(s) | Name fallback | Sound |
 | --- | --- | --- | --- | --- |
 | Mana Tide Totem summoned (`SPELL_SUMMON`) | Source is recognized as a party or raid member. | `16190` | `Mana Tide Totem`, `Totem der Manaflut` | `Manatide.mp3` |
 | Bloodlust/Heroism received (`SPELL_AURA_APPLIED`) | Destination is the player. | `27689` (Horde), `23682` (Alliance) | `Bloodlust`, `Heroism`, `Blutrausch`, `Heldentum` | `Bloodlust.mp3` |
 | Innervate received | Destination is the player. | `29166` | `Innervate`, `Anregen` | `Innervate.mp3` |
-| Power Infusion received | Destination is the player. | `10060` | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
+| Power Infusion received | Destination is the player. | `10060` | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` |
 | Blessing of Protection received | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
 | Divine Intervention received | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
 | Soulstone Resurrection received | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
@@ -98,8 +92,8 @@ ID-first-then-name-fallback pattern used for spells above.
 | --- | --- | --- |
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
 | Melee-capable class not flagged Healer (`isMeleeClass`), or a name in `CritLog.Data.playerGroups.melee` | `/cl melee` enabled | `wilhelm.ogg` |
-| Live classification `worldboss` (`isClassifiedBoss`), or an English/German name in `CritLog.Data.bosses` | `/cl boss` enabled | `FFX.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
-| Assigned raid role Tank (`isAssignedTank`), or a name in `CritLog.Data.playerGroups.tank` | `/cl tank` enabled | `Tank.mp3` (fixed — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md) for why this is no longer a random pick) |
+| Live classification `worldboss` (`isClassifiedBoss`), or an English/German name in `CritLog.Data.bosses` | `/cl boss` enabled | `FFX.mp3` |
+| Assigned raid role Tank (`isAssignedTank`), or a name in `CritLog.Data.playerGroups.tank` | `/cl tank` enabled | `Tank.mp3` |
 | Class `PRIEST` (`isPriestClass`), or a name in `CritLog.Data.playerGroups.priest` | `/cl priest` enabled | `Angels.mp3` |
 
 The live checks need a resolved unit token for the dying player (the current
@@ -113,7 +107,7 @@ sound. Boss detection accepts only the `"worldboss"` classification
 (40-man raid bosses, outdoor world bosses, SoD's level-60 raids); the name
 lists remain the only way 5-man end bosses and similarly-ranked NPCs are
 detected. The name rosters themselves are still hard-coded to one specific
-historical raid group — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md).
+historical raid group — see [ROADMAP.md](ROADMAP.md).
 
 ## Raid-leader chat
 
@@ -133,7 +127,7 @@ disables them.
 | Function | Status |
 | --- | --- |
 | Boss killing-blow output | Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is either live-classified `worldboss` or its name is in the English boss list (German name matching relies on the classification check here — pre-existing asymmetry, not extended to the German list, unlike the death-sound check below which checks both languages). |
-| Spirit of Redemption | Test code is commented out and labeled as not working. Deliberately left as-is for now — see [CLEANUP-REVIEW.md](CLEANUP-REVIEW.md). |
+| Spirit of Redemption | Test code is commented out and labeled as not working. Deliberately left as-is for now — see [ROADMAP.md](ROADMAP.md). |
 
 ## Stored data
 
