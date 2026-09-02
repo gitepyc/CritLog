@@ -78,6 +78,26 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     dropdown:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset - 16, -4)
     UIDropDownMenu_SetWidth(dropdown, 110)
 
+    -- Reported in-game: clicking the dropdown showed no menu at all. The
+    -- options panels use "TOOLTIP" strata (the highest there is - see
+    -- createPanelFrame below) so they stay above other addons' windows,
+    -- but Blizzard's shared dropdown-list frames (DropDownList1/2) are
+    -- created at a lower fixed strata - the menu was very likely opening
+    -- behind our own panel, not failing to open at all. Bumping the list
+    -- frames to match right when this dropdown's button is clicked fixes
+    -- that without affecting anything else that uses dropdowns.
+    local dropdownButton = _G[dropdown:GetName().."Button"]
+    if dropdownButton then
+        dropdownButton:HookScript("OnClick", function()
+            if DropDownList1 then
+                DropDownList1:SetFrameStrata("TOOLTIP")
+            end
+            if DropDownList2 then
+                DropDownList2:SetFrameStrata("TOOLTIP")
+            end
+        end)
+    end
+
     UIDropDownMenu_Initialize(dropdown, function(_, level)
         for _, option in ipairs(entry.options) do
             local info = UIDropDownMenu_CreateInfo()

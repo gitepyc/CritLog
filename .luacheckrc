@@ -35,6 +35,8 @@ stds.wow = {
         "UIDropDownMenu_AddButton",
         "UIDropDownMenu_SetText",
         "CloseDropDownMenus",
+        "DropDownList1",
+        "DropDownList2",
         -- UI/MainPanel.lua: confirmation dialog before Reset All
         "StaticPopup_Show",
     },

@@ -384,13 +384,6 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         return
     end
 
-    if not CritLogDB.DeadSoundFlag then
-        -- Sounds are off, but the GUID is still done for classification
-        -- purposes: drop it now instead of leaving it in the cache.
-        forgetClassification(destGUID)
-        return
-    end
-
     if destGUID == UnitGUID("Player") then
         if CritLogDB.PlayerSoundFlag then
             self:PlaySound(self.Constants.sounds.playerDeath)

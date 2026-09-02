@@ -88,10 +88,11 @@ Wowhead-Classic-sourced but not yet in-game verified — see
 
 ## Deaths
 
-All reactions below require `DeadSoundFlag = true` (`/cl dead`). The
-player's own death sound (`PlayerSoundFlag`) is unchanged, long-standing
-behavior: a plain on/off flag. The other four groups (Melee/Tank/Priest/
-Boss) each have a **detection mode** instead
+The player's own death sound (`PlayerSoundFlag`, `/cl player`) is a plain
+on/off flag, unchanged, long-standing behavior. The other four groups
+(Melee/Tank/Priest/Boss) each have a **detection mode** instead - there is
+no separate master switch over just these four anymore (there used to be
+one, `DeadSoundFlag`); setting all four modes to `none` is equivalent
 (`CritLogDB.<Kind>DetectionMode`, a dropdown in the Sound Settings panel,
 one of `CritLog.Constants.detectionModes`):
 
@@ -170,8 +171,7 @@ check for a specific sender is commented out.
 | `raid ende` or `raid end` | Starts `bye.mp3` and immediately starts `end.mp3`. The clips may overlap. |
 | `shit show` or `wipe` | Plays `wipe.mp3`. |
 
-These chat sounds have no feature flag. Neither `/cl sound` nor `/cl dead`
-disables them.
+These chat sounds have no feature flag - `/cl sound` doesn't disable them.
 
 ## Other code paths
 
