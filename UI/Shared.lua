@@ -27,8 +27,8 @@ end
 -- Clears a single highscore record (e.g. a false-positive value from some
 -- other addon's damage numbers) without touching the other two, then
 -- refreshes the displayed text immediately. `label` defaults to "Reset";
--- the main panel's topmost row uses "Reset all" instead - wording only,
--- it still just clears `kind` like every other row.
+-- the main panel's three rows all use "Reset all" instead - wording only,
+-- each one still just clears its own `kind`, not the other two.
 function CritLog.UI.createResetButton(parent, kind, label)
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetSize(60, 18)
