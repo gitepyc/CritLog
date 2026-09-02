@@ -88,24 +88,34 @@ Wowhead-Classic-sourced but not yet in-game verified — see
 
 ## Deaths
 
-All reactions below require `DeadSoundFlag = true` (`/cl dead`). Each group
-also has its own feature flag. The player's own death sound
-(`PlayerSoundFlag`) is unchanged, long-standing behavior. The other four
-groups (Melee/Tank/Priest/Boss) are marked **"(Experimental)"** in the
-options panel: their primary detection is live class/role/classification
-matching, added this session and not yet in-game verified, with the
-original hard-coded name rosters kept as a fallback for whenever no live
-unit token is available or the live check doesn't match — same
-ID-first-then-name-fallback pattern used for spells above.
+All reactions below require `DeadSoundFlag = true` (`/cl dead`). The
+player's own death sound (`PlayerSoundFlag`) is unchanged, long-standing
+behavior: a plain on/off flag. The other four groups (Melee/Tank/Priest/
+Boss) each have a **detection mode** instead
+(`CritLogDB.<Kind>DetectionMode`, a dropdown in the Sound Settings panel,
+one of `CritLog.Constants.detectionModes`):
 
-| Dead unit | Additional condition | Sound |
+| Mode | Meaning |
+| --- | --- |
+| `none` | Sound never plays for this category. |
+| `experimental` | Only the live class/role/classification check counts (see below); the name roster is ignored even if it matches. |
+| `roster` | Only a name in `CritLogDB.playerGroups.<kind>` (or the boss name lists) counts; the live check is ignored even if it matches. |
+| `both` | Either one counts - the original, still-default behavior. |
+
+`/cl priest`/`melee`/`tank`/`boss` only toggle between `none` and `both`;
+`experimental`/`roster` need the options panel dropdown. The live checks
+are not yet in-game verified for tank/boss/priest specifically (melee's
+false-positive bug is fixed and confirmed) - see
+[ROADMAP.md](ROADMAP.md).
+
+| Dead unit | Live check | Sound |
 | --- | --- | --- |
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
-| Melee-capable class not flagged Healer (`isMeleeClass`), or a name in `CritLogDB.playerGroups.melee` | `/cl melee` enabled | `wilhelm.ogg` |
-| Live classification `worldboss` (`isClassifiedBoss`), or an English/German name in `CritLog.Constants.bosses` | `/cl boss` enabled | `FFX.mp3` |
-| Assigned raid role Tank (`isAssignedTank`), or a name in `CritLogDB.playerGroups.tank` | `/cl tank` enabled | `Tank.mp3` |
-| Class `PRIEST` (`isPriestClass`), or a name in `CritLogDB.playerGroups.priest` | `/cl priest` enabled | `Angels.mp3` |
-| Priest death preceded by the Spirit of Redemption buff (spell id `27827`) | `/cl priest` enabled | `Angels.mp3` (same file as the plain priest death sound for now, see `CHANGELOG.md`) |
+| Melee-capable class not flagged Healer (`isMeleeClass`) | `MeleeDetectionMode` matches | `wilhelm.ogg` |
+| Live classification `worldboss` (`isClassifiedBoss`) | `BossDetectionMode` matches | `FFX.mp3` |
+| Assigned raid role Tank (`isAssignedTank`) | `TankDetectionMode` matches | `Tank.mp3` |
+| Class `PRIEST` (`isPriestClass`) | `PriestDetectionMode` matches | `Angels.mp3` |
+| Priest death preceded by the Spirit of Redemption buff (spell id `27827`) | `PriestDetectionMode` matches (same gate as the plain priest check - see below) | `Angels.mp3` (same file as the plain priest death sound for now, see `CHANGELOG.md`) |
 
 The live checks (melee/tank/priest, not boss) need a resolved unit token
 for the dying player (the current target, or a matching visible nameplate)
@@ -119,11 +129,12 @@ Hyjal). They also require `UnitInParty(destName) or UnitInRaid(destName)`
 player in PvP, or an unrelated player on a visible nameplate) could match
 by class/role alone even though they're nobody in your group; in-game
 reported. This also gates the Spirit of Redemption branch below, checked
-against the same `destName`. When no token resolves, the token isn't a
-player, isn't a group member, or resolves but the class/role check doesn't
-match, the legacy name-roster check still applies - that fallback is an
-explicit named allowlist, not a live-detection heuristic, so it's
-deliberately NOT gated by group membership. The `"Schnutz"` character no longer has a separate special
+against the same `destName`. When the detection mode is `experimental`,
+losing any of these (no token, not a player, not a group member, or a
+class/role mismatch) means no sound at all - the name roster is only
+consulted in `roster`/`both` mode, and is itself NOT gated by group
+membership (it's an explicit named allowlist, not a live-detection
+heuristic). The `"Schnutz"` character no longer has a separate special
 case (removed — see `CHANGELOG.md`); they are simply one more name in
 `playerGroups.melee` like everyone else, and get the regular melee death
 sound. Boss detection accepts only the `"worldboss"` classification

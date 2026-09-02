@@ -71,6 +71,25 @@ function CritLog.Filters.isBossClassification(classification)
         and tContains(CritLog.Constants.bosses.classifications, classification)
 end
 
+-- Decides whether a melee/tank/priest/boss death sound should play, given
+-- the selected detection mode and the two already-computed match results
+-- (live class/role/classification check, and name-roster check). "none"
+-- (or any unrecognized value) always returns false - deliberately fails
+-- closed rather than falling back to some other mode if CritLogDB ever
+-- holds something unexpected.
+function CritLog.Filters.matchesDetectionMode(mode, liveMatch, rosterMatch)
+    if mode == "experimental" then
+        return liveMatch
+    end
+    if mode == "roster" then
+        return rosterMatch
+    end
+    if mode == "both" then
+        return liveMatch or rosterMatch
+    end
+    return false
+end
+
 -- Excludes crits against trivial ("grey") enemies from counting as
 -- highscores, so a one-shot on low-level content doesn't overwrite a real
 -- record from relevant content. `targetLevel`/`targetClassification` are

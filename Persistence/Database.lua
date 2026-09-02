@@ -2,7 +2,10 @@
 -- highscore fields, superseded by the CritLogDB.records lists (see
 -- migrateToRecordLists below) but kept in DEFAULTS - and never actively
 -- written again after migration - purely so an old SavedVariables file
--- never produces a nil field if something still reads them.
+-- never produces a nil field if something still reads them. Same reasoning
+-- for PriestSoundFlag/TankSoundFlag/MeleeSoundFlag/BossSoundFlag, now
+-- superseded by the CritLogDB.<Kind>DetectionMode strings (see
+-- migrateDetectionModes below).
 local DEFAULTS = {
     DamageAbilityCrit = 0,
     DAC_Name = "",
@@ -112,6 +115,29 @@ local function migrateToRecordLists()
     end
 end
 
+-- One-time migration: the melee/tank/priest/boss death sounds used to be a
+-- plain on/off flag; now each is a 4-way mode ("none"/"experimental"/
+-- "roster"/"both", see Core/Constants.lua's detectionModes and Core/
+-- Filters.lua's matchesDetectionMode). Guarded per-category on the new
+-- field itself, same pattern as the other migrations above - true becomes
+-- "both" (live check with roster fallback, the original default
+-- behavior), false becomes "none". Reads the old flag rather than a
+-- hardcoded default so an existing character who had e.g. tank sounds
+-- turned off keeps them off after upgrading.
+local function migrateDetectionModes()
+    local categories = {
+        { mode = "MeleeDetectionMode", oldFlag = "MeleeSoundFlag" },
+        { mode = "TankDetectionMode", oldFlag = "TankSoundFlag" },
+        { mode = "PriestDetectionMode", oldFlag = "PriestSoundFlag" },
+        { mode = "BossDetectionMode", oldFlag = "BossSoundFlag" },
+    }
+    for _, category in ipairs(categories) do
+        if CritLogDB[category.mode] == nil then
+            CritLogDB[category.mode] = CritLogDB[category.oldFlag] and "both" or "none"
+        end
+    end
+end
+
 function CritLog:SetDefaults()
     local initialized = not CritLogDB
     local upgraded = not initialized and CritLogDB.Version ~= self.version
@@ -131,6 +157,7 @@ function CritLog:SetDefaults()
 
     migratePlayerGroups()
     migrateToRecordLists()
+    migrateDetectionModes()
 
     if initialized then
         print("CritLog Initialized")

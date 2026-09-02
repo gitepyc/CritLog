@@ -33,21 +33,26 @@ local SOUND_CHECKBOXES = {
       hint = "Received Soulstone Resurrection." },
     { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
       hint = "Plays when you yourself die." },
-    -- These four (unlike PlayerSoundFlag above) rely on the class/role/
-    -- classification detection in Core/CombatLog.lua (isMeleeClass,
-    -- isAssignedTank, isPriestClass, isClassifiedBoss) - not yet in-game
-    -- verified, hence "(Experimental)". Untested here doesn't mean broken:
-    -- each one falls back to the legacy hardcoded name roster whenever the
-    -- live class/role/classification check doesn't resolve or doesn't
-    -- match.
-    { field = "PriestSoundFlag", label = "Priest death sound (Experimental)", sound = "priestDeath",
-      hint = "By class first, name list fallback." },
-    { field = "MeleeSoundFlag", label = "Melee death sound (Experimental)", sound = "meleeDeath",
-      hint = "By class first, name list fallback." },
-    { field = "TankSoundFlag", label = "Tank death sound (Experimental)", sound = "tankDeath",
-      hint = "By assigned raid role first, name list fallback." },
-    { field = "BossSoundFlag", label = "Boss death sound (Experimental)", sound = "bossDeath",
-      hint = "By live classification first, name list fallback." },
+    -- These four (unlike PlayerSoundFlag above) can be driven by the live
+    -- class/role/classification detection in Core/CombatLog.lua
+    -- (isMeleeClass, isAssignedTank, isPriestClass, isClassifiedBoss), the
+    -- hardcoded name roster, both, or neither - a dropdown instead of a
+    -- checkbox. "Experimental" isn't yet in-game verified for tank/boss/
+    -- priest specifically (melee's false-positive bug is fixed and
+    -- confirmed); "Roster" and "Both" (the original default) aren't
+    -- affected by that.
+    { field = "PriestDetectionMode", label = "Priest death sound", sound = "priestDeath",
+      options = CritLog.Constants.detectionModes,
+      hint = "None / Experimental (live class check) / Roster (name list) / Both." },
+    { field = "MeleeDetectionMode", label = "Melee death sound", sound = "meleeDeath",
+      options = CritLog.Constants.detectionModes,
+      hint = "None / Experimental (live class check) / Roster (name list) / Both." },
+    { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
+      options = CritLog.Constants.detectionModes,
+      hint = "None / Experimental (live role check) / Roster (name list) / Both." },
+    { field = "BossDetectionMode", label = "Boss death sound", sound = "bossDeath",
+      options = CritLog.Constants.detectionModes,
+      hint = "None / Experimental (live classification) / Roster (name list) / Both." },
     { field = "DeadSoundFlag", label = "Death sounds (enables the five above)",
       hint = "Master switch for the five death sounds above." },
 }
@@ -59,10 +64,10 @@ local function buildSoundFrame()
     -- (each with its own hint line underneath) - the 7 individual aura
     -- sounds used to be a compact preview-only button grid under a single
     -- master toggle; now each is a real checkbox row like everything else,
-    -- so it needs noticeably more height than before. Widened from 440:
-    -- the "(Experimental)" suffix on four labels needs more room before
-    -- the preview button column.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 990)
+    -- so it needs noticeably more height than before. The 4 detection-mode
+    -- dropdown rows are taller than a checkbox row too. Not pixel-verified
+    -- in-game yet - see docs/ROADMAP.md, visual polish is a follow-up.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 1010)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
