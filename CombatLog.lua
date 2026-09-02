@@ -398,13 +398,12 @@ function CritLog:PrintBossKillingBlow(
         return
     end
 
-    -- Pre-existing asymmetry, deliberately kept: the name fallback here
-    -- checks the English list only, while the death sound checks both
-    -- languages. The classification check is language-independent, so on a
-    -- German client this now fires for worldboss NPCs where it previously
-    -- never could.
+    -- Name fallback now checks both languages, same as the death-sound
+    -- check below - was English-only, a pre-existing asymmetry with no
+    -- reason behind it (both lists have always existed side by side).
     if isClassifiedBoss(destGUID)
         or tContains(self.Data.bosses.english, destName)
+        or tContains(self.Data.bosses.german, destName)
     then
         print(sourceName.." killed "..destName)
     end

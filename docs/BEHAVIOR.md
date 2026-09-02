@@ -131,7 +131,7 @@ disables them.
 
 | Function | Status |
 | --- | --- |
-| Boss killing-blow output | Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is either live-classified `worldboss` or its name is in the English boss list (German name matching relies on the classification check here — pre-existing asymmetry, not extended to the German list, unlike the death-sound check below which checks both languages). |
+| Boss killing-blow output | Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is either live-classified `worldboss` or its name is in the English or German boss list - same three-way check as the death sound below. |
 | Spirit of Redemption | Test code is commented out and labeled as not working. Deliberately left as-is for now — see [ROADMAP.md](ROADMAP.md). |
 
 ## Stored data

@@ -8,6 +8,12 @@ ongoing in-game verification right now. See
 
 ### Unreleased (not yet tagged)
 
+## 0.4.3-dev
+
+- Fixed the boss killing-blow chat line only checking the English boss
+  name list, not German - a pre-existing asymmetry with the death-sound
+  check below it, which has always checked both languages.
+
 ## 0.4.2-dev
 
 - Fixed the melee/tank/priest death-sound class checks (added in
