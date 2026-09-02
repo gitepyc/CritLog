@@ -3,24 +3,26 @@
 Open, forward-looking items only, in priority order. Everything already
 done is in `CHANGELOG.md` and git history, not repeated here.
 
-1. **In-game verification**, ongoing: the options panel, the four
-   experimental death-sound toggles (melee/tank/priest/boss), debug mode.
-   Not a gate blocking other work anymore - bugs found during verification
-   (e.g. the `0.4.2-dev` NPC-death-sound fix) land on `dev` as they're
-   reported, in parallel with feature work below.
+1. **In-game verification**, ongoing: the options panel (including
+   Escape-key behavior) and melee death-sound detection are now confirmed
+   working (`0.5.0`); still open are tank/boss/priest death-sound
+   detection specifically, and Spirit of Redemption. Not a gate blocking
+   other work anymore - bugs found during verification (e.g. the
+   `0.4.2-dev` NPC-death-sound fix, the `0.4.8-dev` Escape-key fix) land on
+   `dev` as they're reported, in parallel with feature work below.
 2. **Next up, feature work:** multi-entry highscores - top-5 list per
    category instead of a single value, each entry individually deletable.
    Built on its own branch, `feature/multi-entry-highscores`, deliberately
    kept off `dev` until it's ready to merge (bigger, schema-touching
    change than the bugfix-only work `dev` has been getting otherwise).
    Remaining: review/finish that branch, in-game-verify it, then merge.
-3. ~~SavedVariables-backed player-role configuration~~ - done for the
-   melee/tank/priest rosters: `CritLogDB.playerGroups`, editable via
-   `/cl options` → "Roster Settings..." (Add/Remove per category). Not
-   yet in-game verified. The boss name lists (`CritLog.Constants.bosses`) are
-   still code-only, not scoped for this pass - those rosters are still an
-   intentional fallback for the live class/role/classification checks,
-   not scheduled for removal.
+3. ~~SavedVariables-backed player-role configuration~~ - done and in-game
+   confirmed for the melee/tank/priest rosters: `CritLogDB.playerGroups`,
+   editable via `/cl options` → "Roster Settings..." (Add/Remove, plus
+   inline rename with OK/Reset per row, added in `0.5.0`). The boss name
+   lists (`CritLog.Constants.bosses`) are still code-only, not scoped for
+   this pass - those rosters are still an intentional fallback for the
+   live class/role/classification checks, not scheduled for removal.
 4. Audio volume/channel control - all sounds play on the fixed `Master`
    channel via `PlaySoundFile`; no volume control beyond `MasterSoundFlag`'s
    on/off mute.
