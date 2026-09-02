@@ -7,6 +7,21 @@ full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.4.7-dev
+
+- Fixed the highscore panel showing empty parentheses (e.g. "Damage crit
+  (): 0 ()") before any crit of that kind was ever recorded - now shows
+  "no crit recorded yet" instead, in-game-reported.
+- Roster Settings names are now editable in place (rename on Enter or on
+  losing focus), instead of only Add/Remove - fixes a typo or a character
+  rename without a remove-then-re-add round trip.
+- Added temporary `/cl debug` diagnostic output to the Escape-key panel
+  stack, investigating an in-game report that Escape still closes every
+  open panel at once regardless of how many are open, not just the
+  topmost one - the push/pop logic reads correctly on paper, so this
+  prints what's actually left in `UISpecialFrames` to find where it
+  diverges. Not yet resolved.
+
 ## 0.4.6-dev
 
 - Restructured the file layout - no behavior change, pure code organization.

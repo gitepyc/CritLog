@@ -193,6 +193,26 @@ local function removeFromTable(t, value)
     end
 end
 
+-- Temporary diagnostic for a reported bug (Escape closing every open panel
+-- instead of just the topmost, seemingly regardless of how many are open) -
+-- the push/pop logic looks correct on paper, so this prints which of OUR
+-- frame names are actually still sitting in the real UISpecialFrames table
+-- after every push/pop, to see where it actually diverges. Gated by
+-- CritLogDB.DebugFlag (`/cl debug`) like every other diagnostic print;
+-- remove once the bug is understood.
+local function debugEscapeState(label)
+    local ours = {}
+    for _, entry in ipairs(UISpecialFrames) do
+        if type(entry) == "string" and entry:find("^CritLog") then
+            table.insert(ours, entry)
+        end
+    end
+    CritLog:Debug(
+        label, "- stack:", table.concat(escapeFrameStack, ","),
+        "| CritLog entries in UISpecialFrames:", table.concat(ours, ",")
+    )
+end
+
 local function pushEscapeFrame(name)
     removeFromTable(escapeFrameStack, name)
     if #escapeFrameStack > 0 then
@@ -200,6 +220,7 @@ local function pushEscapeFrame(name)
     end
     table.insert(escapeFrameStack, name)
     tinsert(UISpecialFrames, name)
+    debugEscapeState("pushEscapeFrame("..name..")")
 end
 
 local function popEscapeFrame(name)
@@ -208,6 +229,7 @@ local function popEscapeFrame(name)
     if #escapeFrameStack > 0 then
         tinsert(UISpecialFrames, escapeFrameStack[#escapeFrameStack])
     end
+    debugEscapeState("popEscapeFrame("..name..")")
 end
 
 -- Every panel needs to stay above other addon UI (a WeakAuras display was

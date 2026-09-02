@@ -131,3 +131,26 @@ end
 function CritLog:RemoveRosterName(kind, index)
     table.remove(CritLogDB.playerGroups[kind], index)
 end
+
+-- Renames the name at a given position in place, e.g. fixing a typo or a
+-- character rename, without a remove-then-re-add round trip. Same
+-- trim/empty/duplicate rules as AddRosterName, except a name matching
+-- itself at its own position isn't treated as a duplicate. Returns true on
+-- success, false if rejected - the options panel uses that to snap the
+-- edit box back to the stored value instead of keeping the rejected text.
+function CritLog:RenameRosterName(kind, index, name)
+    name = name:match("^%s*(.-)%s*$")
+    if name == "" then
+        return false
+    end
+
+    local list = CritLogDB.playerGroups[kind]
+    for i, existing in ipairs(list) do
+        if i ~= index and existing == name then
+            return false
+        end
+    end
+
+    list[index] = name
+    return true
+end
