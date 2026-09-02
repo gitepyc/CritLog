@@ -6,6 +6,16 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.12-dev
+
+- Wording: "Soulstone Resurrection" renamed to "Soulstone Applied" - the
+  sound plays when the buff lands on you (`SPELL_AURA_APPLIED`), not when
+  you're actually resurrected by it. The real in-game buff name happens to
+  be "Soulstone Resurrection" (kept as the name-match fallback, unchanged),
+  which made the old label read as if it triggered on the resurrection.
+  Also fixed the stale "Melee death"/"melee-roster" wording in
+  `docs/SOUNDS.md`, missed in the earlier Damage Dealer rename.
+
 ## 0.5.11-dev
 
 - Wording: "Melee death sound" / roster category renamed to "Damage
