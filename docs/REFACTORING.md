@@ -122,9 +122,13 @@ manual in-game behavior checklist remains required before merge.
 
 - versioned SavedVariables schema
 - ~~UI for sound groups~~ — done, first draft: `Options.lua` (`/cl options`)
-  has a checkbox for every one of the 15 `CritLogDB` toggle fields plus a
-  "Preview" button for every toggle with a sound of its own. Not yet
-  in-game verified — see CHANGELOG.md.
+  opens a main panel with the 2 crit-tracking toggles (`AllLevel`,
+  `DebugFlag`) plus a "Sound Settings..." button; that button opens a
+  second panel with all 13 sound-related toggle fields plus a "Preview"
+  button for every one of them with a sound of its own. Split out so the
+  default `/cl options` view isn't 13 sound rows deep before you even see
+  whether crit tracking is configured how you want. Not yet in-game
+  verified — see CHANGELOG.md.
 - audio channel/volume — still outstanding. All sounds play on the fixed
   `Master` channel via `PlaySoundFile`; there is no per-sound or overall
   volume control beyond `MasterSoundFlag`'s on/off mute.

@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Split the options panel in two: `/cl options` now opens a small main
+  panel with only the 2 crit-tracking toggles that aren't about sound at
+  all (`AllLevel`, `DebugFlag`) plus a "Sound Settings..." button; that
+  button opens a separate panel with all 13 sound-related toggles (the
+  highscore/aura/death sounds, previews, and the master mute) - moved
+  there wholesale, no behavior changes to any individual toggle. The
+  checkbox/label/preview-button/hint-line row layout was factored into a
+  shared `buildToggleRows()` helper so both panels use the same logic.
+  Reason: the single combined panel put 13 sound rows between the crit
+  settings and nothing, even for someone who only cares about crit
+  tracking. No `CritLogDB` schema impact, no new fields - purely which
+  frame each existing checkbox lives on.
 - Options panel: fixed preview button text getting stuck on the yellow
   hover color permanently after the first mouseover — the code called
   `button:GetFontString():SetFontObject()` directly, which bypasses the

@@ -7,15 +7,27 @@
 -- Label wording is lifted from Commands.lua's printHelp()/printConfig() so
 -- the panel doesn't introduce new terminology for the same settings.
 --
+-- Split into two panels: the main one (this file's CRIT_CHECKBOXES) covers
+-- crit-tracking behavior that isn't about sound at all, while every actual
+-- sound toggle lives in a separate "Sound Settings" panel opened via a
+-- button, so the default /cl options view isn't 13 sound rows deep before
+-- you even see whether crit tracking itself is configured how you want.
+--
 -- `sound` is a key into CritLog.Data.sounds and gets a "Preview" button on
 -- that row; flags with no sound of their own (MasterSoundFlag mutes
 -- everything but plays nothing itself, AllCritFlag/WhiteHitFlag only modify
--- *when* the shared crit sound plays, AllLevel/DebugFlag don't play
--- anything, DeadSoundFlag is a master switch already covered by the five
--- death-sound rows below it) get none. AuraSoundFlag is a master switch
--- over seven distinct spell sounds, too many for a single row - see
--- AURA_PREVIEWS below instead.
-local CHECKBOXES = {
+-- *when* the shared crit sound plays, DeadSoundFlag is a master switch
+-- already covered by the five death-sound rows below it) get none.
+-- AuraSoundFlag is a master switch over seven distinct spell sounds, too
+-- many for a single row - see AURA_PREVIEWS below instead.
+local CRIT_CHECKBOXES = {
+    { field = "AllLevel", label = "Ignore enemy level requirement",
+      hint = "Counts highscores from enemies of any level." },
+    { field = "DebugFlag", label = "Debug mode (diagnostic chat output)",
+      hint = "Prints diagnostic chat messages for troubleshooting." },
+}
+
+local SOUND_CHECKBOXES = {
     { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)",
       hint = "Mutes everything below without changing individual settings." },
     { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
@@ -24,12 +36,8 @@ local CHECKBOXES = {
       hint = "Plays on every crit, not just new highscores." },
     { field = "WhiteHitFlag", label = "Sound for white hit crits",
       hint = "White-hit highscores need this; ability crits don't." },
-    { field = "AllLevel", label = "Ignore enemy level requirement",
-      hint = "Counts highscores from enemies of any level." },
     { field = "XtremeSoundFlag", label = "Xtreme damage sound (over 9000)", sound = "xtremeDamage",
       hint = "Extra sound when a hit deals over 9000 damage." },
-    { field = "DebugFlag", label = "Debug mode (diagnostic chat output)",
-      hint = "Prints diagnostic chat messages for troubleshooting." },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },
     { field = "AuraSoundFlag", label = "Aura/spell sound", auraPreviews = true,
@@ -71,9 +79,10 @@ local AURA_PREVIEWS = {
 
 local AURA_BUTTONS_PER_ROW = 3
 
--- Created lazily on first /cl options, not at load time - nothing needs the
--- frame to exist before the player asks for it.
+-- Both created lazily, not at load time - nothing needs either frame to
+-- exist before the player asks for it.
 local frame
+local soundFrame
 local checkboxesByField = {}
 
 local function anchorBelow(region, previous, yGap)
@@ -146,17 +155,68 @@ local function buildAuraPreviewGrid(parent, anchorTo)
     return rowStart
 end
 
-local function buildFrame()
-    local f = CreateFrame("Frame", "CritLogOptionsFrame", UIParent, "BasicFrameTemplateWithInset")
-    -- Tall enough for the header block, all 15 toggle rows (each now with
-    -- its own hint line underneath), and the aura preview grid.
-    -- Widened from 440: the "(Experimental)" suffix on four labels needs
-    -- more room before the preview button column.
-    f:SetSize(490, 1080)
-    f:SetPoint("CENTER")
+-- Shared row-building loop for both panels: a checkbox, its label, an
+-- optional preview button, and a static hint line underneath (used instead
+-- of a hover tooltip - GameTooltip on the checkbox didn't reliably show
+-- in-game, small hit area, easy to miss). Returns the last anchor region
+-- and its x-offset so the caller can keep chaining further content below.
+local function buildToggleRows(parent, checkboxes, startAnchor)
+    local previous = startAnchor
+    -- buildAuraPreviewGrid's returned anchor sits 24px right of the
+    -- checkbox column (hint is +4 from check, then the grid itself adds
+    -- another +20 to line up under it); this offset cancels that back out
+    -- so the next real checkbox stays in the same column instead of
+    -- drifting right.
+    local previousXOffset = 0
+
+    for _, entry in ipairs(checkboxes) do
+        local check = CreateFrame("CheckButton", "CritLogOptions"..entry.field, parent, "UICheckButtonTemplate")
+        check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -4)
+        -- Hook rather than replace OnClick, so the template's default click
+        -- sound still plays; GetChecked() returns 1/nil on some clients, so
+        -- normalize to a real boolean before writing it back to the DB.
+        check:HookScript("OnClick", function(self)
+            CritLogDB[entry.field] = self:GetChecked() and true or false
+        end)
+        checkboxesByField[entry.field] = check
+
+        local label = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        label:SetPoint("LEFT", check, "RIGHT", 2, 1)
+        label:SetText(entry.label)
+
+        if entry.sound then
+            -- Anchored to a fixed offset from the checkbox itself rather
+            -- than to the label, so button position doesn't depend on how
+            -- long a given label happens to be.
+            local previewButton = createPreviewButton(parent, entry.sound)
+            previewButton:SetPoint("LEFT", check, "LEFT", 340, 0)
+        end
+
+        local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+        hint:SetPoint("TOPLEFT", check, "BOTTOMLEFT", 4, -2)
+        hint:SetText(entry.hint)
+
+        if entry.auraPreviews then
+            previous = buildAuraPreviewGrid(parent, hint)
+            previousXOffset = -24
+        else
+            previous = hint
+            previousXOffset = 0
+        end
+    end
+
+    return previous, previousXOffset
+end
+
+-- Both panels need to stay above other addon UI (a WeakAuras display was
+-- covering the panel before this was added) and share the same drag/close
+-- behavior, so this sets up everything but the content.
+local function createPanelFrame(name, title, width, height)
+    local f = CreateFrame("Frame", name, UIParent, "BasicFrameTemplateWithInset")
+    f:SetSize(width, height)
     -- TOOLTIP is the highest frame strata WoW exposes; other addons
     -- (WeakAuras displays included) commonly sit at MEDIUM/HIGH/DIALOG,
-    -- so this keeps the options panel on top of them without needing to
+    -- so this keeps the options panels on top of them without needing to
     -- know what strata any specific one uses. SetToplevel raises it above
     -- same-strata siblings whenever it's clicked, same as other dialogs.
     f:SetFrameStrata("TOOLTIP")
@@ -167,14 +227,47 @@ local function buildFrame()
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
-    f.TitleText:SetText("CritLog Options")
+    f.TitleText:SetText(title)
+    f:SetScript("OnShow", function()
+        CritLog:RefreshOptionsPanel()
+    end)
+    f:Hide()
+    return f
+end
+
+local function buildSoundFrame()
+    -- Tall enough for the toggles heading, all 13 sound toggle rows (each
+    -- with its own hint line underneath), and the aura preview grid.
+    -- Widened from 440: the "(Experimental)" suffix on four labels needs
+    -- more room before the preview button column.
+    local f = createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 820)
+    -- Offset from center so it doesn't perfectly overlap the main panel
+    -- when both are open at once; a one-time anchor, not a continuous one,
+    -- so dragging either panel doesn't drag the other.
+    f:SetPoint("CENTER", UIParent, "CENTER", 260, 0)
+
+    local togglesHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    togglesHeading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
+    togglesHeading:SetText("Sound Toggles")
+
+    buildToggleRows(f, SOUND_CHECKBOXES, togglesHeading)
+
+    return f
+end
+
+local function buildFrame()
+    -- Tall enough for the header block, the 2 crit-tracking toggle rows
+    -- (each with its own hint line underneath), and the Sound Settings
+    -- button.
+    local f = createPanelFrame("CritLogOptionsFrame", "CritLog Options", 420, 420)
+    f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     -- Anchored directly to the frame rather than f.Inset: that child region
     -- isn't guaranteed to exist on every BasicFrameTemplateWithInset variant
     -- (SoD's client doesn't expose it), and a nil relativeTo here silently
-    -- anchors everything downstream - the whole checkbox chain included -
-    -- to the screen instead of the panel. -30 clears the title bar.
+    -- anchors everything downstream to the screen instead of the panel.
+    -- -30 clears the title bar.
     highscoresHeading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     highscoresHeading:SetText("Highscores")
 
@@ -197,81 +290,43 @@ local function buildFrame()
 
     local togglesHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     anchorBelow(togglesHeading, f.versionText, 16)
-    togglesHeading:SetText("Toggles")
+    togglesHeading:SetText("Options")
 
-    local previous = togglesHeading
-    -- buildAuraPreviewGrid's returned anchor sits 24px right of the checkbox
-    -- column (hint is +4 from check, then the grid itself adds another +20
-    -- to line up under it); this offset cancels that back out so the next
-    -- real checkbox stays in the same column instead of drifting right.
-    local previousXOffset = 0
-    for _, entry in ipairs(CHECKBOXES) do
-        local check = CreateFrame("CheckButton", "CritLogOptions"..entry.field, f, "UICheckButtonTemplate")
-        check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -4)
-        -- Hook rather than replace OnClick, so the template's default click
-        -- sound still plays; GetChecked() returns 1/nil on some clients, so
-        -- normalize to a real boolean before writing it back to the DB.
-        check:HookScript("OnClick", function(self)
-            CritLogDB[entry.field] = self:GetChecked() and true or false
-        end)
-        checkboxesByField[entry.field] = check
+    local lastAnchor = buildToggleRows(f, CRIT_CHECKBOXES, togglesHeading)
 
-        local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        label:SetPoint("LEFT", check, "RIGHT", 2, 1)
-        label:SetText(entry.label)
-
-        if entry.sound then
-            -- Anchored to a fixed offset from the checkbox itself rather
-            -- than to the label, so button position doesn't depend on how
-            -- long a given label happens to be.
-            local previewButton = createPreviewButton(f, entry.sound)
-            previewButton:SetPoint("LEFT", check, "LEFT", 340, 0)
-        end
-
-        -- A static line instead of a hover tooltip: GameTooltip on the
-        -- checkbox didn't reliably show in-game (small hit area, easy to
-        -- miss), so the explanation is just always visible instead.
-        local hint = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-        hint:SetPoint("TOPLEFT", check, "BOTTOMLEFT", 4, -2)
-        hint:SetText(entry.hint)
-
-        if entry.auraPreviews then
-            previous = buildAuraPreviewGrid(f, hint)
-            previousXOffset = -24
-        else
-            previous = hint
-            previousXOffset = 0
-        end
-    end
-
-    f:SetScript("OnShow", function()
-        CritLog:RefreshOptionsPanel()
+    local soundButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    soundButton:SetSize(140, 24)
+    soundButton:SetText("Sound Settings...")
+    soundButton:SetNormalFontObject("GameFontNormalSmall")
+    soundButton:SetHighlightFontObject("GameFontHighlightSmall")
+    soundButton:SetPoint("TOPLEFT", lastAnchor, "BOTTOMLEFT", 0, -16)
+    soundButton:SetScript("OnClick", function()
+        CritLog:ShowSoundOptions()
     end)
 
-    f:Hide()
     return f
 end
 
--- CritLogDB can change while the panel is closed (new highscores, /cl
--- toggles from chat), so re-read everything on every OnShow rather than
--- only when the frame is first built.
+-- CritLogDB can change while a panel is closed (new highscores, /cl toggles
+-- from chat), so re-read everything on every OnShow rather than only when
+-- a frame is first built. Both panels call this; it only touches what
+-- exists (checkboxesByField spans both panels, harmless to refresh a
+-- checkbox that isn't currently visible).
 function CritLog:RefreshOptionsPanel()
-    if not frame then
-        return
+    if frame then
+        frame.dacText:SetText(
+            "Damage crit ("..CritLogDB.DAC_Name.."): "
+            ..CritLogDB.DamageAbilityCrit.." ("..CritLogDB.DAC_Tar..")"
+        )
+        frame.whcText:SetText(
+            "Damage crit (white hit): "..CritLogDB.WhiteHitCrit
+            .." ("..CritLogDB.WHC_Tar..")"
+        )
+        frame.hacText:SetText(
+            "Heal crit ("..CritLogDB.HAC_Name.."): "
+            ..CritLogDB.HealAbilityCrit.." ("..CritLogDB.HAC_Tar..")"
+        )
     end
-
-    frame.dacText:SetText(
-        "Damage crit ("..CritLogDB.DAC_Name.."): "
-        ..CritLogDB.DamageAbilityCrit.." ("..CritLogDB.DAC_Tar..")"
-    )
-    frame.whcText:SetText(
-        "Damage crit (white hit): "..CritLogDB.WhiteHitCrit
-        .." ("..CritLogDB.WHC_Tar..")"
-    )
-    frame.hacText:SetText(
-        "Heal crit ("..CritLogDB.HAC_Name.."): "
-        ..CritLogDB.HealAbilityCrit.." ("..CritLogDB.HAC_Tar..")"
-    )
 
     for field, check in pairs(checkboxesByField) do
         check:SetChecked(CritLogDB[field])
@@ -287,5 +342,17 @@ function CritLog:ShowOptions()
         frame:Hide()
     else
         frame:Show()
+    end
+end
+
+function CritLog:ShowSoundOptions()
+    if not soundFrame then
+        soundFrame = buildSoundFrame()
+    end
+
+    if soundFrame:IsShown() then
+        soundFrame:Hide()
+    else
+        soundFrame:Show()
     end
 end
