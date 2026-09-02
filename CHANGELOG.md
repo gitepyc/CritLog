@@ -6,6 +6,17 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.7-dev
+
+- Main panel's topmost highscore Reset button now reads "Reset all"
+  (wording only - still just clears the Damage crit category, same as
+  before).
+- The 7 individual aura/spell checkboxes under "Aura/spell sound" are now
+  visibly a sub-category: smaller checkboxes, smaller label font, and
+  indented, instead of looking like 7 more peers of the master toggle.
+  `CritLog.UI.buildToggleRows` gained an `indent = true` per-entry option
+  for this (`UI/Shared.lua`).
+
 ## 0.5.6-dev
 
 - Melee/Tank/Priest/Boss death-sound detection is now a 4-way mode

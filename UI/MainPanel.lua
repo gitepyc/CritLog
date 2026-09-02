@@ -205,7 +205,7 @@ local function buildFrame()
 
     f.dacText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     CritLog.UI.anchorBelow(f.dacText, highscoresHeading, 8)
-    local dacReset = CritLog.UI.createResetButton(f, "damage")
+    local dacReset = CritLog.UI.createResetButton(f, "damage", "Reset all")
     dacReset:SetPoint("TOP", f.dacText, "TOP", 0, 0)
     dacReset:SetPoint("RIGHT", f, "RIGHT", -14, 0)
 
