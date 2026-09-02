@@ -189,7 +189,7 @@ function CritLog:HandleAuraSounds(
         and spellName ~= nil
     then
         self:Debug("SPELL_SUMMON by group member - id:", spellId, "name:", spellName)
-        if matchesSpell(self.Constants.spells.manaTide, spellId, spellName) then
+        if CritLogDB.ManaTideSoundFlag and matchesSpell(self.Constants.spells.manaTide, spellId, spellName) then
             self:PlaySound(self.Constants.sounds.manaTide)
         end
     end
@@ -200,27 +200,34 @@ function CritLog:HandleAuraSounds(
 
     self:Debug("SPELL_AURA_APPLIED on player - id:", spellId, "name:", spellName)
 
-    if matchesSpell(self.Constants.spells.bloodlust, spellId, spellName) then
+    -- AuraSoundFlag (checked above) is the master switch; each of these 7
+    -- also has its own flag, individually toggleable in the Sound Settings
+    -- panel instead of all-or-nothing.
+    if CritLogDB.BloodlustSoundFlag and matchesSpell(self.Constants.spells.bloodlust, spellId, spellName) then
         self:PlaySound(self.Constants.sounds.bloodlust)
     end
 
-    if matchesSpell(self.Constants.spells.innervate, spellId, spellName) then
+    if CritLogDB.InnervateSoundFlag and matchesSpell(self.Constants.spells.innervate, spellId, spellName) then
         self:PlaySound(self.Constants.sounds.innervate)
     end
 
-    if matchesSpell(self.Constants.spells.powerInfusion, spellId, spellName) then
+    if CritLogDB.PowerInfusionSoundFlag and matchesSpell(self.Constants.spells.powerInfusion, spellId, spellName) then
         self:PlaySound(self.Constants.sounds.powerInfusion)
     end
 
-    if matchesSpell(self.Constants.spells.blessingOfProtection, spellId, spellName) then
+    if CritLogDB.BlessingOfProtectionSoundFlag
+        and matchesSpell(self.Constants.spells.blessingOfProtection, spellId, spellName)
+    then
         self:PlaySound(self.Constants.sounds.blessingOfProtection)
     end
 
-    if matchesSpell(self.Constants.spells.divineIntervention, spellId, spellName) then
+    if CritLogDB.DivineInterventionSoundFlag
+        and matchesSpell(self.Constants.spells.divineIntervention, spellId, spellName)
+    then
         self:PlaySound(self.Constants.sounds.divineIntervention)
     end
 
-    if matchesSpell(self.Constants.spells.soulstone, spellId, spellName) then
+    if CritLogDB.SoulstoneSoundFlag and matchesSpell(self.Constants.spells.soulstone, spellId, spellName) then
         self:PlaySound(self.Constants.sounds.soulstone)
     end
 end

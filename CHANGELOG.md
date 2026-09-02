@@ -6,6 +6,16 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.5-dev
+
+- The 7 aura/spell sounds (Bloodlust, Innervate, Power Infusion, Blessing
+  of Protection, Divine Intervention, Mana Tide Totem, Soulstone) are now
+  individually toggleable in the Sound Settings panel, each with its own
+  checkbox and preview button, instead of being all-or-nothing under
+  `AuraSoundFlag` (still the master switch, gating all 7). Requested.
+  Replaces the compact preview-only button grid that previously sat under
+  the master toggle.
+
 ## 0.5.4-dev
 
 - Highscore List popup redesigned as an actual table: a category heading

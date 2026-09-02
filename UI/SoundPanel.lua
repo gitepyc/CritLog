@@ -15,8 +15,22 @@ local SOUND_CHECKBOXES = {
       hint = "Extra sound when a hit deals over 9000 damage." },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },
-    { field = "AuraSoundFlag", label = "Aura/spell sound", auraPreviews = true,
+    { field = "AuraSoundFlag", label = "Aura/spell sound",
       hint = "Master switch for the 7 spell sounds below." },
+    { field = "BloodlustSoundFlag", label = "Bloodlust/Heroism", sound = "bloodlust",
+      hint = "Received Bloodlust or Heroism." },
+    { field = "InnervateSoundFlag", label = "Innervate", sound = "innervate",
+      hint = "Received Innervate." },
+    { field = "PowerInfusionSoundFlag", label = "Power Infusion", sound = "powerInfusion",
+      hint = "Received Power Infusion." },
+    { field = "BlessingOfProtectionSoundFlag", label = "Blessing of Protection", sound = "blessingOfProtection",
+      hint = "Received Blessing of Protection." },
+    { field = "DivineInterventionSoundFlag", label = "Divine Intervention", sound = "divineIntervention",
+      hint = "Received Divine Intervention." },
+    { field = "ManaTideSoundFlag", label = "Mana Tide Totem", sound = "manaTide",
+      hint = "A party/raid member summons Mana Tide Totem." },
+    { field = "SoulstoneSoundFlag", label = "Soulstone Resurrection", sound = "soulstone",
+      hint = "Received Soulstone Resurrection." },
     { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
       hint = "Plays when you yourself die." },
     -- These four (unlike PlayerSoundFlag above) rely on the class/role/
@@ -41,11 +55,14 @@ local SOUND_CHECKBOXES = {
 local soundFrame
 
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading, all 13 sound toggle rows (each
-    -- with its own hint line underneath), and the aura preview grid.
-    -- Widened from 440: the "(Experimental)" suffix on four labels needs
-    -- more room before the preview button column.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 820)
+    -- Tall enough for the toggles heading and all 20 sound toggle rows
+    -- (each with its own hint line underneath) - the 7 individual aura
+    -- sounds used to be a compact preview-only button grid under a single
+    -- master toggle; now each is a real checkbox row like everything else,
+    -- so it needs noticeably more height than before. Widened from 440:
+    -- the "(Experimental)" suffix on four labels needs more room before
+    -- the preview button column.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 990)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
