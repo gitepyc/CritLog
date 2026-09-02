@@ -94,7 +94,6 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl options` (or `/cl opt`) | Opens/closes the in-game options panel (checkboxes for every toggle above, plus preview buttons for triggerable sounds). First draft, not yet in-game verified — see [CHANGELOG.md](CHANGELOG.md). |
 | `/cl ready` | Toggles the ready-check sound. |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
-| `/cl dead` | Master switch for death sounds. |
 | `/cl player` | Toggles the player's own death sound. |
 | `/cl melee` | Toggles the melee death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: class/assigned role (melee-capable class, not flagged Healer). |
 | `/cl tank` | Same toggle, for the tank death sound. Live check: assigned raid Tank role. |

@@ -42,7 +42,6 @@ local function printHelp()
     print("/cl tank: toggles Tank Sound between None/Both (see /cl options for Experimental/Roster only)")
     print("/cl boss: toggles Boss Sound between None/Both (see /cl options for Experimental/Roster only)")
     print("/cl player: turns Player Death Sound on/off")
-    print("/cl dead: turns  OnDeath Sound on/off (turn on for priest, melee, tank and boss config to work)")
     print("------------")
     print("/cl config: shows actual config/DB-data")
     print("/cl      : prints CritLogs")
@@ -64,7 +63,6 @@ local function printConfig()
     print("/cl tank: "..CritLogDB.TankDetectionMode)
     print("/cl boss: "..CritLogDB.BossDetectionMode)
     print("/cl player: "..tostring(CritLogDB.PlayerSoundFlag))
-    print("/cl dead: "..tostring(CritLogDB.DeadSoundFlag))
 end
 
 -- Prints only the current best (#1) per category - the same summary the
@@ -145,12 +143,6 @@ function CritLog:PrintCritLogs(message)
         toggleDetectionMode("TankDetectionMode", "TankSound")
     elseif command == "boss" then
         toggleDetectionMode("BossDetectionMode", "BossSound")
-    elseif command == "dead" then
-        toggle(
-            "DeadSoundFlag",
-            "CritLog DeathSound On",
-            "CritLog DeathSound Off"
-        )
     elseif command == "xtreme" then
         toggle(
             "XtremeSoundFlag",

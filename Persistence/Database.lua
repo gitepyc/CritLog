@@ -33,7 +33,6 @@ local DEFAULTS = {
     MeleeSoundFlag = true,
     PlayerSoundFlag = true,
     BossSoundFlag = true,
-    DeadSoundFlag = true,
     XtremeSoundFlag = false,
     DebugFlag = false,
     MasterSoundFlag = true,

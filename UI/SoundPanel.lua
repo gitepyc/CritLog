@@ -39,24 +39,27 @@ local SOUND_CHECKBOXES = {
     -- class/role/classification detection in Core/CombatLog.lua
     -- (isMeleeClass, isAssignedTank, isPriestClass, isClassifiedBoss), the
     -- hardcoded name roster, both, or neither - a dropdown instead of a
-    -- checkbox. "Experimental" isn't yet in-game verified for tank/boss/
-    -- priest specifically (melee's false-positive bug is fixed and
-    -- confirmed); "Roster" and "Both" (the original default) aren't
-    -- affected by that.
+    -- checkbox. No shared master switch anymore (there used to be one,
+    -- DeadSoundFlag) - setting all four to "None" is equivalent, and the
+    -- dropdown is already the one place that controls all of this.
+    -- "Experimental" isn't yet in-game verified for tank/boss/priest
+    -- specifically (melee's false-positive bug is fixed and confirmed);
+    -- "Roster" and "Both" (the original default) aren't affected by that.
+    -- The None/Experimental/Roster/Both explanation is only spelled out
+    -- once, on this first row - the other three just note their own live
+    -- check.
     { field = "PriestDetectionMode", label = "Priest death sound", sound = "priestDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "None / Experimental (live class check) / Roster (name list) / Both." },
+      hint = "None / Experimental (live check only) / Roster (name list only) / Both. Live check here: class = PRIEST." },
     { field = "MeleeDetectionMode", label = "Melee death sound", sound = "meleeDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "None / Experimental (live class check) / Roster (name list) / Both." },
+      hint = "Live check: melee-capable class, not flagged Healer." },
     { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "None / Experimental (live role check) / Roster (name list) / Both." },
+      hint = "Live check: assigned raid Tank role." },
     { field = "BossDetectionMode", label = "Boss death sound", sound = "bossDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "None / Experimental (live classification) / Roster (name list) / Both." },
-    { field = "DeadSoundFlag", label = "Death sounds (enables the five above)",
-      hint = "Master switch for the five death sounds above." },
+      hint = "Live check: live classification (worldboss)." },
 }
 
 local soundFrame

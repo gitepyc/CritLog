@@ -6,6 +6,24 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.10-dev
+
+- Removed the `DeadSoundFlag` master switch - it only ever gated the four
+  detection-mode categories (Melee/Tank/Priest/Boss), which already have
+  their own off state (`none`) each, making the shared master redundant.
+  `/cl dead` is gone; `/cl player`/`PlayerSoundFlag` (unaffected, always
+  had its own toggle) still controls the player's own death sound.
+- Fixed the detection-mode dropdowns not opening at all in-game (in-game
+  reported: no menu appeared, value stayed on "Both" everywhere). The
+  options panels use `TOOLTIP` strata to stay above other addons' windows,
+  but Blizzard's shared dropdown-list frames render at a lower fixed
+  strata by default - the menu was almost certainly opening behind our
+  own panel. Now bumps `DropDownList1`/`DropDownList2` to `TOOLTIP` when a
+  dropdown button is clicked.
+- The None/Experimental/Roster/Both explanation is now spelled out once
+  (on the Priest row, first of the four) instead of repeated on all four
+  dropdown rows; the other three just note their own live-check condition.
+
 ## 0.5.9-dev
 
 - Added `/cl opt` as a short alias for `/cl options`.
