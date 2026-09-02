@@ -11,11 +11,34 @@ local rosterFrame
 -- Unlike highscores there's no fixed cap here - a roster can have as many
 -- entries as someone adds - so the pool just grows as needed instead of
 -- being bounded by a MAX_* constant.
+--
+-- The name itself is an editable box, not static text: renames in place on
+-- Enter or on losing focus (e.g. clicking elsewhere on the panel), so
+-- fixing a typo or a character rename doesn't need a remove-then-re-add
+-- round trip. A rejected rename (empty/duplicate) snaps the box back to
+-- the stored value instead of leaving the rejected text in place - unlike
+-- the Add box below, which leaves rejected text so it can be corrected,
+-- there's already a known-good value here to fall back to.
 local function getOrCreateRosterRow(f, kind, index)
     f.rowPool[kind] = f.rowPool[kind] or {}
     local row = f.rowPool[kind][index]
     if not row then
-        local text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        local nameBox = CreateFrame("EditBox", nil, f, "InputBoxTemplate")
+        nameBox:SetSize(190, 20)
+        nameBox:SetAutoFocus(false)
+        nameBox:SetMaxLetters(30)
+
+        local function commitRename()
+            if not CritLog:RenameRosterName(kind, index, nameBox:GetText()) then
+                nameBox:SetText(CritLogDB.playerGroups[kind][index] or "")
+            end
+            nameBox:ClearFocus()
+            CritLog:RefreshOptionsPanel()
+        end
+
+        nameBox:SetScript("OnEnterPressed", commitRename)
+        nameBox:SetScript("OnEditFocusLost", commitRename)
+
         local removeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
         removeButton:SetSize(60, 18)
         removeButton:SetText("Remove")
@@ -25,7 +48,7 @@ local function getOrCreateRosterRow(f, kind, index)
             CritLog:RemoveRosterName(kind, index)
             CritLog:RefreshOptionsPanel()
         end)
-        row = { text = text, removeButton = removeButton }
+        row = { nameBox = nameBox, removeButton = removeButton }
         f.rowPool[kind][index] = row
     end
     return row
@@ -81,16 +104,23 @@ local function layoutRosterList(f)
             local row = getOrCreateRosterRow(f, kind, index)
 
             if index > #list then
-                row.text:Hide()
+                row.nameBox:Hide()
                 row.removeButton:Hide()
             else
-                row.text:SetText(list[index])
-                row.text:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -4)
-                row.text:Show()
-                row.removeButton:SetPoint("TOP", row.text, "TOP", 0, 0)
+                -- Skip overwriting the text if this box is mid-edit: a
+                -- refresh can happen while it still has focus (e.g. a
+                -- different row's Remove button was just clicked), and
+                -- clobbering the in-progress text here would silently
+                -- discard whatever the user was typing.
+                if not row.nameBox:HasFocus() then
+                    row.nameBox:SetText(list[index])
+                end
+                row.nameBox:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -4)
+                row.nameBox:Show()
+                row.removeButton:SetPoint("TOP", row.nameBox, "TOP", 0, 0)
                 row.removeButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
                 row.removeButton:Show()
-                previous = row.text
+                previous = row.nameBox
             end
         end
 
