@@ -9,6 +9,21 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.2](https://github.com/gitepyc/CritLog/tree/0.2.2) (2026-09-02)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.1...0.2.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **docs:** update stale README version/status, note roster-editing and Spirit of Redemption as newly added (still pending in-game verification)
+
+- **feature:** make melee/tank/priest death-sound rosters editable per character (new Roster Settings panel, Add/Remove)
+
+- **feature:** give Spirit of Redemption a real, working implementation (cache SPELL_AURA_APPLIED by GUID, read back on delayed death)
+
+- **fix:** Escape closed all options panels at once instead of just the topmost (first attempt - panels push/pop onto a stack, only the top registered in UISpecialFrames)
+
+- **fix:** melee/tank/priest death-sound checks wrongly firing on enemy NPC deaths
+
+- **fix:** boss killing-blow chat line only checked the English boss name list, not German
+
 ## [0.2.1](https://github.com/gitepyc/CritLog/tree/0.2.1) (2026-09-02)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.0.1...0.2.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
