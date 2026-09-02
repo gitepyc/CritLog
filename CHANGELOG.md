@@ -9,6 +9,47 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.3](https://github.com/gitepyc/CritLog/tree/0.2.3) (2026-09-02)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.2.2...0.2.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** port multi-entry highscores onto the new Core/Persistence/UI layout
+
+- **feature:** split highscore tracking cap from display cap (track 10, show 5)
+
+- **feature:** redesign Highscore List popup as a table with column headers
+
+- **feature:** make the 7 aura/spell sounds individually toggleable
+
+- **feature:** replace melee/tank/priest/boss on/off flags with a 4-way None/Experimental/Roster/Both detection mode
+
+- **feature:** add confirmation-gated Reset All to the Highscore List popup
+
+- **feature:** add `/cl opt` as a short alias for `/cl options`
+
+- **feature:** add in-game Help panel, rename `/cl melee` to `/cl dps`
+
+- **feature:** add Help panel Close button, shorten death-sound hints
+
+- **fix:** gate melee/tank/priest live class checks on group membership
+
+- **fix:** remove redundant DeadSoundFlag master switch, fix dropdown-not-opening (TOOLTIP strata), dedupe hints
+
+- **fix:** dropdown-row Preview button overlapping the longest label
+
+- **fix:** restore mode explanation on Priest row, one mode per line
+
+- **tweak:** "Reset all" wording, indent+shrink the 7 aura sub-checkboxes
+
+- **tweak:** rename Melee death sound/roster to Damage Dealer
+
+- **tweak:** rename Soulstone Resurrection to Soulstone Applied
+
+- **tweak:** label all three main-panel Reset buttons "Reset all"
+
+- **tweak:** move mode explanation above all four dropdowns, not tied to Priest's own hint
+
+- **tweak:** bottom-center Close buttons, note below dropdowns, shorten DPS label
+
 ## [0.2.2.2](https://github.com/gitepyc/CritLog/tree/0.2.2.2) (2026-09-02)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.2.1...0.2.2.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
