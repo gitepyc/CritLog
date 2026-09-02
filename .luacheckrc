@@ -17,6 +17,7 @@ stds.wow = {
         "UnitGroupRolesAssigned", -- class/role-based death-sound matching (feature/class-based-death-sounds)
         "UnitInParty",
         "UnitInRaid",
+        "UnitIsPlayer", -- excludes NPCs from the melee/tank/priest death-sound class checks
         "UnitLevel",
         "tContains",
         "GetAddOnMetadata",

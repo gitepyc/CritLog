@@ -436,6 +436,17 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- class/role check itself doesn't match.
     local token = findUnitToken(destGUID)
 
+    -- Discard a resolved token unless it's actually a player: UnitClass()/
+    -- UnitGroupRolesAssigned() aren't guaranteed nil for NPCs (some enemy
+    -- units carry a class internally for combat/AI purposes), which let
+    -- enemy deaths in instances - a Necromancer trash mob at Mount Hyjal,
+    -- reported in-game - wrongly trigger the melee/tank/priest death
+    -- sounds. Nilling it here makes every check below fall back to the
+    -- name roster exactly like an unresolved token already does.
+    if token and not UnitIsPlayer(token) then
+        token = nil
+    end
+
     if CritLogDB.MeleeSoundFlag
         and (
             (token and isMeleeClass(token))
