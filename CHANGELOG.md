@@ -2,7 +2,16 @@
 
 ## Unreleased
 
-Nothing yet - see the `0.3.9-dev` section below for the latest tagged build.
+Nothing yet - see the `0.4.0` section below for the latest tagged build.
+
+## 0.4.0
+
+First stable release since `0.2.1`. Same code as `0.3.9-dev`, tagged
+without the `-dev` suffix after internal testing looked good - see the
+`0.3.0-dev` through `0.3.9-dev` sections below for the itemized changes
+that make up this release (options panel, master mute, debug mode,
+spell-ID/class/role/classification-based matching, per-record and
+highscore-list reset).
 
 ## 0.3.9-dev
 
