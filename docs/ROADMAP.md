@@ -26,16 +26,25 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    on/off mute.
 5. Configurable chat-trigger phrases (`CritLog.Data.chatTriggers` is still
    hardcoded).
-6. Spirit of Redemption - give it a real, working implementation, or remove
+6. Boss name-list presets per expansion (SoD/TBC/WotLK/...), selectable or
+   combinable, instead of one static list. Parked, not started - needs
+   real curated boss-name research (English + German) per expansion
+   before it's buildable, not just UI work. Narrower practical value than
+   it first looks: `isClassifiedBoss()`'s live `"worldboss"` check already
+   covers real raid/world bosses for any expansion automatically: presets
+   would mainly matter for 5-man dungeon end-bosses, which aren't
+   classified `worldboss` and are the only thing the name-list fallback
+   still does real work for.
+7. Spirit of Redemption - give it a real, working implementation, or remove
    `SREDEMPTION_NAMES` and the disabled test block entirely. Parked, not
    scheduled either way.
-7. CurseForge/Wago publishing - no project id configured yet; `.pkgmeta`
+8. CurseForge/Wago publishing - no project id configured yet; `.pkgmeta`
    packaging itself is done and verified.
-8. **Asset/audio rights review** - none of the shipped sound files have a
+9. **Asset/audio rights review** - none of the shipped sound files have a
    resolved rights/license status. Genuinely blocks public distribution,
    not just a nice-to-have; see
    [SOUNDS.md#required-human-review](SOUNDS.md#required-human-review).
-9. TitanPanel integration (exploratory) - a status-bar plugin button for
+10. TitanPanel integration (exploratory) - a status-bar plugin button for
    TitanPanel users. Researched, design question from before resolved:
    since CritLog has no XML of its own (`CritLog.toc` lists plain `.lua`
    files), a single-addon approach works fine after all - no separate
