@@ -1,15 +1,8 @@
 # Changelog
 
-Only the most recent versions are kept here in detail - every GitHub
-release body embeds this entire file (`.pkgmeta`'s `manual-changelog`),
-so letting it grow forever bloats every future release too. Once a
-version's changes are fully absorbed into a later stable release, its
-individual section gets folded into that release's own summary and
-dropped from here. Full history: `git log -- CHANGELOG.md`, or each
-past [GitHub release](https://github.com/gitepyc/CritLog/releases)'s own
-notes (which capture this file's state at that point in time).
-
 ## Unreleased
+
+## 0.4.2-dev
 
 - Fixed the melee/tank/priest death-sound class checks (added in
   `0.3.0-dev`) wrongly firing on enemy NPC deaths in instances - reported
