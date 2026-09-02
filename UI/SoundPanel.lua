@@ -55,7 +55,7 @@ local SOUND_CHECKBOXES = {
     -- check.
     { field = "PriestDetectionMode", label = "Priest death sound", sound = "priestDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Modes: None / Experimental / Roster / Both." },
+      hint = "None = nothing\nExperimental = live check only\nRoster = name list only\nBoth = Experimental + Roster" },
     { field = "MeleeDetectionMode", label = "Damage Dealer death sound", sound = "meleeDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Live check: melee-capable class. Roster: ranged OK too." },

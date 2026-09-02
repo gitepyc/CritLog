@@ -6,6 +6,14 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.4-dev
+
+- Restored the None/Experimental/Roster/Both mode explanation on the
+  Priest row (dropped entirely when that hint was shortened in
+  `0.6.2-dev` to fix an overflow), this time as one mode per line instead
+  of a single long line - short enough per line to fit the panel without
+  the earlier overflow.
+
 ## 0.6.3-dev
 
 - Fixed the detection-mode dropdown rows' Preview button, found from an
