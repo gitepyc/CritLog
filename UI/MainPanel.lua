@@ -10,9 +10,10 @@ local CRIT_CHECKBOXES = {
       hint = "Prints diagnostic chat messages for troubleshooting." },
 }
 
--- Fixed display order for the three highscore records - CritLog.Constants.records
--- is keyed by name, not ordered, and both this panel and the highscore list
--- popup need the same consistent order.
+-- Fixed display order for the three highscore categories -
+-- CritLog.Constants.recordKinds/CritLogDB.records are both keyed by name,
+-- not ordered, and both this panel and the highscore list popup need the
+-- same consistent order.
 local RECORD_ORDER = { "damage", "whiteHit", "heal" }
 
 -- Created lazily, not at load time - nothing needs either frame to exist
@@ -20,35 +21,97 @@ local RECORD_ORDER = { "damage", "whiteHit", "heal" }
 local frame
 local highscoreListFrame
 
--- Deliberately minimal for now: shows the same 3 current records the main
--- panel already displays inline, just bigger and in their own window. This
--- is the seed for a real multi-entry list (top 5-10 crits per category)
--- once CritLog actually stores more than one value per category - see
--- docs/ROADMAP.md. Not worth building that infrastructure before there's
--- data to put in it.
+-- Deletes just entry `index` (1 = current best) from a category's list.
+-- `index` is captured once at row-creation time in getOrCreateHighscoreRow
+-- below, not recomputed per click - valid forever because a given pool
+-- slot always displays that same position in the sorted list, whatever
+-- entry currently happens to occupy it.
+local function createDeleteEntryButton(parent, kind, index)
+    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    button:SetSize(50, 18)
+    button:SetText("Delete")
+    button:SetNormalFontObject("GameFontNormalSmall")
+    button:SetHighlightFontObject("GameFontHighlightSmall")
+    button:SetScript("OnClick", function()
+        CritLog:RemoveRecordEntry(kind, index)
+        CritLog:RefreshOptionsPanel()
+    end)
+    return button
+end
+
+-- Row widgets are pooled and reused rather than created/destroyed on every
+-- refresh (WoW frames aren't cheap to churn, and the visible row count
+-- changes often as entries are added/deleted) - same pattern as the roster
+-- panel's row pool. Pool slot i for a given category always displays that
+-- category's list position i when shown - its Delete button's index was
+-- fixed at creation time.
+local function getOrCreateHighscoreRow(f, kind, index)
+    f.rowPool[kind] = f.rowPool[kind] or {}
+    local row = f.rowPool[kind][index]
+    if not row then
+        row = {
+            text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight"),
+            deleteButton = createDeleteEntryButton(f, kind, index),
+        }
+        f.rowPool[kind][index] = row
+    end
+    return row
+end
+
+-- Lays out every row fresh on each call (cheap: at most 3 categories *
+-- Constants.maxRecordEntries rows) rather than trying to incrementally
+-- patch anchors when the row count changes between refreshes. An empty
+-- category still shows one placeholder row (formatRecordText's "no record
+-- yet" text) with no Delete button, so the popup never looks broken for a
+-- fresh character.
+local function layoutHighscoreList(f)
+    local previous = f.heading
+
+    for _, kind in ipairs(RECORD_ORDER) do
+        local list = CritLogDB.records[kind]
+        local visibleRows = math.max(#list, 1)
+
+        for index = 1, CritLog.Constants.maxRecordEntries do
+            local row = getOrCreateHighscoreRow(f, kind, index)
+
+            if index > visibleRows then
+                row.text:Hide()
+                row.deleteButton:Hide()
+            else
+                row.text:SetText(CritLog.Records.formatRecordText(kind, index))
+                row.text:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -8)
+                row.text:Show()
+
+                if list[index] then
+                    row.deleteButton:SetPoint("TOP", row.text, "TOP", 0, 0)
+                    row.deleteButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
+                    row.deleteButton:Show()
+                else
+                    row.deleteButton:Hide()
+                end
+
+                previous = row.text
+            end
+        end
+    end
+end
+
+-- Sized for the worst case (Constants.maxRecordEntries rows in every
+-- category at once) so it never overflows; looks mostly empty until a
+-- character has built up a real history, which is expected for a first
+-- draft - see docs/ROADMAP.md.
 local function buildHighscoreListFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 420, 190)
+    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 420, 460)
     -- Opens to the left of center, mirroring the sound panel opening to the
     -- right, so both can be open next to the main panel at once.
     f:SetPoint("CENTER", UIParent, "CENTER", -260, 0)
 
-    local heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
-    heading:SetText("Highscores")
+    f.heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    f.heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
+    f.heading:SetText("Highscores")
 
-    f.recordTexts = {}
-    local previous = heading
-    for _, kind in ipairs(RECORD_ORDER) do
-        local text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        CritLog.UI.anchorBelow(text, previous, 12)
-        f.recordTexts[kind] = text
-
-        local resetButton = CritLog.UI.createResetButton(f, kind)
-        resetButton:SetPoint("TOP", text, "TOP", 0, 0)
-        resetButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
-
-        previous = text
-    end
+    f.rowPool = {}
+    layoutHighscoreList(f)
 
     return f
 end
@@ -138,15 +201,13 @@ end
 
 CritLog.UI.registerRefresh(function()
     if frame then
-        frame.dacText:SetText(CritLog.Records.formatRecordText("damage"))
-        frame.whcText:SetText(CritLog.Records.formatRecordText("whiteHit"))
-        frame.hacText:SetText(CritLog.Records.formatRecordText("heal"))
+        frame.dacText:SetText(CritLog.Records.formatRecordText("damage", 1))
+        frame.whcText:SetText(CritLog.Records.formatRecordText("whiteHit", 1))
+        frame.hacText:SetText(CritLog.Records.formatRecordText("heal", 1))
     end
 
     if highscoreListFrame then
-        for _, kind in ipairs(RECORD_ORDER) do
-            highscoreListFrame.recordTexts[kind]:SetText(CritLog.Records.formatRecordText(kind))
-        end
+        layoutHighscoreList(highscoreListFrame)
     end
 end)
 

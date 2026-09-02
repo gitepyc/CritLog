@@ -1,11 +1,31 @@
 # Changelog
 
-**Next up:** the multi-entry highscore list (top-5 per category,
-individually deletable), built on its own `feature/multi-entry-highscores`
-branch and not yet merged. See [docs/ROADMAP.md](docs/ROADMAP.md) for the
-full prioritized list.
+**Next up:** in-game verification of the new multi-entry highscore list
+(`0.5.1-dev`) and the remaining unverified death-sound/Spirit of Redemption
+detection. See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized
+list.
 
 ### Unreleased (not yet tagged)
+
+## 0.5.1-dev
+
+- Multi-entry highscores: top-`Constants.maxRecordEntries` (5) list per
+  category instead of a single value, each entry individually deletable
+  via the Highscore List popup's Delete button (`/cl options` -> "Highscore
+  List..."), or a whole category at once via
+  `/cl reset damage|whitehit|heal`. Ported from the `feature/multi-entry-
+  highscores` branch (built before the `0.4.6-dev` file restructure, so
+  merged in by hand onto the current `Core/`/`Persistence/`/`UI/` layout
+  rather than as a git merge) - same underlying design, adapted to the new
+  file/naming conventions (`CritLog.Constants.recordKinds`/`CritLogDB.records`,
+  matching the `rosterKinds`/`playerGroups` split already used for rosters).
+  **`CritLogDB` migration**: `migrateToRecordLists()` seeds the new
+  `CritLogDB.records.*` lists from the old single-value fields
+  (`DamageAbilityCrit`/`DAC_Name`/`DAC_Tar` etc.) on first load after
+  upgrading, guarded on `CritLogDB.records` itself so it runs exactly once.
+  Those old fields are kept in `DEFAULTS` - never written again - purely so
+  a stale SavedVariables file never produces a nil read. Not yet in-game
+  verified.
 
 ## 0.5.0
 

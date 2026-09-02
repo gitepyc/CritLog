@@ -1,16 +1,22 @@
 CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 
 CritLog.Constants = {
-    -- One entry per highscore record CritLog tracks, so a single false-
-    -- positive record (e.g. a buggy value from some other addon reporting
-    -- damage) can be cleared without wiping the other two. `name` is nil
-    -- for white-hit crits: those aren't tied to a named ability, unlike
-    -- damage/heal ability crits.
-    records = {
-        damage = { value = "DamageAbilityCrit", name = "DAC_Name", target = "DAC_Tar", label = "Damage crit" },
-        whiteHit = { value = "WhiteHitCrit", target = "WHC_Tar", label = "White hit crit" },
-        heal = { value = "HealAbilityCrit", name = "HAC_Name", target = "HAC_Tar", label = "Heal crit" },
+    -- One entry per highscore category CritLog tracks (see
+    -- CritLogDB.records in Persistence/Database.lua for the actual
+    -- per-character lists, same split as rosterKinds/playerGroups below).
+    -- `hasName` is false for white-hit crits: those aren't tied to a named
+    -- ability, unlike damage/heal ability crits.
+    recordKinds = {
+        damage = { label = "Damage crit", hasName = true },
+        whiteHit = { label = "White hit crit", hasName = false },
+        heal = { label = "Heal crit", hasName = true },
     },
+    -- Top-N per highscore category instead of a single value, so
+    -- highscores are a real list (each entry individually deletable in the
+    -- options panel) rather than just the current best. 5 keeps the
+    -- options panel's list popup a reasonable size; raise this if that
+    -- turns out to be too few in practice.
+    maxRecordEntries = 5,
     sounds = {
         crit = "at_bam_babam.mp3",
         xtremeDamage = "Xtreme.mp3",

@@ -8,8 +8,9 @@ local function toggle(field, enabledMessage, disabledMessage)
 end
 
 local function printHelp()
-    print("/cl reset: sets all Logs to 0")
-    print("/cl reset damage|whitehit|heal: clears a single highscore record (e.g. a false positive)")
+    print("/cl reset: clears every highscore list")
+    print("/cl reset damage|whitehit|heal: clears just that category's highscore list")
+    print("/cl options -> Highscore List...: delete a single entry instead of a whole list")
     print("/cl level: changes level requirements for crit logs")
     print("/cl mute: turns ALL sounds on/off, overriding every sound toggle below")
     print("/cl sound: turns BÄM sound on/off (highscore sound)")
@@ -51,19 +52,13 @@ local function printConfig()
     print("/cl dead: "..tostring(CritLogDB.DeadSoundFlag))
 end
 
+-- Prints only the current best (#1) per category - the same summary the
+-- main options panel shows inline. The full top-N list with individual
+-- delete buttons is `/cl options` -> "Highscore List...".
 local function printHighscores()
-    print(
-        "DAMAGE Crit "..CritLogDB.DAC_Name..": "
-        ..CritLogDB.DamageAbilityCrit.." ("..CritLogDB.DAC_Tar..")"
-    )
-    print(
-        "DAMAGE Crit WhiteHit: "..CritLogDB.WhiteHitCrit
-        .." ("..CritLogDB.WHC_Tar..")"
-    )
-    print(
-        "HEAL Crit "..CritLogDB.HAC_Name..": "
-        ..CritLogDB.HealAbilityCrit.." ("..CritLogDB.HAC_Tar..")"
-    )
+    print(CritLog.Records.formatRecordText("damage", 1))
+    print(CritLog.Records.formatRecordText("whiteHit", 1))
+    print(CritLog.Records.formatRecordText("heal", 1))
     print("/cl help for list of commands")
 end
 

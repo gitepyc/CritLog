@@ -256,10 +256,15 @@ function CritLog:HandleDamageCrit(
             self:PlayCritSound()
         end
 
-        if CritLog.Records.isNewHighscore(amount, CritLogDB.DamageAbilityCrit) then
-            CritLogDB.DamageAbilityCrit = amount
-            CritLogDB.DAC_Name = spellName
-            CritLogDB.DAC_Tar = destName
+        -- Checked against the current #1 before inserting, so AddRecord
+        -- (which always tries to insert, even a crit that only makes 3rd
+        -- place) doesn't change what counts as "new highscore" for the
+        -- sound/print below.
+        local damageList = CritLogDB.records.damage
+        local isNewHighscore = CritLog.Records.isNewHighscore(amount, damageList[1] and damageList[1].amount or 0)
+        self:AddRecord("damage", amount, spellName, destName)
+
+        if isNewHighscore then
             print("DAMAGE Crit "..spellName..": "..amount.." ("..destName..")")
             self:PlayCritSound()
         end
@@ -280,9 +285,10 @@ function CritLog:HandleDamageCrit(
             alreadyPlayed = true
         end
 
-        if CritLog.Records.isNewHighscore(amount, CritLogDB.WhiteHitCrit) then
-            CritLogDB.WhiteHitCrit = amount
-            CritLogDB.WHC_Tar = destName
+        local whiteHitList = CritLogDB.records.whiteHit
+        local isNewHighscore = CritLog.Records.isNewHighscore(amount, whiteHitList[1] and whiteHitList[1].amount or 0)
+        if isNewHighscore then
+            self:AddRecord("whiteHit", amount, nil, destName)
             print("DAMAGE Crit WhiteHit: "..amount.." ("..destName..")")
             if CritLogDB.WhiteHitFlag and not alreadyPlayed then
                 self:PlayCritSound()
@@ -299,9 +305,10 @@ function CritLog:HandleDamageCrit(
             alreadyPlayed = true
         end
 
-        if CritLog.Records.isNewHighscore(amount, CritLogDB.WhiteHitCrit) and CritLogDB.WhiteHitFlag then
-            CritLogDB.WhiteHitCrit = amount
-            CritLogDB.WHC_Tar = destName
+        local whiteHitList = CritLogDB.records.whiteHit
+        local isNewHighscore = CritLog.Records.isNewHighscore(amount, whiteHitList[1] and whiteHitList[1].amount or 0)
+        if isNewHighscore and CritLogDB.WhiteHitFlag then
+            self:AddRecord("whiteHit", amount, nil, destName)
             print("DAMAGE Crit WhiteHit: "..amount.." ("..destName..")")
             if not alreadyPlayed then
                 self:PlayCritSound()
@@ -325,10 +332,11 @@ function CritLog:HandleHealCrit(
         self:PlayCritSound()
     end
 
-    if CritLog.Records.isNewHighscore(amount, CritLogDB.HealAbilityCrit) then
-        CritLogDB.HealAbilityCrit = amount
-        CritLogDB.HAC_Name = spellName
-        CritLogDB.HAC_Tar = destName
+    local healList = CritLogDB.records.heal
+    local isNewHighscore = CritLog.Records.isNewHighscore(amount, healList[1] and healList[1].amount or 0)
+    self:AddRecord("heal", amount, spellName, destName)
+
+    if isNewHighscore then
         print("HEAL Crit "..spellName..": "..amount.." ("..destName..")")
         self:PlayCritSound()
     end
