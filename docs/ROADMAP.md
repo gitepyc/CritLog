@@ -3,19 +3,17 @@
 Open, forward-looking items only, in priority order. Everything already
 done is in `CHANGELOG.md` and git history, not repeated here.
 
-1. **In-game verification** of everything built recently: the options panel
-   (layout, master mute, hint text, per-record reset buttons), the four
-   experimental death-sound toggles (melee/tank/priest/boss - live
-   class/role/classification detection with name-list fallback), debug
-   mode, and the double-played white/ranged crit sound fix. Nothing further
-   should build on top of this until it's confirmed working.
-2. Expand the highscore display - a popup or a short list of the top 5-10
-   entries instead of a single record per category. First step done: a
-   "Highscore List..." button/popup exists (`CritLog:ShowHighscoreList()`),
-   but CritLog still only stores one record per category, so it currently
-   just re-displays the same 3 records the main panel already shows.
-   Actually storing and showing multiple entries per category is still
-   outstanding.
+1. **In-game verification**, ongoing: the options panel, the four
+   experimental death-sound toggles (melee/tank/priest/boss), debug mode.
+   Not a gate blocking other work anymore - bugs found during verification
+   (e.g. the `0.4.2-dev` NPC-death-sound fix) land on `dev` as they're
+   reported, in parallel with feature work below.
+2. **Next up, feature work:** multi-entry highscores - top-5 list per
+   category instead of a single value, each entry individually deletable.
+   Built on its own branch, `feature/multi-entry-highscores`, deliberately
+   kept off `dev` until it's ready to merge (bigger, schema-touching
+   change than the bugfix-only work `dev` has been getting otherwise).
+   Remaining: review/finish that branch, in-game-verify it, then merge.
 3. SavedVariables-backed player-role configuration - the options panel can
    only toggle whether melee/tank/priest/boss death sounds fire, not edit
    the underlying hardcoded name rosters (`CritLog.Data.playerGroups`/

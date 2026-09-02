@@ -1,7 +1,9 @@
 # Changelog
 
-**Next up:** finish in-game verification of the options panel and the
-experimental class/role-based death-sound detection - see
+**Next up:** the multi-entry highscore list (top-5 per category,
+individually deletable), built on its own `feature/multi-entry-highscores`
+branch and not yet merged - `dev` itself is only taking bugfixes from
+ongoing in-game verification right now. See
 [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
