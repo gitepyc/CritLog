@@ -151,6 +151,8 @@ end
 -- full-size one - for a set of toggles that belong under one master
 -- switch (e.g. the 7 aura sounds under AuraSoundFlag) and should visually
 -- read as a subordinate category, not as 7 more peers of the master row.
+-- `note` renders a plain text row instead of a checkbox/dropdown - see
+-- createDropdownRow's sibling branch below.
 function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     local previous = startAnchor
     -- 0 for the first row: startAnchor (a section heading) has no x-indent
@@ -166,7 +168,19 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     local previousXOffset = 0
 
     for _, entry in ipairs(checkboxes) do
-        if entry.options then
+        if entry.note then
+            -- A plain text row, no checkbox/dropdown control - for
+            -- explaining something that applies to several rows below it
+            -- (e.g. the detection-mode meanings, which apply to all four
+            -- mode dropdowns, not just the first one) without tying it to
+            -- one specific toggle's hint line.
+            local note = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            note:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -8)
+            note:SetJustifyH("LEFT")
+            note:SetText(entry.note)
+            previous = note
+            previousXOffset = 0
+        elseif entry.options then
             previous = createDropdownRow(parent, entry, previous, previousXOffset)
             previousXOffset = -4
         else
