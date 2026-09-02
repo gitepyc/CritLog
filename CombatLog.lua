@@ -449,7 +449,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     if CritLogDB.MeleeSoundFlag
         and (
             (token and isMeleeClass(token))
-            or tContains(self.Data.playerGroups.melee, destName)
+            or tContains(CritLogDB.playerGroups.melee, destName)
         )
     then
         self:PlaySound(self.Data.sounds.meleeDeath)
@@ -468,7 +468,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     if CritLogDB.TankSoundFlag
         and (
             (token and isAssignedTank(token))
-            or tContains(self.Data.playerGroups.tank, destName)
+            or tContains(CritLogDB.playerGroups.tank, destName)
         )
     then
         self:PlaySound(self.Data.sounds.tankDeath)
@@ -477,7 +477,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     if CritLogDB.PriestSoundFlag
         and (
             (token and isPriestClass(token))
-            or tContains(self.Data.playerGroups.priest, destName)
+            or tContains(CritLogDB.playerGroups.priest, destName)
         )
     then
         self:PlaySound(self.Data.sounds.priestDeath)

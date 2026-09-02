@@ -73,15 +73,26 @@ CritLog.Data = {
             "Illidan Sturmgrimm",
         },
     },
-    -- Legacy name-based death rosters, tied to one specific historical raid
-    -- group. As of the class/role-based matching added in CombatLog.lua
-    -- (see deathClasses below), these are no longer the primary check —
-    -- they're kept as a fallback, same ID-first-then-name-fallback pattern
-    -- already used for spells above: class/role detection needs a live
-    -- unit token and (for tank) an explicitly assigned raid role, neither
-    -- of which is guaranteed available, so a name still in this list keeps
-    -- firing even when the live check can't. See CHANGELOG.md for the
-    -- decision to keep rather than delete these.
+    -- Display labels for the three roster categories - Options.lua's
+    -- Roster Settings panel and Database.lua's migration both need a
+    -- consistent name/order for them.
+    rosterKinds = {
+        melee = { label = "Melee" },
+        tank = { label = "Tank" },
+        priest = { label = "Priest" },
+    },
+    -- Default seed for CritLogDB.playerGroups (Database.lua migrates a copy
+    -- of this into SavedVariables on first load; from then on CombatLog.lua
+    -- reads only the CritLogDB copy, never this table). Originally a fixed,
+    -- code-only roster tied to one specific historical raid group; now
+    -- editable per character via the options panel. As of the class/role-
+    -- based matching added in CombatLog.lua (see deathClasses below), these
+    -- are no longer the primary check — they're kept as a fallback, same
+    -- ID-first-then-name-fallback pattern already used for spells above:
+    -- class/role detection needs a live unit token and (for tank) an
+    -- explicitly assigned raid role, neither of which is guaranteed
+    -- available, so a name still in this list keeps firing even when the
+    -- live check can't.
     playerGroups = {
         melee = {
             "Schnutz", "Synday", "Kamicaze", "Alcira", "Shocksx",

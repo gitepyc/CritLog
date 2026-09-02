@@ -14,11 +14,13 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    kept off `dev` until it's ready to merge (bigger, schema-touching
    change than the bugfix-only work `dev` has been getting otherwise).
    Remaining: review/finish that branch, in-game-verify it, then merge.
-3. SavedVariables-backed player-role configuration - the options panel can
-   only toggle whether melee/tank/priest/boss death sounds fire, not edit
-   the underlying hardcoded name rosters (`CritLog.Data.playerGroups`/
-   `bosses`). Those rosters are an intentional fallback for the live
-   class/role/classification checks, not scheduled for removal.
+3. ~~SavedVariables-backed player-role configuration~~ - done for the
+   melee/tank/priest rosters: `CritLogDB.playerGroups`, editable via
+   `/cl options` → "Roster Settings..." (Add/Remove per category). Not
+   yet in-game verified. The boss name lists (`CritLog.Data.bosses`) are
+   still code-only, not scoped for this pass - those rosters are still an
+   intentional fallback for the live class/role/classification checks,
+   not scheduled for removal.
 4. Audio volume/channel control - all sounds play on the fixed `Master`
    channel via `PlaySoundFile`; no volume control beyond `MasterSoundFlag`'s
    on/off mute.

@@ -91,10 +91,10 @@ ID-first-then-name-fallback pattern used for spells above.
 | Dead unit | Additional condition | Sound |
 | --- | --- | --- |
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
-| Melee-capable class not flagged Healer (`isMeleeClass`), or a name in `CritLog.Data.playerGroups.melee` | `/cl melee` enabled | `wilhelm.ogg` |
+| Melee-capable class not flagged Healer (`isMeleeClass`), or a name in `CritLogDB.playerGroups.melee` | `/cl melee` enabled | `wilhelm.ogg` |
 | Live classification `worldboss` (`isClassifiedBoss`), or an English/German name in `CritLog.Data.bosses` | `/cl boss` enabled | `FFX.mp3` |
-| Assigned raid role Tank (`isAssignedTank`), or a name in `CritLog.Data.playerGroups.tank` | `/cl tank` enabled | `Tank.mp3` |
-| Class `PRIEST` (`isPriestClass`), or a name in `CritLog.Data.playerGroups.priest` | `/cl priest` enabled | `Angels.mp3` |
+| Assigned raid role Tank (`isAssignedTank`), or a name in `CritLogDB.playerGroups.tank` | `/cl tank` enabled | `Tank.mp3` |
+| Class `PRIEST` (`isPriestClass`), or a name in `CritLogDB.playerGroups.priest` | `/cl priest` enabled | `Angels.mp3` |
 
 The live checks (melee/tank/priest, not boss) need a resolved unit token
 for the dying player (the current target, or a matching visible nameplate)
@@ -111,8 +111,14 @@ case (removed — see `CHANGELOG.md`); they are simply one more name in
 sound. Boss detection accepts only the `"worldboss"` classification
 (40-man raid bosses, outdoor world bosses, SoD's level-60 raids); the name
 lists remain the only way 5-man end bosses and similarly-ranked NPCs are
-detected. The name rosters themselves are still hard-coded to one specific
-historical raid group — see [ROADMAP.md](ROADMAP.md).
+detected (that boss list is still code-only, not editable). The three
+death-sound name rosters (melee/tank/priest) are editable per character:
+`/cl options` → "Roster Settings..." shows each one with Add/Remove
+controls. `CritLogDB.playerGroups` is a per-character copy, migrated once
+from `CritLog.Data.playerGroups` on first load after upgrading (see
+`Database.lua`'s `migratePlayerGroups()`) - from then on only the
+`CritLogDB` copy is read or written, so removing a name that used to be a
+hard-coded default works the same as removing one you added yourself.
 
 ## Raid-leader chat
 

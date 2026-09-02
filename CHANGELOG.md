@@ -2,11 +2,27 @@
 
 **Next up:** the multi-entry highscore list (top-5 per category,
 individually deletable), built on its own `feature/multi-entry-highscores`
-branch and not yet merged - `dev` itself is only taking bugfixes from
-ongoing in-game verification right now. See
-[docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
+branch and not yet merged. See [docs/ROADMAP.md](docs/ROADMAP.md) for the
+full prioritized list.
 
 ### Unreleased (not yet tagged)
+
+## 0.4.4-dev
+
+- Made the melee/tank/priest death-sound name rosters editable per
+  character: `/cl options` → "Roster Settings..." now shows each
+  category's name list with Add/Remove controls, instead of them being
+  fixed in the addon's code.
+  **`CritLogDB` migration**: adds a new `CritLogDB.playerGroups` table,
+  copied once from `CritLog.Data.playerGroups` (`Database.lua`'s
+  `migratePlayerGroups()`, guarded on `CritLogDB.playerGroups` itself so
+  it runs exactly once regardless of which version a character upgrades
+  from). Existing characters keep every name that was already in the
+  hardcoded roster - nothing is dropped or reset. `CombatLog.lua` reads
+  only the new `CritLogDB` copy from now on, never the old
+  `CritLog.Data.playerGroups` table directly, so removing a name that
+  used to be a hard-coded default now works the same as removing one you
+  added yourself. Not yet in-game verified.
 
 ## 0.4.3-dev
 
