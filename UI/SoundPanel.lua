@@ -31,8 +31,13 @@ local SOUND_CHECKBOXES = {
       indent = true, hint = "Received Divine Intervention." },
     { field = "ManaTideSoundFlag", label = "Mana Tide Totem", sound = "manaTide", indent = true,
       hint = "A party/raid member summons Mana Tide Totem." },
-    { field = "SoulstoneSoundFlag", label = "Soulstone Resurrection", sound = "soulstone", indent = true,
-      hint = "Received Soulstone Resurrection." },
+    -- Labeled "Applied", not "Resurrection": this fires when the Soulstone
+    -- buff itself lands on you (SPELL_AURA_APPLIED), well before it's
+    -- actually used to self-resurrect - the buff is literally named
+    -- "Soulstone Resurrection" in-game (see Core/Constants.lua's spell
+    -- name fallback), which was misleading here as a trigger description.
+    { field = "SoulstoneSoundFlag", label = "Soulstone Applied", sound = "soulstone", indent = true,
+      hint = "Received the Soulstone buff (not the resurrection itself)." },
     { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
       hint = "Plays when you yourself die." },
     -- These four (unlike PlayerSoundFlag above) can be driven by the live

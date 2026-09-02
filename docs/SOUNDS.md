@@ -23,9 +23,9 @@ Windows did not expose the value.
 | Power Infusion | `Surprise.mp3` | Player receives Power Infusion |
 | Blessing of Protection | `Bubble.mp3` | Player receives Blessing of Protection |
 | Divine Intervention | `divineInt.mp3` | Player receives Divine Intervention |
-| Soulstone | `soulstone.mp3` | Player receives Soulstone Resurrection |
+| Soulstone | `soulstone.mp3` | Player receives the Soulstone buff (not the resurrection itself) |
 | Player death | `MarioDeath.mp3` | Player dies |
-| Melee death | `wilhelm.ogg` | Hard-coded melee-roster member dies |
+| Damage Dealer death | `wilhelm.ogg` | Hard-coded Damage Dealer-roster member dies |
 | Tank death | `Tank.mp3` | Hard-coded tank-roster member dies |
 | Healer-priest death | `Angels.mp3` | Hard-coded healer-priest member dies |
 | Boss death | `FFX.mp3` | Hard-coded boss dies |
@@ -55,7 +55,7 @@ complete trigger conditions.
 | `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | Soulstone |
 | `Surprise.mp3` | 5 s | 128 kbps | 83,280 B | Power Infusion |
 | `Tank.mp3` | 1 s | 128 kbps | 31,763 B | tank death |
-| `wilhelm.ogg` | n/a | n/a | 12,524 B | melee death |
+| `wilhelm.ogg` | n/a | n/a | 12,524 B | Damage Dealer death |
 | `wipe.mp3` | 10 s | 234 kbps | 298,605 B | wipe chat phrase |
 | `Xtreme.mp3` | 2 s | 128 kbps | 42,214 B | extreme hit (off by default) |
 

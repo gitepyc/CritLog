@@ -84,7 +84,7 @@ Wowhead-Classic-sourced but not yet in-game verified — see
 | Power Infusion received | `PowerInfusionSoundFlag` | Destination is the player. | `10060` | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` |
 | Blessing of Protection received | `BlessingOfProtectionSoundFlag` | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
 | Divine Intervention received | `DivineInterventionSoundFlag` | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
-| Soulstone Resurrection received | `SoulstoneSoundFlag` | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
+| Soulstone buff received (not the resurrection itself - the buff's real in-game name happens to be "Soulstone Resurrection", the name fallback below) | `SoulstoneSoundFlag` | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
 
 ## Deaths
 
