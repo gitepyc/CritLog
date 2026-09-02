@@ -26,11 +26,13 @@ end
 
 -- Clears a single highscore record (e.g. a false-positive value from some
 -- other addon's damage numbers) without touching the other two, then
--- refreshes the displayed text immediately.
-function CritLog.UI.createResetButton(parent, kind)
+-- refreshes the displayed text immediately. `label` defaults to "Reset";
+-- the main panel's topmost row uses "Reset all" instead - wording only,
+-- it still just clears `kind` like every other row.
+function CritLog.UI.createResetButton(parent, kind, label)
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-    button:SetSize(50, 18)
-    button:SetText("Reset")
+    button:SetSize(60, 18)
+    button:SetText(label or "Reset")
     button:SetNormalFontObject("GameFontNormalSmall")
     button:SetHighlightFontObject("GameFontHighlightSmall")
     button:SetScript("OnClick", function()
@@ -117,6 +119,10 @@ end
 --
 -- `sound` on an entry is a key into CritLog.Constants.sounds and gets a
 -- "Preview" button on that row; flags with no sound of their own get none.
+-- `indent = true` renders a smaller, indented sub-row instead of a
+-- full-size one - for a set of toggles that belong under one master
+-- switch (e.g. the 7 aura sounds under AuraSoundFlag) and should visually
+-- read as a subordinate category, not as 7 more peers of the master row.
 function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     local previous = startAnchor
     -- 0 for the first row: startAnchor (a section heading) has no x-indent
@@ -124,7 +130,11 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     -- hint line, which sits +4px right of its own checkbox - so from the
     -- second row on this needs to be -4, or each row would drift 4px
     -- further right than the last (a growing staircase, not a one-time
-    -- shift).
+    -- shift). `indent` rows add a further, one-time +20 on top of that for
+    -- themselves, then subtract the same +20 back out of what they hand to
+    -- the next row - so indentation doesn't compound across consecutive
+    -- indented rows, and a normal row right after an indented block lands
+    -- back at the same column as if the indent never happened.
     local previousXOffset = 0
 
     for _, entry in ipairs(checkboxes) do
@@ -132,8 +142,13 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             previous = createDropdownRow(parent, entry, previous, previousXOffset)
             previousXOffset = -4
         else
+            local indent = entry.indent and 20 or 0
+            local checkSize = entry.indent and 20 or 26
+            local labelFont = entry.indent and "GameFontHighlightSmall" or "GameFontHighlight"
+
             local check = CreateFrame("CheckButton", "CritLogOptions"..entry.field, parent, "UICheckButtonTemplate")
-            check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -4)
+            check:SetSize(checkSize, checkSize)
+            check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset + indent, -4)
             -- Hook rather than replace OnClick, so the template's default
             -- click sound still plays; GetChecked() returns 1/nil on some
             -- clients, so normalize to a real boolean before writing it
@@ -143,7 +158,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             end)
             checkboxesByField[entry.field] = check
 
-            local label = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+            local label = parent:CreateFontString(nil, "OVERLAY", labelFont)
             label:SetPoint("LEFT", check, "RIGHT", 2, 1)
             label:SetText(entry.label)
 
@@ -152,7 +167,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
                 -- rather than to the label, so button position doesn't
                 -- depend on how long a given label happens to be.
                 local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
-                previewButton:SetPoint("LEFT", check, "LEFT", 340, 0)
+                previewButton:SetPoint("LEFT", check, "LEFT", 340 - indent, 0)
             end
 
             local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
@@ -160,7 +175,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             hint:SetText(entry.hint)
 
             previous = hint
-            previousXOffset = -4
+            previousXOffset = -4 - indent
         end
     end
 
