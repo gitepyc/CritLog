@@ -6,6 +6,19 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.2-dev
+
+- Fixed the Help panel having no obvious way to close it (in-game
+  reported) - added an explicit "Close" button; the built-in corner X and
+  Escape should already work the same as every other panel, but this adds
+  an unambiguous way out regardless.
+- Shortened the Priest/Damage Dealer detection-mode hint texts (in-game
+  reported as too long/needing to be cut down).
+- Still open: the detection-mode dropdown's Preview button not lining up
+  vertically with the other rows' Preview buttons (in-game reported) -
+  needs a screenshot to fix precisely rather than guessing pixel offsets
+  again.
+
 ## 0.6.1-dev
 
 - Wording: the White Hit crit and Heal crit Reset buttons on the main
