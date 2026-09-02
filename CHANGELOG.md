@@ -9,6 +9,15 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.2.2](https://github.com/gitepyc/CritLog/tree/0.2.2.2) (2026-09-02)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.2.1...0.2.2.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **fix:** empty-parens highscore display before any crit recorded, inline roster rename, add Escape-key debug output
+
+- **fix:** Escape-key bug for real - track the registered panel explicitly instead of inferring it from stack position
+
+- **tweak:** roster rename requires an explicit confirm (OK button) instead of committing on focus-lost
+
 ## [0.2.2.1](https://github.com/gitepyc/CritLog/tree/0.2.2.1) (2026-09-02)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.2...0.2.2.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
