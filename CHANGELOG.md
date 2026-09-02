@@ -9,6 +9,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.2.1](https://github.com/gitepyc/CritLog/tree/0.2.2.1) (2026-09-02)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.2...0.2.2.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **refactor:** restructure into Core/Persistence/UI, no behavior change
+
 ## [0.2.2](https://github.com/gitepyc/CritLog/tree/0.2.2) (2026-09-02)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.1...0.2.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
