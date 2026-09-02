@@ -10,7 +10,12 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    mode, and the double-played white/ranged crit sound fix. Nothing further
    should build on top of this until it's confirmed working.
 2. Expand the highscore display - a popup or a short list of the top 5-10
-   entries instead of a single record per category.
+   entries instead of a single record per category. First step done: a
+   "Highscore List..." button/popup exists (`CritLog:ShowHighscoreList()`),
+   but CritLog still only stores one record per category, so it currently
+   just re-displays the same 3 records the main panel already shows.
+   Actually storing and showing multiple entries per category is still
+   outstanding.
 3. SavedVariables-backed player-role configuration - the options panel can
    only toggle whether melee/tank/priest/boss death sounds fire, not edit
    the underlying hardcoded name rosters (`CritLog.Data.playerGroups`/

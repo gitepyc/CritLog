@@ -79,14 +79,31 @@ local AURA_PREVIEWS = {
 
 local AURA_BUTTONS_PER_ROW = 3
 
--- Both created lazily, not at load time - nothing needs either frame to
--- exist before the player asks for it.
+-- Fixed display order for the three highscore records - CritLog.Data.records
+-- is keyed by name, not ordered, and both the main panel and the highscore
+-- list popup need the same consistent order.
+local RECORD_ORDER = { "damage", "whiteHit", "heal" }
+
+-- All created lazily, not at load time - nothing needs any of these frames
+-- to exist before the player asks for it.
 local frame
 local soundFrame
+local highscoreListFrame
 local checkboxesByField = {}
 
 local function anchorBelow(region, previous, yGap)
     region:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -(yGap or 6))
+end
+
+-- One line of "<label> (<ability>): <amount> (<target>)", or without the
+-- ability part for white-hit crits (no named ability to show).
+local function formatRecordText(kind)
+    local fields = CritLog.Data.records[kind]
+    if fields.name then
+        return fields.label.." ("..CritLogDB[fields.name].."): "
+            ..CritLogDB[fields.value].." ("..CritLogDB[fields.target]..")"
+    end
+    return fields.label..": "..CritLogDB[fields.value].." ("..CritLogDB[fields.target]..")"
 end
 
 -- Plays a CritLog.Data.sounds entry directly via PlaySoundFile, bypassing
@@ -278,12 +295,46 @@ local function buildSoundFrame()
     return f
 end
 
+-- Deliberately minimal for now: shows the same 3 current records the main
+-- panel already displays inline, just bigger and in their own window. This
+-- is the seed for a real multi-entry list (top 5-10 crits per category)
+-- once CritLog actually stores more than one value per category - see
+-- docs/ROADMAP.md. Not worth building that infrastructure before there's
+-- data to put in it.
+local function buildHighscoreListFrame()
+    local f = createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 420, 190)
+    -- Opens to the left of center, mirroring the sound panel opening to the
+    -- right, so both can be open next to the main panel at once.
+    f:SetPoint("CENTER", UIParent, "CENTER", -260, 0)
+
+    local heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
+    heading:SetText("Highscores")
+
+    f.recordTexts = {}
+    local previous = heading
+    for _, kind in ipairs(RECORD_ORDER) do
+        local text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        anchorBelow(text, previous, 12)
+        f.recordTexts[kind] = text
+
+        local resetButton = createResetButton(f, kind)
+        resetButton:SetPoint("TOP", text, "TOP", 0, 0)
+        resetButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
+
+        previous = text
+    end
+
+    return f
+end
+
 local function buildFrame()
-    -- Tall enough for the header block, the 2 crit-tracking toggle rows
-    -- (each with its own hint line underneath), and the Sound Settings
-    -- button. Widened from 420 so a long spell/target name in a highscore
-    -- line has room before running into that row's Reset button.
-    local f = createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 420)
+    -- Tall enough for the header block, the Highscore List button, the 2
+    -- crit-tracking toggle rows (each with its own hint line underneath),
+    -- and the Sound Settings button. Widened from 420 so a long
+    -- spell/target name in a highscore line has room before running into
+    -- that row's Reset button.
+    local f = createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 470)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -313,8 +364,18 @@ local function buildFrame()
     hacReset:SetPoint("TOP", f.hacText, "TOP", 0, 0)
     hacReset:SetPoint("RIGHT", f, "RIGHT", -14, 0)
 
+    local listButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    listButton:SetSize(140, 24)
+    listButton:SetText("Highscore List...")
+    listButton:SetNormalFontObject("GameFontNormalSmall")
+    listButton:SetHighlightFontObject("GameFontHighlightSmall")
+    listButton:SetPoint("TOPLEFT", f.hacText, "BOTTOMLEFT", 0, -12)
+    listButton:SetScript("OnClick", function()
+        CritLog:ShowHighscoreList()
+    end)
+
     local infoHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    anchorBelow(infoHeading, f.hacText, 16)
+    anchorBelow(infoHeading, listButton, 16)
     infoHeading:SetText("Info")
 
     f.versionText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -342,23 +403,20 @@ end
 
 -- CritLogDB can change while a panel is closed (new highscores, /cl toggles
 -- from chat), so re-read everything on every OnShow rather than only when
--- a frame is first built. Both panels call this; it only touches what
--- exists (checkboxesByField spans both panels, harmless to refresh a
+-- a frame is first built. All three panels call this; it only touches what
+-- exists (checkboxesByField spans both toggle panels, harmless to refresh a
 -- checkbox that isn't currently visible).
 function CritLog:RefreshOptionsPanel()
     if frame then
-        frame.dacText:SetText(
-            "Damage crit ("..CritLogDB.DAC_Name.."): "
-            ..CritLogDB.DamageAbilityCrit.." ("..CritLogDB.DAC_Tar..")"
-        )
-        frame.whcText:SetText(
-            "Damage crit (white hit): "..CritLogDB.WhiteHitCrit
-            .." ("..CritLogDB.WHC_Tar..")"
-        )
-        frame.hacText:SetText(
-            "Heal crit ("..CritLogDB.HAC_Name.."): "
-            ..CritLogDB.HealAbilityCrit.." ("..CritLogDB.HAC_Tar..")"
-        )
+        frame.dacText:SetText(formatRecordText("damage"))
+        frame.whcText:SetText(formatRecordText("whiteHit"))
+        frame.hacText:SetText(formatRecordText("heal"))
+    end
+
+    if highscoreListFrame then
+        for _, kind in ipairs(RECORD_ORDER) do
+            highscoreListFrame.recordTexts[kind]:SetText(formatRecordText(kind))
+        end
     end
 
     for field, check in pairs(checkboxesByField) do
@@ -387,5 +445,17 @@ function CritLog:ShowSoundOptions()
         soundFrame:Hide()
     else
         soundFrame:Show()
+    end
+end
+
+function CritLog:ShowHighscoreList()
+    if not highscoreListFrame then
+        highscoreListFrame = buildHighscoreListFrame()
+    end
+
+    if highscoreListFrame:IsShown() then
+        highscoreListFrame:Hide()
+    else
+        highscoreListFrame:Show()
     end
 end
