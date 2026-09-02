@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Added a "Highscore List..." button under the main panel's highscore
+  lines, opening a dedicated popup (`CritLog:ShowHighscoreList()`).
+  Deliberately minimal first step: CritLog only stores one record per
+  category today, so the popup just re-displays the same 3 records (with
+  their own Reset buttons) in a bigger window - the foundation for a real
+  multi-entry list later, once more than one value per category is
+  actually stored (see docs/ROADMAP.md).
 - Both options panels now close on Escape (registered via `UISpecialFrames`,
   the standard WoW convention - previously only closable by clicking the
   title bar's close button or re-running the slash command).
