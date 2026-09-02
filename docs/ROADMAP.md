@@ -48,8 +48,9 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    installed. `## OptionalDeps: Titan` in `CritLog.toc` for load order
    (so Titan's API exists first if both are present), not
    `## Dependencies:` (that would force Titan as a hard requirement,
-   wrong for an addon most users won't have it for). Not yet scoped what
-   the plugin button should actually show.
+   wrong for an addon most users won't have it for). Button content
+   decided: top score for damage/white-hit/heal, left-click opens
+   `/cl options`, right-click a small context menu (contents TBD).
 
 ## Known constraint
 
