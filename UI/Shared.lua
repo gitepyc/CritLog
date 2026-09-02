@@ -119,8 +119,16 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     label:SetText(entry.label)
 
     if entry.sound then
+        -- Anchored to the label's own right edge, not a fixed offset from
+        -- the dropdown (like the checkbox rows' Preview buttons are) - the
+        -- dropdown control itself is much wider than a checkbox, leaving
+        -- far less room before a fixed column would sit, and the longest
+        -- label here ("Damage Dealer death sound") ran straight into the
+        -- button at the old fixed offset (in-game reported/screenshotted).
+        -- Trades a neat shared column across rows for never overlapping,
+        -- regardless of how long a label is.
         local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
-        previewButton:SetPoint("LEFT", dropdown, "LEFT", 340 - 16, 0)
+        previewButton:SetPoint("LEFT", label, "RIGHT", 12, -2)
     end
 
     local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")

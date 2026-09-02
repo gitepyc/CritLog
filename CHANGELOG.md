@@ -6,6 +6,18 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.3-dev
+
+- Fixed the detection-mode dropdown rows' Preview button, found from an
+  in-game screenshot: "Damage Dealer death sound" (the longest label) ran
+  straight into its Preview button with no gap, because the button was
+  fixed at the same 340px-from-control offset used for checkbox rows -
+  fine there, but a dropdown control is much wider than a checkbox,
+  leaving far less room for the label before hitting that fixed spot.
+  Preview now anchors to the label's own right edge instead, so it can't
+  overlap regardless of label length (checkbox rows unchanged, not
+  affected by this bug).
+
 ## 0.6.2-dev
 
 - Fixed the Help panel having no obvious way to close it (in-game
