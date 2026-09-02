@@ -50,12 +50,13 @@ local SOUND_CHECKBOXES = {
     -- "Experimental" isn't yet in-game verified for tank/boss/priest
     -- specifically (melee's false-positive bug is fixed and confirmed);
     -- "Roster" and "Both" (the original default) aren't affected by that.
-    -- The None/Experimental/Roster/Both explanation is only spelled out
-    -- once, on this first row - the other three just note their own live
-    -- check.
+    -- The None/Experimental/Roster/Both explanation applies to all four
+    -- dropdowns below, so it's its own note row above them instead of
+    -- being tied to (and only shown on) one specific row's hint.
+    { note = "None = nothing\nExperimental = live check only\nRoster = name list only\nBoth = Experimental + Roster" },
     { field = "PriestDetectionMode", label = "Priest death sound", sound = "priestDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "None = nothing\nExperimental = live check only\nRoster = name list only\nBoth = Experimental + Roster" },
+      hint = "Live check: class = PRIEST." },
     { field = "MeleeDetectionMode", label = "Damage Dealer death sound", sound = "meleeDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Live check: melee-capable class. Roster: ranged OK too." },

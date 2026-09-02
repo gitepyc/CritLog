@@ -6,6 +6,14 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.5-dev
+
+- Moved the None/Experimental/Roster/Both mode explanation off the Priest
+  row's own hint into its own note row above all four detection-mode
+  dropdowns - it applies to Priest/Damage Dealer/Tank/Boss alike, not just
+  Priest specifically. `UI/Shared.lua`'s `buildToggleRows` gained a `note`
+  entry type (a plain text row, no checkbox/dropdown) for this.
+
 ## 0.6.4-dev
 
 - Restored the None/Experimental/Roster/Both mode explanation on the
