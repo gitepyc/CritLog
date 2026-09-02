@@ -102,6 +102,22 @@ local function previewSound(soundKey)
     PlaySoundFile(CritLog.soundPath..CritLog.Data.sounds[soundKey], "Master")
 end
 
+-- Clears a single highscore record (e.g. a false-positive value from some
+-- other addon's damage numbers) without touching the other two, then
+-- refreshes the displayed text immediately.
+local function createResetButton(parent, kind)
+    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    button:SetSize(50, 18)
+    button:SetText("Reset")
+    button:SetNormalFontObject("GameFontNormalSmall")
+    button:SetHighlightFontObject("GameFontHighlightSmall")
+    button:SetScript("OnClick", function()
+        CritLog:ResetRecord(kind)
+        CritLog:RefreshOptionsPanel()
+    end)
+    return button
+end
+
 local function createPreviewButton(parent, soundKey, width)
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetSize(width or 70, 20)
@@ -258,8 +274,9 @@ end
 local function buildFrame()
     -- Tall enough for the header block, the 2 crit-tracking toggle rows
     -- (each with its own hint line underneath), and the Sound Settings
-    -- button.
-    local f = createPanelFrame("CritLogOptionsFrame", "CritLog Options", 420, 420)
+    -- button. Widened from 420 so a long spell/target name in a highscore
+    -- line has room before running into that row's Reset button.
+    local f = createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 420)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -273,12 +290,21 @@ local function buildFrame()
 
     f.dacText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     anchorBelow(f.dacText, highscoresHeading, 8)
+    local dacReset = createResetButton(f, "damage")
+    dacReset:SetPoint("TOP", f.dacText, "TOP", 0, 0)
+    dacReset:SetPoint("RIGHT", f, "RIGHT", -14, 0)
 
     f.whcText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     anchorBelow(f.whcText, f.dacText)
+    local whcReset = createResetButton(f, "whiteHit")
+    whcReset:SetPoint("TOP", f.whcText, "TOP", 0, 0)
+    whcReset:SetPoint("RIGHT", f, "RIGHT", -14, 0)
 
     f.hacText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     anchorBelow(f.hacText, f.whcText)
+    local hacReset = createResetButton(f, "heal")
+    hacReset:SetPoint("TOP", f.hacText, "TOP", 0, 0)
+    hacReset:SetPoint("RIGHT", f, "RIGHT", -14, 0)
 
     local infoHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     anchorBelow(infoHeading, f.hacText, 16)

@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Added per-record highscore reset, for clearing a single false positive
+  (e.g. a bogus value from some other addon) without wiping the other two
+  records. `Database.lua`'s old `ResetRecords()` (still `/cl reset`, resets
+  all three) is now built on a new `CritLog:ResetRecord(kind)` that clears
+  just one, driven by a new `CritLog.Data.records` table describing each
+  record's fields. Exposed two ways: `/cl reset damage|whitehit|heal`, and
+  a small "Reset" button next to each of the three highscore lines in the
+  main options panel (`/cl options`), which immediately refreshes the
+  displayed text after clearing. No confirmation dialog - same as the
+  existing blunt `/cl reset`. No `CritLogDB` schema impact: same three
+  records, same fields, just resettable individually now.
 - Split the options panel in two: `/cl options` now opens a small main
   panel with only the 2 crit-tracking toggles that aren't about sound at
   all (`AllLevel`, `DebugFlag`) plus a "Sound Settings..." button; that

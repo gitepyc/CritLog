@@ -9,6 +9,7 @@ end
 
 local function printHelp()
     print("/cl reset: sets all Logs to 0")
+    print("/cl reset damage|whitehit|heal: clears a single highscore record (e.g. a false positive)")
     print("/cl level: changes level requirements for crit logs")
     print("/cl mute: turns ALL sounds on/off, overriding every sound toggle below")
     print("/cl sound: turns BÄM sound on/off (highscore sound)")
@@ -71,6 +72,15 @@ function CritLog:PrintCritLogs(message)
 
     if command == "reset" then
         self:ResetRecords()
+        printHighscores()
+    elseif command == "reset damage" then
+        self:ResetRecord("damage")
+        printHighscores()
+    elseif command == "reset whitehit" then
+        self:ResetRecord("whiteHit")
+        printHighscores()
+    elseif command == "reset heal" then
+        self:ResetRecord("heal")
         printHighscores()
     elseif command == "mute" then
         toggle(
