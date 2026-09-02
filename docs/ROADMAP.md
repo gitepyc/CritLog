@@ -34,10 +34,22 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    not just a nice-to-have; see
    [SOUNDS.md#required-human-review](SOUNDS.md#required-human-review).
 9. TitanPanel integration (exploratory) - a status-bar plugin button for
-   TitanPanel users. Harder than the items above since Titan is an optional
-   third-party dependency most users won't have installed; two possible
-   approaches (guard Titan API calls inline, or ship a separate companion
-   addon with `## RequiredDeps: Titan`), no design decision made.
+   TitanPanel users. Researched, design question from before resolved:
+   since CritLog has no XML of its own (`CritLog.toc` lists plain `.lua`
+   files), a single-addon approach works fine after all - no separate
+   companion addon needed. Titan plugins register via a registry table
+   (`id`/`menuText`/`buttonTextFunction`/etc.) passed to
+   `TitanPanelButton_OnLoad()`, and the button frame is created with
+   `CreateFrame("Button", name, parent, "TitanPanelTextTemplate")` - a
+   runtime Lua call, not a static XML `inherits`, so it only needs to be
+   wrapped in `if IsAddOnLoaded("Titan") then ... end` (checked at
+   `PLAYER_LOGIN`, same place `Events.lua` already hooks) to stay
+   completely inert - no error, nothing created - when Titan isn't
+   installed. `## OptionalDeps: Titan` in `CritLog.toc` for load order
+   (so Titan's API exists first if both are present), not
+   `## Dependencies:` (that would force Titan as a hard requirement,
+   wrong for an addon most users won't have it for). Not yet scoped what
+   the plugin button should actually show.
 
 ## Known constraint
 
