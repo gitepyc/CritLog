@@ -111,9 +111,16 @@ for the dying player (the current target, or a matching visible nameplate)
 internally, so `UnitClass()`/`UnitGroupRolesAssigned()` aren't reliably
 `nil` for them, which let enemy deaths in instances wrongly trigger these
 sounds (fixed after an in-game report - a Necromancer trash mob at Mount
-Hyjal). When no token resolves, the token isn't a player, or the token
-resolves but the class/role check doesn't match, the legacy name-roster
-check still applies. The `"Schnutz"` character no longer has a separate special
+Hyjal). They also require `UnitInParty(destName) or UnitInRaid(destName)`
+— without that, any player death that happens to resolve a token (an enemy
+player in PvP, or an unrelated player on a visible nameplate) could match
+by class/role alone even though they're nobody in your group; in-game
+reported. This also gates the Spirit of Redemption branch below, checked
+against the same `destName`. When no token resolves, the token isn't a
+player, isn't a group member, or resolves but the class/role check doesn't
+match, the legacy name-roster check still applies - that fallback is an
+explicit named allowlist, not a live-detection heuristic, so it's
+deliberately NOT gated by group membership. The `"Schnutz"` character no longer has a separate special
 case (removed — see `CHANGELOG.md`); they are simply one more name in
 `playerGroups.melee` like everyone else, and get the regular melee death
 sound. Boss detection accepts only the `"worldboss"` classification

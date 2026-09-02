@@ -6,6 +6,17 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.3-dev
+
+- Fixed the melee/tank/priest death-sound class/role checks (and Spirit of
+  Redemption) firing on any player death that happened to resolve a live
+  unit token, regardless of whether that player was actually in your
+  group - in-game reported. Now also requires
+  `UnitInParty(destName) or UnitInRaid(destName)`, same check already used
+  for the Mana Tide Totem aura trigger. The name-roster fallback is
+  unaffected - it's an explicit named allowlist, not a live-detection
+  heuristic that needs this sanity check.
+
 ## 0.5.2-dev
 
 - Highscore lists now track more entries than they display: up to

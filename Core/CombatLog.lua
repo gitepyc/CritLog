@@ -418,9 +418,21 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         role = UnitGroupRolesAssigned(token)
     end
 
+    -- The live class/role checks below (melee/tank/priest, and Spirit of
+    -- Redemption) are gated on group membership - without this, any player
+    -- death that happens to resolve a unit token (e.g. an enemy player in
+    -- PvP, or an unrelated player on a visible nameplate) could trigger
+    -- these sounds just because their class/role matched, even though
+    -- they're nobody in your group. Checked by name (works whether or not
+    -- a token resolved), same as the Mana Tide Totem check in
+    -- HandleAuraSounds. The name-roster fallback below is deliberately NOT
+    -- gated by this - it's an explicit named allowlist of real people, not
+    -- a live-detection heuristic that needs a sanity check.
+    local isGroupMember = UnitInParty(destName) or UnitInRaid(destName)
+
     if CritLogDB.MeleeSoundFlag
         and (
-            (token and CritLog.Filters.isMeleeClass(class, role))
+            (token and isGroupMember and CritLog.Filters.isMeleeClass(class, role))
             or tContains(CritLogDB.playerGroups.melee, destName)
         )
     then
@@ -439,7 +451,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
 
     if CritLogDB.TankSoundFlag
         and (
-            (token and CritLog.Filters.isAssignedTank(role))
+            (token and isGroupMember and CritLog.Filters.isAssignedTank(role))
             or tContains(CritLogDB.playerGroups.tank, destName)
         )
     then
@@ -450,10 +462,14 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         -- Spirit of Redemption is checked first and is exclusive with the
         -- plain priest-death sound below - both currently point at the same
         -- file (see Core/Constants.lua), so playing both back to back would
-        -- just double the same clip.
-        if spiritOfRedemptionGuids[destGUID] then
+        -- just double the same clip. Also gated on group membership - the
+        -- buff-apply tracking in rememberSpiritOfRedemption has no way to
+        -- know who's in your group at that earlier point, so the check
+        -- happens here instead, against the same destName used everywhere
+        -- else in this function.
+        if spiritOfRedemptionGuids[destGUID] and isGroupMember then
             self:PlaySound(self.Constants.sounds.spiritOfRedemption)
-        elseif (token and CritLog.Filters.isPriestClass(class))
+        elseif (token and isGroupMember and CritLog.Filters.isPriestClass(class))
             or tContains(CritLogDB.playerGroups.priest, destName)
         then
             self:PlaySound(self.Constants.sounds.priestDeath)
