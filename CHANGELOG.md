@@ -9,6 +9,61 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.1](https://github.com/gitepyc/CritLog/tree/0.2.1) (2026-09-02)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.0.1...0.2.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** drop legacy 'CritLog AriZoNa!' title easter egg and DruidLord/ShamanKing comment
+
+- **chore:** exclude .claude/ from git and luacheck scans
+
+- **chore:** remove the special-cased Schnutz death sound
+
+- **chore:** delete unused sound files, rename survivors to drop stale variant suffixes
+
+- **docs:** reconcile docs with the class/role/classification death-sound rewrite
+
+- **docs:** document the options panel, fix stale version/count claims
+
+- **docs:** fix stale comment - preview buttons no longer route through CritLog:PlaySound()
+
+- **feature:** match aura/ability triggers by spell ID first, name as fallback
+
+- **feature:** add a debug mode (`/cl debug`)
+
+- **feature:** add a first-draft in-game options panel (`/cl options`)
+
+- **feature:** add per-sound preview buttons to the options panel
+
+- **feature:** add a master sound switch (MasterSoundFlag/`/cl mute`)
+
+- **feature:** melee/tank/priest death sounds match live class/role first (experimental), fall back to hardcoded rosters
+
+- **feature:** classify boss/NPC deaths via live UnitClassification() == worldboss, fall back to hardcoded name lists
+
+- **feature:** split options panel, separate Sound Settings panel behind a button
+
+- **feature:** add per-record highscore reset for clearing a single false positive
+
+- **feature:** close both options panels on Escape via UISpecialFrames
+
+- **feature:** add a Highscore List popup button under the main panel's highscore lines
+
+- **fix:** options panel checkboxes drifting right after the aura grid, frame too short
+
+- **fix:** options panel anchoring to f.Inset instead of the frame itself
+
+- **fix:** preview buttons stuck on hover color, reorder player death sound check, replace hover tooltips with static hint lines
+
+- **fix:** preview buttons doing nothing while muted, double-played white/ranged crit sound
+
+- **fix:** options panel checkboxes drifting right on every row
+
+- **refactor:** remove random multi-clip sound selection, one fixed file per sound
+
+- **tweak:** options panel uses TOOLTIP strata (renders above WeakAuras etc.), mark class/role/classification toggles experimental
+
+- **tweak:** clarify the white-hit crit sound hint text in the options panel
+
 ## [0.2.0.1](https://github.com/gitepyc/CritLog/tree/0.2.0.1) (2026-08-31)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.0...0.2.0.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
