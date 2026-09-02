@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Both options panels now close on Escape (registered via `UISpecialFrames`,
+  the standard WoW convention - previously only closable by clicking the
+  title bar's close button or re-running the slash command).
 - Fixed options panel checkboxes drifting 4px further right on every row
   (a growing staircase down the list) - each row's hint line sits +4px
   from its own checkbox, and the next checkbox anchored to that hint
