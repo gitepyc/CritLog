@@ -7,6 +7,13 @@ full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.4.9-dev
+
+- Roster Settings renames no longer save on every focus loss - clicking
+  elsewhere on the panel (e.g. a different row's Remove button) no longer
+  risks committing a half-finished edit. Each row now has its own "OK"
+  button; Enter still confirms too, matching the Add box's pattern.
+
 ## 0.4.8-dev
 
 - Fixed the real cause of Escape closing every open panel instead of just
