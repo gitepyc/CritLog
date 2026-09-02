@@ -38,7 +38,7 @@ local function printHelp()
     print("/cl aura: turns Aura/Spell Sound on/off")
     print("------------")
     print("/cl priest: toggles Priest Sound between None/Both (see /cl options for Experimental/Roster only)")
-    print("/cl melee: toggles Melee Sound between None/Both (see /cl options for Experimental/Roster only)")
+    print("/cl melee: toggles Damage Dealer Sound between None/Both (see /cl options for Experimental/Roster only)")
     print("/cl tank: toggles Tank Sound between None/Both (see /cl options for Experimental/Roster only)")
     print("/cl boss: toggles Boss Sound between None/Both (see /cl options for Experimental/Roster only)")
     print("/cl player: turns Player Death Sound on/off")
@@ -132,7 +132,7 @@ function CritLog:PrintCritLogs(message)
     elseif command == "priest" then
         toggleDetectionMode("PriestDetectionMode", "PriestSound")
     elseif command == "melee" then
-        toggleDetectionMode("MeleeDetectionMode", "MeleeSound")
+        toggleDetectionMode("MeleeDetectionMode", "Damage Dealer Sound")
     elseif command == "player" then
         toggle(
             "PlayerSoundFlag",

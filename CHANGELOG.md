@@ -6,6 +6,14 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.11-dev
+
+- Wording: "Melee death sound" / roster category renamed to "Damage
+  Dealer" - the roster (name-list) side was never actually restricted to
+  melee, just labeled that way, and ranged DPS names belong there too.
+  The live "Experimental" check (`isMeleeClass`) is unchanged, still
+  melee-specific. `/cl melee` command name unchanged.
+
 ## 0.5.10-dev
 
 - Removed the `DeadSoundFlag` master switch - it only ever gated the four
