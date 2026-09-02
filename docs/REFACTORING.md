@@ -184,6 +184,31 @@ manual in-game behavior checklist remains required before merge.
 - changelog and versioned releases — `CHANGELOG.md` started; no tagged
   releases yet
 
+### 7. TitanPanel integration (exploratory, not scheduled)
+
+Roadmap goal, not started: a TitanPanel plugin button (e.g. current top
+highscore or a quick toggle menu) for players who use TitanPanel as their
+status bar.
+
+Expected to be harder than the other roadmap items above, since TitanPanel
+is an optional third-party addon most CritLog users won't have installed —
+the integration can't assume it exists. Two ways to structure that, neither
+trivial:
+
+- Guard every Titan API call behind an existence check inside CritLog
+  itself. Simple to ship, but TitanPanel's own plugin-registration model
+  expects a specific frame/template setup at load time, which is awkward
+  to make conditional cleanly.
+- Ship a separate companion addon (its own subfolder and `.toc` with
+  `## RequiredDeps: Titan`) that WoW's loader skips entirely when Titan
+  isn't installed. Cleaner at runtime, but means packaging and versioning
+  two addons together — `.pkgmeta` would need to bundle a nested addon
+  folder, which it doesn't do today.
+
+No design decision made yet on which approach, or what the plugin should
+actually show. Lower priority than in-game verification of the existing
+first-draft features and the other still-outstanding items above.
+
 ## Current refactoring status
 
 The catalog-and-safety work, the responsibility-based file split, spell-ID
