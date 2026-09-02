@@ -4,7 +4,12 @@
 and the remaining unverified death-sound/Spirit of Redemption detection.
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
-### Unreleased (not yet tagged)
+## 0.6.0-dev
+
+Snapshot tag for review, not a consolidated stable release - everything
+from `0.5.1-dev` through `0.5.13-dev` below is included as-is, one section
+per change. Consolidation into a single summary happens when this line
+becomes a real `0.6.0`, same as `0.4.0`/`0.5.0` before it.
 
 ## 0.5.13-dev
 
