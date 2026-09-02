@@ -1,6 +1,16 @@
 CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 
 CritLog.Data = {
+    -- One entry per highscore record CritLog tracks, so a single false-
+    -- positive record (e.g. a buggy value from some other addon reporting
+    -- damage) can be cleared without wiping the other two. `name` is nil
+    -- for white-hit crits: those aren't tied to a named ability, unlike
+    -- damage/heal ability crits.
+    records = {
+        damage = { value = "DamageAbilityCrit", name = "DAC_Name", target = "DAC_Tar", label = "Damage crit" },
+        whiteHit = { value = "WhiteHitCrit", target = "WHC_Tar", label = "White hit crit" },
+        heal = { value = "HealAbilityCrit", name = "HAC_Name", target = "HAC_Tar", label = "Heal crit" },
+    },
     sounds = {
         crit = "at_bam_babam.mp3",
         xtremeDamage = "Xtreme.mp3",
