@@ -7,6 +7,19 @@ full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.4.8-dev
+
+- Fixed the real cause of Escape closing every open panel instead of just
+  the topmost one, found from the `0.4.7-dev` diagnostic output (thanks to
+  in-game testing): closing a panel that wasn't the topmost (e.g. closing
+  panel A directly while B, opened after it, was still open) re-registered
+  the wrong frame in `UISpecialFrames` without removing the one already
+  there, leaving a duplicate. Over a few out-of-order closes, every panel's
+  name ended up permanently stuck in `UISpecialFrames` regardless of what
+  was actually open. Now tracks the one currently-registered frame
+  explicitly instead of inferring it from stack position, and removed the
+  temporary debug output that found it.
+
 ## 0.4.7-dev
 
 - Fixed the highscore panel showing empty parentheses (e.g. "Damage crit

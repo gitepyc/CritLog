@@ -184,6 +184,22 @@ end
 -- one at a time, in the order they were opened, like a normal window stack.
 local escapeFrameStack = {}
 
+-- The one name we've actually put in UISpecialFrames right now, or nil.
+-- Tracked explicitly instead of inferred from the stack: an earlier version
+-- assumed "whatever I just popped was the one occupying UISpecialFrames",
+-- which is only true if panels are always closed in reverse-open order.
+-- Closing a non-topmost panel (e.g. panel A opened, then B, then A is
+-- closed directly via its own close button while B is still open) broke
+-- that assumption - the pop re-added the new stack top on top of an entry
+-- that was never actually removed, leaving a duplicate. Over a few
+-- out-of-order closes those duplicates piled up until every panel's name
+-- was permanently stuck in UISpecialFrames regardless of what was actually
+-- open - exactly the in-game report ("always all entries, even with just
+-- one window open"). Explicitly removing whatever `registeredFrame`
+-- currently is - not whatever was just popped - fixes that regardless of
+-- close order.
+local registeredFrame
+
 local function removeFromTable(t, value)
     for i, existing in ipairs(t) do
         if existing == value then
@@ -193,43 +209,25 @@ local function removeFromTable(t, value)
     end
 end
 
--- Temporary diagnostic for a reported bug (Escape closing every open panel
--- instead of just the topmost, seemingly regardless of how many are open) -
--- the push/pop logic looks correct on paper, so this prints which of OUR
--- frame names are actually still sitting in the real UISpecialFrames table
--- after every push/pop, to see where it actually diverges. Gated by
--- CritLogDB.DebugFlag (`/cl debug`) like every other diagnostic print;
--- remove once the bug is understood.
-local function debugEscapeState(label)
-    local ours = {}
-    for _, entry in ipairs(UISpecialFrames) do
-        if type(entry) == "string" and entry:find("^CritLog") then
-            table.insert(ours, entry)
-        end
+local function setRegisteredFrame(name)
+    if registeredFrame then
+        removeFromTable(UISpecialFrames, registeredFrame)
     end
-    CritLog:Debug(
-        label, "- stack:", table.concat(escapeFrameStack, ","),
-        "| CritLog entries in UISpecialFrames:", table.concat(ours, ",")
-    )
+    registeredFrame = name
+    if registeredFrame then
+        tinsert(UISpecialFrames, registeredFrame)
+    end
 end
 
 local function pushEscapeFrame(name)
     removeFromTable(escapeFrameStack, name)
-    if #escapeFrameStack > 0 then
-        removeFromTable(UISpecialFrames, escapeFrameStack[#escapeFrameStack])
-    end
     table.insert(escapeFrameStack, name)
-    tinsert(UISpecialFrames, name)
-    debugEscapeState("pushEscapeFrame("..name..")")
+    setRegisteredFrame(name)
 end
 
 local function popEscapeFrame(name)
     removeFromTable(escapeFrameStack, name)
-    removeFromTable(UISpecialFrames, name)
-    if #escapeFrameStack > 0 then
-        tinsert(UISpecialFrames, escapeFrameStack[#escapeFrameStack])
-    end
-    debugEscapeState("popEscapeFrame("..name..")")
+    setRegisteredFrame(escapeFrameStack[#escapeFrameStack])
 end
 
 -- Every panel needs to stay above other addon UI (a WeakAuras display was
