@@ -178,11 +178,14 @@ end
 -- and its x-offset so the caller can keep chaining further content below.
 local function buildToggleRows(parent, checkboxes, startAnchor)
     local previous = startAnchor
-    -- buildAuraPreviewGrid's returned anchor sits 24px right of the
-    -- checkbox column (hint is +4 from check, then the grid itself adds
-    -- another +20 to line up under it); this offset cancels that back out
-    -- so the next real checkbox stays in the same column instead of
-    -- drifting right.
+    -- 0 for the first row: startAnchor (a section heading) has no x-indent
+    -- quirk to cancel. Every row after that anchors to the PREVIOUS row's
+    -- hint line, which sits +4px right of its own checkbox - so from the
+    -- second row on this needs to be -4, or each row would drift 4px
+    -- further right than the last (a growing staircase, not a one-time
+    -- shift). buildAuraPreviewGrid's returned anchor is an extra 20px
+    -- right on top of that (hint's +4, then the grid's own +20 to line up
+    -- under it), so that branch below cancels -24 instead.
     local previousXOffset = 0
 
     for _, entry in ipairs(checkboxes) do
@@ -217,7 +220,7 @@ local function buildToggleRows(parent, checkboxes, startAnchor)
             previousXOffset = -24
         else
             previous = hint
-            previousXOffset = 0
+            previousXOffset = -4
         end
     end
 

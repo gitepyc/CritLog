@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Fixed options panel checkboxes drifting 4px further right on every row
+  (a growing staircase down the list) - each row's hint line sits +4px
+  from its own checkbox, and the next checkbox anchored to that hint
+  without canceling the offset back out.
 - Added per-record highscore reset (`/cl reset damage|whitehit|heal`, or a
   Reset button per line in the options panel) to clear a single false
   positive without wiping all three records.
