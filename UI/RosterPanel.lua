@@ -12,12 +12,15 @@ local rosterFrame
 -- entries as someone adds - so the pool just grows as needed instead of
 -- being bounded by a MAX_* constant.
 --
--- The name itself is an editable box, not static text: renames in place on
--- Enter or on losing focus (e.g. clicking elsewhere on the panel), so
--- fixing a typo or a character rename doesn't need a remove-then-re-add
--- round trip. A rejected rename (empty/duplicate) snaps the box back to
--- the stored value instead of leaving the rejected text in place - unlike
--- the Add box below, which leaves rejected text so it can be corrected,
+-- The name itself is an editable box, not static text: renames in place
+-- instead of a remove-then-re-add round trip. Deliberately NOT saved on
+-- every focus loss (an earlier version did that, but clicking elsewhere on
+-- the panel - e.g. a different row's Remove button - counts as focus loss
+-- too, so it could commit a half-finished edit by accident) - a rename only
+-- takes effect on Enter or the confirm (✓) button, same as the Add box's
+-- explicit Add button. A rejected rename (empty/duplicate) snaps the box
+-- back to the stored value instead of leaving the rejected text in place -
+-- unlike the Add box, which leaves rejected text so it can be corrected,
 -- there's already a known-good value here to fall back to.
 local function getOrCreateRosterRow(f, kind, index)
     f.rowPool[kind] = f.rowPool[kind] or {}
@@ -37,7 +40,16 @@ local function getOrCreateRosterRow(f, kind, index)
         end
 
         nameBox:SetScript("OnEnterPressed", commitRename)
-        nameBox:SetScript("OnEditFocusLost", commitRename)
+
+        -- Plain "OK" rather than a Unicode checkmark glyph: Classic Era's
+        -- bundled fonts aren't guaranteed to have that glyph, risking a
+        -- tofu box with no way to verify short of testing in-game.
+        local confirmButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+        confirmButton:SetSize(32, 18)
+        confirmButton:SetText("OK")
+        confirmButton:SetNormalFontObject("GameFontNormalSmall")
+        confirmButton:SetHighlightFontObject("GameFontHighlightSmall")
+        confirmButton:SetScript("OnClick", commitRename)
 
         local removeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
         removeButton:SetSize(60, 18)
@@ -48,7 +60,7 @@ local function getOrCreateRosterRow(f, kind, index)
             CritLog:RemoveRosterName(kind, index)
             CritLog:RefreshOptionsPanel()
         end)
-        row = { nameBox = nameBox, removeButton = removeButton }
+        row = { nameBox = nameBox, confirmButton = confirmButton, removeButton = removeButton }
         f.rowPool[kind][index] = row
     end
     return row
@@ -105,6 +117,7 @@ local function layoutRosterList(f)
 
             if index > #list then
                 row.nameBox:Hide()
+                row.confirmButton:Hide()
                 row.removeButton:Hide()
             else
                 -- Skip overwriting the text if this box is mid-edit: a
@@ -120,6 +133,9 @@ local function layoutRosterList(f)
                 row.removeButton:SetPoint("TOP", row.nameBox, "TOP", 0, 0)
                 row.removeButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
                 row.removeButton:Show()
+                row.confirmButton:SetPoint("TOP", row.nameBox, "TOP", 0, 0)
+                row.confirmButton:SetPoint("RIGHT", row.removeButton, "LEFT", -6, 0)
+                row.confirmButton:Show()
                 previous = row.nameBox
             end
         end
