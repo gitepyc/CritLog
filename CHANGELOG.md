@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-Nothing yet - see the `0.4.0` section below for the latest tagged build.
+- Fixed Escape closing every open options panel at once instead of just
+  the topmost one. `UISpecialFrames` natively hides every registered,
+  shown frame in a single keystroke; panels now push/pop themselves on a
+  small stack so only the most-recently-opened one is ever actually
+  registered, closing them one at a time like a normal window stack.
 
 ## 0.4.0
 
