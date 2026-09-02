@@ -6,6 +6,10 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.9-dev
+
+- Added `/cl opt` as a short alias for `/cl options`.
+
 ## 0.5.8-dev
 
 - Added a "Reset All" button to the Highscore List popup that clears every
