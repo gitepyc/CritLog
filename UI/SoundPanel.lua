@@ -55,10 +55,10 @@ local SOUND_CHECKBOXES = {
     -- check.
     { field = "PriestDetectionMode", label = "Priest death sound", sound = "priestDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "None / Experimental (live check only) / Roster (name list only) / Both. Live check here: class = PRIEST." },
+      hint = "Modes: None / Experimental / Roster / Both." },
     { field = "MeleeDetectionMode", label = "Damage Dealer death sound", sound = "meleeDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Live check: melee-capable class, not flagged Healer. Roster mode isn't limited to melee - add ranged DPS names too." },
+      hint = "Live check: melee-capable class. Roster: ranged OK too." },
     { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Live check: assigned raid Tank role." },
