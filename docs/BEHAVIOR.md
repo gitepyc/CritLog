@@ -95,6 +95,7 @@ ID-first-then-name-fallback pattern used for spells above.
 | Live classification `worldboss` (`isClassifiedBoss`), or an English/German name in `CritLog.Data.bosses` | `/cl boss` enabled | `FFX.mp3` |
 | Assigned raid role Tank (`isAssignedTank`), or a name in `CritLogDB.playerGroups.tank` | `/cl tank` enabled | `Tank.mp3` |
 | Class `PRIEST` (`isPriestClass`), or a name in `CritLogDB.playerGroups.priest` | `/cl priest` enabled | `Angels.mp3` |
+| Priest death preceded by the Spirit of Redemption buff (spell id `27827`) | `/cl priest` enabled | `Angels.mp3` (same file as the plain priest death sound for now, see `CHANGELOG.md`) |
 
 The live checks (melee/tank/priest, not boss) need a resolved unit token
 for the dying player (the current target, or a matching visible nameplate)
@@ -119,6 +120,17 @@ from `CritLog.Data.playerGroups` on first load after upgrading (see
 `Database.lua`'s `migratePlayerGroups()`) - from then on only the
 `CritLogDB` copy is read or written, so removing a name that used to be a
 hard-coded default works the same as removing one you added yourself.
+Spirit of Redemption (the Priest talent that turns the killing blow into a
+15s delayed death) is now handled specifically: the real `UNIT_DIED` only
+fires once the buff expires, with nothing on that event itself to tie it
+back to the talent, so the buff's `SPELL_AURA_APPLIED` (spell id `27827`,
+matched the same ID-first-then-name pattern as the spells table above) is
+cached by GUID (`CombatLog.lua`'s `rememberSpiritOfRedemption` /
+`spiritOfRedemptionGuids`, any priest in the raid, not just the player) and
+consumed once the matching death arrives. This branch is exclusive with the
+plain priest-class check right above it, not additive - both currently play
+the same file, so without the exclusivity a Spirit of Redemption death would
+double-play it.
 
 ## Raid-leader chat
 
@@ -138,7 +150,6 @@ disables them.
 | Function | Status |
 | --- | --- |
 | Boss killing-blow output | Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is either live-classified `worldboss` or its name is in the English or German boss list - same three-way check as the death sound below. |
-| Spirit of Redemption | Test code is commented out and labeled as not working. Deliberately left as-is for now — see [ROADMAP.md](ROADMAP.md). |
 
 ## Stored data
 
