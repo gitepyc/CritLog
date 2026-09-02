@@ -6,6 +6,24 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.6-dev
+
+- Melee/Tank/Priest/Boss death-sound detection is now a 4-way mode
+  (`None`/`Experimental`/`Roster`/`Both`) via a dropdown in the Sound
+  Settings panel, instead of a plain on/off flag that always used live
+  detection with roster fallback. `Experimental` uses only the live
+  class/role/classification check (no roster fallback); `Roster` uses only
+  the name list (live check ignored even if it matches); `Both` is the
+  original default behavior. Requested. `/cl priest`/`melee`/`tank`/`boss`
+  still work as a quick `None`/`Both` toggle; the dropdown is needed for
+  `Experimental`/`Roster` only.
+  **`CritLogDB` migration**: `migrateDetectionModes()` seeds the new
+  `CritLogDB.<Kind>DetectionMode` fields from the old
+  `<Kind>SoundFlag` booleans (`true` -> `"both"`, `false` -> `"none"`) on
+  first load after upgrading, guarded per-category on the new field
+  itself. The old flags are kept in `DEFAULTS` - never written again -
+  purely so a stale SavedVariables file never produces a nil read.
+
 ## 0.5.5-dev
 
 - The 7 aura/spell sounds (Bloodlust, Innervate, Power Infusion, Blessing

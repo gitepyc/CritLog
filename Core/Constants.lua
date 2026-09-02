@@ -1,6 +1,18 @@
 CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 
 CritLog.Constants = {
+    -- Options for the melee/tank/priest/boss death-sound detection mode
+    -- dropdowns in the Sound Settings panel: choose whether the live
+    -- class/role/classification check, the roster/name-list fallback,
+    -- both (the original, still-default behavior), or neither decides
+    -- whether the sound plays. See Core/Filters.lua's
+    -- matchesDetectionMode.
+    detectionModes = {
+        { value = "none", label = "None" },
+        { value = "experimental", label = "Experimental" },
+        { value = "roster", label = "Roster" },
+        { value = "both", label = "Both" },
+    },
     -- One entry per highscore category CritLog tracks (see
     -- CritLogDB.records in Persistence/Database.lua for the actual
     -- per-character lists, same split as rosterKinds/playerGroups below).

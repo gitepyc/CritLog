@@ -96,10 +96,10 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl dead` | Master switch for death sounds. |
 | `/cl player` | Toggles the player's own death sound. |
-| `/cl melee` | **(Experimental)** Toggles the melee death sound. Matched by class/assigned role first (melee-capable class, not flagged Healer), falling back to a hard-coded melee roster. |
-| `/cl tank` | **(Experimental)** Toggles the tank death sound. Matched by assigned raid Tank role first, falling back to a hard-coded tank roster. |
-| `/cl priest` | **(Experimental)** Toggles the priest death sound. Matched by class (`PRIEST`) first, falling back to a hard-coded healer-priest roster. |
-| `/cl boss` | **(Experimental)** Toggles the boss death sound. Matched by live `UnitClassification` (`worldboss`) first, falling back to a hard-coded English/German boss-name list. |
+| `/cl melee` | Toggles the melee death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: class/assigned role (melee-capable class, not flagged Healer). |
+| `/cl tank` | Same toggle, for the tank death sound. Live check: assigned raid Tank role. |
+| `/cl priest` | Same toggle, for the priest death sound (and Spirit of Redemption). Live check: class `PRIEST`. |
+| `/cl boss` | Same toggle, for the boss death sound. Live check: `UnitClassification` (`worldboss`). |
 
 ## Repository layout
 

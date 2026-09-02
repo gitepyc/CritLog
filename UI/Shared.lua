@@ -63,7 +63,53 @@ end
 -- every panel OnShow, regardless of which panel actually owns a given row.
 local checkboxesByField = {}
 
--- Shared row-building loop for every panel: a checkbox, its label, an
+-- Same idea as checkboxesByField, for buildToggleRows' dropdown rows
+-- (entries with `options` instead of a plain boolean flag).
+local dropdownsByField = {}
+
+local function createDropdownRow(parent, entry, previous, previousXOffset)
+    -- UIDropDownMenuTemplate's clickable texture extends ~16px left of the
+    -- frame's own left edge, so this is nudged left to keep the control
+    -- itself visually lined up with the checkboxes in the rows above/below
+    -- it - approximate, not pixel-verified in-game yet.
+    local dropdown = CreateFrame("Frame", "CritLogOptions"..entry.field, parent, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset - 16, -4)
+    UIDropDownMenu_SetWidth(dropdown, 110)
+
+    UIDropDownMenu_Initialize(dropdown, function(_, level)
+        for _, option in ipairs(entry.options) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = option.label
+            info.value = option.value
+            info.checked = (CritLogDB[entry.field] == option.value)
+            info.func = function()
+                CritLogDB[entry.field] = option.value
+                UIDropDownMenu_SetText(dropdown, option.label)
+                CloseDropDownMenus()
+            end
+            UIDropDownMenu_AddButton(info, level)
+        end
+    end)
+    dropdownsByField[entry.field] = dropdown
+
+    local label = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    label:SetPoint("LEFT", dropdown, "RIGHT", -8, 2)
+    label:SetText(entry.label)
+
+    if entry.sound then
+        local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
+        previewButton:SetPoint("LEFT", dropdown, "LEFT", 340 - 16, 0)
+    end
+
+    local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    hint:SetPoint("TOPLEFT", dropdown, "BOTTOMLEFT", 20, -2)
+    hint:SetText(entry.hint)
+
+    return hint
+end
+
+-- Shared row-building loop for every panel: a checkbox (or, for an entry
+-- with `options`, a dropdown - see createDropdownRow above), its label, an
 -- optional preview button, and a static hint line underneath (used instead
 -- of a hover tooltip - GameTooltip on the checkbox didn't reliably show
 -- in-game, small hit area, easy to miss). Returns the last anchor region
@@ -82,34 +128,40 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     local previousXOffset = 0
 
     for _, entry in ipairs(checkboxes) do
-        local check = CreateFrame("CheckButton", "CritLogOptions"..entry.field, parent, "UICheckButtonTemplate")
-        check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -4)
-        -- Hook rather than replace OnClick, so the template's default click
-        -- sound still plays; GetChecked() returns 1/nil on some clients, so
-        -- normalize to a real boolean before writing it back to the DB.
-        check:HookScript("OnClick", function(self)
-            CritLogDB[entry.field] = self:GetChecked() and true or false
-        end)
-        checkboxesByField[entry.field] = check
+        if entry.options then
+            previous = createDropdownRow(parent, entry, previous, previousXOffset)
+            previousXOffset = -4
+        else
+            local check = CreateFrame("CheckButton", "CritLogOptions"..entry.field, parent, "UICheckButtonTemplate")
+            check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -4)
+            -- Hook rather than replace OnClick, so the template's default
+            -- click sound still plays; GetChecked() returns 1/nil on some
+            -- clients, so normalize to a real boolean before writing it
+            -- back to the DB.
+            check:HookScript("OnClick", function(self)
+                CritLogDB[entry.field] = self:GetChecked() and true or false
+            end)
+            checkboxesByField[entry.field] = check
 
-        local label = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        label:SetPoint("LEFT", check, "RIGHT", 2, 1)
-        label:SetText(entry.label)
+            local label = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+            label:SetPoint("LEFT", check, "RIGHT", 2, 1)
+            label:SetText(entry.label)
 
-        if entry.sound then
-            -- Anchored to a fixed offset from the checkbox itself rather
-            -- than to the label, so button position doesn't depend on how
-            -- long a given label happens to be.
-            local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
-            previewButton:SetPoint("LEFT", check, "LEFT", 340, 0)
+            if entry.sound then
+                -- Anchored to a fixed offset from the checkbox itself
+                -- rather than to the label, so button position doesn't
+                -- depend on how long a given label happens to be.
+                local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
+                previewButton:SetPoint("LEFT", check, "LEFT", 340, 0)
+            end
+
+            local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+            hint:SetPoint("TOPLEFT", check, "BOTTOMLEFT", 4, -2)
+            hint:SetText(entry.hint)
+
+            previous = hint
+            previousXOffset = -4
         end
-
-        local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-        hint:SetPoint("TOPLEFT", check, "BOTTOMLEFT", 4, -2)
-        hint:SetText(entry.hint)
-
-        previous = hint
-        previousXOffset = -4
     end
 
     return previous, previousXOffset
@@ -223,5 +275,17 @@ function CritLog:RefreshOptionsPanel()
 
     for field, check in pairs(checkboxesByField) do
         check:SetChecked(CritLogDB[field])
+    end
+
+    -- All current dropdown rows share the same detectionModes option set
+    -- (see Core/Constants.lua) - fine to assume here since it's the only
+    -- one in use; would need a per-field option list if that changes.
+    for field, dropdown in pairs(dropdownsByField) do
+        for _, option in ipairs(CritLog.Constants.detectionModes) do
+            if option.value == CritLogDB[field] then
+                UIDropDownMenu_SetText(dropdown, option.label)
+                break
+            end
+        end
     end
 end

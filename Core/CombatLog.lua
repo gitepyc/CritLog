@@ -437,48 +437,54 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- a live-detection heuristic that needs a sanity check.
     local isGroupMember = UnitInParty(destName) or UnitInRaid(destName)
 
-    if CritLogDB.MeleeSoundFlag
-        and (
-            (token and isGroupMember and CritLog.Filters.isMeleeClass(class, role))
-            or tContains(CritLogDB.playerGroups.melee, destName)
-        )
-    then
+    -- Each category's sound now has a 4-way mode instead of a plain
+    -- on/off flag: "experimental" only trusts the live check, "roster"
+    -- only the name list, "both" either one (the original default
+    -- behavior), "none" (or anything else) never plays. See
+    -- Core/Filters.lua's matchesDetectionMode.
+    local matchesMode = CritLog.Filters.matchesDetectionMode
+
+    if matchesMode(
+        CritLogDB.MeleeDetectionMode,
+        token and isGroupMember and CritLog.Filters.isMeleeClass(class, role),
+        tContains(CritLogDB.playerGroups.melee, destName)
+    ) then
         self:PlaySound(self.Constants.sounds.meleeDeath)
     end
 
-    if CritLogDB.BossSoundFlag
-        and (
-            isClassifiedBoss(destGUID)
-            or tContains(self.Constants.bosses.english, destName)
-            or tContains(self.Constants.bosses.german, destName)
-        )
-    then
+    if matchesMode(
+        CritLogDB.BossDetectionMode,
+        isClassifiedBoss(destGUID),
+        tContains(self.Constants.bosses.english, destName) or tContains(self.Constants.bosses.german, destName)
+    ) then
         self:PlaySound(self.Constants.sounds.bossDeath)
     end
 
-    if CritLogDB.TankSoundFlag
-        and (
-            (token and isGroupMember and CritLog.Filters.isAssignedTank(role))
-            or tContains(CritLogDB.playerGroups.tank, destName)
-        )
-    then
+    if matchesMode(
+        CritLogDB.TankDetectionMode,
+        token and isGroupMember and CritLog.Filters.isAssignedTank(role),
+        tContains(CritLogDB.playerGroups.tank, destName)
+    ) then
         self:PlaySound(self.Constants.sounds.tankDeath)
     end
 
-    if CritLogDB.PriestSoundFlag then
-        -- Spirit of Redemption is checked first and is exclusive with the
-        -- plain priest-death sound below - both currently point at the same
-        -- file (see Core/Constants.lua), so playing both back to back would
-        -- just double the same clip. Also gated on group membership - the
-        -- buff-apply tracking in rememberSpiritOfRedemption has no way to
-        -- know who's in your group at that earlier point, so the check
-        -- happens here instead, against the same destName used everywhere
-        -- else in this function.
+    -- Spirit of Redemption and the plain priest-death sound share the same
+    -- mode gate - whether the priest sound plays at all is still decided
+    -- by CritLogDB.PriestDetectionMode, same as the other three categories.
+    -- Which of the two files plays is a separate, exclusive choice once
+    -- that's already true (both currently point at the same file anyway,
+    -- see Core/Constants.lua, so playing both would just double it).
+    -- isGroupMember gates Spirit of Redemption too - the buff-apply
+    -- tracking in rememberSpiritOfRedemption has no way to know who's in
+    -- your group at that earlier point, so the check happens here instead.
+    if matchesMode(
+        CritLogDB.PriestDetectionMode,
+        token and isGroupMember and CritLog.Filters.isPriestClass(class),
+        tContains(CritLogDB.playerGroups.priest, destName)
+    ) then
         if spiritOfRedemptionGuids[destGUID] and isGroupMember then
             self:PlaySound(self.Constants.sounds.spiritOfRedemption)
-        elseif (token and isGroupMember and CritLog.Filters.isPriestClass(class))
-            or tContains(CritLogDB.playerGroups.priest, destName)
-        then
+        else
             self:PlaySound(self.Constants.sounds.priestDeath)
         end
     end

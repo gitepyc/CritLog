@@ -7,6 +7,21 @@ local function toggle(field, enabledMessage, disabledMessage)
     end
 end
 
+-- Melee/tank/priest/boss death sounds are a 4-way mode now (see
+-- Core/Constants.lua's detectionModes), not a plain flag - this chat
+-- command still only flips between off ("none") and the original default
+-- ("both", live check with roster fallback). For "experimental"- or
+-- "roster"-only, use `/cl options` -> Sound Settings.
+local function toggleDetectionMode(field, label)
+    if CritLogDB[field] == "none" then
+        CritLogDB[field] = "both"
+        print("CritLog "..label.." On (both) - see /cl options for Experimental/Roster only")
+    else
+        CritLogDB[field] = "none"
+        print("CritLog "..label.." Off (none)")
+    end
+end
+
 local function printHelp()
     print("/cl reset: clears every highscore list")
     print("/cl reset damage|whitehit|heal: clears just that category's highscore list")
@@ -22,10 +37,10 @@ local function printHelp()
     print("/cl ready: turns ReadyCheck Sound on/off")
     print("/cl aura: turns Aura/Spell Sound on/off")
     print("------------")
-    print("/cl priest: turns Priest Sound on/off")
-    print("/cl melee: turns Melee Sound on/off")
-    print("/cl tank: turns Tank Sound on/off")
-    print("/cl boss: turns Boss Sound on/off")
+    print("/cl priest: toggles Priest Sound between None/Both (see /cl options for Experimental/Roster only)")
+    print("/cl melee: toggles Melee Sound between None/Both (see /cl options for Experimental/Roster only)")
+    print("/cl tank: toggles Tank Sound between None/Both (see /cl options for Experimental/Roster only)")
+    print("/cl boss: toggles Boss Sound between None/Both (see /cl options for Experimental/Roster only)")
     print("/cl player: turns Player Death Sound on/off")
     print("/cl dead: turns  OnDeath Sound on/off (turn on for priest, melee, tank and boss config to work)")
     print("------------")
@@ -44,10 +59,10 @@ local function printConfig()
     print("/cl ready: "..tostring(CritLogDB.ReadySoundFlag))
     print("/cl aura: "..tostring(CritLogDB.AuraSoundFlag))
     print("------------")
-    print("/cl priest: "..tostring(CritLogDB.PriestSoundFlag))
-    print("/cl melee: "..tostring(CritLogDB.MeleeSoundFlag))
-    print("/cl tank: "..tostring(CritLogDB.TankSoundFlag))
-    print("/cl boss: "..tostring(CritLogDB.BossSoundFlag))
+    print("/cl priest: "..CritLogDB.PriestDetectionMode)
+    print("/cl melee: "..CritLogDB.MeleeDetectionMode)
+    print("/cl tank: "..CritLogDB.TankDetectionMode)
+    print("/cl boss: "..CritLogDB.BossDetectionMode)
     print("/cl player: "..tostring(CritLogDB.PlayerSoundFlag))
     print("/cl dead: "..tostring(CritLogDB.DeadSoundFlag))
 end
@@ -117,17 +132,9 @@ function CritLog:PrintCritLogs(message)
             "CritLog Aura/Spell Sound Off"
         )
     elseif command == "priest" then
-        toggle(
-            "PriestSoundFlag",
-            "CritLog PriestSound On",
-            "CritLog PriestSound Off"
-        )
+        toggleDetectionMode("PriestDetectionMode", "PriestSound")
     elseif command == "melee" then
-        toggle(
-            "MeleeSoundFlag",
-            "CritLog MeleeSound On",
-            "CritLog MeleeSound Off"
-        )
+        toggleDetectionMode("MeleeDetectionMode", "MeleeSound")
     elseif command == "player" then
         toggle(
             "PlayerSoundFlag",
@@ -135,17 +142,9 @@ function CritLog:PrintCritLogs(message)
             "CritLog PlayerDeathSound Off"
         )
     elseif command == "tank" then
-        toggle(
-            "TankSoundFlag",
-            "CritLog TankSound On",
-            "CritLog TankSound Off"
-        )
+        toggleDetectionMode("TankDetectionMode", "TankSound")
     elseif command == "boss" then
-        toggle(
-            "BossSoundFlag",
-            "CritLog BossSound On",
-            "CritLog BossSound Off"
-        )
+        toggleDetectionMode("BossDetectionMode", "BossSound")
     elseif command == "dead" then
         toggle(
             "DeadSoundFlag",

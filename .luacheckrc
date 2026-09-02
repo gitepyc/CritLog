@@ -28,6 +28,13 @@ stds.wow = {
         -- UI/Shared.lua: registers panels so Escape closes them
         "UISpecialFrames",
         "tinsert",
+        -- UI/Shared.lua: the melee/tank/priest/boss detection-mode dropdowns
+        "UIDropDownMenu_SetWidth",
+        "UIDropDownMenu_Initialize",
+        "UIDropDownMenu_CreateInfo",
+        "UIDropDownMenu_AddButton",
+        "UIDropDownMenu_SetText",
+        "CloseDropDownMenus",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned
