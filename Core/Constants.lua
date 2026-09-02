@@ -174,4 +174,34 @@ CritLog.Constants = {
         raidEnd = { "raid ende", "raid end" },
         wipe = { "shit show", "wipe" },
     },
+    -- One line per slash command, shared by Commands.lua's `/cl help`
+    -- (prints each line to chat) and UI/HelpPanel.lua's Help button (shows
+    -- each line in a panel) - a single source of truth so the two can't
+    -- drift apart. "------------" entries are section dividers, rendered
+    -- as-is in both places.
+    helpLines = {
+        "/cl reset: clears every highscore list",
+        "/cl reset damage|whitehit|heal: clears just that category's highscore list",
+        "/cl options -> Highscore List...: delete a single entry instead of a whole list",
+        "/cl level: changes level requirements for crit logs",
+        "/cl mute: turns ALL sounds on/off, overriding every sound toggle below",
+        "/cl sound: turns BÄM sound on/off (highscore sound)",
+        "/cl allcrits: turns BÄM sound on/off for all crits",
+        "/cl whitehit: turns BÄM sound on/off for all WHITEHIT crits",
+        "/cl xtreme: turns sound for hits over 9000 damage on/off (off by default)",
+        "/cl debug: turns diagnostic chat output on/off (off by default)",
+        "/cl options (or /cl opt): opens/closes the CritLog options panel",
+        "/cl ready: turns ReadyCheck Sound on/off",
+        "/cl aura: turns Aura/Spell Sound on/off",
+        "------------",
+        "/cl priest: toggles Priest Sound between None/Both (see /cl options for Experimental/Roster only)",
+        "/cl dps: toggles Damage Dealer Sound between None/Both (see /cl options for Experimental/Roster only)",
+        "/cl tank: toggles Tank Sound between None/Both (see /cl options for Experimental/Roster only)",
+        "/cl boss: toggles Boss Sound between None/Both (see /cl options for Experimental/Roster only)",
+        "/cl player: turns Player Death Sound on/off",
+        "------------",
+        "/cl config: shows actual config/DB-data",
+        "/cl help (or /cl options -> Help): lists this",
+        "/cl      : prints CritLogs",
+    },
 }

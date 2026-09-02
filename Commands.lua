@@ -22,29 +22,12 @@ local function toggleDetectionMode(field, label)
     end
 end
 
+-- Shared with the Help panel (UI/HelpPanel.lua's CritLog:ShowHelp) so chat
+-- and the in-game panel can't drift out of sync with each other.
 local function printHelp()
-    print("/cl reset: clears every highscore list")
-    print("/cl reset damage|whitehit|heal: clears just that category's highscore list")
-    print("/cl options -> Highscore List...: delete a single entry instead of a whole list")
-    print("/cl level: changes level requirements for crit logs")
-    print("/cl mute: turns ALL sounds on/off, overriding every sound toggle below")
-    print("/cl sound: turns BÄM sound on/off (highscore sound)")
-    print("/cl allcrits: turns BÄM sound on/off for all crits")
-    print("/cl whitehit: turns BÄM sound on/off for all WHITEHIT crits")
-    print("/cl xtreme: turns sound for hits over 9000 damage on/off (off by default)")
-    print("/cl debug: turns diagnostic chat output on/off (off by default)")
-    print("/cl options (or /cl opt): opens/closes the CritLog options panel")
-    print("/cl ready: turns ReadyCheck Sound on/off")
-    print("/cl aura: turns Aura/Spell Sound on/off")
-    print("------------")
-    print("/cl priest: toggles Priest Sound between None/Both (see /cl options for Experimental/Roster only)")
-    print("/cl melee: toggles Damage Dealer Sound between None/Both (see /cl options for Experimental/Roster only)")
-    print("/cl tank: toggles Tank Sound between None/Both (see /cl options for Experimental/Roster only)")
-    print("/cl boss: toggles Boss Sound between None/Both (see /cl options for Experimental/Roster only)")
-    print("/cl player: turns Player Death Sound on/off")
-    print("------------")
-    print("/cl config: shows actual config/DB-data")
-    print("/cl      : prints CritLogs")
+    for _, line in ipairs(CritLog.Constants.helpLines) do
+        print(line)
+    end
 end
 
 local function printConfig()
@@ -59,7 +42,7 @@ local function printConfig()
     print("/cl aura: "..tostring(CritLogDB.AuraSoundFlag))
     print("------------")
     print("/cl priest: "..CritLogDB.PriestDetectionMode)
-    print("/cl melee: "..CritLogDB.MeleeDetectionMode)
+    print("/cl dps: "..CritLogDB.MeleeDetectionMode)
     print("/cl tank: "..CritLogDB.TankDetectionMode)
     print("/cl boss: "..CritLogDB.BossDetectionMode)
     print("/cl player: "..tostring(CritLogDB.PlayerSoundFlag))
@@ -131,7 +114,7 @@ function CritLog:PrintCritLogs(message)
         )
     elseif command == "priest" then
         toggleDetectionMode("PriestDetectionMode", "PriestSound")
-    elseif command == "melee" then
+    elseif command == "dps" then
         toggleDetectionMode("MeleeDetectionMode", "Damage Dealer Sound")
     elseif command == "player" then
         toggle(
