@@ -244,6 +244,41 @@ local function buildToggleRows(parent, checkboxes, startAnchor)
     return previous, previousXOffset
 end
 
+-- UISpecialFrames's native Escape behavior hides every registered frame
+-- that's currently shown, all at once - fine for a single frame, wrong for
+-- us with up to 2 panels open simultaneously (one Escape press would close
+-- both instead of just the topmost). Only the most-recently-shown panel's
+-- name is ever actually present in UISpecialFrames; on hide, the
+-- next-most-recent one (if any) is re-registered - so Escape closes them
+-- one at a time, in the order they were opened, like a normal window stack.
+local escapeFrameStack = {}
+
+local function removeFromTable(t, value)
+    for i, existing in ipairs(t) do
+        if existing == value then
+            table.remove(t, i)
+            return
+        end
+    end
+end
+
+local function pushEscapeFrame(name)
+    removeFromTable(escapeFrameStack, name)
+    if #escapeFrameStack > 0 then
+        removeFromTable(UISpecialFrames, escapeFrameStack[#escapeFrameStack])
+    end
+    table.insert(escapeFrameStack, name)
+    tinsert(UISpecialFrames, name)
+end
+
+local function popEscapeFrame(name)
+    removeFromTable(escapeFrameStack, name)
+    removeFromTable(UISpecialFrames, name)
+    if #escapeFrameStack > 0 then
+        tinsert(UISpecialFrames, escapeFrameStack[#escapeFrameStack])
+    end
+end
+
 -- Both panels need to stay above other addon UI (a WeakAuras display was
 -- covering the panel before this was added) and share the same drag/close
 -- behavior, so this sets up everything but the content.
@@ -266,12 +301,12 @@ local function createPanelFrame(name, title, width, height)
     f.TitleText:SetText(title)
     f:SetScript("OnShow", function()
         CritLog:RefreshOptionsPanel()
+        pushEscapeFrame(name)
+    end)
+    f:SetScript("OnHide", function()
+        popEscapeFrame(name)
     end)
     f:Hide()
-    -- Standard WoW convention: any frame name listed here gets closed by
-    -- Escape before the game menu opens, same as Blizzard's own frames and
-    -- practically every other addon's options window.
-    tinsert(UISpecialFrames, name)
     return f
 end
 
