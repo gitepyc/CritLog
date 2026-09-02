@@ -6,6 +6,16 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.4-dev
+
+- Highscore List popup redesigned as an actual table: a category heading
+  (Damage/White Hit/Heal Crit) and a column header row (#/Amount/Ability/
+  Target) per category, with each entry's values aligned into columns
+  instead of one combined "label (ability): amount (target)" line.
+  Requested after testing the multi-entry list. Widened the popup
+  (420 -> 460) and gave it more height (460 -> 520) for the extra header
+  rows.
+
 ## 0.5.3-dev
 
 - Fixed the melee/tank/priest death-sound class/role checks (and Spirit of

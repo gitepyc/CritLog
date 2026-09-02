@@ -39,18 +39,40 @@ local function createDeleteEntryButton(parent, kind, index)
     return button
 end
 
+-- Fixed x-offsets (from the panel's left edge) for the table columns,
+-- shared by both the column header row and every data row so values line
+-- up underneath their header regardless of text length.
+local COLUMN_X = { rank = 14, amount = 50, ability = 110, target = 250 }
+
+local function createColumnHeaderRow(f)
+    local labels = {}
+    for column, text in pairs({ rank = "#", amount = "Amount", ability = "Ability", target = "Target" }) do
+        local label = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        label:SetText(text)
+        labels[column] = label
+    end
+    return labels
+end
+
 -- Row widgets are pooled and reused rather than created/destroyed on every
 -- refresh (WoW frames aren't cheap to churn, and the visible row count
 -- changes often as entries are added/deleted) - same pattern as the roster
 -- panel's row pool. Pool slot i for a given category always displays that
 -- category's list position i when shown - its Delete button's index was
 -- fixed at creation time.
+--
+-- One FontString per column instead of a single pre-formatted line, so
+-- values actually line up in a table under the header row created by
+-- createColumnHeaderRow above.
 local function getOrCreateHighscoreRow(f, kind, index)
     f.rowPool[kind] = f.rowPool[kind] or {}
     local row = f.rowPool[kind][index]
     if not row then
         row = {
-            text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight"),
+            rankText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight"),
+            amountText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight"),
+            abilityText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight"),
+            targetText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight"),
             deleteButton = createDeleteEntryButton(f, kind, index),
         }
         f.rowPool[kind][index] = row
@@ -61,19 +83,28 @@ end
 -- Lays out every row fresh on each call (cheap: at most 3 categories *
 -- Constants.maxDisplayEntries rows) rather than trying to incrementally
 -- patch anchors when the row count changes between refreshes. An empty
--- category still shows one placeholder row (formatRecordText's "no record
--- yet" text) with no Delete button, so the popup never looks broken for a
--- fresh character.
+-- category still shows one placeholder row (in the rank column, spanning
+-- the row - no amount/ability/target/Delete to show yet) so the popup
+-- never looks broken for a fresh character.
 --
 -- Only the top Constants.maxDisplayEntries are ever shown, even though up
 -- to Constants.maxTrackedEntries can be stored (see Persistence/
 -- Database.lua's AddRecord) - deleting one of the visible entries doesn't
--- need a brand new crit to refill the list, the next-best already-tracked
+-- need a brand new crit to refill it, the next-best already-tracked
 -- entry just shifts into view on the next refresh.
 local function layoutHighscoreList(f)
     local previous = f.heading
 
     for _, kind in ipairs(RECORD_ORDER) do
+        f.categoryHeadings[kind]:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -14)
+        previous = f.categoryHeadings[kind]
+
+        local headers = f.columnHeaders[kind]
+        for column, x in pairs(COLUMN_X) do
+            headers[column]:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", x - 14, -6)
+        end
+        previous = headers.rank
+
         local list = CritLogDB.records[kind]
         local visibleRows = math.max(math.min(#list, CritLog.Constants.maxDisplayEntries), 1)
 
@@ -81,22 +112,42 @@ local function layoutHighscoreList(f)
             local row = getOrCreateHighscoreRow(f, kind, index)
 
             if index > visibleRows then
-                row.text:Hide()
+                row.rankText:Hide()
+                row.amountText:Hide()
+                row.abilityText:Hide()
+                row.targetText:Hide()
                 row.deleteButton:Hide()
             else
-                row.text:SetText(CritLog.Records.formatRecordText(kind, index))
-                row.text:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -8)
-                row.text:Show()
+                local entry = list[index]
+                row.rankText:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -4)
+                row.rankText:Show()
+                previous = row.rankText
 
-                if list[index] then
-                    row.deleteButton:SetPoint("TOP", row.text, "TOP", 0, 0)
+                if not entry then
+                    row.rankText:SetText("No record yet")
+                    row.amountText:Hide()
+                    row.abilityText:Hide()
+                    row.targetText:Hide()
+                    row.deleteButton:Hide()
+                else
+                    row.rankText:SetText(index..".")
+
+                    row.amountText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.amount - COLUMN_X.rank, 0)
+                    row.amountText:SetText(entry.amount)
+                    row.amountText:Show()
+
+                    row.abilityText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.ability - COLUMN_X.rank, 0)
+                    row.abilityText:SetText(entry.name or "-")
+                    row.abilityText:Show()
+
+                    row.targetText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.target - COLUMN_X.rank, 0)
+                    row.targetText:SetText(entry.target)
+                    row.targetText:Show()
+
+                    row.deleteButton:SetPoint("TOP", row.rankText, "TOP", 0, 0)
                     row.deleteButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
                     row.deleteButton:Show()
-                else
-                    row.deleteButton:Hide()
                 end
-
-                previous = row.text
             end
         end
     end
@@ -105,9 +156,11 @@ end
 -- Sized for the worst case (Constants.maxDisplayEntries rows in every
 -- category at once) so it never overflows; looks mostly empty until a
 -- character has built up a real history, which is expected for a first
--- draft - see docs/ROADMAP.md.
+-- draft - see docs/ROADMAP.md. Widened from 420 for the table columns
+-- (Ability names in particular need more room than a single combined line
+-- did).
 local function buildHighscoreListFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 420, 460)
+    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 520)
     -- Opens to the left of center, mirroring the sound panel opening to the
     -- right, so both can be open next to the main panel at once.
     f:SetPoint("CENTER", UIParent, "CENTER", -260, 0)
@@ -116,7 +169,17 @@ local function buildHighscoreListFrame()
     f.heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     f.heading:SetText("Highscores")
 
+    f.categoryHeadings = {}
+    f.columnHeaders = {}
     f.rowPool = {}
+    for _, kind in ipairs(RECORD_ORDER) do
+        local categoryHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        categoryHeading:SetText(CritLog.Constants.recordKinds[kind].label)
+        f.categoryHeadings[kind] = categoryHeading
+
+        f.columnHeaders[kind] = createColumnHeaderRow(f)
+    end
+
     layoutHighscoreList(f)
 
     return f
