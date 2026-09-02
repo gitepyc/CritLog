@@ -59,19 +59,25 @@ local function getOrCreateHighscoreRow(f, kind, index)
 end
 
 -- Lays out every row fresh on each call (cheap: at most 3 categories *
--- Constants.maxRecordEntries rows) rather than trying to incrementally
+-- Constants.maxDisplayEntries rows) rather than trying to incrementally
 -- patch anchors when the row count changes between refreshes. An empty
 -- category still shows one placeholder row (formatRecordText's "no record
 -- yet" text) with no Delete button, so the popup never looks broken for a
 -- fresh character.
+--
+-- Only the top Constants.maxDisplayEntries are ever shown, even though up
+-- to Constants.maxTrackedEntries can be stored (see Persistence/
+-- Database.lua's AddRecord) - deleting one of the visible entries doesn't
+-- need a brand new crit to refill the list, the next-best already-tracked
+-- entry just shifts into view on the next refresh.
 local function layoutHighscoreList(f)
     local previous = f.heading
 
     for _, kind in ipairs(RECORD_ORDER) do
         local list = CritLogDB.records[kind]
-        local visibleRows = math.max(#list, 1)
+        local visibleRows = math.max(math.min(#list, CritLog.Constants.maxDisplayEntries), 1)
 
-        for index = 1, CritLog.Constants.maxRecordEntries do
+        for index = 1, CritLog.Constants.maxDisplayEntries do
             local row = getOrCreateHighscoreRow(f, kind, index)
 
             if index > visibleRows then
@@ -96,7 +102,7 @@ local function layoutHighscoreList(f)
     end
 end
 
--- Sized for the worst case (Constants.maxRecordEntries rows in every
+-- Sized for the worst case (Constants.maxDisplayEntries rows in every
 -- category at once) so it never overflows; looks mostly empty until a
 -- character has built up a real history, which is expected for a first
 -- draft - see docs/ROADMAP.md.

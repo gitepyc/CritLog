@@ -1,16 +1,26 @@
 # Changelog
 
 **Next up:** in-game verification of the new multi-entry highscore list
-(`0.5.1-dev`) and the remaining unverified death-sound/Spirit of Redemption
-detection. See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized
-list.
+and the remaining unverified death-sound/Spirit of Redemption detection.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.5.2-dev
+
+- Highscore lists now track more entries than they display: up to
+  `Constants.maxTrackedEntries` (10) per category, but the Highscore List
+  popup only ever shows the top `Constants.maxDisplayEntries` (5) -
+  requested so deleting a couple of bad entries from the visible list
+  (e.g. two false positives) doesn't need brand new crits to refill it;
+  the next-best already-tracked entries shift into view immediately
+  instead. Previously tracking and display shared one cap
+  (`Constants.maxRecordEntries`, now split into the two above).
+
 ## 0.5.1-dev
 
-- Multi-entry highscores: top-`Constants.maxRecordEntries` (5) list per
-  category instead of a single value, each entry individually deletable
+- Multi-entry highscores: list per category instead of a single value,
+  each entry individually deletable
   via the Highscore List popup's Delete button (`/cl options` -> "Highscore
   List..."), or a whole category at once via
   `/cl reset damage|whitehit|heal`. Ported from the `feature/multi-entry-

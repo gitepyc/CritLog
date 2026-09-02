@@ -135,15 +135,17 @@ function CritLog:SetDefaults()
 end
 
 -- Inserts a new crit into a category's list, sorted highest-first, capped
--- at Constants.maxRecordEntries. Always attempted (not just for a new #1),
--- so a crit that only beats the 3rd-best still earns its spot - the caller
--- checks list[1] before/after to detect an actual new highscore itself
--- (see Core.CombatLog's HandleDamageCrit/HandleHealCrit).
+-- at Constants.maxTrackedEntries (more than what's actually displayed -
+-- see UI/MainPanel.lua's Constants.maxDisplayEntries). Always attempted
+-- (not just for a new #1), so a crit that only beats the 3rd-best still
+-- earns its spot - the caller checks list[1] before/after to detect an
+-- actual new highscore itself (see Core.CombatLog's
+-- HandleDamageCrit/HandleHealCrit).
 function CritLog:AddRecord(kind, amount, name, target)
     local list = CritLogDB.records[kind]
     table.insert(list, { amount = amount, name = name, target = target })
     table.sort(list, function(a, b) return a.amount > b.amount end)
-    while #list > self.Constants.maxRecordEntries do
+    while #list > self.Constants.maxTrackedEntries do
         table.remove(list)
     end
 end

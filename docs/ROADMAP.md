@@ -10,10 +10,12 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    other work anymore - bugs found during verification (e.g. the
    `0.4.2-dev` NPC-death-sound fix, the `0.4.8-dev` Escape-key fix) land on
    `dev` as they're reported, in parallel with feature work below.
-2. ~~Multi-entry highscores~~ - done: top-5 list per category
-   (`CritLogDB.records.*`, `Constants.maxRecordEntries`) instead of a single
-   value, each entry individually deletable via the Highscore List popup's
-   Delete button, or a whole category at once via
+2. ~~Multi-entry highscores~~ - done: list per category
+   (`CritLogDB.records.*`) instead of a single value - 10 tracked
+   (`Constants.maxTrackedEntries`), top 5 shown (`Constants.maxDisplayEntries`)
+   so deleting a visible entry doesn't need a new crit to refill it. Each
+   entry individually deletable via the Highscore List popup's Delete
+   button, or a whole category at once via
    `/cl reset damage|whitehit|heal`. Ported from the now-deleted
    `feature/multi-entry-highscores` branch onto the current
    Core/Persistence/UI layout rather than merged as-is (that branch
