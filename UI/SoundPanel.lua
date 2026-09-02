@@ -50,14 +50,15 @@ local SOUND_CHECKBOXES = {
     -- "Experimental" isn't yet in-game verified for tank/boss/priest
     -- specifically (melee's false-positive bug is fixed and confirmed);
     -- "Roster" and "Both" (the original default) aren't affected by that.
-    -- The None/Experimental/Roster/Both explanation applies to all four
-    -- dropdowns below, so it's its own note row above them instead of
-    -- being tied to (and only shown on) one specific row's hint.
-    { note = "None = nothing\nExperimental = live check only\nRoster = name list only\nBoth = Experimental + Roster" },
+    -- Labeled "DPS", not "Damage Dealer", specifically here (unlike the
+    -- roster category label, which stays "Damage Dealer") - kept short so
+    -- it's close to the same length as Priest/Tank/Boss below, which
+    -- keeps all four rows' Preview buttons in one aligned column instead
+    -- of each sitting wherever its own label happens to end.
     { field = "PriestDetectionMode", label = "Priest death sound", sound = "priestDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Live check: class = PRIEST." },
-    { field = "MeleeDetectionMode", label = "Damage Dealer death sound", sound = "meleeDeath",
+    { field = "MeleeDetectionMode", label = "DPS death sound", sound = "meleeDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Live check: melee-capable class. Roster: ranged OK too." },
     { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
@@ -66,6 +67,10 @@ local SOUND_CHECKBOXES = {
     { field = "BossDetectionMode", label = "Boss death sound", sound = "bossDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Live check: live classification (worldboss)." },
+    -- The None/Experimental/Roster/Both explanation applies to all four
+    -- dropdowns above - a note row below them, rather than above (tried
+    -- first, but a note explaining rows already past it read backwards).
+    { note = "None = nothing\nExperimental = live check only\nRoster = name list only\nBoth = Experimental + Roster" },
 }
 
 local soundFrame

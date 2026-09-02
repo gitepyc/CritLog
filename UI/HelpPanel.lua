@@ -12,20 +12,11 @@ local function buildHelpFrame()
     heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     heading:SetText("Commands")
 
-    -- In-game reported: no way to close this panel. BasicFrameTemplateWithInset's
-    -- built-in corner X and Escape (via createPanelFrame's escape-stack
-    -- registration) should already both close it like every other panel -
-    -- this button is a visible, unambiguous way out regardless of what's
-    -- actually wrong with those, until the real cause is confirmed.
-    local closeButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-    closeButton:SetSize(70, 20)
-    closeButton:SetText("Close")
-    closeButton:SetNormalFontObject("GameFontNormalSmall")
-    closeButton:SetHighlightFontObject("GameFontHighlightSmall")
-    closeButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -14, -28)
-    closeButton:SetScript("OnClick", function()
-        f:Hide()
-    end)
+    -- In-game reported: no way to close this panel; the button was also
+    -- reported as being in the wrong spot (top-right) - moved to
+    -- bottom-center via the shared helper (also used by the Highscore
+    -- List and Roster Settings popups now, for consistency).
+    CritLog.UI.createCloseButton(f)
 
     -- Built once at creation, not re-laid-out on refresh: the command
     -- list is static, unlike the highscore/roster panels' data.
