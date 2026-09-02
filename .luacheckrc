@@ -24,6 +24,9 @@ stds.wow = {
         "C_NamePlate",
         -- Options.lua: parent frame for the standalone options panel
         "UIParent",
+        -- Options.lua: registers both panels so Escape closes them
+        "UISpecialFrames",
+        "tinsert",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned

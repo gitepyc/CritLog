@@ -251,6 +251,10 @@ local function createPanelFrame(name, title, width, height)
         CritLog:RefreshOptionsPanel()
     end)
     f:Hide()
+    -- Standard WoW convention: any frame name listed here gets closed by
+    -- Escape before the game menu opens, same as Blizzard's own frames and
+    -- practically every other addon's options window.
+    tinsert(UISpecialFrames, name)
     return f
 end
 
