@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.7.4-dev
+
+- fix: toggle-row tooltips reported still not showing - root cause was our own options panels sitting on TOOLTIP frame strata, competing with GameTooltip itself; panels now use FULLSCREEN (matching TitanCritLine's settings panel), tooltip code back to the plain TitanCritLine pattern
+
 ## 0.7.3-dev
 
 - fix: toggle-row tooltips reported still not showing - anchor now matches TitanCritLine's proven pattern, plus explicit EnableMouse
