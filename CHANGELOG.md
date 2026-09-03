@@ -10,6 +10,8 @@ commit message/PR, not here.
 ## 0.7.4-dev
 
 - fix: toggle-row tooltips reported still not showing - root cause was our own options panels sitting on TOOLTIP frame strata, competing with GameTooltip itself; panels now use FULLSCREEN (matching TitanCritLine's settings panel), tooltip code back to the plain TitanCritLine pattern
+- feature: Death Sounds dropdown order now matches Roster Settings (DPS, Tank, Healer, Boss)
+- feature: dropdown hints say "Experimental:" instead of "Live check:", matching the mode's actual name
 
 ## 0.7.3-dev
 
