@@ -21,3 +21,24 @@ jobs:
 
       - name: Package and release
         uses: BigWigsMods/packager@v2
+
+      # packager's manual-changelog (.pkgmeta) dumps the entire CHANGELOG.md
+      # into the release body it just created - every -dev iteration ever
+      # tagged, not just this one. Overwrites that body with just the
+      # latest version's own section, hard-capped as a safety net in case
+      # one section itself gets too long. Doesn't touch what ships inside
+      # the zip - CHANGELOG.md there stays the full file, this is release
+      # notes only.
+      - name: Trim release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MAX_CHARS=4000
+          awk '/^## / { c++ } c <= 1 { print }' CHANGELOG.md > /tmp/release-notes.md
+          if [ "$(wc -c < /tmp/release-notes.md)" -gt "$MAX_CHARS" ]; then
+            head -c "$MAX_CHARS" /tmp/release-notes.md > /tmp/release-notes.trunc.md
+            printf '\n\n…truncated - see the full changelog: %s/blob/main/CHANGELOG.md\n' \
+              "${{ github.server_url }}/${{ github.repository }}" >> /tmp/release-notes.trunc.md
+            mv /tmp/release-notes.trunc.md /tmp/release-notes.md
+          fi
+          gh release edit "${{ github.ref_name }}" --notes-file /tmp/release-notes.md --repo "${{ github.repository }}"
