@@ -1,5 +1,5 @@
 -- Main options panel (/cl options): crit-tracking behavior that isn't about
--- sound at all, plus buttons into the Sound/Roster Settings panels and the
+-- sound at all, plus buttons into the Sound Settings/Help panels and the
 -- Highscore List popup. Label wording is lifted from Commands.lua's
 -- printHelp()/printConfig() so the panel doesn't introduce new terminology
 -- for the same settings.
@@ -218,10 +218,11 @@ end
 local function buildFrame()
     -- Tall enough for the header block, the Highscore List button, the 2
     -- crit-tracking toggle rows (each with its own hint line underneath),
-    -- and the Sound Settings/Roster Settings/Help button row. Widened from
-    -- 420 so a long spell/target name in a highscore line has room before
-    -- running into that row's Reset button.
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 500)
+    -- and the Sound Settings/Help button row (Roster Settings moved to the
+    -- Death Sounds panel, so this is back to a single row - see
+    -- CHANGELOG.md). Widened from 420 so a long spell/target name in a
+    -- highscore line has room before running into that row's Reset button.
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 470)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -285,25 +286,16 @@ local function buildFrame()
         CritLog:ShowSoundOptions()
     end)
 
-    local rosterButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-    rosterButton:SetSize(140, 24)
-    rosterButton:SetText("Roster Settings...")
-    rosterButton:SetNormalFontObject("GameFontNormalSmall")
-    rosterButton:SetHighlightFontObject("GameFontHighlightSmall")
-    rosterButton:SetPoint("LEFT", soundButton, "RIGHT", 8, 0)
-    rosterButton:SetScript("OnClick", function()
-        CritLog:ShowRoster()
-    end)
-
-    -- Own row below Sound/Roster Settings rather than a third button
-    -- squeezed into the same row - two 140px buttons already use most of
-    -- this panel's 470px width.
+    -- Roster Settings moved to the Death Sounds panel (it's only relevant
+    -- to the melee/tank/heal roster fallback used there, not to anything
+    -- else on this main panel) - just Sound Settings and Help remain here,
+    -- side by side on one row.
     local helpButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     helpButton:SetSize(140, 24)
     helpButton:SetText("Help...")
     helpButton:SetNormalFontObject("GameFontNormalSmall")
     helpButton:SetHighlightFontObject("GameFontHighlightSmall")
-    helpButton:SetPoint("TOPLEFT", soundButton, "BOTTOMLEFT", 0, -8)
+    helpButton:SetPoint("LEFT", soundButton, "RIGHT", 8, 0)
     helpButton:SetScript("OnClick", function()
         CritLog:ShowHelp()
     end)

@@ -180,8 +180,8 @@ configuration file:
 The melee/tank/heal death-sound rosters are seeded from
 `Persistence/Database.lua` once, then live in `CritLogDB.playerGroups` per
 character — editable via
-`/cl options` → "Roster Settings..." (Add/Remove per category), not just a
-fallback for the live class/role check anymore.
+`/cl options` → "Death Sounds..." → "Roster Settings..." (Add/Remove per
+category), not just a fallback for the live class/role check anymore.
 
 ## Known technical issues and risks
 
