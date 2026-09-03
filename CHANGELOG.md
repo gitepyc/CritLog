@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.8.2-dev
+
+- feature: Help panel's About/credits line now anchored to the bottom of the panel itself (centered, just above the Close button) instead of chained below the content above
+
 ## 0.9.8.1-dev
 
 - fix: Roll Sounds button overflowed past the panel's right edge and sat awkwardly on its own row - now sized/positioned like a Preview button, same row as the RollSoundFlag checkbox

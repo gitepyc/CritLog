@@ -94,16 +94,19 @@ local function buildHelpFrame()
     -- height either way) - full width again below both columns, same
     -- pattern UI/AuraSoundPanel.lua's note row uses ahead of its own two
     -- columns, just reversed (here it's after).
-    local deathSoundsBottom, deathOffset = buildSection(
-        f, "Death Sounds", CritLog.Constants.helpDeathSounds, leftBottom, leftOffset
-    )
+    buildSection(f, "Death Sounds", CritLog.Constants.helpDeathSounds, leftBottom, leftOffset)
 
-    -- Pushed further down and a touch brighter than the dim description
-    -- text elsewhere (GameFontHighlightSmall, not GameFontDisableSmall) -
-    -- in-game requested: should read as its own little credits footer,
-    -- not just another row, but without being loud about it.
+    -- Anchored to the panel's own bottom edge instead of chained below
+    -- Death Sounds - in-game requested "all the way down, but still above
+    -- the Close button" (which sits at y=14 from the bottom, 22 tall, so
+    -- its top edge is at y=36 - 44 leaves it a small gap above that).
+    -- Centered rather than left-aligned like the rest of the panel, which
+    -- also reads as a distinct footer rather than another content row.
+    -- Anchoring to the panel directly (not the content above) means this
+    -- always sits at the same fixed spot regardless of how tall the
+    -- sections above happen to be.
     local aboutText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    aboutText:SetPoint("TOPLEFT", deathSoundsBottom, "BOTTOMLEFT", deathOffset, -36)
+    aboutText:SetPoint("BOTTOM", f, "BOTTOM", 0, 44)
     aboutText:SetText(CritLog.Constants.helpAbout)
 
     return f
