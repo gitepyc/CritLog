@@ -69,10 +69,14 @@ local PLAYER_GROUPS_DEFAULTS = {
         "Truffi", "Gradba", "Zoiy",
     },
     tank = { "Truby", "Ketamartin", "Hïnatahÿuuga", "Kîtten" },
-    priest = { "Ilenkov", "Epyç" },
+    -- Key is `heal`, not `priest` (see migratePriestToHeal below for the
+    -- rename of an already-existing character's data) - this seed only
+    -- ever runs for a brand-new install, which always gets the current
+    -- key name directly.
+    heal = { "Ilenkov", "Epyç" },
 }
 
--- One-time migration: copies PLAYER_GROUPS_DEFAULTS (melee/tank/priest name
+-- One-time migration: copies PLAYER_GROUPS_DEFAULTS (melee/tank/heal name
 -- rosters, previously code-only) into CritLogDB, so they're editable per
 -- character via the options panel. Guarded on CritLogDB.playerGroups itself
 -- (not the schema version) so it runs exactly once regardless of which
@@ -127,7 +131,7 @@ local function migrateToRecordLists()
     end
 end
 
--- One-time migration: the melee/tank/priest/boss death sounds used to be a
+-- One-time migration: the melee/tank/heal/boss death sounds used to be a
 -- plain on/off flag; now each is a 4-way mode ("none"/"experimental"/
 -- "roster"/"both", see Core/Constants.lua's detectionModes and Core/
 -- Filters.lua's matchesDetectionMode). Guarded per-category on the new
@@ -135,12 +139,16 @@ end
 -- "both" (live check with roster fallback, the original default
 -- behavior), false becomes "none". Reads the old flag rather than a
 -- hardcoded default so an existing character who had e.g. tank sounds
--- turned off keeps them off after upgrading.
+-- turned off keeps them off after upgrading. Run after migratePriestToHeal
+-- below, so HealDetectionMode already has any pre-existing
+-- PriestDetectionMode value by the time this runs - PriestSoundFlag here
+-- is only the oldest generation's fallback (a character that never even
+-- reached the PriestDetectionMode era).
 local function migrateDetectionModes()
     local categories = {
         { mode = "MeleeDetectionMode", oldFlag = "MeleeSoundFlag" },
         { mode = "TankDetectionMode", oldFlag = "TankSoundFlag" },
-        { mode = "PriestDetectionMode", oldFlag = "PriestSoundFlag" },
+        { mode = "HealDetectionMode", oldFlag = "PriestSoundFlag" },
         { mode = "BossDetectionMode", oldFlag = "BossSoundFlag" },
     }
     for _, category in ipairs(categories) do
@@ -148,6 +156,32 @@ local function migrateDetectionModes()
             CritLogDB[category.mode] = CritLogDB[category.oldFlag] and "both" or "none"
         end
     end
+end
+
+-- One-time migration: PriestDetectionMode/playerGroups.priest renamed to
+-- HealDetectionMode/playerGroups.heal for naming consistency - healer
+-- detection became role-based (any class) rather than Priest-class-based,
+-- so keeping "Priest" in the field/key name was misleading (see
+-- CHANGELOG.md). Guarded on the new name being nil, not the old one's
+-- absence, so this runs exactly once regardless of what an upgrading
+-- character already has. Must run before migrateDetectionModes above, so
+-- a character that already has a real PriestDetectionMode value (not just
+-- the oldest PriestSoundFlag boolean) carries it forward instead of that
+-- migration falling back to the boolean. The old names are cleared here
+-- rather than left as orphaned clutter, unlike some other superseded
+-- fields in DEFAULTS above - those are still read as a migration source by
+-- name elsewhere, these two are not (nothing reads
+-- PriestDetectionMode/playerGroups.priest ever again after this point).
+local function migratePriestToHeal()
+    if CritLogDB.HealDetectionMode == nil and CritLogDB.PriestDetectionMode ~= nil then
+        CritLogDB.HealDetectionMode = CritLogDB.PriestDetectionMode
+    end
+    CritLogDB.PriestDetectionMode = nil
+
+    if CritLogDB.playerGroups.heal == nil and CritLogDB.playerGroups.priest ~= nil then
+        CritLogDB.playerGroups.heal = CritLogDB.playerGroups.priest
+    end
+    CritLogDB.playerGroups.priest = nil
 end
 
 function CritLog:SetDefaults()
@@ -169,6 +203,7 @@ function CritLog:SetDefaults()
 
     migratePlayerGroups()
     migrateToRecordLists()
+    migratePriestToHeal()
     migrateDetectionModes()
 
     if initialized then
@@ -215,7 +250,7 @@ function CritLog:ResetRecords()
     end
 end
 
--- Adds a name to a roster category (melee/tank/priest) if it's non-empty
+-- Adds a name to a roster category (melee/tank/heal) if it's non-empty
 -- and not already present. Returns true on success, false if rejected -
 -- the options panel uses that to decide whether to clear the input box.
 function CritLog:AddRosterName(kind, name)

@@ -5,7 +5,7 @@
 --
 -- Two groups of rows used to live here directly and grew this panel too
 -- tall: the 13 individual aura/ritual sounds (now UI/AuraSoundPanel.lua)
--- and the player/priest/DPS/tank/boss death-sound block (now
+-- and the player/heal/DPS/tank/boss death-sound block (now
 -- UI/DeathSoundPanel.lua) - see CHANGELOG.md. What's left here is just the
 -- general toggles plus the two buttons to reach those panels.
 local SOUND_CHECKBOXES = {

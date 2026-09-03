@@ -1,7 +1,7 @@
 -- Roster Settings panel, opened via the main panel's button. Editable copy
--- of the melee/tank/priest death-sound name rosters (CritLogDB.playerGroups,
+-- of the melee/tank/heal death-sound name rosters (CritLogDB.playerGroups,
 -- migrated once from a code-only seed - see Persistence/Database.lua).
-local ROSTER_ORDER = { "melee", "tank", "priest" }
+local ROSTER_ORDER = { "melee", "tank", "heal" }
 
 local rosterFrame
 

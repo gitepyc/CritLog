@@ -447,7 +447,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- UnitGroupRolesAssigned() aren't guaranteed nil for NPCs (some enemy
     -- units carry a class internally for combat/AI purposes), which let
     -- enemy deaths in instances - a Necromancer trash mob at Mount Hyjal,
-    -- reported in-game - wrongly trigger the melee/tank/priest death
+    -- reported in-game - wrongly trigger the melee/tank/heal death
     -- sounds. Nilling it here makes every check below fall back to the
     -- name roster exactly like an unresolved token already does.
     if token and not UnitIsPlayer(token) then
@@ -463,7 +463,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         role = UnitGroupRolesAssigned(token)
     end
 
-    -- The live class/role checks below (melee/tank/priest, and Spirit of
+    -- The live class/role checks below (melee/tank/heal, and Spirit of
     -- Redemption) are gated on group membership - without this, any player
     -- death that happens to resolve a unit token (e.g. an enemy player in
     -- PvP, or an unrelated player on a visible nameplate) could trigger
@@ -511,29 +511,30 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- your group at that earlier point, so the check happens here instead.
     local hasSpiritBuff = spiritOfRedemptionGuids[destGUID] and isGroupMember
 
-    -- Healer death (PriestDetectionMode, unchanged field name - only the
-    -- UI label changed from "Priest" to "Healer", same as the DPS/"Melee"
-    -- rename before it) and Spirit of Redemption used to share one gate,
-    -- with the buff-apply cache above only deciding which file played -
-    -- meaning you couldn't hear one without the other, and in practice
-    -- couldn't tell them apart anyway since both point at the same file.
-    -- Now independent, AND the live check itself changed: Healer death
-    -- used to require class PRIEST, same as Spirit; now it matches the
-    -- assigned Healer role instead (isAssignedHealer, same pattern as
-    -- isAssignedTank) - a Holy Paladin/Resto Druid/Resto Shaman death
-    -- counts here exactly like a Priest's. Spirit of Redemption is the one
-    -- case that still needs isPriestClass specifically, since the talent
-    -- itself is Priest-only, unlike the Healer role. Spirit is a plain
-    -- on/off flag (SpiritSoundFlag), not a 4-way detection mode - there is
-    -- no roster/name-list equivalent for "this priest had Spirit of
-    -- Redemption go off", the buff-apply cache is the only signal that
-    -- exists at all.
+    -- Healer death (CritLogDB.HealDetectionMode, renamed from
+    -- PriestDetectionMode - see CHANGELOG.md and
+    -- Persistence/Database.lua's migratePriestToHeal) and Spirit of
+    -- Redemption used to share one gate, with the buff-apply cache above
+    -- only deciding which file played - meaning you couldn't hear one
+    -- without the other, and in practice couldn't tell them apart either,
+    -- since both used to point at the same file (they no longer do, see
+    -- Core/Constants.lua). Now independent, AND the live check itself
+    -- changed: Healer death used to require class PRIEST, same as Spirit;
+    -- now it matches the assigned Healer role instead (isAssignedHealer,
+    -- same pattern as isAssignedTank) - a Holy Paladin/Resto Druid/Resto
+    -- Shaman death counts here exactly like a Priest's. Spirit of
+    -- Redemption is the one case that still needs isPriestClass
+    -- specifically, since the talent itself is Priest-only, unlike the
+    -- Healer role. Spirit is a plain on/off flag (SpiritSoundFlag), not a
+    -- 4-way detection mode - there is no roster/name-list equivalent for
+    -- "this priest had Spirit of Redemption go off", the buff-apply cache
+    -- is the only signal that exists at all.
     if not hasSpiritBuff and matchesMode(
-        CritLogDB.PriestDetectionMode,
+        CritLogDB.HealDetectionMode,
         token and isGroupMember and CritLog.Filters.isAssignedHealer(role),
-        tContains(CritLogDB.playerGroups.priest, destName)
+        tContains(CritLogDB.playerGroups.heal, destName)
     ) then
-        self:PlaySound(self.Constants.sounds.priestDeath)
+        self:PlaySound(self.Constants.sounds.healDeath)
     end
 
     if hasSpiritBuff and CritLogDB.SpiritSoundFlag and CritLog.Filters.isPriestClass(class) then

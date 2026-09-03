@@ -6,6 +6,27 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.13-dev
+
+- Renamed `PriestDetectionMode`/`CritLogDB.playerGroups.priest` to
+  `HealDetectionMode`/`playerGroups.heal` for naming consistency, now that
+  the underlying check is role-based (`isAssignedHealer`) rather than
+  Priest-specific (see `0.6.12-dev`) - the old "Priest" name was
+  misleading once a Holy Paladin/Resto Druid/Resto Shaman could trigger
+  it too. One-time migration (`migratePriestToHeal` in
+  `Persistence/Database.lua`) carries an existing character's value/roster
+  over and clears the old names; `isPriestClass`/`deathClasses.priest`
+  (genuinely Priest-class-specific, used only by Spirit of Redemption) are
+  intentionally left alone.
+- Sidequest: gave Spirit of Redemption its own sound file
+  (`Angels2.mp3`) instead of sharing `Angels.mp3` with the plain healer
+  death sound. Restored from the legacy addon's sound folder, which
+  originally alternated randomly between `Angels1.mp3`/`Angels2.mp3` for
+  the same trigger; the `0.4.0` cleanup that removed random multi-clip
+  selection kept only `Angels1.mp3` (as `Angels.mp3`) and dropped
+  `Angels2.mp3` - reused here now that the two triggers are independently
+  toggleable and it's worth being able to tell them apart by ear.
+
 ## 0.6.12-dev
 
 - Split "Priest death sound" into two independent triggers: "Healer death

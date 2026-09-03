@@ -90,7 +90,7 @@ function CritLog.Filters.isBossClassification(classification)
         and tContains(CritLog.Constants.bosses.classifications, classification)
 end
 
--- Decides whether a melee/tank/priest/boss death sound should play, given
+-- Decides whether a melee/tank/heal/boss death sound should play, given
 -- the selected detection mode and the two already-computed match results
 -- (live class/role/classification check, and name-roster check). "none"
 -- (or any unrecognized value) always returns false - deliberately fails

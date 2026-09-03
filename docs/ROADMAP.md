@@ -33,7 +33,7 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    Core/Persistence/UI layout rather than merged as-is (that branch
    predated the `0.4.6-dev` restructure). Not yet in-game verified.
 3. ~~SavedVariables-backed player-role configuration~~ - done and in-game
-   confirmed for the melee/tank/priest rosters: `CritLogDB.playerGroups`,
+   confirmed for the melee/tank/heal rosters: `CritLogDB.playerGroups`,
    editable via `/cl options` → "Roster Settings..." (Add/Remove, plus
    inline rename with OK/Reset per row, added in `0.5.0`). The boss name
    lists (`CritLog.Constants.bosses`) are still code-only, not scoped for

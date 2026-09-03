@@ -7,7 +7,7 @@ auras, and raid-leader chat triggers.
 > **Project status:** Working legacy addon under active documentation and
 > modernization. CritLog `0.5.0` targets Season of Discovery on Classic Era
 > `1.15.9` (Interface `11509`). The options panel, the Escape-key behavior,
-> and editable melee/tank/priest rosters are now in-game confirmed; the
+> and editable melee/tank/heal rosters are now in-game confirmed; the
 > class/role-based death-sound detection for tank/boss specifically and
 > Spirit of Redemption are not yet — see [CHANGELOG.md](CHANGELOG.md) for
 > the versioned list.
@@ -105,7 +105,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: melee-capable class, not flagged Healer - the roster/name-list side isn't melee-only, ranged DPS names belong there too. |
 | `/cl tank` | Same toggle, for the tank death sound. Live check: assigned raid Tank role. |
 | `/cl healer` | Same toggle, for the healer death sound. Live check: assigned raid Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). Excludes a death delayed by Spirit of Redemption - see `/cl spirit`. |
-| `/cl spirit` | Toggles the Spirit of Redemption sound (a Priest's death delayed ~15s by the talent - Priest-only, unlike `/cl healer` above). Independent of `/cl healer` - plain on/off, not a detection mode; there's no roster equivalent for "this death was Spirit-delayed". |
+| `/cl spirit` | Toggles the Spirit of Redemption sound (a Priest's death delayed ~15s by the talent - Priest-only, unlike `/cl healer` above; own sound file, not shared with the plain healer death sound). Independent of `/cl healer` - plain on/off, not a detection mode; there's no roster equivalent for "this death was Spirit-delayed". |
 | `/cl boss` | Same toggle, for the boss death sound. Live check: `UnitClassification` (`worldboss`). |
 
 ## Repository layout
@@ -136,7 +136,7 @@ critlog/
 │   ├── MainPanel.lua     # Crit-tracking panel + Highscore List popup
 │   ├── SoundPanel.lua    # Sound Settings panel
 │   ├── AuraSoundPanel.lua # Aura Sounds panel (13 aura/ritual sounds, opened from Sound Settings)
-│   ├── DeathSoundPanel.lua # Death Sounds panel (player + priest/DPS/tank/boss, opened from Sound Settings)
+│   ├── DeathSoundPanel.lua # Death Sounds panel (player + heal/DPS/tank/boss, opened from Sound Settings)
 │   ├── RosterPanel.lua   # Roster Settings panel
 │   └── HelpPanel.lua     # Help panel - lists every slash command
 ├── Sounds.lua            # Sound playback helpers
@@ -163,7 +163,7 @@ on every tag push, matching what manual installation above does by hand.
 
 The following data is centralized in `Core/Constants.lua`. The options panel
 (`/cl options`) can toggle whether each feature fires at all, and the
-melee/tank/priest name rosters are now editable too (see below) — everything
+melee/tank/heal name rosters are now editable too (see below) — everything
 else in this list is still code-only, not editable through the panel or a
 configuration file:
 
@@ -177,7 +177,7 @@ configuration file:
 - a nine-level threshold for relevant damage targets
 - defaults for all feature toggles
 
-The melee/tank/priest death-sound rosters are seeded from
+The melee/tank/heal death-sound rosters are seeded from
 `Persistence/Database.lua` once, then live in `CritLogDB.playerGroups` per
 character — editable via
 `/cl options` → "Roster Settings..." (Add/Remove per category), not just a
