@@ -19,6 +19,12 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
   editable source, excluded from the packaged zip via `.pkgmeta` - only
   the PNG ships. Not yet in-game confirmed that Classic Era's AddOns list
   actually renders it.
+- Fixed: the toggle-row tooltips added earlier this version never showed
+  in-game at all. Every options panel deliberately sits on `TOOLTIP` frame
+  strata (to stay above other addons); GameTooltip defaults to that same
+  strata, and our own panel could end up rendering on top of it. Fixed by
+  explicitly bumping GameTooltip's strata/level above the hovered control
+  each time it's shown.
 
 ## 0.7.0
 
