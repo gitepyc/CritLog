@@ -47,6 +47,7 @@ stds.wow = {
         -- TitanPanel status-bar button (feature/titan-panel-integration)
         "IsAddOnLoaded",
         "TitanPanelButton_OnClick",
+        "TitanPanelButton_UpdateButton",
         "Titan_Menu",
     },
     globals = {

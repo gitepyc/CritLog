@@ -223,3 +223,20 @@ function CritLog:InitTitanPanelButton()
         TitanPanelButton_OnClick(clickedButton, mouseButton)
     end)
 end
+
+-- Called from Persistence/Database.lua's AddRecord whenever a crit gets
+-- recorded, so the button's own text (CritLogTitan_GetButtonText, the
+-- current top score per category) actually refreshes. In-game reported:
+-- a new crit updated the hover tooltip (rebuilt fresh every time it's
+-- shown) but the button text itself stayed on its initial "-/-/-"
+-- placeholder forever - Titan doesn't poll buttonTextFunction on its own,
+-- it only re-invokes it when explicitly told to via
+-- TitanPanelButton_UpdateButton (verified against the real Titan Panel
+-- 9.3.2 source, same as everything else in this file). No-op if the
+-- button was never created (Titan not installed), same guard
+-- InitTitanPanelButton uses.
+function CritLog:RefreshTitanPanelButton()
+    if _G.TitanPanelCritLogButton then
+        TitanPanelButton_UpdateButton("CritLog")
+    end
+end

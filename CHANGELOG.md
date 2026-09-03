@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.8.3-dev
+
+- fix: TitanPanel button text never updated after a new crit (stayed on "-/-/-" forever, even though the hover tooltip showed the correct data) - Titan doesn't refresh button text on its own, now explicitly told to via `TitanPanelButton_UpdateButton` whenever a highscore is recorded
+
 ## 0.9.8.2-dev
 
 - feature: Help panel's About/credits line now anchored to the bottom of the panel itself (centered, just above the Close button) instead of chained below the content above

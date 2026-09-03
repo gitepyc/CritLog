@@ -253,6 +253,11 @@ function CritLog:AddRecord(kind, amount, name, target)
     while #list > self.Constants.maxTrackedEntries do
         table.remove(list)
     end
+
+    -- See UI/TitanButton.lua's RefreshTitanPanelButton - a no-op unless
+    -- the optional Titan button exists, needed because Titan doesn't
+    -- refresh its button text on its own.
+    self:RefreshTitanPanelButton()
 end
 
 -- Removes a single entry from a category's list by its position (1 =
