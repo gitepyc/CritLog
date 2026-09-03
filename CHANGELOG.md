@@ -9,6 +9,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.2](https://github.com/gitepyc/CritLog/tree/0.3.2) (2026-09-03)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.1...0.3.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** share colored highscore formatting between TitanPanel tooltip and options panel, retune color palette, shrink Help panel
+
+- **tweak:** move Debug mode below the Options group, render it smaller
+
 ## [0.3.1](https://github.com/gitepyc/CritLog/tree/0.3.1) (2026-09-03)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.0...0.3.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
