@@ -40,6 +40,9 @@ stds.wow = {
         "DropDownList2",
         -- UI/MainPanel.lua: confirmation dialog before Reset All
         "StaticPopup_Show",
+        -- UI/Shared.lua: hover tooltip for each toggle row, replacing the
+        -- static hint line underneath (feature/toggle-row-tooltips)
+        "GameTooltip",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned

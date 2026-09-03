@@ -87,13 +87,36 @@ local checkboxesByField = {}
 -- (entries with `options` instead of a plain boolean flag).
 local dropdownsByField = {}
 
+-- Shows `text` in GameTooltip while the mouse is over `control` - shared by
+-- checkbox and dropdown rows below, replacing the static hint line that
+-- used to sit underneath every row (see CHANGELOG.md,
+-- feature/toggle-row-tooltips). An earlier attempt at this apparently
+-- didn't show reliably in-game because the checkbox's own hit area is tiny
+-- and easy to miss with the mouse - see the SetHitRectInsets calls at each
+-- call site, which grow the hit area out to cover the row's label too so
+-- hovering the text works, not just the control itself.
+local function attachTooltip(control, text)
+    if not text then
+        return
+    end
+
+    control:HookScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(text, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    control:HookScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+end
+
 local function createDropdownRow(parent, entry, previous, previousXOffset)
     -- UIDropDownMenuTemplate's clickable texture extends ~16px left of the
     -- frame's own left edge, so this is nudged left to keep the control
     -- itself visually lined up with the checkboxes in the rows above/below
     -- it - approximate, not pixel-verified in-game yet.
     local dropdown = CreateFrame("Frame", "CritLogOptions"..entry.field, parent, "UIDropDownMenuTemplate")
-    dropdown:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset - 16, -4)
+    dropdown:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset - 16, -8)
     UIDropDownMenu_SetWidth(dropdown, 110)
 
     -- Reported in-game: clicking the dropdown showed no menu at all. The
@@ -151,19 +174,22 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
         previewButton:SetPoint("LEFT", dropdown, "LEFT", 340 + 16, 0)
     end
 
-    local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    hint:SetPoint("TOPLEFT", dropdown, "BOTTOMLEFT", 20, -2)
-    hint:SetText(entry.hint)
+    attachTooltip(dropdown, entry.hint)
+    -- SetHitRectInsets(left, right, top, bottom) - a negative value grows
+    -- the hit area outward instead of shrinking it, so this extends the
+    -- dropdown's hit rect rightward to cover its own label too.
+    dropdown:SetHitRectInsets(0, -(label:GetStringWidth() + 8), 0, 0)
 
-    return hint
+    return dropdown
 end
 
 -- Shared row-building loop for every panel: a checkbox (or, for an entry
 -- with `options`, a dropdown - see createDropdownRow above), its label, an
--- optional preview button, and a static hint line underneath (used instead
--- of a hover tooltip - GameTooltip on the checkbox didn't reliably show
--- in-game, small hit area, easy to miss). Returns the last anchor region
--- and its x-offset so the caller can keep chaining further content below.
+-- optional preview button, and a `entry.hint` shown as a hover tooltip via
+-- attachTooltip above instead of a static line underneath the row (see
+-- CHANGELOG.md, feature/toggle-row-tooltips). Returns the last anchor
+-- region and its x-offset so the caller can keep chaining further content
+-- below.
 --
 -- `sound` on an entry is a key into CritLog.Constants.sounds and gets a
 -- "Preview" button on that row; flags with no sound of their own get none.
@@ -176,15 +202,14 @@ end
 function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     local previous = startAnchor
     -- 0 for the first row: startAnchor (a section heading) has no x-indent
-    -- quirk to cancel. Every row after that anchors to the PREVIOUS row's
-    -- hint line, which sits +4px right of its own checkbox - so from the
-    -- second row on this needs to be -4, or each row would drift 4px
-    -- further right than the last (a growing staircase, not a one-time
-    -- shift). `indent` rows add a further, one-time +20 on top of that for
-    -- themselves, then subtract the same +20 back out of what they hand to
-    -- the next row - so indentation doesn't compound across consecutive
-    -- indented rows, and a normal row right after an indented block lands
-    -- back at the same column as if the indent never happened.
+    -- quirk to cancel. Every row after that anchors directly to the
+    -- PREVIOUS row's own control (checkbox/dropdown), not to a hint line
+    -- underneath it anymore - so there's no fixed per-row drift to cancel
+    -- out here. `indent` rows add a further, one-time +20 on top of that
+    -- for themselves, then subtract the same +20 back out of what they
+    -- hand to the next row - so indentation doesn't compound across
+    -- consecutive indented rows, and a normal row right after an indented
+    -- block lands back at the same column as if the indent never happened.
     local previousXOffset = 0
 
     for _, entry in ipairs(checkboxes) do
@@ -202,7 +227,10 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             previousXOffset = 0
         elseif entry.options then
             previous = createDropdownRow(parent, entry, previous, previousXOffset)
-            previousXOffset = -4
+            -- Cancels the -16 nudge createDropdownRow applies to the
+            -- dropdown itself, so a row anchored below it lands back in the
+            -- normal checkbox column instead of drifting 16px left.
+            previousXOffset = 16
         else
             local indent = entry.indent and 20 or 0
             local checkSize = entry.indent and 20 or 26
@@ -210,7 +238,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
 
             local check = CreateFrame("CheckButton", "CritLogOptions"..entry.field, parent, "UICheckButtonTemplate")
             check:SetSize(checkSize, checkSize)
-            check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset + indent, -4)
+            check:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset + indent, -10)
             -- Hook rather than replace OnClick, so the template's default
             -- click sound still plays; GetChecked() returns 1/nil on some
             -- clients, so normalize to a real boolean before writing it
@@ -232,12 +260,17 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
                 previewButton:SetPoint("LEFT", check, "LEFT", 340 - indent, 0)
             end
 
-            local hint = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-            hint:SetPoint("TOPLEFT", check, "BOTTOMLEFT", 4, -2)
-            hint:SetText(entry.hint)
+            attachTooltip(check, entry.hint)
+            -- SetHitRectInsets(left, right, top, bottom) - a negative value
+            -- grows the hit area outward instead of shrinking it, so this
+            -- extends the checkbox's hit rect rightward to cover its own
+            -- label too (fixes the "small hit area, easy to miss" problem
+            -- an earlier tooltip attempt apparently ran into - see
+            -- attachTooltip's comment above).
+            check:SetHitRectInsets(0, -(label:GetStringWidth() + 8), 0, 0)
 
-            previous = hint
-            previousXOffset = -4 - indent
+            previous = check
+            previousXOffset = -indent
         end
     end
 
