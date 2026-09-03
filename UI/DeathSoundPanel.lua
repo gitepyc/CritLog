@@ -28,12 +28,21 @@ local DEATH_CHECKBOXES = {
     -- tank/boss/heal specifically (melee's false-positive bug is fixed
     -- and confirmed); "Roster" and "Both" (the original default) aren't
     -- affected by that.
+    --
+    -- Order matches UI/RosterPanel.lua's ROSTER_ORDER (melee/dmg, tank,
+    -- heal) - Boss has no roster category, so it stays last regardless.
+    --
     -- Labeled "DPS", not "Damage Dealer", specifically here (unlike the
     -- roster category label, which stays "Damage Dealer") - kept short so
     -- it's close to the same length as Healer/Tank/Boss below, which
     -- keeps all four rows' Preview buttons in one aligned column instead
     -- of each sitting wherever its own label happens to end.
-    --
+    { field = "MeleeDetectionMode", label = "DPS death sound", sound = "meleeDeath",
+      options = CritLog.Constants.detectionModes,
+      hint = "Experimental: melee-capable class. Roster: ranged OK too." },
+    { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
+      options = CritLog.Constants.detectionModes,
+      hint = "Experimental: assigned raid Tank role." },
     -- Field renamed HealDetectionMode (was PriestDetectionMode - see
     -- Persistence/Database.lua's migratePriestToHeal) once the live check
     -- stopped being Priest-specific: it now reads the assigned raid
@@ -44,19 +53,15 @@ local DEATH_CHECKBOXES = {
     -- now, no cross-reference needed.
     { field = "HealDetectionMode", label = "Healer death sound", sound = "healDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Live check: assigned raid Healer role." },
-    { field = "MeleeDetectionMode", label = "DPS death sound", sound = "meleeDeath",
-      options = CritLog.Constants.detectionModes,
-      hint = "Live check: melee-capable class. Roster: ranged OK too." },
-    { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
-      options = CritLog.Constants.detectionModes,
-      hint = "Live check: assigned raid Tank role." },
+      hint = "Experimental: assigned raid Healer role." },
     { field = "BossDetectionMode", label = "Boss death sound", sound = "bossDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Live check: live classification (worldboss)." },
+      hint = "Experimental: live classification (worldboss)." },
     -- The None/Experimental/Roster/Both explanation applies to the four
     -- dropdowns above only - a note row after them, not before, same
-    -- reasoning as the Sound Settings panel's dropdown note.
+    -- reasoning as the Sound Settings panel's dropdown note. "Experimental"
+    -- in each row's own hint above ties back to this same word, not a
+    -- separate "live check" concept.
     { note = "None = nothing\nExperimental = live check only\nRoster = name list only\nBoth = Experimental + Roster" },
 }
 
