@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.7-dev
+
+- feature: TitanPanel tooltip amount colors retuned - orange from 4000, red from 8000 (was 5000/10000)
+
 ## 0.9.6-dev
 
 - feature: TitanPanel tooltip title changed to "CritLog Summary"

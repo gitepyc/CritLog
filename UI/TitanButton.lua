@@ -48,13 +48,14 @@ local SPELL_COLOR = "|cff69ccf0"
 local TARGET_COLOR = "|cffff8080"
 
 -- Amount colored by a rough "hotter = bigger" heat scale, in-game
--- requested ("color the number by size or something") - thresholds are a
--- reasonable guess for SoD-era numbers, not measured against real data;
--- easy to retune once someone's actually looked at it in-game.
+-- requested ("color the number by size or something"). Thresholds tuned
+-- once already (2026-09-03: orange/red moved from 5000/10000 to
+-- 4000/8000) after seeing it in-game - still just a reasonable guess, not
+-- measured against real data, easy to retune again.
 local function amountColor(amount)
-    if amount >= 10000 then
+    if amount >= 8000 then
         return "|cffff4040" -- red
-    elseif amount >= 5000 then
+    elseif amount >= 4000 then
         return "|cffff8000" -- orange
     elseif amount >= 2000 then
         return "|cffffff00" -- yellow
