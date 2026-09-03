@@ -8,26 +8,29 @@
 --
 -- Not in-game verified - nobody working on this repo has a WoW client
 -- available (see README.md's "Known technical issues and risks"). The Titan
--- Panel API surface used here (CreateFrame with "TitanPanelTextTemplate",
+-- Panel API surface used here (CreateFrame with "TitanPanelComboTemplate",
 -- TitanPanelButton_OnLoad/OnClick, the registry table shape, Titan_Menu.*
 -- for the right-click menu) is modeled directly on TitanCritLine, a
 -- separate, already-working "track your crits" Titan plugin - not guessed.
 
--- Compact "D:<dmg> W:<white> H:<heal>" line shown next to the button's icon
--- (the ROADMAP-promised "top score for damage/white-hit/heal"). A category
--- with no record yet shows "-" instead of a number, so the button has a
--- stable shape from the very first login instead of growing/shrinking as
--- categories fill in. Titan re-calls this function by name (see
--- registry.buttonTextFunction below) every time it wants to refresh the
--- button, so it always reflects the live CritLogDB.records state - nothing
--- is cached here.
+-- "CL: <dmg>/<white>/<heal>" next to the button's icon - matches
+-- TitanCritLine's own button text exactly (TITAN_CRITLINE_BUTTON_LABEL
+-- "CL: " + TITAN_CRITLINE_BUTTON_TEXT "%s/%s/%s"), in-game requested
+-- specifically instead of the longer "D:/W:/H:" first draft. Full detail
+-- moved to the hover tooltip below - this is just the at-a-glance number.
+-- A category with no record yet shows "-" instead of a number, so the
+-- button has a stable shape from the very first login instead of
+-- growing/shrinking as categories fill in. Titan re-calls this function by
+-- name (see registry.buttonTextFunction below) every time it wants to
+-- refresh the button, so it always reflects the live CritLogDB.records
+-- state - nothing is cached here.
 function CritLogTitan_GetButtonText()
     local function top(kind)
         local entry = CritLogDB.records[kind][1]
         return entry and tostring(entry.amount) or "-"
     end
 
-    return "D:"..top("damage").." W:"..top("whiteHit").." H:"..top("heal")
+    return "CL: "..top("damage").."/"..top("whiteHit").."/"..top("heal")
 end
 
 -- Full detail line per category for the hover tooltip, reusing
@@ -60,8 +63,16 @@ end
 -- has already confirmed Titan Panel is present - see Events.lua. Builds the
 -- button via a plain runtime CreateFrame call (no XML anywhere in CritLog,
 -- see README.md's repository layout) inheriting Titan's own
--- "TitanPanelTextTemplate", the same template/registry shape TitanCritLine's
--- XML-based button ultimately produces.
+-- "TitanPanelComboTemplate", the same template/registry shape TitanCritLine's
+-- XML-based button ultimately produces - TitanPanelComboTemplate specifically
+-- (not the plain TitanPanelTextTemplate the first draft used), since it's
+-- the one that actually has an icon texture region (`$parentIcon`) in
+-- addition to the text label - in-game requested: a visible icon next to
+-- the button text. Verified against the real Titan Panel 9.3.2 source
+-- (Titan/TitanTemplate.xml, Titan/TitanTemplate.lua's
+-- TitanPanelButton_SetButtonIcon): it looks up `_G[buttonName.."Icon"]`,
+-- which is nil (and silently does nothing) for TitanPanelTextTemplate -
+-- that template has no icon region at all, only ComboTemplate does.
 function CritLog:InitTitanPanelButton()
     -- In-game reported: Titan rejected registration with "Plugin 'CritLog'
     -- already loaded" - this fires if InitTitanPanelButton somehow runs
@@ -76,7 +87,7 @@ function CritLog:InitTitanPanelButton()
         return
     end
 
-    local button = CreateFrame("Button", "TitanPanelCritLogButton", UIParent, "TitanPanelTextTemplate")
+    local button = CreateFrame("Button", "TitanPanelCritLogButton", UIParent, "TitanPanelComboTemplate")
     button.registry = {
         -- Plain "CritLog", no "Titan" prefix/suffix on the id itself - see
         -- TitanCritLine's own TITAN_CRITLINE_ID ("CritLine", not
@@ -118,7 +129,8 @@ function CritLog:InitTitanPanelButton()
 
     -- No explicit TitanPanelButton_OnLoad(button) call here - verified
     -- against the real Titan Panel 9.3.2 source
-    -- (Titan/TitanTemplate.xml): "TitanPanelTextTemplate" inherits
+    -- (Titan/TitanTemplate.xml): "TitanPanelComboTemplate" (like
+    -- "TitanPanelTextTemplate" before it) inherits
     -- "TitanPanelButtonTemplate", which has its own baked-in
     -- <OnLoad>TitanPanelButton_OnLoad(self)</OnLoad> - it already fires
     -- once, synchronously, as part of the CreateFrame call above. Calling

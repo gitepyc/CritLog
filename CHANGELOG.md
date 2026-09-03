@@ -7,6 +7,14 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.1.7-titanpanel-dev
+
+Test build on `feature/titan-panel-integration`, not merged into `dev` -
+standalone, not decided yet whether to keep this.
+
+- fix: button icon never rendered - switched from TitanPanelTextTemplate (no icon region at all) to TitanPanelComboTemplate (has one), matching TitanCritLine
+- feature: button text simplified to "CL: <dmg>/<white>/<heal>", matching TitanCritLine's own format exactly; full detail stays in the hover tooltip
+
 ## 0.1.6-titanpanel-dev
 
 Test build on `feature/titan-panel-integration`, not merged into `dev` -
