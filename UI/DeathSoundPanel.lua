@@ -9,12 +9,12 @@ local DEATH_CHECKBOXES = {
       hint = "Plays when you yourself die." },
     -- These four (unlike PlayerSoundFlag above) can be driven by the live
     -- class/role/classification detection in Core/CombatLog.lua
-    -- (isMeleeClass, isAssignedTank, isPriestClass, isClassifiedBoss), the
-    -- hardcoded name roster, both, or neither - a dropdown instead of a
-    -- checkbox. No shared master switch anymore (there used to be one,
+    -- (isMeleeClass, isAssignedTank, isAssignedHealer, isClassifiedBoss),
+    -- the hardcoded name roster, both, or neither - a dropdown instead of
+    -- a checkbox. No shared master switch anymore (there used to be one,
     -- DeadSoundFlag) - setting all four to "None" is equivalent, and the
     -- dropdown is already the one place that controls all of this.
-    -- "Experimental" isn't yet in-game verified for tank/boss/priest
+    -- "Experimental" isn't yet in-game verified for tank/boss/heal
     -- specifically (melee's false-positive bug is fixed and confirmed);
     -- "Roster" and "Both" (the original default) aren't affected by that.
     -- Labeled "DPS", not "Damage Dealer", specifically here (unlike the
@@ -23,16 +23,16 @@ local DEATH_CHECKBOXES = {
     -- keeps all four rows' Preview buttons in one aligned column instead
     -- of each sitting wherever its own label happens to end.
     --
-    -- Labeled "Healer", not "Priest" (same rename reasoning as DPS above)
-    -- - the field name (PriestDetectionMode) is unchanged. Also not
-    -- priest-specific anymore: the live check reads the assigned raid
+    -- Field renamed HealDetectionMode (was PriestDetectionMode - see
+    -- Persistence/Database.lua's migratePriestToHeal) once the live check
+    -- stopped being Priest-specific: it now reads the assigned raid
     -- Healer role (isAssignedHealer, same pattern as Tank), not class - a
     -- Holy Paladin/Resto Druid/Resto Shaman death counts the same as a
     -- Priest's. This no longer covers a Spirit-of-Redemption-delayed
     -- death - that's the separate, Priest-specific SpiritSoundFlag
     -- checkbox further down, previously folded into this same toggle (see
     -- CHANGELOG.md).
-    { field = "PriestDetectionMode", label = "Healer death sound", sound = "priestDeath",
+    { field = "HealDetectionMode", label = "Healer death sound", sound = "healDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Live check: assigned raid Healer role. Excludes Spirit of Redemption deaths - see below." },
     { field = "MeleeDetectionMode", label = "DPS death sound", sound = "meleeDeath",
@@ -55,7 +55,7 @@ local DEATH_CHECKBOXES = {
     -- at all is having actually seen the buff applied, there's no roster/
     -- name-list equivalent to fall back to.
     { field = "SpiritSoundFlag", label = "Spirit of Redemption", sound = "spiritOfRedemption",
-      hint = "A Priest's death was delayed ~15s by the talent (Priest-only, unlike Healer death above)." },
+      hint = "A Priest's death was delayed ~15s by the talent (Priest-only, unlike Healer death above; own sound file)." },
 }
 
 local deathSoundFrame

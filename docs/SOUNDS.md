@@ -2,8 +2,8 @@
 
 ## Overview
 
-The catalog contains **32 files**, all in active use, totaling approximately
-**2.8 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
+The catalog contains **33 files**, all in active use, totaling approximately
+**3.0 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
 consolidation, random-pick removal, the `feature/legacy-sound-port` batch of
 14 files ported from the original single-file addon); [ROADMAP.md](ROADMAP.md)
 for what's still outstanding — the asset-rights review below is the big one.
@@ -29,7 +29,7 @@ Windows did not expose the value.
 | Damage Dealer death | `wilhelm.ogg` | Live melee-capable class and/or Damage Dealer roster, per detection mode - see `docs/BEHAVIOR.md` |
 | Tank death | `Tank.mp3` | Live assigned Tank role and/or tank roster, per detection mode |
 | Healer death | `Angels.mp3` | Live assigned Healer role (any class) and/or Healer roster, per detection mode; excludes a Spirit-of-Redemption-delayed death |
-| Spirit of Redemption | `Angels.mp3` (same file as Healer death for now) | A Priest's death (class-specific, not role-based) delayed by the talent; independent on/off toggle, not a detection mode |
+| Spirit of Redemption | `Angels2.mp3` (own asset, restored from the legacy addon - see `CHANGELOG.md`) | A Priest's death (class-specific, not role-based) delayed by the talent; independent on/off toggle, not a detection mode |
 | Boss death | `FFX.mp3` | Live `worldboss` classification and/or boss name list, per detection mode |
 | Raid end | `bye.mp3`, then `end.mp3` | Matching raid-leader message, both immediately |
 | Wipe | `wipe.mp3` | Matching raid-leader message |
@@ -55,7 +55,8 @@ complete trigger conditions.
 
 | File | Duration | Bitrate | Size | Used by |
 | --- | ---: | ---: | ---: | --- |
-| `Angels.mp3` | 5 s | 178 kbps | 121,680 B | healer death, Spirit of Redemption |
+| `Angels.mp3` | 5 s | 178 kbps | 121,680 B | healer death |
+| `Angels2.mp3` | n/a | n/a | 161,568 B | Spirit of Redemption |
 | `at_bam_babam.mp3` | 1 s | 128 kbps | 17,553 B | crit/highscore |
 | `Bloodlust.mp3` | 3 s | 128 kbps | 56,134 B | Bloodlust/Heroism |
 | `Bubble.mp3` | 1 s | 128 kbps | 27,305 B | Blessing of Protection |

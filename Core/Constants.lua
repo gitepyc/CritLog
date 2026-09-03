@@ -1,7 +1,7 @@
 CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 
 CritLog.Constants = {
-    -- Options for the melee/tank/priest/boss death-sound detection mode
+    -- Options for the melee/tank/heal/boss death-sound detection mode
     -- dropdowns in the Death Sounds panel: choose whether the live
     -- class/role/classification check, the roster/name-list fallback,
     -- both (the original, still-default behavior), or neither decides
@@ -39,12 +39,16 @@ CritLog.Constants = {
         playerDeath = "MarioDeath.mp3",
         bossDeath = "FFX.mp3",
         tankDeath = "Tank.mp3",
-        priestDeath = "Angels.mp3",
-        -- Reuses priestDeath's file - no dedicated asset yet, same precedent
-        -- as the shared `crit` sound above. Kept as its own catalog key
-        -- since it's a logically distinct trigger (see HandleDeath in
-        -- Core/CombatLog.lua), just sharing a file for now.
-        spiritOfRedemption = "Angels.mp3",
+        healDeath = "Angels.mp3",
+        -- Legacy addon randomly alternated between Angels1.mp3/Angels2.mp3
+        -- for the same "priest death" trigger (see CHANGELOG.md); the 0.4.0
+        -- cleanup that removed random multi-clip selection kept only one
+        -- (as `Angels.mp3`, used by healDeath above) and dropped the other.
+        -- Now that Spirit of Redemption is an independently toggleable
+        -- trigger rather than just a file choice under the same gate as
+        -- healDeath, it gets the previously-dropped clip back as its own
+        -- dedicated asset instead of reusing healDeath's file.
+        spiritOfRedemption = "Angels2.mp3",
         innervate = "Innervate.mp3",
         manaTide = "Manatide.mp3",
         bloodlust = "Bloodlust.mp3",
@@ -126,13 +130,12 @@ CritLog.Constants = {
         -- was never actually restricted to melee, just mislabeled).
         melee = { label = "Damage Dealer" },
         tank = { label = "Tank" },
-        -- Labeled "Healer" rather than "Priest", same reasoning as
-        -- "Damage Dealer" above: the live check this falls back for
-        -- (isAssignedHealer) is now role-based, not Priest-specific - a
-        -- Holy Paladin/Resto Druid/Resto Shaman belongs here too. Key
-        -- stays `priest` (CritLogDB.playerGroups.priest) - only the
-        -- display label changed.
-        priest = { label = "Healer" },
+        -- Labeled "Healer" (key `heal`, renamed from `priest` - see
+        -- Persistence/Database.lua's migratePriestToHeal), same reasoning
+        -- as "Damage Dealer" above: the live check this falls back for
+        -- (isAssignedHealer) is role-based, not Priest-specific - a Holy
+        -- Paladin/Resto Druid/Resto Shaman belongs here too.
+        heal = { label = "Healer" },
     },
     -- Class/role rules for death-sound matching, used as the primary check
     -- (see Core/Filters.lua's isMeleeClass/isAssignedTank/isPriestClass and
