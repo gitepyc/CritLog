@@ -96,41 +96,25 @@ local dropdownsByField = {}
 -- call site, which grow the hit area out to cover the row's label too so
 -- hovering the text works, not just the control itself.
 --
--- In-game reported: the tooltip never appeared at all (not just hard to
--- trigger). Root cause: every options panel deliberately sits on
--- "TOOLTIP" frame strata (see createPanelFrame below, added so panels
--- stay above other addons like WeakAuras) - the same strata GameTooltip
--- itself defaults to. Our own panel is `SetToplevel(true)` and gets
--- raised by normal interaction (dragging, clicking buttons), so within
--- that shared strata it can end up with a higher frame level than
--- GameTooltip's own default one and render on top of it, hiding the
--- tooltip completely behind the panel's opaque background. Explicitly
--- bumping GameTooltip's strata/level above the hovered control every time
--- it's shown fixes that regardless of whatever level the panel happens to
--- be at.
+-- In-game reported, across several attempts: the tooltip never appeared at
+-- all. Root cause: every options panel deliberately sat on "TOOLTIP" frame
+-- strata (added so panels stay above other addons like WeakAuras) - the
+-- same strata GameTooltip itself defaults to, putting our own panel in
+-- direct competition with it. Forcing GameTooltip's own strata/frame level
+-- upward on every hover (tried first) was fragile and never reliably won
+-- that competition in-game. The actual fix is createPanelFrame below no
+-- longer using TOOLTIP strata at all (FULLSCREEN instead, still above
+-- ordinary addon UI, but below GameTooltip's default) - once that's true,
+-- this can be the same plain SetOwner/SetPoint/SetText/Show TitanCritLine's
+-- settings panel uses, with nothing tooltip-strata-specific needed here.
 local function attachTooltip(control, text)
     if not text then
         return
     end
 
-    -- Belt-and-suspenders: Button/CheckButton frames have mouse enabled by
-    -- default (needed for OnClick), so this shouldn't be necessary, but
-    -- OnEnter not firing at all has been hard to pin down in-game - cheap
-    -- to rule out explicitly rather than assume.
-    control:EnableMouse(true)
-
     control:HookScript("OnEnter", function(self)
-        -- SetOwner(self, "ANCHOR_RIGHT") (the first attempt) is the more
-        -- common idiom, but TitanCritLine's settings panel - a confirmed
-        -- working reference - anchors manually via SetOwner(UIParent,
-        -- "ANCHOR_NONE") + an explicit SetPoint instead. Matching that
-        -- exactly, on top of the strata/level bump below (which
-        -- TitanCritLine's panel doesn't need - it doesn't sit on TOOLTIP
-        -- strata like ours does).
         GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
         GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -10, -4)
-        GameTooltip:SetFrameStrata("TOOLTIP")
-        GameTooltip:SetFrameLevel(self:GetFrameLevel() + 10)
         GameTooltip:SetText(text, nil, nil, nil, nil, true)
         GameTooltip:Show()
     end)
@@ -149,13 +133,14 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     UIDropDownMenu_SetWidth(dropdown, 110)
 
     -- Reported in-game: clicking the dropdown showed no menu at all. The
-    -- options panels use "TOOLTIP" strata (the highest there is - see
-    -- createPanelFrame below) so they stay above other addons' windows,
-    -- but Blizzard's shared dropdown-list frames (DropDownList1/2) are
-    -- created at a lower fixed strata - the menu was very likely opening
-    -- behind our own panel, not failing to open at all. Bumping the list
-    -- frames to match right when this dropdown's button is clicked fixes
-    -- that without affecting anything else that uses dropdowns.
+    -- options panels sit on "FULLSCREEN" strata (see createPanelFrame
+    -- below) so they stay above other addons' windows, but Blizzard's
+    -- shared dropdown-list frames (DropDownList1/2) are created at a lower
+    -- fixed strata - the menu was very likely opening behind our own
+    -- panel, not failing to open at all. Bumping the list frames to
+    -- "TOOLTIP" (a level above our own panel's strata, not just matching
+    -- it) right when this dropdown's button is clicked fixes that without
+    -- affecting anything else that uses dropdowns.
     local dropdownButton = _G[dropdown:GetName().."Button"]
     if dropdownButton then
         dropdownButton:HookScript("OnClick", function()
@@ -380,12 +365,20 @@ end
 function CritLog.UI.createPanelFrame(name, title, width, height)
     local f = CreateFrame("Frame", name, UIParent, "BasicFrameTemplateWithInset")
     f:SetSize(width, height)
-    -- TOOLTIP is the highest frame strata WoW exposes; other addons
-    -- (WeakAuras displays included) commonly sit at MEDIUM/HIGH/DIALOG,
-    -- so this keeps the options panels on top of them without needing to
-    -- know what strata any specific one uses. SetToplevel raises it above
-    -- same-strata siblings whenever it's clicked, same as other dialogs.
-    f:SetFrameStrata("TOOLTIP")
+    -- FULLSCREEN, not TOOLTIP: other addons (WeakAuras displays included)
+    -- commonly sit at MEDIUM/HIGH/DIALOG, so FULLSCREEN already keeps the
+    -- options panels on top of them without needing to know what strata
+    -- any specific one uses - and unlike TOOLTIP, it stays below
+    -- GameTooltip's own default strata. Using TOOLTIP here (the actual
+    -- highest strata WoW exposes) put our own panels in direct competition
+    -- with GameTooltip itself, which shares that same strata - toggle-row
+    -- hover tooltips (see attachTooltip in this file) kept rendering behind
+    -- the panel no matter how their own frame level was forced upward,
+    -- in-game reported repeatedly. TitanCritLine's settings panel (a
+    -- confirmed working reference) uses FULLSCREEN for exactly this reason.
+    -- SetToplevel raises it above same-strata siblings whenever it's
+    -- clicked, same as other dialogs.
+    f:SetFrameStrata("FULLSCREEN")
     f:SetToplevel(true)
     f:SetMovable(true)
     f:EnableMouse(true)
