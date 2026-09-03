@@ -24,7 +24,7 @@ toggles below.
 
 | Event | Condition | Effect | Sound |
 | --- | --- | --- | --- |
-| `PLAYER_LOGIN` | Always | Initializes/migrates `CritLogDB` and prints records. | None. The login-sound feature was removed entirely, along with `Login.mp3`; see `CHANGELOG.md`. |
+| `PLAYER_LOGIN` | Always | Initializes/migrates `CritLogDB` and prints records. | `Login.mp3`, only if `LoginSoundFlag = true` (`/cl login`, **off by default** - ported back from the legacy addon in `feature/legacy-sound-port`, see `CHANGELOG.md`). |
 | `READY_CHECK` | `ReadySoundFlag = true` | No state change. | `Ready.mp3` |
 
 ## Critical hits and heals
@@ -68,13 +68,20 @@ enough" alert. Toggle with `/cl xtreme`.
 ## Auras and abilities
 
 This group requires `/cl aura` (`AuraSoundFlag`) to be enabled - a master
-switch over all 7 triggers below, each of which also has its own flag
+switch over all 13 triggers below, each of which also has its own flag
 (e.g. `BloodlustSoundFlag`), individually toggleable in the Sound Settings
 panel instead of all-or-nothing. Each trigger matches by spell ID first;
 if the ID doesn't hit, it falls back to matching the displayed
 English/German spell name. The name fallback exists because the IDs are
 Wowhead-Classic-sourced but not yet in-game verified — see
-[ROADMAP.md](ROADMAP.md).
+[ROADMAP.md](ROADMAP.md). The six ported in `feature/legacy-sound-port`
+(Drums of Battle, Pain Suppression, Hymn of Hope, Evocation, Mage Table,
+Warlock Healthstone ritual) are name-only matches except Pain Suppression
+(`402004`, the Season of Discovery Priest rune) and Evocation (`12051`,
+confirmed on Wowhead Classic) - the legacy addon itself never matched by
+ID for any of these, and whether some of them (Drums of Battle, Mage
+Table, the Healthstone ritual, Hymn of Hope) even exist as castable
+spells on Classic Era/SoD is unverified; see `CHANGELOG.md`.
 
 | Trigger | Own flag | Source/destination condition | Spell ID(s) | Name fallback | Sound |
 | --- | --- | --- | --- | --- | --- |
@@ -85,6 +92,12 @@ Wowhead-Classic-sourced but not yet in-game verified — see
 | Blessing of Protection received | `BlessingOfProtectionSoundFlag` | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
 | Divine Intervention received | `DivineInterventionSoundFlag` | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
 | Soulstone buff received (not the resurrection itself - the buff's real in-game name happens to be "Soulstone Resurrection", the name fallback below) | `SoulstoneSoundFlag` | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
+| Drums of Battle received | `DrumsSoundFlag` | Destination is the player. | none | `Drums of Battle`, `Greater Drums of Battle`, `Trommeln der Schlacht`, `Große Trommeln der Schlacht` | `dkRapL.mp3` |
+| Pain Suppression received | `PainSuppressionSoundFlag` | Destination is the player. | `402004` | `Pain Suppression`, `Schmerzunterdrückung` | `Painsup.mp3` |
+| Hymn of Hope received | `HymnOfHopeSoundFlag` | Destination is the player. | none | `Hymn of Hope`, `Hymne der Hoffnung` | `HymnOfHope.mp3` |
+| Evocation received | `EvocationSoundFlag` | Destination is the player. | `12051` | `Evocation`, `Hervorrufung` | `evo.mp3` |
+| Mage Table cast (`SPELL_CAST_SUCCESS`) | `MageTableSoundFlag` | Source is a party/raid member; at most once per 100s (cooldown gate, shared across the whole group so 5 simultaneous casts don't play it 5 times). | none | `Ritual of Refreshment`, `Tischlein deck dich` | `Table.mp3` |
+| Warlock Healthstone ritual cast (`SPELL_CAST_SUCCESS`) | `HealthstoneSoundFlag` | Source is a party/raid member; at most once per 60s (same cooldown-gate reasoning as Mage Table). | none | `Ritual of Souls`, `Ritual der Seelen` | `healthstone.mp3` |
 
 ## Deaths
 
@@ -172,6 +185,37 @@ check for a specific sender is commented out.
 | `shit show` or `wipe` | Plays `wipe.mp3`. |
 
 These chat sounds have no feature flag - `/cl sound` doesn't disable them.
+
+## Raid chat (lottery)
+
+`CHAT_MSG_RAID`, gated by `GambleSoundFlag` (`/cl gamble`). Reacts to a
+fixed announcement phrase from a third-party lottery addon (e.g.
+CrossGambling) - CritLog does not run or understand any lottery itself,
+this is purely a chat-string match, same mechanism as raid end/wipe above.
+
+| Raid chat message contains | Reaction |
+| --- | --- |
+| `CrossGambling: A new game has been started! Type 1 to join!` | Starts `lottery2.wav` and immediately starts `lottery3.mp3`. |
+
+## Rolls
+
+`CHAT_MSG_SYSTEM`, gated by `RollSoundFlag` (`/cl roll`). Only reacts to a
+plain 1-100 `/roll` (or the localized equivalent) - any other range (e.g.
+loot rolls with a custom range) is ignored. The message is parsed for both
+the English (`"X rolls N (min-max)"`) and German (`"X würfelt. Ergebnis: N
+(min-max)"`) client phrasing; classification of the parsed numbers into a
+sound (or no sound) is `CritLog.Filters.classifyRoll` - pure, no WoW API,
+ported near-verbatim from the legacy addon.
+
+| Roll result | Sound |
+| --- | --- |
+| Exactly 1 | `roll1.mp3` |
+| 2 to ~7% of max (below the 8% band) | `roll5.mp3` |
+| ~8-10% of max | `roll10.mp3` |
+| Exactly 69 | `roll69.mp3` |
+| ~92-99% of max | `roll95.mp3` |
+| The maximum (100) | `roll100.mp3` |
+| Anything else | No sound. |
 
 ## Other code paths
 

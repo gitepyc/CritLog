@@ -19,6 +19,18 @@ end
 -- back once in HandleDeath, then cleared.
 local spiritOfRedemptionGuids = {}
 
+-- Cooldown gates for the two group-member ritual sounds below (Mage Table,
+-- Warlock Healthstone ritual): every party/raid member's SPELL_CAST_SUCCESS
+-- fires its own combat-log event, so without this a 5-person group would
+-- play the sound 5 times for one ritual cast. Matches the legacy addon's
+-- 100s/60s dedup windows. Plain module-level locals (not SavedVariables) -
+-- resets on reload, which is fine, it's just spam prevention within a
+-- session.
+local lastMageTableSound = 0
+local lastHealthstoneSound = 0
+local MAGE_TABLE_COOLDOWN_SECONDS = 100
+local HEALTHSTONE_COOLDOWN_SECONDS = 60
+
 local function rememberSpiritOfRedemption(subevent, destGUID, spellId, spellName)
     if subevent == "SPELL_AURA_APPLIED"
         and CritLog.Filters.matchesSpell(CritLog.Constants.spells.spiritOfRedemption, spellId, spellName)
@@ -184,13 +196,28 @@ function CritLog:HandleAuraSounds(
 
     local matchesSpell = CritLog.Filters.matchesSpell
 
-    if (UnitInParty(sourceName) or UnitInRaid(sourceName))
-        and subevent == "SPELL_SUMMON"
-        and spellName ~= nil
-    then
-        self:Debug("SPELL_SUMMON by group member - id:", spellId, "name:", spellName)
-        if CritLogDB.ManaTideSoundFlag and matchesSpell(self.Constants.spells.manaTide, spellId, spellName) then
-            self:PlaySound(self.Constants.sounds.manaTide)
+    if (UnitInParty(sourceName) or UnitInRaid(sourceName)) and spellName ~= nil then
+        if subevent == "SPELL_SUMMON" then
+            self:Debug("SPELL_SUMMON by group member - id:", spellId, "name:", spellName)
+            if CritLogDB.ManaTideSoundFlag and matchesSpell(self.Constants.spells.manaTide, spellId, spellName) then
+                self:PlaySound(self.Constants.sounds.manaTide)
+            end
+        elseif subevent == "SPELL_CAST_SUCCESS" then
+            if CritLogDB.MageTableSoundFlag
+                and matchesSpell(self.Constants.spells.mageTable, spellId, spellName)
+                and (GetTime() - lastMageTableSound) > MAGE_TABLE_COOLDOWN_SECONDS
+            then
+                lastMageTableSound = GetTime()
+                self:PlaySound(self.Constants.sounds.mageTable)
+            end
+
+            if CritLogDB.HealthstoneSoundFlag
+                and matchesSpell(self.Constants.spells.healthstoneRitual, spellId, spellName)
+                and (GetTime() - lastHealthstoneSound) > HEALTHSTONE_COOLDOWN_SECONDS
+            then
+                lastHealthstoneSound = GetTime()
+                self:PlaySound(self.Constants.sounds.healthstoneRitual)
+            end
         end
     end
 
@@ -229,6 +256,24 @@ function CritLog:HandleAuraSounds(
 
     if CritLogDB.SoulstoneSoundFlag and matchesSpell(self.Constants.spells.soulstone, spellId, spellName) then
         self:PlaySound(self.Constants.sounds.soulstone)
+    end
+
+    if CritLogDB.DrumsSoundFlag and matchesSpell(self.Constants.spells.drums, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.drums)
+    end
+
+    if CritLogDB.PainSuppressionSoundFlag
+        and matchesSpell(self.Constants.spells.painSuppression, spellId, spellName)
+    then
+        self:PlaySound(self.Constants.sounds.painSuppression)
+    end
+
+    if CritLogDB.HymnOfHopeSoundFlag and matchesSpell(self.Constants.spells.hymnOfHope, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.hymnOfHope)
+    end
+
+    if CritLogDB.EvocationSoundFlag and matchesSpell(self.Constants.spells.evocation, spellId, spellName) then
+        self:PlaySound(self.Constants.sounds.evocation)
     end
 end
 

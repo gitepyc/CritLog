@@ -90,6 +90,36 @@ function CritLog.Filters.matchesDetectionMode(mode, liveMatch, rosterMatch)
     return false
 end
 
+-- Classifies a /roll result into a Constants.sounds key, or nil for a roll
+-- that doesn't hit any of the specific values/bands below. Ported near
+-- verbatim from the legacy single-file addon (see CHANGELOG.md); only
+-- applies to a plain 1-100 roll (rollMin == 1, rollMax >= 100) - any other
+-- range (e.g. a /roll 1 5 for loot) is deliberately ignored. Checked in
+-- this order because the bands overlap at their edges (e.g. 100 would
+-- also satisfy ">= 92%"), so the more specific exact-value checks must run
+-- first.
+function CritLog.Filters.classifyRoll(rollResult, rollMin, rollMax)
+    if rollMin ~= 1 or rollMax < 100 then
+        return nil
+    end
+
+    if rollResult == rollMax then
+        return "roll100"
+    elseif rollResult == 1 * rollMax / 100 then
+        return "roll1"
+    elseif rollResult == 69 then
+        return "roll69"
+    elseif rollResult >= 92 * rollMax / 100 then
+        return "roll95"
+    elseif rollResult < 8 * rollMax / 100 then
+        return "roll5"
+    elseif rollResult <= 10 * rollMax / 100 then
+        return "roll10"
+    end
+
+    return nil
+end
+
 -- Excludes crits against trivial ("grey") enemies from counting as
 -- highscores, so a one-shot on low-level content doesn't overwrite a real
 -- record from relevant content. `targetLevel`/`targetClassification` are

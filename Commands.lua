@@ -40,6 +40,9 @@ local function printConfig()
     print("/cl debug: "..tostring(CritLogDB.DebugFlag))
     print("/cl ready: "..tostring(CritLogDB.ReadySoundFlag))
     print("/cl aura: "..tostring(CritLogDB.AuraSoundFlag))
+    print("/cl login: "..tostring(CritLogDB.LoginSoundFlag))
+    print("/cl roll: "..tostring(CritLogDB.RollSoundFlag))
+    print("/cl gamble: "..tostring(CritLogDB.GambleSoundFlag))
     print("------------")
     print("/cl priest: "..CritLogDB.PriestDetectionMode)
     print("/cl dps: "..CritLogDB.MeleeDetectionMode)
@@ -111,6 +114,24 @@ function CritLog:PrintCritLogs(message)
             "AuraSoundFlag",
             "CritLog Aura/Spell Sound On",
             "CritLog Aura/Spell Sound Off"
+        )
+    elseif command == "login" then
+        toggle(
+            "LoginSoundFlag",
+            "CritLog LoginSound On",
+            "CritLog LoginSound Off"
+        )
+    elseif command == "roll" then
+        toggle(
+            "RollSoundFlag",
+            "CritLog RollSound On",
+            "CritLog RollSound Off"
+        )
+    elseif command == "gamble" then
+        toggle(
+            "GambleSoundFlag",
+            "CritLog GambleSound On",
+            "CritLog GambleSound Off"
         )
     elseif command == "priest" then
         toggleDetectionMode("PriestDetectionMode", "PriestSound")

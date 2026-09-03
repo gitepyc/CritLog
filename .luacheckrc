@@ -11,6 +11,7 @@ stds.wow = {
         "CreateFrame",
         "CombatLogGetCurrentEventInfo",
         "PlaySoundFile",
+        "GetTime", -- cooldown gate for the Mage Table/Healthstone ritual sounds (feature/legacy-sound-port)
         "UnitClass", -- class/role-based death-sound matching (feature/class-based-death-sounds)
         "UnitClassification",
         "UnitGUID",
