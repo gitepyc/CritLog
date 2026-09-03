@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.8.2-leveldiff-dev
+
+Test build on `feature/level-diff-slider`, not merged into `dev` - not
+decided yet whether to keep this.
+
+- fix: Debug mode checkbox (and anything after the slider) still sat far to the right - the slider's value-number label was anchored by its center instead of its left edge, in-game screenshotted
+
 ## 0.8.1-leveldiff-dev
 
 Test build on `feature/level-diff-slider`, not merged into `dev` - not

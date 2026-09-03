@@ -243,8 +243,16 @@ local function createSliderRow(parent, entry, previous, previousXOffset)
     _G[slider:GetName().."High"]:SetText(tostring(entry.slider.max))
     _G[slider:GetName().."Text"]:SetText(entry.label)
 
+    -- TOPLEFT/BOTTOMLEFT, not a centered TOP/BOTTOM anchor: buildToggleRows
+    -- always chains rows via their left edge (see e.g. the checkbox
+    -- branch below), and this return value becomes the next row's anchor.
+    -- A center-anchored FontString's own BOTTOMLEFT sits near the middle
+    -- of the slider (offset by half its own text width from center), not
+    -- the slider's actual left edge - the next row inherited that
+    -- drift, in-game reported/screenshotted as Debug mode sitting far to
+    -- the right of the checkbox above the slider.
     local valueText = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    valueText:SetPoint("TOP", slider, "BOTTOM", 0, -2)
+    valueText:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -2)
 
     local function updateValueText(value)
         valueText:SetText(tostring(value))
