@@ -3,28 +3,15 @@
 **Next up:** in-game verification is the main open item across the board -
 see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
+**Entry format:** one line per change, `type: short description`
+(`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
+commit message/PR, not here.
+
 ## 0.7.1-dev
 
-- **Toggle-row tooltips**: every toggle row's explanation (checkbox and
-  dropdown alike, across every options panel) is now a hover tooltip
-  instead of a static line of text underneath the row - see if this reads
-  cleaner than the old layout. The checkbox/dropdown's own hit area is
-  widened to cover its label too, so hovering the text also shows the
-  tooltip, not just the small control itself.
-- Fixed: the main options panel (`/cl options`) was missing the bottom-
-  center Close button every other panel already has.
-- **Addon icon**: `CritLog.toc` now declares `## IconTexture` pointing at
-  `media/icon.png` (a comic "CRIT LOG" burst-style icon), so the Blizzard
-  AddOns list can show it next to the addon name. `media/icon.svg` is the
-  editable source, excluded from the packaged zip via `.pkgmeta` - only
-  the PNG ships. Not yet in-game confirmed that Classic Era's AddOns list
-  actually renders it.
-- Fixed: the toggle-row tooltips added earlier this version never showed
-  in-game at all. Every options panel deliberately sits on `TOOLTIP` frame
-  strata (to stay above other addons); GameTooltip defaults to that same
-  strata, and our own panel could end up rendering on top of it. Fixed by
-  explicitly bumping GameTooltip's strata/level above the hovered control
-  each time it's shown.
+- feature: hover tooltips instead of static hint text under each toggle row
+- fix: main options panel was missing its Close button
+- feature: addon icon (`media/icon.png`), wired up via `## IconTexture`
 
 ## 0.7.0
 
