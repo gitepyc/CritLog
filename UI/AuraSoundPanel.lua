@@ -56,9 +56,10 @@ local function buildAuraSoundFrame()
     -- column row does (checkbox + label + the Preview button's fixed
     -- 340px-from-checkbox column - see UI/Shared.lua's buildToggleRows).
     -- Tall enough for the heading, the note row, and the longer column (7
-    -- rows, each with its own hint line underneath). Not pixel-verified
-    -- in-game yet - see docs/ROADMAP.md, visual polish is a follow-up.
-    local f = CritLog.UI.createPanelFrame("CritLogAuraSoundFrame", "CritLog Aura Sounds", 920, 520)
+    -- rows; hints are now a hover tooltip, not a line underneath each row).
+    -- Not pixel-verified in-game yet - see docs/ROADMAP.md, visual polish
+    -- is a follow-up.
+    local f = CritLog.UI.createPanelFrame("CritLogAuraSoundFrame", "CritLog Aura Sounds", 920, 460)
     -- Offset from center so it doesn't perfectly overlap the main panel or
     -- Sound Settings when several are open at once; a one-time anchor, not
     -- a continuous one, so dragging one doesn't drag the others.

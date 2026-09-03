@@ -217,12 +217,13 @@ end
 
 local function buildFrame()
     -- Tall enough for the header block, the Highscore List button, the 2
-    -- crit-tracking toggle rows (each with its own hint line underneath),
-    -- and the Sound Settings/Help button row (Roster Settings moved to the
-    -- Death Sounds panel, so this is back to a single row - see
-    -- CHANGELOG.md). Widened from 420 so a long spell/target name in a
-    -- highscore line has room before running into that row's Reset button.
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 470)
+    -- crit-tracking toggle rows (hints are now a hover tooltip, not a line
+    -- underneath each row - see UI/Shared.lua), and the Sound Settings/Help
+    -- button row (Roster Settings moved to the Death Sounds panel, so this
+    -- is back to a single row - see CHANGELOG.md). Widened from 420 so a
+    -- long spell/target name in a highscore line has room before running
+    -- into that row's Reset button.
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 450)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")

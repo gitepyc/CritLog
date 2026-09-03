@@ -3,6 +3,15 @@
 **Next up:** in-game verification is the main open item across the board -
 see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
+## 0.7.1-dev
+
+- **Toggle-row tooltips**: every toggle row's explanation (checkbox and
+  dropdown alike, across every options panel) is now a hover tooltip
+  instead of a static line of text underneath the row - see if this reads
+  cleaner than the old layout. The checkbox/dropdown's own hit area is
+  widened to cover its label too, so hovering the text also shows the
+  tooltip, not just the small control itself.
+
 ## 0.7.0
 
 Third stable release since `0.5.0`, folding in everything from the

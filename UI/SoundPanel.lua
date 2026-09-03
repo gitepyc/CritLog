@@ -32,11 +32,11 @@ local SOUND_CHECKBOXES = {
 local soundFrame
 
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading, all 9 checkbox rows (each with
-    -- its own hint line underneath), and the two buttons to the Aura
-    -- Sounds/Death Sounds panels - not pixel-verified in-game yet, see
-    -- docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 560)
+    -- Tall enough for the toggles heading, all 9 checkbox rows (hints are
+    -- now a hover tooltip, not a line underneath each row - see
+    -- UI/Shared.lua), and the two buttons to the Aura Sounds/Death Sounds
+    -- panels - not pixel-verified in-game yet, see docs/ROADMAP.md.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 480)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
