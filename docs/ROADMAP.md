@@ -39,6 +39,11 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    Titan` in `CritLog.toc` for load order. Button shows top score for
    damage/white-hit/heal, left-click opens `/cl options`, right-click a
    small context menu (contents TBD).
+4. Addon icon - a first draft SVG exists (comic "BÄM"-burst style, tying
+   into the highscore sound's own naming) but isn't in the repo yet, needs
+   a look and sign-off first. Useful for the Titan button texture above
+   and any future CurseForge/Wago page, even while publishing itself stays
+   parked.
 
 ## Parked
 
