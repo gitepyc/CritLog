@@ -6,6 +6,23 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.16-dev
+
+- Death Sounds panel: moved Spirit of Redemption right after Player death
+  sound, before the four detection-mode dropdowns (was at the very end) -
+  requested, reads better grouped with the other plain on/off flags than
+  tacked on after the Experimental/Roster/Both system. Healer death
+  sound's hint no longer mentions excluding a Spirit-delayed death (no
+  longer needed as a cross-reference now that Spirit sits directly above
+  it). Shortened Spirit's own hint - the old one ran past the panel's
+  right edge (in-game reported).
+- Moved the "Roster Settings..." button from the main panel to the Death
+  Sounds panel - the melee/tank/heal rosters are only ever a fallback for
+  the detection-mode dropdowns there, so the button was otherwise
+  unrelated to anything else on the main panel. Main panel is back down
+  to two buttons (Sound Settings, Help) on one row; panel height reduced
+  to match.
+
 ## 0.6.15-dev
 
 - Fixed the Highscore List popup's row count tracking `#list` (floored at

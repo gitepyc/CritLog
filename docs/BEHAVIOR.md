@@ -166,7 +166,8 @@ detected (that boss list is still code-only, not editable). The three
 death-sound name rosters (melee/tank/heal, `playerGroups.priest` renamed
 to `playerGroups.heal` - see `Persistence/Database.lua`'s
 `migratePriestToHeal()`) are editable per character:
-`/cl options` → "Roster Settings..." shows each one with Add/Remove
+`/cl options` → "Death Sounds..." → "Roster Settings..." shows each one
+with Add/Remove
 controls. `CritLogDB.playerGroups` is a per-character copy, migrated once
 from a code-only seed on first load after upgrading (see
 `Persistence/Database.lua`'s `migratePlayerGroups()`) - from then on only the

@@ -1,4 +1,5 @@
--- Roster Settings panel, opened via the main panel's button. Editable copy
+-- Roster Settings panel, opened via the Death Sounds panel's button (moved
+-- there from the main panel - see CHANGELOG.md). Editable copy
 -- of the melee/tank/heal death-sound name rosters (CritLogDB.playerGroups,
 -- migrated once from a code-only seed - see Persistence/Database.lua).
 local ROSTER_ORDER = { "melee", "tank", "heal" }
