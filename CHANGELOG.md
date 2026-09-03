@@ -9,6 +9,23 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.6](https://github.com/gitepyc/CritLog/tree/0.2.6) (2026-09-03)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.5...0.2.6) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** add Close button to Sound Settings, two-column layout for Aura Sounds
+
+- **fix:** fill in missing TBC spell IDs, confirm Hymn of Hope doesn't exist pre-WotLK
+
+- **refactor:** split the death-sound block into its own Death Sounds panel
+
+- **refactor:** split Healer death and Spirit of Redemption into independent triggers
+
+- **refactor:** rename Priest to Heal throughout the code, give Spirit its own sound file
+
+- **tweak:** always reserve 5 rows per highscore category, not floor(#list, 1)
+
+- **tweak:** reorder Death Sounds panel, shorten Spirit hint, move Roster Settings button there
+
 ## [0.2.5](https://github.com/gitepyc/CritLog/tree/0.2.5) (2026-09-03)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.3...0.2.5) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
