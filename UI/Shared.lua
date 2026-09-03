@@ -328,7 +328,10 @@ end
 -- switch (e.g. the 7 aura sounds under AuraSoundFlag) and should visually
 -- read as a subordinate category, not as 7 more peers of the master row.
 -- `note` renders a plain text row instead of a checkbox/dropdown - see
--- createDropdownRow's sibling branch below.
+-- createDropdownRow's sibling branch below. `previewOnly` renders just a
+-- label + Preview button with no checkbox/field at all, for entries that
+-- share one master toggle elsewhere instead of each having their own
+-- independent flag.
 function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     local previous = startAnchor
     -- 0 for the first row: startAnchor (a section heading) has no x-indent
@@ -366,6 +369,22 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             -- No indent quirk to cancel - createSliderRow doesn't add one
             -- (see its own comment above), so the next row lands back at
             -- the normal column just like after a plain checkbox row.
+            previousXOffset = 0
+        elseif entry.previewOnly then
+            -- A plain label + Preview button, no checkbox and no
+            -- CritLogDB field at all - for a set of sounds that share one
+            -- master toggle elsewhere (e.g. the 6 roll-result sounds
+            -- under RollSoundFlag on the Sound Settings panel) rather than
+            -- each having its own independent flag like Aura Sounds' 13
+            -- entries do.
+            local label = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+            label:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -10)
+            label:SetText(entry.label)
+
+            local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
+            previewButton:SetPoint("LEFT", label, "LEFT", 340, 0)
+
+            previous = label
             previousXOffset = 0
         else
             local indent = entry.indent and 20 or 0

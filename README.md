@@ -46,6 +46,7 @@ World of Warcraft/
                 │   ├── SoundPanel.lua
                 │   ├── AuraSoundPanel.lua
                 │   ├── DeathSoundPanel.lua
+                │   ├── RollSoundPanel.lua
                 │   ├── RosterPanel.lua
                 │   ├── HelpPanel.lua
                 │   └── TitanButton.lua
@@ -138,6 +139,7 @@ critlog/
 │   ├── SoundPanel.lua    # Sound Settings panel
 │   ├── AuraSoundPanel.lua # Aura Sounds panel (13 aura/ritual sounds, opened from Sound Settings)
 │   ├── DeathSoundPanel.lua # Death Sounds panel (player + heal/DPS/tank/boss, opened from Sound Settings)
+│   ├── RollSoundPanel.lua # Roll Sounds panel (6 roll-result sounds, opened from Sound Settings)
 │   ├── RosterPanel.lua   # Roster Settings panel
 │   ├── HelpPanel.lua     # Help panel - lists every slash command
 │   └── TitanButton.lua   # Optional TitanPanel status-bar button, inert without Titan
