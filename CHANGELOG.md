@@ -6,6 +6,21 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.14-dev
+
+- Filled in the still-missing Wowhead spell IDs for the `feature/legacy-
+  sound-port` triggers: Drums of Battle (`35476`), Ritual of
+  Refreshment/Mage Table (`43987`), Ritual of Souls/Healthstone (`29893`).
+  All three are confirmed real spells, but confirmed **TBC-introduced**
+  ones (none existed in vanilla WoW at all) - the ID being right doesn't
+  by itself confirm SoD availability, which stays unverified.
+- Confirmed Hymn of Hope did not exist under that name before WotLK patch
+  3.0.2 at all - it replaced the TBC-only, Draenei-only "Symbol of Hope"
+  (a different spell, different mechanics, spell id `32548`, not used
+  here). No ID exists for it on Classic Era/SoD, so this trigger cannot
+  fire there under any circumstances unless SoD adds an equivalent rune -
+  documented as confirmed, not just unverified.
+
 ## 0.6.13-dev
 
 - Renamed `PriestDetectionMode`/`CritLogDB.playerGroups.priest` to

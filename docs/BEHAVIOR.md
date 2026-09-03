@@ -74,14 +74,20 @@ panel instead of all-or-nothing. Each trigger matches by spell ID first;
 if the ID doesn't hit, it falls back to matching the displayed
 English/German spell name. The name fallback exists because the IDs are
 Wowhead-Classic-sourced but not yet in-game verified — see
-[ROADMAP.md](ROADMAP.md). The six ported in `feature/legacy-sound-port`
-(Drums of Battle, Pain Suppression, Hymn of Hope, Evocation, Mage Table,
-Warlock Healthstone ritual) are name-only matches except Pain Suppression
-(`402004`, the Season of Discovery Priest rune) and Evocation (`12051`,
-confirmed on Wowhead Classic) - the legacy addon itself never matched by
-ID for any of these, and whether some of them (Drums of Battle, Mage
-Table, the Healthstone ritual, Hymn of Hope) even exist as castable
-spells on Classic Era/SoD is unverified; see `CHANGELOG.md`.
+[ROADMAP.md](ROADMAP.md). Of the six ported in `feature/legacy-sound-port`,
+five now have a confirmed Wowhead spell ID: Pain Suppression (`402004`,
+the Season of Discovery Priest rune), Evocation (`12051`, a genuine
+vanilla/Classic Era spell), and Drums of Battle (`35476`)/Mage Table
+(`43987`)/the Healthstone ritual (`29893`) - but those last three are
+confirmed **TBC-introduced** spells (none existed in vanilla WoW at all),
+so having the right ID doesn't by itself confirm they're castable on
+Classic Era/SoD; that's still unverified, mirroring the legacy addon's
+own uncertainty (see `CHANGELOG.md`). Hymn of Hope is the one exception
+with no ID at all: confirmed to not exist under that name before WotLK
+patch 3.0.2 (it replaced the TBC-only, Draenei-only "Symbol of Hope",
+spell id `32548` - a different spell, not used here), so this trigger
+cannot fire on Classic Era/SoD under any circumstances unless SoD
+introduces an equivalent rune.
 
 | Trigger | Own flag | Source/destination condition | Spell ID(s) | Name fallback | Sound |
 | --- | --- | --- | --- | --- | --- |
@@ -92,12 +98,12 @@ spells on Classic Era/SoD is unverified; see `CHANGELOG.md`.
 | Blessing of Protection received | `BlessingOfProtectionSoundFlag` | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
 | Divine Intervention received | `DivineInterventionSoundFlag` | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
 | Soulstone buff received (not the resurrection itself - the buff's real in-game name happens to be "Soulstone Resurrection", the name fallback below) | `SoulstoneSoundFlag` | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
-| Drums of Battle received | `DrumsSoundFlag` | Destination is the player. | none | `Drums of Battle`, `Greater Drums of Battle`, `Trommeln der Schlacht`, `Große Trommeln der Schlacht` | `dkRapL.mp3` |
+| Drums of Battle received | `DrumsSoundFlag` | Destination is the player. | `35476` (TBC-introduced, SoD availability unverified) | `Drums of Battle`, `Greater Drums of Battle`, `Trommeln der Schlacht`, `Große Trommeln der Schlacht` | `dkRapL.mp3` |
 | Pain Suppression received | `PainSuppressionSoundFlag` | Destination is the player. | `402004` | `Pain Suppression`, `Schmerzunterdrückung` | `Painsup.mp3` |
-| Hymn of Hope received | `HymnOfHopeSoundFlag` | Destination is the player. | none | `Hymn of Hope`, `Hymne der Hoffnung` | `HymnOfHope.mp3` |
+| Hymn of Hope received | `HymnOfHopeSoundFlag` | Destination is the player. | none - confirmed to not exist before WotLK | `Hymn of Hope`, `Hymne der Hoffnung` | `HymnOfHope.mp3` |
 | Evocation received | `EvocationSoundFlag` | Destination is the player. | `12051` | `Evocation`, `Hervorrufung` | `evo.mp3` |
-| Mage Table cast (`SPELL_CAST_SUCCESS`) | `MageTableSoundFlag` | Source is a party/raid member; at most once per 100s (cooldown gate, shared across the whole group so 5 simultaneous casts don't play it 5 times). | none | `Ritual of Refreshment`, `Tischlein deck dich` | `Table.mp3` |
-| Warlock Healthstone ritual cast (`SPELL_CAST_SUCCESS`) | `HealthstoneSoundFlag` | Source is a party/raid member; at most once per 60s (same cooldown-gate reasoning as Mage Table). | none | `Ritual of Souls`, `Ritual der Seelen` | `healthstone.mp3` |
+| Mage Table cast (`SPELL_CAST_SUCCESS`) | `MageTableSoundFlag` | Source is a party/raid member; at most once per 100s (cooldown gate, shared across the whole group so 5 simultaneous casts don't play it 5 times). | `43987` (TBC-introduced, SoD availability unverified) | `Ritual of Refreshment`, `Tischlein deck dich` | `Table.mp3` |
+| Warlock Healthstone ritual cast (`SPELL_CAST_SUCCESS`) | `HealthstoneSoundFlag` | Source is a party/raid member; at most once per 60s (same cooldown-gate reasoning as Mage Table). | `29893` (TBC-introduced, SoD availability unverified) | `Ritual of Souls`, `Ritual der Seelen` | `healthstone.mp3` |
 
 ## Deaths
 
