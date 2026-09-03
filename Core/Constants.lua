@@ -56,6 +56,23 @@ CritLog.Constants = {
         raidEndBye = "bye.mp3",
         raidEndFinal = "end.mp3",
         wipe = "wipe.mp3",
+        login = "Login.mp3",
+        lotteryFirst = "lottery2.wav",
+        lotterySecond = "lottery3.mp3",
+        -- roll1/69/100 hit exact values; roll5/roll10/roll95 are percentage
+        -- bands - see Filters.classifyRoll for the exact thresholds.
+        roll1 = "roll1.mp3",
+        roll5 = "roll5.mp3",
+        roll10 = "roll10.mp3",
+        roll69 = "roll69.mp3",
+        roll95 = "roll95.mp3",
+        roll100 = "roll100.mp3",
+        drums = "dkRapL.mp3",
+        painSuppression = "Painsup.mp3",
+        hymnOfHope = "HymnOfHope.mp3",
+        evocation = "evo.mp3",
+        mageTable = "Table.mp3",
+        healthstoneRitual = "healthstone.mp3",
     },
     -- Boss detection is classification-first with the name lists as a
     -- fallback, mirroring the spells table below: the primary signal is the
@@ -169,10 +186,51 @@ CritLog.Constants = {
             ids = { 27827 },
             names = { "Spirit of Redemption", "Geist der Erlösung" },
         },
+        -- Evocation's ID (12051) is confirmed on Wowhead Classic. The
+        -- remaining five below are ported from the legacy addon, which
+        -- only ever matched by name - no ID was verified for any of them,
+        -- so `ids` is left empty and they rely entirely on the name
+        -- fallback, same "wrong ID fails silently, wrong name doesn't cost
+        -- anything extra" reasoning as elsewhere in this table. Pain
+        -- Suppression's ID (402004) is confirmed as the Season of
+        -- Discovery Priest rune. Drums of Battle/Ritual of Refreshment
+        -- (Mage Table)/Ritual of Souls (Healthstone) are TBC+-era spells
+        -- in retail's history; whether they - or Hymn of Hope, never
+        -- confirmed to exist as a SoD rune at all - actually fire on
+        -- Classic Era/SoD is unverified, mirroring the legacy addon's own
+        -- uncertainty about several of these (see CHANGELOG.md).
+        evocation = {
+            ids = { 12051 },
+            names = { "Evocation", "Hervorrufung" },
+        },
+        painSuppression = {
+            ids = { 402004 },
+            names = { "Pain Suppression", "Schmerzunterdrückung" },
+        },
+        drums = {
+            ids = {},
+            names = {
+                "Drums of Battle", "Greater Drums of Battle",
+                "Trommeln der Schlacht", "Große Trommeln der Schlacht",
+            },
+        },
+        hymnOfHope = {
+            ids = {},
+            names = { "Hymn of Hope", "Hymne der Hoffnung" },
+        },
+        mageTable = {
+            ids = {},
+            names = { "Ritual of Refreshment", "Tischlein deck dich" },
+        },
+        healthstoneRitual = {
+            ids = {},
+            names = { "Ritual of Souls", "Ritual der Seelen" },
+        },
     },
     chatTriggers = {
         raidEnd = { "raid ende", "raid end" },
         wipe = { "shit show", "wipe" },
+        gamble = "CrossGambling: A new game has been started! Type 1 to join!",
     },
     -- One line per slash command, shared by Commands.lua's `/cl help`
     -- (prints each line to chat) and UI/HelpPanel.lua's Help button (shows
@@ -193,6 +251,9 @@ CritLog.Constants = {
         "/cl options (or /cl opt): opens/closes the CritLog options panel",
         "/cl ready: turns ReadyCheck Sound on/off",
         "/cl aura: turns Aura/Spell Sound on/off",
+        "/cl login: turns Login Sound on/off (plays once on login/reload)",
+        "/cl roll: turns Roll Sound on/off (specific /roll 1-100 results)",
+        "/cl gamble: turns Lottery Sound on/off (CrossGambling raid chat trigger)",
         "------------",
         "/cl priest: toggles Priest Sound between None/Both (see /cl options for Experimental/Roster only)",
         "/cl dps: toggles Damage Dealer Sound between None/Both (see /cl options for Experimental/Roster only)",

@@ -94,6 +94,9 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl debug` | Toggles diagnostic chat output (spell ID/name seen by aura triggers, level-filter decisions). Off by default. |
 | `/cl options` (or `/cl opt`) | Opens/closes the in-game options panel (checkboxes for every toggle above, plus preview buttons for triggerable sounds). First draft, not yet in-game verified — see [CHANGELOG.md](CHANGELOG.md). |
 | `/cl ready` | Toggles the ready-check sound. |
+| `/cl login` | Toggles the login sound. Off by default. |
+| `/cl roll` | Toggles sounds for specific `/roll` results on a 1-100 roll (1, 69, 95+, 100, lowest range). |
+| `/cl gamble` | Toggles the lottery sound (CrossGambling raid-chat announcement). |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl player` | Toggles the player's own death sound. |
 | `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: melee-capable class, not flagged Healer - the roster/name-list side isn't melee-only, ranged DPS names belong there too. |

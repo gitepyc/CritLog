@@ -15,8 +15,14 @@ local SOUND_CHECKBOXES = {
       hint = "Extra sound when a hit deals over 9000 damage." },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },
+    { field = "LoginSoundFlag", label = "Login sound", sound = "login",
+      hint = "Plays once on login/reload. Off by default." },
+    { field = "RollSoundFlag", label = "Roll sound", sound = "roll100",
+      hint = "Specific /roll results on a 1-100 roll (1, 69, 95+, 100, lowest range)." },
+    { field = "GambleSoundFlag", label = "Lottery sound", sound = "lotteryFirst",
+      hint = "A CrossGambling lottery announcement in raid chat." },
     { field = "AuraSoundFlag", label = "Aura/spell sound",
-      hint = "Master switch for the 7 spell sounds below." },
+      hint = "Master switch for the 13 spell sounds below." },
     -- indent = true: these 7 are a sub-category under AuraSoundFlag above,
     -- not 7 more peers of it - smaller and indented so that reads clearly.
     { field = "BloodlustSoundFlag", label = "Bloodlust/Heroism", sound = "bloodlust", indent = true,
@@ -38,6 +44,18 @@ local SOUND_CHECKBOXES = {
     -- name fallback), which was misleading here as a trigger description.
     { field = "SoulstoneSoundFlag", label = "Soulstone Applied", sound = "soulstone", indent = true,
       hint = "Received the Soulstone buff (not the resurrection itself)." },
+    { field = "DrumsSoundFlag", label = "Drums of Battle", sound = "drums", indent = true,
+      hint = "Received Drums of Battle." },
+    { field = "PainSuppressionSoundFlag", label = "Pain Suppression", sound = "painSuppression", indent = true,
+      hint = "Received Pain Suppression." },
+    { field = "HymnOfHopeSoundFlag", label = "Hymn of Hope", sound = "hymnOfHope", indent = true,
+      hint = "Received Hymn of Hope." },
+    { field = "EvocationSoundFlag", label = "Evocation", sound = "evocation", indent = true,
+      hint = "Received Evocation." },
+    { field = "MageTableSoundFlag", label = "Mage Table", sound = "mageTable", indent = true,
+      hint = "A party/raid member casts Ritual of Refreshment (max once per 100s)." },
+    { field = "HealthstoneSoundFlag", label = "Warlock Healthstone Ritual", sound = "healthstoneRitual", indent = true,
+      hint = "A party/raid member casts Ritual of Souls (max once per 60s)." },
     { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
       hint = "Plays when you yourself die." },
     -- These four (unlike PlayerSoundFlag above) can be driven by the live
@@ -76,14 +94,15 @@ local SOUND_CHECKBOXES = {
 local soundFrame
 
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading and all 20 sound toggle rows
-    -- (each with its own hint line underneath) - the 7 individual aura
-    -- sounds used to be a compact preview-only button grid under a single
-    -- master toggle; now each is a real checkbox row like everything else,
-    -- so it needs noticeably more height than before. The 4 detection-mode
-    -- dropdown rows are taller than a checkbox row too. Not pixel-verified
-    -- in-game yet - see docs/ROADMAP.md, visual polish is a follow-up.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 1010)
+    -- Tall enough for the toggles heading and all 29 sound toggle rows
+    -- (each with its own hint line underneath) - the 13 individual aura/
+    -- ritual sounds used to be a compact preview-only button grid under a
+    -- single master toggle; now each is a real checkbox row like everything
+    -- else, so it needs noticeably more height than before. The 4
+    -- detection-mode dropdown rows are taller than a checkbox row too. Not
+    -- pixel-verified in-game yet - see docs/ROADMAP.md, visual polish is a
+    -- follow-up.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 1400)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
