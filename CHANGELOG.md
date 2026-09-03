@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.1.6-titanpanel-dev
+
+Test build on `feature/titan-panel-integration`, not merged into `dev` -
+standalone, not decided yet whether to keep this.
+
+- feature: naming brought in line with TitanCritLine's own convention - frame renamed `TitanPanelCritLogButton` (was `CritLogTitanPanelButton`), registry id back to plain `"CritLog"` (was `"CritLogTitan"`, no longer needed now that the real "already loaded" bug is fixed)
+
 ## 0.1.5-titanpanel-dev
 
 Test build on `feature/titan-panel-integration`, not merged into `dev` -

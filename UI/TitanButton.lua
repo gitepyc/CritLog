@@ -72,21 +72,25 @@ function CritLog:InitTitanPanelButton()
     -- CreateFrame with an existing global name returns the *same* frame
     -- rather than creating a new one, so this check is enough to make a
     -- second call a no-op regardless of why it happened.
-    if _G.CritLogTitanPanelButton then
+    if _G.TitanPanelCritLogButton then
         return
     end
 
-    local button = CreateFrame("Button", "CritLogTitanPanelButton", UIParent, "TitanPanelTextTemplate")
+    local button = CreateFrame("Button", "TitanPanelCritLogButton", UIParent, "TitanPanelTextTemplate")
     button.registry = {
-        -- Not "CritLog" - kept from an earlier fix attempt at renaming the
-        -- id away from a suspected (and, it turned out, wrong) stale-
-        -- SavedVariables theory; the real "already loaded" cause was a
-        -- genuine double registration, now fixed below (see the comment
-        -- above the removed TitanPanelButton_OnLoad(button) call). No
-        -- reason to rename it back, "CritLogTitan" works fine. Display
-        -- strings (menuText, tooltipTitle, menu labels below) still say
-        -- "CritLog" - only the internal registry key differs.
-        id = "CritLogTitan",
+        -- Plain "CritLog", no "Titan" prefix/suffix on the id itself - see
+        -- TitanCritLine's own TITAN_CRITLINE_ID ("CritLine", not
+        -- "TitanCritLine"). The frame name above follows the matching
+        -- convention instead: "TitanPanel<Name>Button"
+        -- (TitanPanelCritLineButton in the reference, TitanPanelCritLogButton
+        -- here) - "Titan" is a naming prefix for the frame/addon, not the
+        -- registry id. An earlier attempt used "CritLogTitan" here while
+        -- chasing a since-debunked stale-SavedVariables theory for the
+        -- "already loaded" bug (the real cause, a genuine double
+        -- registration, is fixed below - see the comment above the removed
+        -- TitanPanelButton_OnLoad(button) call) - safe to use the plain
+        -- name again now that the actual bug is gone.
+        id = "CritLog",
         category = "Combat",
         version = self.version,
         menuText = "CritLog",
