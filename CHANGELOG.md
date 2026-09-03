@@ -7,6 +7,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.2-dev
+
+- feature: new Roll Sounds panel (opened from Sound Settings, same pattern as Aura/Death Sounds) - Preview button for each of the 6 roll-result sounds; still one shared toggle (`RollSoundFlag`) for all of them, not individually toggleable
+- feature: Roll Sounds row moved to sit right after Lottery on the Sound Settings panel, renamed from "Roll sound" to "Roll Sounds"
+
 ## 0.9.1-dev
 
 - feature: TitanPanel button text - numbers rendered white, matching TitanCritLine's own color scheme (separators stay the default gold)
