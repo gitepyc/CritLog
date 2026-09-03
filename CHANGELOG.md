@@ -7,6 +7,19 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.7.5-dev
+
+- feature: Death Sounds dropdown order now matches Roster Settings (DPS, Tank, Healer, Boss)
+- feature: dropdown hints say "Experimental:" instead of "Live check:", matching the mode's actual name
+
+## 0.7.4-dev
+
+- fix: toggle-row tooltips reported still not showing - root cause was our own options panels sitting on TOOLTIP frame strata, competing with GameTooltip itself; panels now use FULLSCREEN (matching TitanCritLine's settings panel), tooltip code back to the plain TitanCritLine pattern
+
+## 0.7.3-dev
+
+- fix: toggle-row tooltips reported still not showing - anchor now matches TitanCritLine's proven pattern, plus explicit EnableMouse
+
 ## 0.7.2-dev
 
 - fix: toggle-row tooltips still didn't show (hit-rect expansion used a width that read as 0)
