@@ -9,6 +9,29 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.6.1](https://github.com/gitepyc/CritLog/tree/0.2.6.1) (2026-09-03)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.6...0.2.6.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** add scripts/cleanup-tags.sh for manual -dev tag cleanup
+
+- **feature:** replace static hint lines with hover tooltips on toggle rows
+
+- **feature:** add addon icon (media/icon.svg + rendered PNG)
+
+- **feature:** wire up addon icon via `## IconTexture`
+
+- **fix:** add missing Close button to the main options panel
+
+- **fix:** toggle-row tooltips not showing (GameTooltip vs. our own TOOLTIP-strata panels)
+
+- **fix:** tooltip hit-rect expansion used a fixed width instead of GetStringWidth() (was reading as 0)
+
+- **fix:** tooltip anchor now matches TitanCritLine's proven pattern, force EnableMouse
+
+- **fix:** tooltips for real - stop putting options panels on TOOLTIP strata (now FULLSCREEN)
+
+- **tweak:** reorder Death Sounds dropdowns to match Roster Settings, reword hints to say "Experimental"
+
 ## [0.2.6](https://github.com/gitepyc/CritLog/tree/0.2.6) (2026-09-03)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.5...0.2.6) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
