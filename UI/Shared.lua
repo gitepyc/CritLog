@@ -222,6 +222,15 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
         -- abandoning the shared column).
         local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
         previewButton:SetPoint("LEFT", dropdown, "LEFT", 340 + 16, 0)
+        -- Raised above the dropdown explicitly - the dropdown's own
+        -- expanded hit rect (SetHitRectInsets below) reaches right up to
+        -- x=450 from its own left edge, which fully covers this button
+        -- (it sits at x=356-426). Both are siblings at the same default
+        -- frame level, and in-game reported: the button was completely
+        -- unclickable, the dropdown's oversized hit rect was winning every
+        -- click meant for it. Same latent risk exists for the checkbox
+        -- row's Preview button below, fixed there too.
+        previewButton:SetFrameLevel(dropdown:GetFrameLevel() + 1)
     end
 
     attachTooltip(dropdown, entry.hint)
@@ -413,6 +422,16 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
                 -- depend on how long a given label happens to be.
                 local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
                 previewButton:SetPoint("LEFT", check, "LEFT", 340 - indent, 0)
+                -- Raised above the checkbox explicitly - same fix as
+                -- createDropdownRow's identical comment above, for the
+                -- same reason: the checkbox's own expanded hit rect
+                -- (SetHitRectInsets below) overlaps this button's left
+                -- edge, and both are siblings at the same default frame
+                -- level. In-game reported unclickable for the dropdown
+                -- rows specifically; this is the same latent risk here,
+                -- fixed proactively even though not (yet) reported for a
+                -- checkbox row.
+                previewButton:SetFrameLevel(check:GetFrameLevel() + 1)
             end
 
             attachTooltip(check, entry.hint)

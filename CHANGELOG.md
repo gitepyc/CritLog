@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.3-dev
+
+- fix: Death Sounds dropdown rows' Preview buttons were completely unclickable - the dropdown's own expanded tooltip hit rect fully covered them and won every click; same latent risk fixed proactively for every checkbox row's Preview button too, not yet reported there
+
 ## 0.9.2-dev
 
 - feature: new Roll Sounds panel (opened from Sound Settings, same pattern as Aura/Death Sounds) - Preview button for each of the 6 roll-result sounds; still one shared toggle (`RollSoundFlag`) for all of them, not individually toggleable
