@@ -9,6 +9,27 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.1](https://github.com/gitepyc/CritLog/tree/0.3.1) (2026-09-03)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.0...0.3.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **docs:** explain save behavior on the Roster Settings panel
+
+- **feature:** add Roll Sounds panel with per-file Preview, move row after Lottery
+
+- **fix:** unclickable Preview buttons - raise them above their dropdown/checkbox
+
+- **fix:** Help panel's cascading indent, reorder Sound Settings' Roll button
+
+- **fix:** Roll Sounds button overflow (final resize/reposition), retune TitanPanel tooltip colors (several in-game-tuned rounds, final: gold spell / muted red target / green-starting amount gradient)
+
+- **fix:** TitanPanel button text never refreshing after a new crit
+
+- **tweak:** TitanPanel button numbers rendered white, matching TitanCritLine's color scheme
+
+- **tweak:** Help panel About line pushed down as its own footer, Aura/spell sound hint drops the exact sound count
+
+- **tweak:** anchor Help panel's About line to the panel's own bottom, not the content above
+
 ## [0.3.0](https://github.com/gitepyc/CritLog/tree/0.3.0) (2026-09-03)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.6.1...0.3.0) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
