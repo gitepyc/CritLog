@@ -7,6 +7,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.9-dev
+
+- fix: Roll Sounds button overflowed past the panel's right edge and sat awkwardly on its own row - now sized/positioned like a Preview button, same row as the RollSoundFlag checkbox
+- feature: TitanPanel tooltip colors toned down again - spell gold, target muted red, amount scale now starts at green instead of white (in-game screenshotted: the yellow/blue/heat-scale combo "didn't look good")
+
 ## 0.9.8-dev
 
 - feature: TitanPanel tooltip restyled - spell yellow, target blue (was blue/red, "didn't look good"), plain text now explicitly white instead of relying on GameTooltip's own default

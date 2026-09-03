@@ -58,30 +58,25 @@ local function buildSoundFrame()
 
     local lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_TOP, togglesHeading)
 
+    -- In-game screenshotted: a 140px button at the Preview column
+    -- overflowed past the panel's right edge, and sitting on its own row
+    -- below RollSoundFlag (rather than beside it) looked like it
+    -- belonged to the wrong row. Sized and positioned like a Preview
+    -- button instead - same row as the checkbox, same column, close to
+    -- the same size (Preview buttons are 70x20) - "Roll Sounds..." needs
+    -- a bit more width than "Preview" to stay readable, 110px comfortably
+    -- fits within this panel's right margin at this column.
     local rollSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-    rollSoundsButton:SetSize(140, 24)
+    rollSoundsButton:SetSize(110, 20)
     rollSoundsButton:SetText("Roll Sounds...")
     rollSoundsButton:SetNormalFontObject("GameFontNormalSmall")
     rollSoundsButton:SetHighlightFontObject("GameFontHighlightSmall")
-    -- Under the shared Preview-button column (x=340 from the checkbox's
-    -- own left edge, same column every other row's Preview button sits
-    -- in) instead of flush-left - in-game requested.
-    rollSoundsButton:SetPoint("TOPLEFT", lastAnchor, "BOTTOMLEFT", lastOffset + 340, -12)
+    rollSoundsButton:SetPoint("LEFT", lastAnchor, "LEFT", 340 + lastOffset, 0)
     rollSoundsButton:SetScript("OnClick", function()
         CritLog:ShowRollSounds()
     end)
 
-    -- A separate invisible anchor on the same row as the button above,
-    -- but back at the normal checkbox column (x=0) - chaining
-    -- buildToggleRows directly from the button would carry its +340
-    -- offset into the next checkbox row, misaligning it. Same
-    -- decouple-visual-from-chaining-anchor idea the level-diff slider's
-    -- value label uses (see UI/Shared.lua's createSliderRow).
-    local afterRollButton = CreateFrame("Frame", nil, f)
-    afterRollButton:SetSize(1, 1)
-    afterRollButton:SetPoint("TOPLEFT", lastAnchor, "BOTTOMLEFT", lastOffset, -12)
-
-    lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_BOTTOM, afterRollButton)
+    lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_BOTTOM, lastAnchor)
 
     local auraSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     auraSoundsButton:SetSize(140, 24)
