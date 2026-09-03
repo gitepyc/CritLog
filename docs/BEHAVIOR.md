@@ -24,7 +24,7 @@ toggles below.
 
 | Event | Condition | Effect | Sound |
 | --- | --- | --- | --- |
-| `PLAYER_LOGIN` | Always | Initializes/migrates `CritLogDB` and prints records. | `Login.mp3`, only if `LoginSoundFlag = true` (`/cl login`, **off by default** - ported back from the legacy addon in `feature/legacy-sound-port`, see `CHANGELOG.md`). |
+| `PLAYER_LOGIN` | Always | Initializes/migrates `CritLogDB` and prints records. | None. A login sound was briefly ported from the legacy addon in `feature/legacy-sound-port`, then removed - see `CHANGELOG.md`. |
 | `READY_CHECK` | `ReadySoundFlag = true` | No state change. | `Ready.mp3` |
 
 ## Critical hits and heals

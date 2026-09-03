@@ -10,8 +10,8 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    other work anymore - bugs found during verification (e.g. the
    `0.4.2-dev` NPC-death-sound fix, the `0.4.8-dev` Escape-key fix) land on
    `dev` as they're reported, in parallel with feature work below. Also
-   still open, from `feature/legacy-sound-port`: none of the 15 sounds
-   ported from the legacy addon (login, roll, lottery, Drums of Battle,
+   still open, from `feature/legacy-sound-port`: none of the 14 sounds
+   ported from the legacy addon (roll, lottery, Drums of Battle,
    Pain Suppression, Hymn of Hope, Evocation, Mage Table, Warlock
    Healthstone ritual) have been in-game confirmed yet - and four of them
    (Drums of Battle, Mage Table, the Healthstone ritual, Hymn of Hope) have

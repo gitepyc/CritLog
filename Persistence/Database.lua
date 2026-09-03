@@ -20,9 +20,6 @@ local DEFAULTS = {
     AllCritFlag = false,
     WhiteHitFlag = true,
     ReadySoundFlag = true,
-    -- Off by default, matching the legacy addon's own default - a login
-    -- sound is more likely to be an annoyance than the other misc sounds.
-    LoginSoundFlag = false,
     RollSoundFlag = true,
     GambleSoundFlag = true,
     AuraSoundFlag = true,

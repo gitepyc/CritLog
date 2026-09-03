@@ -40,7 +40,6 @@ local function printConfig()
     print("/cl debug: "..tostring(CritLogDB.DebugFlag))
     print("/cl ready: "..tostring(CritLogDB.ReadySoundFlag))
     print("/cl aura: "..tostring(CritLogDB.AuraSoundFlag))
-    print("/cl login: "..tostring(CritLogDB.LoginSoundFlag))
     print("/cl roll: "..tostring(CritLogDB.RollSoundFlag))
     print("/cl gamble: "..tostring(CritLogDB.GambleSoundFlag))
     print("------------")
@@ -114,12 +113,6 @@ function CritLog:PrintCritLogs(message)
             "AuraSoundFlag",
             "CritLog Aura/Spell Sound On",
             "CritLog Aura/Spell Sound Off"
-        )
-    elseif command == "login" then
-        toggle(
-            "LoginSoundFlag",
-            "CritLog LoginSound On",
-            "CritLog LoginSound Off"
         )
     elseif command == "roll" then
         toggle(

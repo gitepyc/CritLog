@@ -22,8 +22,6 @@ local SOUND_CHECKBOXES_TOP = {
       hint = "Extra sound when a hit deals over 9000 damage." },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },
-    { field = "LoginSoundFlag", label = "Login sound", sound = "login",
-      hint = "Plays once on login/reload. Off by default." },
     { field = "RollSoundFlag", label = "Roll sound", sound = "roll100",
       hint = "Specific /roll results on a 1-100 roll (1, 69, 95+, 100, lowest range)." },
     { field = "GambleSoundFlag", label = "Lottery sound", sound = "lotteryFirst",

@@ -6,6 +6,13 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.9-dev
+
+- Removed the login sound (`LoginSoundFlag`, `Login.mp3`, `/cl login`) that
+  `0.6.7-dev` ported from the legacy addon - decided against, every
+  reference removed: the DB flag, the constant/sound file, the panel row,
+  the slash command, and the docs. `Login.mp3` deleted from `sounds/`.
+
 ## 0.6.8-dev
 
 - Split the 13 individual aura/ritual sound toggles out of Sound Settings
