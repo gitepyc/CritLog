@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.1-dev
+
+- feature: TitanPanel button text - numbers rendered white, matching TitanCritLine's own color scheme (separators stay the default gold)
+
 ## 0.9.0-dev
 
 Merges two standalone test branches into `dev`: `feature/level-diff-slider`

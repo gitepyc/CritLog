@@ -24,10 +24,18 @@
 -- name (see registry.buttonTextFunction below) every time it wants to
 -- refresh the button, so it always reflects the live CritLogDB.records
 -- state - nothing is cached here.
+-- Numbers rendered white (|cffffffff...|r), "/" and "CL: " left in the
+-- default inherited font color (GameFontNormalSmall's usual gold) -
+-- in-game requested to match TitanCritLine's own look exactly. Verified
+-- against their actual code (TitanCritLine.lua): BODY_TEXT_COLOR is
+-- literally "|cffffffff", and only the %s values passed through their
+-- COLOR() helper get wrapped in it - the "/" separators in their format
+-- string are outside that wrapping, same split done here.
 function CritLogTitan_GetButtonText()
     local function top(kind)
         local entry = CritLogDB.records[kind][1]
-        return entry and tostring(entry.amount) or "-"
+        local value = entry and tostring(entry.amount) or "-"
+        return "|cffffffff"..value.."|r"
     end
 
     return "CL: "..top("damage").."/"..top("whiteHit").."/"..top("heal")
