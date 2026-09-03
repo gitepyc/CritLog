@@ -78,7 +78,18 @@ function CritLog:InitTitanPanelButton()
 
     local button = CreateFrame("Button", "CritLogTitanPanelButton", UIParent, "TitanPanelTextTemplate")
     button.registry = {
-        id = "CritLog",
+        -- Not "CritLog" - in-game reported: Titan kept rejecting
+        -- registration with "Plugin 'CritLog' already loaded" even on a
+        -- freshly reloaded client with a single, guarded registration call
+        -- (see InitTitanPanelButton's guard above and CHANGELOG.md) -
+        -- likely a stale/corrupted entry in Titan's own SavedVariables
+        -- left over from the earlier (pre-guard) double-registration bug,
+        -- which a code fix alone can't clean up. A different id sidesteps
+        -- whatever's stuck under the old one entirely, no need to touch
+        -- Titan's SavedVariables by hand. Display strings (menuText,
+        -- tooltipTitle, menu labels below) still say "CritLog" - only the
+        -- internal registry key changed.
+        id = "CritLogTitan",
         category = "Combat",
         version = self.version,
         menuText = "CritLog",
