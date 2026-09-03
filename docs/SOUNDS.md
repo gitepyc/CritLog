@@ -2,10 +2,10 @@
 
 ## Overview
 
-The catalog contains **33 files**, all in active use, totaling approximately
-**2.9 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
+The catalog contains **32 files**, all in active use, totaling approximately
+**2.8 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
 consolidation, random-pick removal, the `feature/legacy-sound-port` batch of
-15 files ported from the original single-file addon); [ROADMAP.md](ROADMAP.md)
+14 files ported from the original single-file addon); [ROADMAP.md](ROADMAP.md)
 for what's still outstanding — the asset-rights review below is the big one.
 
 Duration and bitrate values come from Windows audio metadata; `n/a` means
@@ -32,7 +32,6 @@ Windows did not expose the value.
 | Boss death | `FFX.mp3` | Hard-coded boss dies |
 | Raid end | `bye.mp3`, then `end.mp3` | Matching raid-leader message, both immediately |
 | Wipe | `wipe.mp3` | Matching raid-leader message |
-| Login | `Login.mp3` | `PLAYER_LOGIN`; off by default (`/cl login`) |
 | Lottery | `lottery2.wav`, then `lottery3.mp3` | Matching CrossGambling message in raid chat, both immediately |
 | Roll (exact 1) | `roll1.mp3` | `/roll` result is the lowest possible value on a 1-100 roll |
 | Roll (low band) | `roll5.mp3` | `/roll` result in the roughly-2-7% band on a 1-100 roll |
@@ -68,7 +67,6 @@ complete trigger conditions.
 | `healthstone.mp3` | n/a | n/a | 85,855 B | Warlock Healthstone ritual |
 | `HymnOfHope.mp3` | n/a | n/a | 26,330 B | Hymn of Hope |
 | `Innervate.mp3` | 2 s | 128 kbps | 47,754 B | Innervate |
-| `Login.mp3` | n/a | n/a | 77,574 B | login (off by default) |
 | `lottery2.wav` | n/a | n/a | 706,330 B | lottery, first clip |
 | `lottery3.mp3` | n/a | n/a | 29,603 B | lottery, second clip |
 | `Manatide.mp3` | 2 s | 320 kbps | 82,684 B | Mana Tide Totem |

@@ -14,10 +14,6 @@ end)
 function CritLog:PLAYER_LOGIN()
     self:SetDefaults()
     self:PrintCritLogs()
-
-    if CritLogDB.LoginSoundFlag then
-        self:PlaySound(self.Constants.sounds.login)
-    end
 end
 
 function CritLog:READY_CHECK()

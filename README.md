@@ -63,7 +63,7 @@ CritLog listens for six events:
 
 | WoW event | Reaction |
 | --- | --- |
-| `PLAYER_LOGIN` | Initializes per-character settings, prints stored records, and plays the login sound if enabled (off by default). |
+| `PLAYER_LOGIN` | Initializes per-character settings and prints stored records. |
 | `COMBAT_LOG_EVENT_UNFILTERED` | Detects critical spell, ranged, and melee damage; critical healing; selected auras; and deaths. |
 | `READY_CHECK` | Plays a sound when enabled. |
 | `CHAT_MSG_RAID_LEADER` | Reacts to hard-coded raid-leader phrases such as `raid end`, `raid ende`, `wipe`, and `shit show`. |
@@ -97,7 +97,6 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl debug` | Toggles diagnostic chat output (spell ID/name seen by aura triggers, level-filter decisions). Off by default. |
 | `/cl options` (or `/cl opt`) | Opens/closes the in-game options panel (checkboxes for every toggle above, plus preview buttons for triggerable sounds). First draft, not yet in-game verified — see [CHANGELOG.md](CHANGELOG.md). |
 | `/cl ready` | Toggles the ready-check sound. |
-| `/cl login` | Toggles the login sound. Off by default. |
 | `/cl roll` | Toggles sounds for specific `/roll` results on a 1-100 roll (1, 69, 95+, 100, lowest range). |
 | `/cl gamble` | Toggles the lottery sound (CrossGambling raid-chat announcement). |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |

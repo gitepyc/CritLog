@@ -56,7 +56,6 @@ CritLog.Constants = {
         raidEndBye = "bye.mp3",
         raidEndFinal = "end.mp3",
         wipe = "wipe.mp3",
-        login = "Login.mp3",
         lotteryFirst = "lottery2.wav",
         lotterySecond = "lottery3.mp3",
         -- roll1/69/100 hit exact values; roll5/roll10/roll95 are percentage
@@ -251,7 +250,6 @@ CritLog.Constants = {
         "/cl options (or /cl opt): opens/closes the CritLog options panel",
         "/cl ready: turns ReadyCheck Sound on/off",
         "/cl aura: turns Aura/Spell Sound on/off",
-        "/cl login: turns Login Sound on/off (plays once on login/reload)",
         "/cl roll: turns Roll Sound on/off (specific /roll 1-100 results)",
         "/cl gamble: turns Lottery Sound on/off (CrossGambling raid chat trigger)",
         "------------",
