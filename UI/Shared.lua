@@ -24,11 +24,31 @@ function CritLog.UI.previewSound(soundKey)
     PlaySoundFile(CritLog.soundPath..CritLog.Constants.sounds[soundKey], "Master")
 end
 
+-- Same confirmation pattern as MainPanel.lua's "Reset All" dialog
+-- (CRITLOG_RESET_ALL_HIGHSCORES) - parameterized on the category label via
+-- StaticPopup's text_arg1 substitution instead of one dialog per kind.
+-- In-game requested: every reset action should confirm, not just "Reset
+-- All" - a single accidental click on one of these used to lose a
+-- category's highscores instantly, no way back.
+StaticPopupDialogs["CRITLOG_RESET_CATEGORY"] = {
+    text = "Delete every %s highscore entry? This cannot be undone.",
+    button1 = "Delete",
+    button2 = "Cancel",
+    OnAccept = function(_, data)
+        CritLog:ResetRecord(data.kind)
+        CritLog:RefreshOptionsPanel()
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
 -- Clears a single highscore record (e.g. a false-positive value from some
--- other addon's damage numbers) without touching the other two, then
--- refreshes the displayed text immediately. `label` defaults to "Reset";
--- the main panel's three rows all use "Reset all" instead - wording only,
--- each one still just clears its own `kind`, not the other two.
+-- other addon's damage numbers) without touching the other two. `label`
+-- defaults to "Reset"; the main panel's three rows all use "Reset all"
+-- instead - wording only, each one still just clears its own `kind`, not
+-- the other two.
 function CritLog.UI.createResetButton(parent, kind, label)
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetSize(60, 18)
@@ -36,8 +56,7 @@ function CritLog.UI.createResetButton(parent, kind, label)
     button:SetNormalFontObject("GameFontNormalSmall")
     button:SetHighlightFontObject("GameFontHighlightSmall")
     button:SetScript("OnClick", function()
-        CritLog:ResetRecord(kind)
-        CritLog:RefreshOptionsPanel()
+        StaticPopup_Show("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds[kind].label, nil, { kind = kind })
     end)
     return button
 end

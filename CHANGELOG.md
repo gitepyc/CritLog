@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.7.6-dev
+
+- feature: every highscore reset (per-category buttons, and now `/cl reset`/`/cl reset damage|whitehit|heal` too) asks for confirmation, not just "Reset All"
+
 ## 0.7.5-dev
 
 - feature: Death Sounds dropdown order now matches Roster Settings (DPS, Tank, Healer, Boss)

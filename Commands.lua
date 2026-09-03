@@ -64,18 +64,20 @@ end
 function CritLog:PrintCritLogs(message)
     local command = message or ""
 
+    -- Same confirmation dialogs the options panel's reset buttons use
+    -- (CRITLOG_RESET_ALL_HIGHSCORES/CRITLOG_RESET_CATEGORY, both
+    -- registered in UI/MainPanel.lua/UI/Shared.lua, loaded before this
+    -- file per CritLog.toc) - in-game requested: every way to reset
+    -- highscores should confirm first, chat commands included, not just
+    -- the panel buttons.
     if command == "reset" then
-        self:ResetRecords()
-        printHighscores()
+        StaticPopup_Show("CRITLOG_RESET_ALL_HIGHSCORES")
     elseif command == "reset damage" then
-        self:ResetRecord("damage")
-        printHighscores()
+        StaticPopup_Show("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.damage.label, nil, { kind = "damage" })
     elseif command == "reset whitehit" then
-        self:ResetRecord("whiteHit")
-        printHighscores()
+        StaticPopup_Show("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.whiteHit.label, nil, { kind = "whiteHit" })
     elseif command == "reset heal" then
-        self:ResetRecord("heal")
-        printHighscores()
+        StaticPopup_Show("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.heal.label, nil, { kind = "heal" })
     elseif command == "mute" then
         toggle(
             "MasterSoundFlag",
