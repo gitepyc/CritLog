@@ -3,13 +3,12 @@
 -- before you even see whether crit tracking itself is configured how you
 -- want.
 --
--- Split into two row lists (TOP/BOTTOM) rather than one, with the "Aura
--- Sounds..." button manually placed between them in buildSoundFrame below -
--- the 13 individual aura/ritual sounds used to live here as indented rows
--- under AuraSoundFlag, but got their own panel (UI/AuraSoundPanel.lua) once
--- this one grew too tall (see CHANGELOG.md). AuraSoundFlag (the master
--- switch) stays here, at the end of TOP.
-local SOUND_CHECKBOXES_TOP = {
+-- Two groups of rows used to live here directly and grew this panel too
+-- tall: the 13 individual aura/ritual sounds (now UI/AuraSoundPanel.lua)
+-- and the player/priest/DPS/tank/boss death-sound block (now
+-- UI/DeathSoundPanel.lua) - see CHANGELOG.md. What's left here is just the
+-- general toggles plus the two buttons to reach those panels.
+local SOUND_CHECKBOXES = {
     { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)",
       hint = "Mutes everything below without changing individual settings." },
     { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
@@ -30,53 +29,14 @@ local SOUND_CHECKBOXES_TOP = {
       hint = "Master switch for the 13 spell sounds - see the button below." },
 }
 
-local SOUND_CHECKBOXES_BOTTOM = {
-    { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
-      hint = "Plays when you yourself die." },
-    -- These four (unlike PlayerSoundFlag above) can be driven by the live
-    -- class/role/classification detection in Core/CombatLog.lua
-    -- (isMeleeClass, isAssignedTank, isPriestClass, isClassifiedBoss), the
-    -- hardcoded name roster, both, or neither - a dropdown instead of a
-    -- checkbox. No shared master switch anymore (there used to be one,
-    -- DeadSoundFlag) - setting all four to "None" is equivalent, and the
-    -- dropdown is already the one place that controls all of this.
-    -- "Experimental" isn't yet in-game verified for tank/boss/priest
-    -- specifically (melee's false-positive bug is fixed and confirmed);
-    -- "Roster" and "Both" (the original default) aren't affected by that.
-    -- Labeled "DPS", not "Damage Dealer", specifically here (unlike the
-    -- roster category label, which stays "Damage Dealer") - kept short so
-    -- it's close to the same length as Priest/Tank/Boss below, which
-    -- keeps all four rows' Preview buttons in one aligned column instead
-    -- of each sitting wherever its own label happens to end.
-    { field = "PriestDetectionMode", label = "Priest death sound", sound = "priestDeath",
-      options = CritLog.Constants.detectionModes,
-      hint = "Live check: class = PRIEST." },
-    { field = "MeleeDetectionMode", label = "DPS death sound", sound = "meleeDeath",
-      options = CritLog.Constants.detectionModes,
-      hint = "Live check: melee-capable class. Roster: ranged OK too." },
-    { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
-      options = CritLog.Constants.detectionModes,
-      hint = "Live check: assigned raid Tank role." },
-    { field = "BossDetectionMode", label = "Boss death sound", sound = "bossDeath",
-      options = CritLog.Constants.detectionModes,
-      hint = "Live check: live classification (worldboss)." },
-    -- The None/Experimental/Roster/Both explanation applies to all four
-    -- dropdowns above - a note row below them, rather than above (tried
-    -- first, but a note explaining rows already past it read backwards).
-    { note = "None = nothing\nExperimental = live check only\nRoster = name list only\nBoth = Experimental + Roster" },
-}
-
 local soundFrame
 
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading, all 16 checkbox/dropdown/note
-    -- rows (each with its own hint line underneath), and the "Aura
-    -- Sounds..." button between the two row groups - the 13 individual
-    -- aura/ritual sounds that used to live here directly now have their
-    -- own panel (UI/AuraSoundPanel.lua). The 4 detection-mode dropdown rows
-    -- are taller than a checkbox row too. Not pixel-verified in-game yet -
-    -- see docs/ROADMAP.md, visual polish is a follow-up.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 950)
+    -- Tall enough for the toggles heading, all 9 checkbox rows (each with
+    -- its own hint line underneath), and the two buttons to the Aura
+    -- Sounds/Death Sounds panels - not pixel-verified in-game yet, see
+    -- docs/ROADMAP.md.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 560)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
@@ -86,7 +46,7 @@ local function buildSoundFrame()
     togglesHeading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     togglesHeading:SetText("Sound Toggles")
 
-    local lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_TOP, togglesHeading)
+    local lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES, togglesHeading)
 
     local auraSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     auraSoundsButton:SetSize(140, 24)
@@ -98,7 +58,15 @@ local function buildSoundFrame()
         CritLog:ShowAuraSounds()
     end)
 
-    CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_BOTTOM, auraSoundsButton)
+    local deathSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    deathSoundsButton:SetSize(140, 24)
+    deathSoundsButton:SetText("Death Sounds...")
+    deathSoundsButton:SetNormalFontObject("GameFontNormalSmall")
+    deathSoundsButton:SetHighlightFontObject("GameFontHighlightSmall")
+    deathSoundsButton:SetPoint("LEFT", auraSoundsButton, "RIGHT", 8, 0)
+    deathSoundsButton:SetScript("OnClick", function()
+        CritLog:ShowDeathSounds()
+    end)
 
     CritLog.UI.createCloseButton(f)
 
