@@ -7,13 +7,16 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.7.2-dev
+
+- fix: toggle-row tooltips still didn't show (hit-rect expansion used a width that read as 0)
+
 ## 0.7.1-dev
 
 - feature: hover tooltips instead of static hint text under each toggle row
 - fix: main options panel was missing its Close button
 - feature: addon icon (`media/icon.png`), wired up via `## IconTexture`
 - fix: toggle-row tooltips didn't show at all (GameTooltip vs. our own TOOLTIP-strata panels)
-- fix: toggle-row tooltips still didn't show (hit-rect expansion used a width that read as 0)
 
 ## 0.7.0
 
