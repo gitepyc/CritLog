@@ -10,6 +10,7 @@ commit message/PR, not here.
 ## 0.7.2-dev
 
 - fix: toggle-row tooltips still didn't show (hit-rect expansion used a width that read as 0)
+- fix: toggle-row tooltips reported still not showing - anchor now matches TitanCritLine's proven pattern, plus explicit EnableMouse
 
 ## 0.7.1-dev
 
