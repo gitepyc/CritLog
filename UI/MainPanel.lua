@@ -101,10 +101,18 @@ end
 
 -- Lays out every row fresh on each call (cheap: at most 3 categories *
 -- Constants.maxDisplayEntries rows) rather than trying to incrementally
--- patch anchors when the row count changes between refreshes. An empty
--- category still shows one placeholder row (in the rank column, spanning
--- the row - no amount/ability/target/Delete to show yet) so the popup
--- never looks broken for a fresh character.
+-- patch anchors when the row count changes between refreshes.
+--
+-- Always lays out all Constants.maxDisplayEntries rows per category,
+-- regardless of how many entries actually exist yet - missing ones get a
+-- "No record yet" placeholder (see the `not entry` branch below) instead
+-- of being skipped. Previously the row count tracked `#list` (floored at
+-- 1), so a category with e.g. only 1 real entry reserved just 1 row's
+-- worth of space and the next category's heading shifted up to fill the
+-- rest - every category "growing into" its final position as entries
+-- accumulated, in-game reported as looking wrong. Fixed height per
+-- category (even at 0 entries) means the whole popup's layout is stable
+-- from the very first time it's opened.
 --
 -- Only the top Constants.maxDisplayEntries are ever shown, even though up
 -- to Constants.maxTrackedEntries can be stored (see Persistence/
@@ -125,48 +133,39 @@ local function layoutHighscoreList(f)
         previous = headers.rank
 
         local list = CritLogDB.records[kind]
-        local visibleRows = math.max(math.min(#list, CritLog.Constants.maxDisplayEntries), 1)
 
         for index = 1, CritLog.Constants.maxDisplayEntries do
             local row = getOrCreateHighscoreRow(f, kind, index)
+            local entry = list[index]
 
-            if index > visibleRows then
-                row.rankText:Hide()
+            row.rankText:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -4)
+            row.rankText:Show()
+            previous = row.rankText
+
+            if not entry then
+                row.rankText:SetText("No record yet")
                 row.amountText:Hide()
                 row.abilityText:Hide()
                 row.targetText:Hide()
                 row.deleteButton:Hide()
             else
-                local entry = list[index]
-                row.rankText:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -4)
-                row.rankText:Show()
-                previous = row.rankText
+                row.rankText:SetText(index..".")
 
-                if not entry then
-                    row.rankText:SetText("No record yet")
-                    row.amountText:Hide()
-                    row.abilityText:Hide()
-                    row.targetText:Hide()
-                    row.deleteButton:Hide()
-                else
-                    row.rankText:SetText(index..".")
+                row.amountText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.amount - COLUMN_X.rank, 0)
+                row.amountText:SetText(entry.amount)
+                row.amountText:Show()
 
-                    row.amountText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.amount - COLUMN_X.rank, 0)
-                    row.amountText:SetText(entry.amount)
-                    row.amountText:Show()
+                row.abilityText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.ability - COLUMN_X.rank, 0)
+                row.abilityText:SetText(entry.name or "-")
+                row.abilityText:Show()
 
-                    row.abilityText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.ability - COLUMN_X.rank, 0)
-                    row.abilityText:SetText(entry.name or "-")
-                    row.abilityText:Show()
+                row.targetText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.target - COLUMN_X.rank, 0)
+                row.targetText:SetText(entry.target)
+                row.targetText:Show()
 
-                    row.targetText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.target - COLUMN_X.rank, 0)
-                    row.targetText:SetText(entry.target)
-                    row.targetText:Show()
-
-                    row.deleteButton:SetPoint("TOP", row.rankText, "TOP", 0, 0)
-                    row.deleteButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
-                    row.deleteButton:Show()
-                end
+                row.deleteButton:SetPoint("TOP", row.rankText, "TOP", 0, 0)
+                row.deleteButton:SetPoint("RIGHT", f, "RIGHT", -14, 0)
+                row.deleteButton:Show()
             end
         end
     end
