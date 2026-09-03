@@ -338,12 +338,18 @@ function CritLog:HandleDamageCrit(
             alreadyPlayed = true
         end
 
+        -- A new highscore always sounds, same as ability/heal crits below -
+        -- WhiteHitFlag only gates the "every crit" spam sound above, not
+        -- this one. Previously required WhiteHitFlag here too, so a muted
+        -- white-hit new record stayed silent - inconsistent with how
+        -- SPELL_DAMAGE/SPELL_HEAL already behaved, and not what a "new
+        -- record" notification should do.
         local whiteHitList = CritLogDB.records.whiteHit
         local isNewHighscore = CritLog.Records.isNewHighscore(amount, whiteHitList[1] and whiteHitList[1].amount or 0)
         if isNewHighscore then
             self:AddRecord("whiteHit", amount, nil, destName)
             print("DAMAGE Crit WhiteHit: "..amount.." ("..destName..")")
-            if CritLogDB.WhiteHitFlag and not alreadyPlayed then
+            if not alreadyPlayed then
                 self:PlayCritSound()
             end
         end
@@ -358,9 +364,13 @@ function CritLog:HandleDamageCrit(
             alreadyPlayed = true
         end
 
+        -- Matches the SWING_DAMAGE fix above: AddRecord/print always happen
+        -- on a new highscore, and the sound is gated only by alreadyPlayed,
+        -- not WhiteHitFlag - previously a muted ranged white-hit record
+        -- wasn't even recorded, unlike its melee counterpart.
         local whiteHitList = CritLogDB.records.whiteHit
         local isNewHighscore = CritLog.Records.isNewHighscore(amount, whiteHitList[1] and whiteHitList[1].amount or 0)
-        if isNewHighscore and CritLogDB.WhiteHitFlag then
+        if isNewHighscore then
             self:AddRecord("whiteHit", amount, nil, destName)
             print("DAMAGE Crit WhiteHit: "..amount.." ("..destName..")")
             if not alreadyPlayed then
