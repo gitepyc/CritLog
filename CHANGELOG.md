@@ -7,6 +7,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.7.7-dev
+
+- feature: shortened Help panel/`/cl help` wording throughout, merged the four healer/dps/tank/boss lines into one
+- feature: added an "About" line at the end (author, year)
+
 ## 0.7.6-dev
 
 - feature: every highscore reset (per-category buttons, and now `/cl reset`/`/cl reset damage|whitehit|heal` too) asks for confirmation, not just "Reset All"
