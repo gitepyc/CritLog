@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.8-dev
+
+- feature: TitanPanel tooltip restyled - spell yellow, target blue (was blue/red, "didn't look good"), plain text now explicitly white instead of relying on GameTooltip's own default
+- feature: Roll Sounds button moved under the shared Preview-button column instead of flush-left
+- feature: Help panel's About/credits line pushed further down and a touch brighter, reads as its own footer now
+- feature: Aura/spell sound hint no longer states the exact count ("13"), just "spell sounds"
+
 ## 0.9.7-dev
 
 - feature: TitanPanel tooltip amount colors retuned - orange from 4000, red from 8000 (was 5000/10000)

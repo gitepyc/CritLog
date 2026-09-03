@@ -35,7 +35,7 @@ local SOUND_CHECKBOXES_TOP = {
 
 local SOUND_CHECKBOXES_BOTTOM = {
     { field = "AuraSoundFlag", label = "Aura/spell sound",
-      hint = "Master switch for the 13 spell sounds - see the button below." },
+      hint = "Master switch for the spell sounds - see the button below." },
 }
 
 local soundFrame
@@ -63,12 +63,25 @@ local function buildSoundFrame()
     rollSoundsButton:SetText("Roll Sounds...")
     rollSoundsButton:SetNormalFontObject("GameFontNormalSmall")
     rollSoundsButton:SetHighlightFontObject("GameFontHighlightSmall")
-    rollSoundsButton:SetPoint("TOPLEFT", lastAnchor, "BOTTOMLEFT", lastOffset, -12)
+    -- Under the shared Preview-button column (x=340 from the checkbox's
+    -- own left edge, same column every other row's Preview button sits
+    -- in) instead of flush-left - in-game requested.
+    rollSoundsButton:SetPoint("TOPLEFT", lastAnchor, "BOTTOMLEFT", lastOffset + 340, -12)
     rollSoundsButton:SetScript("OnClick", function()
         CritLog:ShowRollSounds()
     end)
 
-    lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_BOTTOM, rollSoundsButton)
+    -- A separate invisible anchor on the same row as the button above,
+    -- but back at the normal checkbox column (x=0) - chaining
+    -- buildToggleRows directly from the button would carry its +340
+    -- offset into the next checkbox row, misaligning it. Same
+    -- decouple-visual-from-chaining-anchor idea the level-diff slider's
+    -- value label uses (see UI/Shared.lua's createSliderRow).
+    local afterRollButton = CreateFrame("Frame", nil, f)
+    afterRollButton:SetSize(1, 1)
+    afterRollButton:SetPoint("TOPLEFT", lastAnchor, "BOTTOMLEFT", lastOffset, -12)
+
+    lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_BOTTOM, afterRollButton)
 
     local auraSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     auraSoundsButton:SetSize(140, 24)

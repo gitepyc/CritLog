@@ -41,11 +41,19 @@ function CritLogTitan_GetButtonText()
     return "CL: "..top("damage").."/"..top("whiteHit").."/"..top("heal")
 end
 
--- Ability names blue, target names red/pink - in-game requested, picks
--- that just read clearly against GameTooltip's dark background, not tied
--- to any particular Blizzard convention.
-local SPELL_COLOR = "|cff69ccf0"
-local TARGET_COLOR = "|cffff8080"
+-- Ability names yellow, target names blue - in-game requested; the first
+-- attempt (spell blue, target red/pink) "didn't look good". Plain text
+-- (the label, colons, parens) explicitly wrapped in white too now instead
+-- of relying on GameTooltip:AddLine's own default color - that default is
+-- apparently not a clean white on its own, part of why the first attempt
+-- looked off.
+local WHITE_COLOR = "|cffffffff"
+local SPELL_COLOR = "|cffffff00"
+local TARGET_COLOR = "|cff3399ff"
+
+local function colored(color, text)
+    return color..text.."|r"
+end
 
 -- Amount colored by a rough "hotter = bigger" heat scale, in-game
 -- requested ("color the number by size or something"). Thresholds tuned
@@ -76,17 +84,20 @@ function CritLogTitan_GetTooltipText()
         local entry = CritLogDB.records[kind][1]
 
         if not entry then
-            return fields.label..": no record yet"
+            return colored(WHITE_COLOR, fields.label..": no record yet")
         end
 
-        local amountText = amountColor(entry.amount)..tostring(entry.amount).."|r"
-        local targetText = TARGET_COLOR..entry.target.."|r"
+        local amountText = colored(amountColor(entry.amount), tostring(entry.amount))
+        local targetText = colored(TARGET_COLOR, entry.target)
 
         if fields.hasName then
-            local spellText = SPELL_COLOR..entry.name.."|r"
-            return fields.label.." ("..spellText.."): "..amountText.." ("..targetText..")"
+            local spellText = colored(SPELL_COLOR, entry.name)
+            return colored(WHITE_COLOR, fields.label.." (")..spellText
+                ..colored(WHITE_COLOR, "): ")..amountText
+                ..colored(WHITE_COLOR, " (")..targetText..colored(WHITE_COLOR, ")")
         end
-        return fields.label..": "..amountText.." ("..targetText..")"
+        return colored(WHITE_COLOR, fields.label..": ")..amountText
+            ..colored(WHITE_COLOR, " (")..targetText..colored(WHITE_COLOR, ")")
     end
 
     return line("damage").."\n"..line("whiteHit").."\n"..line("heal")
