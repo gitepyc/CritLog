@@ -192,8 +192,17 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     attachTooltip(dropdown, entry.hint)
     -- SetHitRectInsets(left, right, top, bottom) - a negative value grows
     -- the hit area outward instead of shrinking it, so this extends the
-    -- dropdown's hit rect rightward to cover its own label too.
-    dropdown:SetHitRectInsets(0, -(label:GetStringWidth() + 8), 0, 0)
+    -- dropdown's hit rect rightward to cover its own label too. A fixed
+    -- value, not label:GetStringWidth() - these rows are built while the
+    -- panel is still hidden (see "Created lazily" comments on each panel),
+    -- and a FontString that's never been drawn yet reliably reports a
+    -- width of 0, which silently shrank this back down to a few px past
+    -- the dropdown itself (in-game reported: tooltip never appeared at
+    -- all). 340 matches the fixed Preview-button column used everywhere
+    -- else in this file, comfortably past every label in use. Same fix
+    -- TitanCritLine's settings panel uses (a flat XML HitRectInsets, not
+    -- a computed one).
+    dropdown:SetHitRectInsets(0, -340, 0, 0)
 
     return dropdown
 end
@@ -281,8 +290,12 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             -- extends the checkbox's hit rect rightward to cover its own
             -- label too (fixes the "small hit area, easy to miss" problem
             -- an earlier tooltip attempt apparently ran into - see
-            -- attachTooltip's comment above).
-            check:SetHitRectInsets(0, -(label:GetStringWidth() + 8), 0, 0)
+            -- attachTooltip's comment above). A fixed value, not
+            -- label:GetStringWidth() - see createDropdownRow's identical
+            -- comment above for why a computed width silently broke this
+            -- entirely (checkboxes are built while the panel is still
+            -- hidden, so the label's width reads as 0 at this point).
+            check:SetHitRectInsets(0, -340, 0, 0)
 
             previous = check
             previousXOffset = -indent

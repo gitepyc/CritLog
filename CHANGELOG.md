@@ -12,6 +12,8 @@ commit message/PR, not here.
 - feature: hover tooltips instead of static hint text under each toggle row
 - fix: main options panel was missing its Close button
 - feature: addon icon (`media/icon.png`), wired up via `## IconTexture`
+- fix: toggle-row tooltips didn't show at all (GameTooltip vs. our own TOOLTIP-strata panels)
+- fix: toggle-row tooltips still didn't show (hit-rect expansion used a width that read as 0)
 
 ## 0.7.0
 
