@@ -41,15 +41,20 @@ function CritLogTitan_GetButtonText()
     return "CL: "..top("damage").."/"..top("whiteHit").."/"..top("heal")
 end
 
--- Ability names yellow, target names blue - in-game requested; the first
--- attempt (spell blue, target red/pink) "didn't look good". Plain text
--- (the label, colons, parens) explicitly wrapped in white too now instead
--- of relying on GameTooltip:AddLine's own default color - that default is
--- apparently not a clean white on its own, part of why the first attempt
--- looked off.
+-- Second color pass - in-game screenshotted: plain yellow spell + blue
+-- target + a white/yellow/orange/red amount all fighting for attention
+-- at once "didn't look good", and small amounts landed white-on-white
+-- against the label text. Toned down instead of just swapping hues
+-- again: WoW's own tooltip-title gold for spell names (softer than pure
+-- yellow, a color WoW's UI already uses for "this is important" text),
+-- a muted red for target names (WoW's usual "this is an enemy" cue,
+-- softer than hot pink), and the amount scale now starts at green
+-- instead of white so small values are clearly distinct from the label
+-- too - a full green-to-red gradient instead of "invisible, then
+-- suddenly colorful".
 local WHITE_COLOR = "|cffffffff"
-local SPELL_COLOR = "|cffffff00"
-local TARGET_COLOR = "|cff3399ff"
+local SPELL_COLOR = "|cffffd200"
+local TARGET_COLOR = "|cffff6060"
 
 local function colored(color, text)
     return color..text.."|r"
@@ -68,7 +73,7 @@ local function amountColor(amount)
     elseif amount >= 2000 then
         return "|cffffff00" -- yellow
     end
-    return "|cffffffff" -- white
+    return "|cff40ff40" -- green
 end
 
 -- Full detail line per category for the hover tooltip. Not
