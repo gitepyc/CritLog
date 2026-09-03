@@ -9,7 +9,9 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    verification even though the general detection-mode mechanism is
    already partly tested), Spirit of Redemption, the `0.7.0` multi-entry
    highscores and fixed-row Highscore List layout, and the `0.7.1-dev`
-   tooltip refactor. Also still open, from `feature/legacy-sound-port`:
+   tooltip refactor and `## IconTexture` (unclear whether Classic Era's
+   AddOns list actually renders it). Also still open, from
+   `feature/legacy-sound-port`:
    none of the 14 sounds ported from the legacy addon (roll, lottery,
    Drums of Battle, Pain Suppression, Evocation, Mage Table, Warlock
    Healthstone ritual) have been in-game confirmed yet. Three of them
