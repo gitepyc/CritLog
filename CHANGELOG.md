@@ -7,10 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.7.3-dev
+
+- fix: toggle-row tooltips reported still not showing - anchor now matches TitanCritLine's proven pattern, plus explicit EnableMouse
+
 ## 0.7.2-dev
 
 - fix: toggle-row tooltips still didn't show (hit-rect expansion used a width that read as 0)
-- fix: toggle-row tooltips reported still not showing - anchor now matches TitanCritLine's proven pattern, plus explicit EnableMouse
 
 ## 0.7.1-dev
 
