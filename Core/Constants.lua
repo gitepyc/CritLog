@@ -194,19 +194,25 @@ CritLog.Constants = {
             ids = { 27827 },
             names = { "Spirit of Redemption", "Geist der Erlösung" },
         },
-        -- Evocation's ID (12051) is confirmed on Wowhead Classic. The
-        -- remaining five below are ported from the legacy addon, which
-        -- only ever matched by name - no ID was verified for any of them,
-        -- so `ids` is left empty and they rely entirely on the name
-        -- fallback, same "wrong ID fails silently, wrong name doesn't cost
-        -- anything extra" reasoning as elsewhere in this table. Pain
-        -- Suppression's ID (402004) is confirmed as the Season of
-        -- Discovery Priest rune. Drums of Battle/Ritual of Refreshment
-        -- (Mage Table)/Ritual of Souls (Healthstone) are TBC+-era spells
-        -- in retail's history; whether they - or Hymn of Hope, never
-        -- confirmed to exist as a SoD rune at all - actually fire on
-        -- Classic Era/SoD is unverified, mirroring the legacy addon's own
-        -- uncertainty about several of these (see CHANGELOG.md).
+        -- Evocation's ID (12051) is confirmed on Wowhead Classic (a
+        -- genuine vanilla/Classic Era Mage spell). Pain Suppression's ID
+        -- (402004) is confirmed as the Season of Discovery Priest rune.
+        -- Drums of Battle (35476), Ritual of Refreshment/Mage Table
+        -- (43987), and Ritual of Souls/Healthstone (29893) are all
+        -- confirmed on Wowhead - but confirmed as TBC-introduced spells
+        -- (Drums of Battle and Ritual of Refreshment/Souls did not exist
+        -- in vanilla WoW at all, added in patches 2.0-2.1), not Classic
+        -- Era/SoD ones - whether SoD backports them (e.g. as drops/runes)
+        -- is unverified, so having the "right" TBC spell ID doesn't by
+        -- itself guarantee these fire on Classic Era/SoD (see
+        -- docs/ROADMAP.md). Hymn of Hope did not exist under that name
+        -- until WotLK patch 3.0.2 (it replaced the TBC-only, Draenei-only
+        -- "Symbol of Hope", spell id 32548 - a different spell with
+        -- different mechanics, not used here since the legacy addon's
+        -- trigger was always specifically "Hymn of Hope") - no ID exists
+        -- for it on Classic Era/SoD at all, so this trigger cannot fire
+        -- there under any circumstances until/unless SoD adds an
+        -- equivalent rune.
         evocation = {
             ids = { 12051 },
             names = { "Evocation", "Hervorrufung" },
@@ -216,22 +222,23 @@ CritLog.Constants = {
             names = { "Pain Suppression", "Schmerzunterdrückung" },
         },
         drums = {
-            ids = {},
+            ids = { 35476 },
             names = {
                 "Drums of Battle", "Greater Drums of Battle",
                 "Trommeln der Schlacht", "Große Trommeln der Schlacht",
             },
         },
+        -- No ids: genuinely does not exist pre-WotLK, see comment above.
         hymnOfHope = {
             ids = {},
             names = { "Hymn of Hope", "Hymne der Hoffnung" },
         },
         mageTable = {
-            ids = {},
+            ids = { 43987 },
             names = { "Ritual of Refreshment", "Tischlein deck dich" },
         },
         healthstoneRitual = {
-            ids = {},
+            ids = { 29893 },
             names = { "Ritual of Souls", "Ritual der Seelen" },
         },
     },

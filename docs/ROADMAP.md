@@ -17,11 +17,15 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    still open, from `feature/legacy-sound-port`: none of the 14 sounds
    ported from the legacy addon (roll, lottery, Drums of Battle,
    Pain Suppression, Hymn of Hope, Evocation, Mage Table, Warlock
-   Healthstone ritual) have been in-game confirmed yet - and four of them
-   (Drums of Battle, Mage Table, the Healthstone ritual, Hymn of Hope) have
-   an open question of whether the underlying spell even exists to cast on
-   Classic Era/SoD at all, since the legacy addon itself was never
-   confirmed working for those (see `docs/BEHAVIOR.md`).
+   Healthstone ritual) have been in-game confirmed yet. Three of them
+   (Drums of Battle, Mage Table, the Healthstone ritual) now have a
+   confirmed Wowhead spell ID, but all three are confirmed TBC-introduced
+   spells (didn't exist in vanilla WoW at all) - having the right ID
+   doesn't confirm SoD availability, that's still an open question, since
+   the legacy addon itself was never confirmed working for those. Hymn of
+   Hope is confirmed to not exist under that name before WotLK at all (see
+   `docs/BEHAVIOR.md`) - not just unverified, this one genuinely cannot
+   fire on Classic Era/SoD unless a SoD rune reintroduces it.
 2. ~~Multi-entry highscores~~ - done: list per category
    (`CritLogDB.records.*`) instead of a single value - 10 tracked
    (`Constants.maxTrackedEntries`), top 5 shown (`Constants.maxDisplayEntries`)
