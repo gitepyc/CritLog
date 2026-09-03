@@ -45,6 +45,7 @@ World of Warcraft/
                 │   ├── MainPanel.lua
                 │   ├── SoundPanel.lua
                 │   ├── AuraSoundPanel.lua
+                │   ├── DeathSoundPanel.lua
                 │   ├── RosterPanel.lua
                 │   └── HelpPanel.lua
                 ├── Sounds.lua
@@ -134,6 +135,7 @@ critlog/
 │   ├── MainPanel.lua     # Crit-tracking panel + Highscore List popup
 │   ├── SoundPanel.lua    # Sound Settings panel
 │   ├── AuraSoundPanel.lua # Aura Sounds panel (13 aura/ritual sounds, opened from Sound Settings)
+│   ├── DeathSoundPanel.lua # Death Sounds panel (player + priest/DPS/tank/boss, opened from Sound Settings)
 │   ├── RosterPanel.lua   # Roster Settings panel
 │   └── HelpPanel.lua     # Help panel - lists every slash command
 ├── Sounds.lua            # Sound playback helpers

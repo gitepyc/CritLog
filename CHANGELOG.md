@@ -6,6 +6,18 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.11-dev
+
+- Split the player/priest/DPS/tank/boss death-sound block out of Sound
+  Settings into its own new "Death Sounds..." panel
+  (`UI/DeathSoundPanel.lua`), same reasoning as the Aura Sounds split
+  before it: Sound Settings had shrunk back down to its general toggles
+  plus this 5-row, dropdown-heavy block (the 4 detection-mode dropdowns
+  are taller than a checkbox row, plus the mode-explanation note), and
+  splitting it out keeps both panels short. Sound Settings is now just 9
+  general toggle rows plus two buttons ("Aura Sounds...", "Death
+  Sounds...").
+
 ## 0.6.10-dev
 
 - Added the bottom-center "Close" button (`CritLog.UI.createCloseButton`)
