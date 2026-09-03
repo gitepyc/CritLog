@@ -184,6 +184,25 @@ local function migratePriestToHeal()
     CritLogDB.playerGroups.priest = nil
 end
 
+-- One-time migration: the level filter used to be a plain on/off flag
+-- (AllLevel, see DEFAULTS above); now it's a configurable slider
+-- (LevelDiffThreshold, 0 = off) replacing the hardcoded "9" a trivial/grey
+-- target used to be compared against - see Core/Filters.lua's
+-- passesLevelFilter and CHANGELOG.md. Deliberately not in DEFAULTS itself
+-- (same reason HealDetectionMode isn't, see migratePriestToHeal above):
+-- being in DEFAULTS would back-fill it to a value before this migration
+-- runs, and the nil guard below would never trigger. AllLevel stays in
+-- DEFAULTS purely as a migration source, same pattern as the
+-- MeleeSoundFlag/TankSoundFlag/etc. flags above - never read again after
+-- this.
+local function migrateAllLevelToThreshold()
+    if CritLogDB.LevelDiffThreshold ~= nil then
+        return
+    end
+
+    CritLogDB.LevelDiffThreshold = CritLogDB.AllLevel and 0 or 9
+end
+
 function CritLog:SetDefaults()
     local initialized = not CritLogDB
     local upgraded = not initialized and CritLogDB.Version ~= self.version
@@ -205,6 +224,7 @@ function CritLog:SetDefaults()
     migrateToRecordLists()
     migratePriestToHeal()
     migrateDetectionModes()
+    migrateAllLevelToThreshold()
 
     if initialized then
         print("CritLog Initialized")
