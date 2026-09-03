@@ -324,10 +324,13 @@ local function buildFrame()
 end
 
 CritLog.UI.registerRefresh(function()
+    -- Colored variant (Core/Records.lua's formatRecordTextColored) - in-game
+    -- requested applying the same spell/target/amount styling used on the
+    -- TitanPanel tooltip here too, not just there.
     if frame then
-        frame.dacText:SetText(CritLog.Records.formatRecordText("damage", 1))
-        frame.whcText:SetText(CritLog.Records.formatRecordText("whiteHit", 1))
-        frame.hacText:SetText(CritLog.Records.formatRecordText("heal", 1))
+        frame.dacText:SetText(CritLog.Records.formatRecordTextColored("damage", 1))
+        frame.whcText:SetText(CritLog.Records.formatRecordTextColored("whiteHit", 1))
+        frame.hacText:SetText(CritLog.Records.formatRecordTextColored("heal", 1))
     end
 
     if highscoreListFrame then

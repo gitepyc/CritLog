@@ -41,71 +41,17 @@ function CritLogTitan_GetButtonText()
     return "CL: "..top("damage").."/"..top("whiteHit").."/"..top("heal")
 end
 
--- Second color pass - in-game screenshotted: plain yellow spell + blue
--- target + a white/yellow/orange/red amount all fighting for attention
--- at once "didn't look good", and small amounts landed white-on-white
--- against the label text. Toned down instead of just swapping hues
--- again: WoW's own tooltip-title gold for spell names (softer than pure
--- yellow, a color WoW's UI already uses for "this is important" text),
--- a muted red for target names (WoW's usual "this is an enemy" cue,
--- softer than hot pink), and the amount scale now starts at green
--- instead of white so small values are clearly distinct from the label
--- too - a full green-to-red gradient instead of "invisible, then
--- suddenly colorful".
-local WHITE_COLOR = "|cffffffff"
-local SPELL_COLOR = "|cffffd200"
-local TARGET_COLOR = "|cffff6060"
-
-local function colored(color, text)
-    return color..text.."|r"
-end
-
--- Amount colored by a rough "hotter = bigger" heat scale, in-game
--- requested ("color the number by size or something"). Thresholds tuned
--- once already (2026-09-03: orange/red moved from 5000/10000 to
--- 4000/8000) after seeing it in-game - still just a reasonable guess, not
--- measured against real data, easy to retune again.
-local function amountColor(amount)
-    if amount >= 8000 then
-        return "|cffff4040" -- red
-    elseif amount >= 4000 then
-        return "|cffff8000" -- orange
-    elseif amount >= 2000 then
-        return "|cffffff00" -- yellow
-    end
-    return "|cff40ff40" -- green
-end
-
--- Full detail line per category for the hover tooltip. Not
--- Core/Records.lua's formatRecordText anymore (a plain string, no color
--- codes) - in-game requested styling (spell/target in their own colors,
--- amount colored by size) is specific to this one display, so this is a
--- deliberate second copy of the format rather than adding color-code
--- support to the shared formatter and risking it bleeding into the
--- options panel/chat output, which were never asked to look different.
+-- Full detail line per category for the hover tooltip, now sharing
+-- Core/Records.lua's formatRecordTextColored instead of a third color
+-- scheme kept only here - in-game requested applying the same styling to
+-- the main options panel too (see UI/MainPanel.lua), so the coloring
+-- logic moved to Core/Records.lua where both can use it. Still being
+-- iterated on in-game ("sieht besser aus jetzt aber noch nicht gut") -
+-- see Core/Records.lua's color constants for the current values.
 function CritLogTitan_GetTooltipText()
-    local function line(kind)
-        local fields = CritLog.Constants.recordKinds[kind]
-        local entry = CritLogDB.records[kind][1]
-
-        if not entry then
-            return colored(WHITE_COLOR, fields.label..": no record yet")
-        end
-
-        local amountText = colored(amountColor(entry.amount), tostring(entry.amount))
-        local targetText = colored(TARGET_COLOR, entry.target)
-
-        if fields.hasName then
-            local spellText = colored(SPELL_COLOR, entry.name)
-            return colored(WHITE_COLOR, fields.label.." (")..spellText
-                ..colored(WHITE_COLOR, "): ")..amountText
-                ..colored(WHITE_COLOR, " (")..targetText..colored(WHITE_COLOR, ")")
-        end
-        return colored(WHITE_COLOR, fields.label..": ")..amountText
-            ..colored(WHITE_COLOR, " (")..targetText..colored(WHITE_COLOR, ")")
-    end
-
-    return line("damage").."\n"..line("whiteHit").."\n"..line("heal")
+    return CritLog.Records.formatRecordTextColored("damage", 1).."\n"
+        ..CritLog.Records.formatRecordTextColored("whiteHit", 1).."\n"
+        ..CritLog.Records.formatRecordTextColored("heal", 1)
 end
 
 -- Right-click context menu. The roadmap only ever said "contents TBD" for
