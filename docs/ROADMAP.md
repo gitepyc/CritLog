@@ -3,90 +3,64 @@
 Open, forward-looking items only, in priority order. Everything already
 done is in `CHANGELOG.md` and git history, not repeated here.
 
-1. **In-game verification**, ongoing: the options panel (including
-   Escape-key behavior) and melee death-sound detection are now confirmed
-   working (`0.5.0`); still open are tank/boss/healer death-sound
-   detection specifically, and Spirit of Redemption - healer death-sound
-   detection changed from a Priest class check to an assigned Healer role
-   check (any class), so this needs fresh in-game verification even though
-   the general detection-mode mechanism was already partly tested. Not a
-   gate blocking
-   other work anymore - bugs found during verification (e.g. the
-   `0.4.2-dev` NPC-death-sound fix, the `0.4.8-dev` Escape-key fix) land on
-   `dev` as they're reported, in parallel with feature work below. Also
-   still open, from `feature/legacy-sound-port`: none of the 14 sounds
-   ported from the legacy addon (roll, lottery, Drums of Battle,
-   Pain Suppression, Hymn of Hope, Evocation, Mage Table, Warlock
+1. **In-game verification**, ongoing: still open are tank/boss/healer
+   death-sound detection specifically (healer changed from a Priest class
+   check to an assigned Healer role check, any class - needs fresh
+   verification even though the general detection-mode mechanism is
+   already partly tested), Spirit of Redemption, the `0.7.0` multi-entry
+   highscores and fixed-row Highscore List layout, and the `0.7.1-dev`
+   tooltip refactor. Also still open, from `feature/legacy-sound-port`:
+   none of the 14 sounds ported from the legacy addon (roll, lottery,
+   Drums of Battle, Pain Suppression, Evocation, Mage Table, Warlock
    Healthstone ritual) have been in-game confirmed yet. Three of them
-   (Drums of Battle, Mage Table, the Healthstone ritual) now have a
-   confirmed Wowhead spell ID, but all three are confirmed TBC-introduced
-   spells (didn't exist in vanilla WoW at all) - having the right ID
-   doesn't confirm SoD availability, that's still an open question, since
-   the legacy addon itself was never confirmed working for those. Hymn of
-   Hope is confirmed to not exist under that name before WotLK at all (see
-   `docs/BEHAVIOR.md`) - not just unverified, this one genuinely cannot
-   fire on Classic Era/SoD unless a SoD rune reintroduces it.
-2. ~~Multi-entry highscores~~ - done: list per category
-   (`CritLogDB.records.*`) instead of a single value - 10 tracked
-   (`Constants.maxTrackedEntries`), top 5 shown (`Constants.maxDisplayEntries`)
-   so deleting a visible entry doesn't need a new crit to refill it. Each
-   entry individually deletable via the Highscore List popup's Delete
-   button, or a whole category at once via
-   `/cl reset damage|whitehit|heal`. Ported from the now-deleted
-   `feature/multi-entry-highscores` branch onto the current
-   Core/Persistence/UI layout rather than merged as-is (that branch
-   predated the `0.4.6-dev` restructure). Not yet in-game verified.
-3. ~~SavedVariables-backed player-role configuration~~ - done and in-game
-   confirmed for the melee/tank/heal rosters: `CritLogDB.playerGroups`,
-   editable via `/cl options` → "Death Sounds..." → "Roster Settings..."
-   (Add/Remove, plus
-   inline rename with OK/Reset per row, added in `0.5.0`). The boss name
-   lists (`CritLog.Constants.bosses`) are still code-only, not scoped for
-   this pass - those rosters are still an intentional fallback for the
-   live class/role/classification checks, not scheduled for removal.
-4. Audio volume/channel control - all sounds play on the fixed `Master`
-   channel via `PlaySoundFile`; no volume control beyond `MasterSoundFlag`'s
-   on/off mute.
-5. Configurable chat-trigger phrases (`CritLog.Constants.chatTriggers` is still
-   hardcoded).
-6. Boss name-list presets per expansion (SoD/TBC/WotLK/...), selectable or
-   combinable, instead of one static list. Parked, not started - needs
-   real curated boss-name research (English + German) per expansion
-   before it's buildable, not just UI work. Narrower practical value than
-   it first looks: `isClassifiedBoss()`'s live `"worldboss"` check already
-   covers real raid/world bosses for any expansion automatically: presets
-   would mainly matter for 5-man dungeon end-bosses, which aren't
-   classified `worldboss` and are the only thing the name-list fallback
-   still does real work for.
-7. ~~Spirit of Redemption~~ - done: the priest death sound now specifically
-   detects a Spirit-of-Redemption-delayed death (buff spell id `27827`
-   cached on apply, consumed on the later real `UNIT_DIED`), not just any
-   priest dying. Reuses the plain priest-death file for now (no dedicated
-   asset), see [BEHAVIOR.md](BEHAVIOR.md). Not yet in-game verified.
-8. CurseForge/Wago publishing - no project id configured yet; `.pkgmeta`
-   packaging itself is done and verified.
-9. **Asset/audio rights review** - none of the shipped sound files have a
-   resolved rights/license status. Genuinely blocks public distribution,
-   not just a nice-to-have; see
-   [SOUNDS.md#required-human-review](SOUNDS.md#required-human-review).
-10. TitanPanel integration (exploratory) - a status-bar plugin button for
-   TitanPanel users. Researched, design question from before resolved:
-   since CritLog has no XML of its own (`CritLog.toc` lists plain `.lua`
-   files), a single-addon approach works fine after all - no separate
-   companion addon needed. Titan plugins register via a registry table
-   (`id`/`menuText`/`buttonTextFunction`/etc.) passed to
-   `TitanPanelButton_OnLoad()`, and the button frame is created with
-   `CreateFrame("Button", name, parent, "TitanPanelTextTemplate")` - a
-   runtime Lua call, not a static XML `inherits`, so it only needs to be
-   wrapped in `if IsAddOnLoaded("Titan") then ... end` (checked at
-   `PLAYER_LOGIN`, same place `Events.lua` already hooks) to stay
-   completely inert - no error, nothing created - when Titan isn't
-   installed. `## OptionalDeps: Titan` in `CritLog.toc` for load order
-   (so Titan's API exists first if both are present), not
-   `## Dependencies:` (that would force Titan as a hard requirement,
-   wrong for an addon most users won't have it for). Button content
-   decided: top score for damage/white-hit/heal, left-click opens
-   `/cl options`, right-click a small context menu (contents TBD).
+   (Drums of Battle, Mage Table, the Healthstone ritual) have a confirmed
+   Wowhead spell ID but are confirmed TBC-introduced spells (didn't exist
+   in vanilla WoW) - having the right ID doesn't confirm SoD availability.
+   Hymn of Hope is excluded entirely: confirmed to not exist under that
+   name before WotLK, cannot fire on Classic Era/SoD. Not a gate blocking
+   other work - bugs found during verification land on `dev` as they're
+   reported, in parallel with feature work below.
+2. TitanPanel integration - a status-bar plugin button. Researched, design
+   settled: single-addon approach works (`CritLog.toc` has no XML to
+   conflict with), wrapped in `if IsAddOnLoaded("Titan") then ... end` at
+   `PLAYER_LOGIN` so it's inert without Titan installed. `## OptionalDeps:
+   Titan` in `CritLog.toc` for load order. Button shows top score for
+   damage/white-hit/heal, left-click opens `/cl options`, right-click a
+   small context menu (contents TBD).
+3. Configurable boss name list - `CritLog.Constants.bosses`' name-list
+   fallback (used when live `UnitClassification` doesn't return
+   `"worldboss"`, e.g. 5-man dungeon end bosses) is currently code-only and
+   still the original Burning Crusade roster, matching nothing in Classic
+   Era/SoD. Make it editable per character, the same Add/Remove pattern
+   already used for the melee/tank/heal death-sound rosters
+   (`CritLogDB.playerGroups`, see `UI/RosterPanel.lua`) - narrower scope
+   than the old "presets per expansion" idea, no curated research needed
+   up front, players just add the names they actually need.
+
+## Parked
+
+Not active priorities, revisit only if the situation changes:
+
+- **Publishing (CurseForge/Wago) and the audio/asset rights review** - the
+  review found the sound files' origin/license undocumented (see
+  [SOUNDS.md#required-human-review](SOUNDS.md#required-human-review)),
+  which likely rules out public distribution as-is. A sounds-stripped
+  build was floated as one possible way around that, but it's an early
+  idea, not a plan - low priority either way since staying internal/
+  guild-only is a perfectly fine outcome.
+- Configurable chat-trigger phrases (`CritLog.Constants.chatTriggers`) -
+  the current raid-end/wipe/gamble phrases are guild-specific inside jokes
+  ("shit show" as a wipe trigger, a hardcoded tie-in to another addon's
+  chat announcement for the lottery), not a generic feature - hardcoding
+  is the right call unless this addon starts being used outside the guild.
+- Audio volume/channel control - `PlaySoundFile` already plays on the
+  `Master` channel, so it already respects the game's own master volume
+  slider; a dedicated per-addon volume slider would be a fair amount of
+  UI/persistence work for not much beyond what's already there.
+- Boss name-list presets per expansion (SoD/TBC/WotLK/...), selectable or
+  combinable - superseded by the simpler configurable-list item above;
+  would still need real curated boss-name research (English + German) per
+  expansion if ever revisited.
 
 ## Known constraint
 
