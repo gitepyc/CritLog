@@ -1,4 +1,4 @@
--- Optional TitanPanel status-bar button (docs/ROADMAP.md item 10). Entirely
+-- Optional TitanPanel status-bar button (docs/ROADMAP.md item 3). Entirely
 -- inert when TitanPanel isn't installed: CritLog:InitTitanPanelButton below
 -- is only ever called from Events.lua's PLAYER_LOGIN handler, gated behind
 -- IsAddOnLoaded("Titan") there - nothing in this file runs, and no frame is

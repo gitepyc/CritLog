@@ -16,7 +16,7 @@ function CritLog:PLAYER_LOGIN()
     self:PrintCritLogs()
 
     -- Optional TitanPanel status-bar button (UI/TitanButton.lua) - see
-    -- docs/ROADMAP.md item 10. Gated here so it's completely inert (no
+    -- docs/ROADMAP.md item 3. Gated here so it's completely inert (no
     -- frame created, no error) when Titan isn't installed.
     if IsAddOnLoaded("Titan") then
         self:InitTitanPanelButton()
