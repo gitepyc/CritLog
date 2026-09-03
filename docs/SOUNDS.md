@@ -26,10 +26,11 @@ Windows did not expose the value.
 | Divine Intervention | `divineInt.mp3` | Player receives Divine Intervention |
 | Soulstone | `soulstone.mp3` | Player receives the Soulstone buff (not the resurrection itself) |
 | Player death | `MarioDeath.mp3` | Player dies |
-| Damage Dealer death | `wilhelm.ogg` | Hard-coded Damage Dealer-roster member dies |
-| Tank death | `Tank.mp3` | Hard-coded tank-roster member dies |
-| Healer-priest death | `Angels.mp3` | Hard-coded healer-priest member dies |
-| Boss death | `FFX.mp3` | Hard-coded boss dies |
+| Damage Dealer death | `wilhelm.ogg` | Live melee-capable class and/or Damage Dealer roster, per detection mode - see `docs/BEHAVIOR.md` |
+| Tank death | `Tank.mp3` | Live assigned Tank role and/or tank roster, per detection mode |
+| Healer death | `Angels.mp3` | Live assigned Healer role (any class) and/or Healer roster, per detection mode; excludes a Spirit-of-Redemption-delayed death |
+| Spirit of Redemption | `Angels.mp3` (same file as Healer death for now) | A Priest's death (class-specific, not role-based) delayed by the talent; independent on/off toggle, not a detection mode |
+| Boss death | `FFX.mp3` | Live `worldboss` classification and/or boss name list, per detection mode |
 | Raid end | `bye.mp3`, then `end.mp3` | Matching raid-leader message, both immediately |
 | Wipe | `wipe.mp3` | Matching raid-leader message |
 | Lottery | `lottery2.wav`, then `lottery3.mp3` | Matching CrossGambling message in raid chat, both immediately |
@@ -54,7 +55,7 @@ complete trigger conditions.
 
 | File | Duration | Bitrate | Size | Used by |
 | --- | ---: | ---: | ---: | --- |
-| `Angels.mp3` | 5 s | 178 kbps | 121,680 B | healer-priest death |
+| `Angels.mp3` | 5 s | 178 kbps | 121,680 B | healer death, Spirit of Redemption |
 | `at_bam_babam.mp3` | 1 s | 128 kbps | 17,553 B | crit/highscore |
 | `Bloodlust.mp3` | 3 s | 128 kbps | 56,134 B | Bloodlust/Heroism |
 | `Bubble.mp3` | 1 s | 128 kbps | 27,305 B | Blessing of Protection |

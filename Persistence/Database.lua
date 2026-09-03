@@ -40,6 +40,11 @@ local DEFAULTS = {
     TankSoundFlag = true,
     MeleeSoundFlag = true,
     PlayerSoundFlag = true,
+    -- Independent of PriestDetectionMode now - see Core/CombatLog.lua's
+    -- HandleDeath. Plain flag, not a detection mode: there is no roster/
+    -- name-list equivalent for "this priest's death was Spirit-of-
+    -- Redemption-delayed", the buff-apply cache is the only signal.
+    SpiritSoundFlag = true,
     BossSoundFlag = true,
     XtremeSoundFlag = false,
     DebugFlag = false,
