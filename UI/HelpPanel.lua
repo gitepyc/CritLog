@@ -58,7 +58,7 @@ local function buildHelpFrame()
     -- Height is a first guess for General (the taller of the two columns)
     -- plus Death Sounds and About below it - not pixel-verified in-game
     -- yet, see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogHelpFrame", "CritLog Help", 920, 640)
+    local f = CritLog.UI.createPanelFrame("CritLogHelpFrame", "CritLog Help", 920, 660)
     f:SetPoint("CENTER")
 
     local heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -98,8 +98,12 @@ local function buildHelpFrame()
         f, "Death Sounds", CritLog.Constants.helpDeathSounds, leftBottom, leftOffset
     )
 
-    local aboutText = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    aboutText:SetPoint("TOPLEFT", deathSoundsBottom, "BOTTOMLEFT", deathOffset, -16)
+    -- Pushed further down and a touch brighter than the dim description
+    -- text elsewhere (GameFontHighlightSmall, not GameFontDisableSmall) -
+    -- in-game requested: should read as its own little credits footer,
+    -- not just another row, but without being loud about it.
+    local aboutText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    aboutText:SetPoint("TOPLEFT", deathSoundsBottom, "BOTTOMLEFT", deathOffset, -36)
     aboutText:SetText(CritLog.Constants.helpAbout)
 
     return f
