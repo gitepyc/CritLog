@@ -21,7 +21,16 @@ local CRIT_CHECKBOXES = {
       hint = "Off: counts highscores from enemies of any level." },
     { field = "LevelDiffThreshold", label = "Max levels below you", slider = { min = 1, max = 20, step = 1 },
       hint = "How far below your level a target may be and still count. Worldbosses always count regardless." },
-    { field = "DebugFlag", label = "Debug mode (diagnostic chat output)",
+}
+
+-- Separate from CRIT_CHECKBOXES and rendered smaller (`indent = true`,
+-- see UI/Shared.lua's buildToggleRows) below the Sound Settings/Help
+-- button row instead of grouped with the real settings above - in-game
+-- requested: this isn't something most players ever need, only useful
+-- for troubleshooting/development, so it shouldn't sit at the same
+-- visual weight as the level filter.
+local DEBUG_CHECKBOX = {
+    { field = "DebugFlag", label = "Debug mode (diagnostic chat output)", indent = true,
       hint = "Prints diagnostic chat messages for troubleshooting." },
 }
 
@@ -232,15 +241,15 @@ end
 
 local function buildFrame()
     -- Tall enough for the header block, the Highscore List button, the
-    -- level-filter checkbox, the level-filter slider row (taller than a
-    -- plain checkbox - Low/High/value labels) and the Debug checkbox row,
-    -- and the Sound Settings/Help button row (Roster Settings moved to the
-    -- Death Sounds panel, so this is back to a single row - see
-    -- CHANGELOG.md). Widened from 420 so a long spell/target name in a
-    -- highscore line has room before running into that row's Reset
+    -- level-filter checkbox and slider row (taller than a plain checkbox -
+    -- Low/High/value labels), the Sound Settings/Help button row (Roster
+    -- Settings moved to the Death Sounds panel, so this is back to a
+    -- single row - see CHANGELOG.md), and the small indented Debug
+    -- checkbox below that. Widened from 420 so a long spell/target name in
+    -- a highscore line has room before running into that row's Reset
     -- button. Not pixel-verified in-game yet for the slider specifically
     -- - see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 520)
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 550)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -317,6 +326,8 @@ local function buildFrame()
     helpButton:SetScript("OnClick", function()
         CritLog:ShowHelp()
     end)
+
+    CritLog.UI.buildToggleRows(f, DEBUG_CHECKBOX, soundButton)
 
     CritLog.UI.createCloseButton(f)
 

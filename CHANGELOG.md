@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.8.5-dev
+
+- feature: Debug mode moved off the main "Options" group - now a small indented checkbox below the Sound Settings/Help buttons instead of grouped with the level filter, since it's dev/troubleshooting-only
+
 ## 0.9.8.4-dev
 
 - feature: colored highscore display (spell/target/amount) shared between the TitanPanel tooltip and the main options panel now, via a new `Core/Records.lua` `formatRecordTextColored` instead of a Titan-only copy
