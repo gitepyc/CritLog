@@ -20,22 +20,25 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    name before WotLK, cannot fire on Classic Era/SoD. Not a gate blocking
    other work - bugs found during verification land on `dev` as they're
    reported, in parallel with feature work below.
-2. TitanPanel integration - a status-bar plugin button. Researched, design
+2. Configurable boss name list - `CritLog.Constants.bosses`' name-list
+   fallback (used when live `UnitClassification` doesn't return
+   `"worldboss"`, e.g. 5-man dungeon end bosses) is currently code-only and
+   still the original Burning Crusade roster, matching nothing in Classic
+   Era/SoD. Make it editable per character, the same Add/Remove pattern
+   already used for the melee/tank/heal death-sound rosters
+   (`CritLogDB.playerGroups`, see `UI/RosterPanel.lua`) - players add the
+   names they actually need instead of waiting on curated research. Folds
+   in the old "presets per expansion" idea as an optional extra on top of
+   this, not a separate research-heavy project: once the list is editable,
+   shipping a couple of quick-add preset buttons (SoD/TBC/...) is a small
+   follow-up, not its own effort.
+3. TitanPanel integration - a status-bar plugin button. Researched, design
    settled: single-addon approach works (`CritLog.toc` has no XML to
    conflict with), wrapped in `if IsAddOnLoaded("Titan") then ... end` at
    `PLAYER_LOGIN` so it's inert without Titan installed. `## OptionalDeps:
    Titan` in `CritLog.toc` for load order. Button shows top score for
    damage/white-hit/heal, left-click opens `/cl options`, right-click a
    small context menu (contents TBD).
-3. Configurable boss name list - `CritLog.Constants.bosses`' name-list
-   fallback (used when live `UnitClassification` doesn't return
-   `"worldboss"`, e.g. 5-man dungeon end bosses) is currently code-only and
-   still the original Burning Crusade roster, matching nothing in Classic
-   Era/SoD. Make it editable per character, the same Add/Remove pattern
-   already used for the melee/tank/heal death-sound rosters
-   (`CritLogDB.playerGroups`, see `UI/RosterPanel.lua`) - narrower scope
-   than the old "presets per expansion" idea, no curated research needed
-   up front, players just add the names they actually need.
 
 ## Parked
 
@@ -48,19 +51,6 @@ Not active priorities, revisit only if the situation changes:
   build was floated as one possible way around that, but it's an early
   idea, not a plan - low priority either way since staying internal/
   guild-only is a perfectly fine outcome.
-- Configurable chat-trigger phrases (`CritLog.Constants.chatTriggers`) -
-  the current raid-end/wipe/gamble phrases are guild-specific inside jokes
-  ("shit show" as a wipe trigger, a hardcoded tie-in to another addon's
-  chat announcement for the lottery), not a generic feature - hardcoding
-  is the right call unless this addon starts being used outside the guild.
-- Audio volume/channel control - `PlaySoundFile` already plays on the
-  `Master` channel, so it already respects the game's own master volume
-  slider; a dedicated per-addon volume slider would be a fair amount of
-  UI/persistence work for not much beyond what's already there.
-- Boss name-list presets per expansion (SoD/TBC/WotLK/...), selectable or
-  combinable - superseded by the simpler configurable-list item above;
-  would still need real curated boss-name research (English + German) per
-  expansion if ever revisited.
 
 ## Known constraint
 
