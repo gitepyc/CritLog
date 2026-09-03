@@ -124,7 +124,7 @@ end
 -- dozen names at most), and avoids incrementally patching anchors when a
 -- category's entry count changes between refreshes.
 local function layoutRosterList(f)
-    local previous = f.heading
+    local previous = f.behaviorNote
 
     for _, kind in ipairs(ROSTER_ORDER) do
         f.categoryHeadings[kind]:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -14)
@@ -175,12 +175,32 @@ end
 -- Sized generously tall since a roster has no fixed entry cap, unlike the
 -- highscore list popup.
 local function buildRosterFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogRosterFrame", "CritLog Roster Settings", 440, 750)
+    local f = CritLog.UI.createPanelFrame("CritLogRosterFrame", "CritLog Roster Settings", 440, 775)
     f:SetPoint("CENTER", UIParent, "CENTER", -260, -80)
 
     f.heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     f.heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     f.heading:SetText("Rosters")
+
+    -- In-game requested: explain the save behavior somewhere on this
+    -- panel, since it's not the same for every action here. Add/Remove
+    -- write to CritLogDB.playerGroups immediately, no confirmation - see
+    -- CritLog:AddRosterName/RemoveRosterName in Persistence/Database.lua.
+    -- A rename is the one exception: typing (or clicking away, which just
+    -- loses focus) does not save by itself - only Enter or OK commits it,
+    -- and Reset explicitly discards it - see commitRename above. A
+    -- separate field, not reusing f.heading for the anchor chain below -
+    -- f.heading is the panel title, keep it that way for anyone reading
+    -- this later.
+    f.behaviorNote = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    f.behaviorNote:SetPoint("TOPLEFT", f.heading, "BOTTOMLEFT", 0, -6)
+    f.behaviorNote:SetWidth(400)
+    f.behaviorNote:SetJustifyH("LEFT")
+    f.behaviorNote:SetText(
+        "Add and Remove take effect immediately, no confirmation. "..
+        "Renaming only saves on Enter or OK - Reset discards an "..
+        "in-progress edit instead."
+    )
 
     f.categoryHeadings = {}
     f.rowPool = {}
