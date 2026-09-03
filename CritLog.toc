@@ -2,7 +2,7 @@
 ## Title: CritLog
 ## Note: #CrimeTime #420 #gtrkt
 ## Author: Epyc (original by Kîtten aka Chabo)
-## Version: 0.7.4-dev
+## Version: 0.7.5-dev
 ## IconTexture: Interface\AddOns\CritLog\media\icon.png
 
 ## SavedVariablesPerCharacter: CritLogDB
