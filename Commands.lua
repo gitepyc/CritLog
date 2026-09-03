@@ -31,7 +31,7 @@ local function printHelp()
 end
 
 local function printConfig()
-    print("/cl level: "..tostring(CritLogDB.AllLevel))
+    print("/cl level: "..tostring(CritLogDB.LevelDiffThreshold))
     print("/cl mute: "..tostring(CritLogDB.MasterSoundFlag))
     print("/cl sound: "..tostring(CritLogDB.SoundFlag))
     print("/cl allcrits: "..tostring(CritLogDB.AllCritFlag))
@@ -160,11 +160,17 @@ function CritLog:PrintCritLogs(message)
             "CritLog Debug Mode Off"
         )
     elseif command == "level" then
-        CritLogDB.AllLevel = not CritLogDB.AllLevel
-        if CritLogDB.AllLevel then
-            print("CritLog: Enemy Level does not matter now")
+        -- Plain on/off toggle, same pattern as /cl dps|tank|healer|boss
+        -- above for their detection modes - the full 0-20 range needs the
+        -- options panel slider (see UI/MainPanel.lua, Core/Filters.lua's
+        -- passesLevelFilter). 9 matches the threshold this used to be
+        -- hardcoded to before it became configurable.
+        if CritLogDB.LevelDiffThreshold == 0 then
+            CritLogDB.LevelDiffThreshold = 9
+            print("CritLog: Enemy Level + 9 < Player Level to log DAMAGE Crits (GREEN Level Units) only - see /cl options for a different threshold")
         else
-            print("CritLog: Enemy Level + 9 < Player Level to log DAMAGE Crits (GREEN Level Units) only")
+            CritLogDB.LevelDiffThreshold = 0
+            print("CritLog: Enemy Level does not matter now")
         end
     elseif command == "options" or command == "opt" then
         self:ShowOptions()

@@ -93,7 +93,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl sound` | Toggles the sound for a new highscore. |
 | `/cl allcrits` | Toggles sounds for every critical hit. |
 | `/cl whitehit` | Toggles critical auto-attack/ranged-attack handling. |
-| `/cl level` | Toggles the level filter for damage records. |
+| `/cl level` | Toggles the level filter for damage records between off and 9 levels below you; `/cl options` has a slider for a different threshold (0-20). |
 | `/cl xtreme` | Toggles the sound for hits over 9000 damage. Off by default. |
 | `/cl debug` | Toggles diagnostic chat output (spell ID/name seen by aura triggers, level-filter decisions). Off by default. |
 | `/cl options` (or `/cl opt`) | Opens/closes the in-game options panel (checkboxes for every toggle above, plus preview buttons for triggerable sounds). First draft, not yet in-game verified — see [CHANGELOG.md](CHANGELOG.md). |

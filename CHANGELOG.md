@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.8.0-leveldiff-dev
+
+Test build on `feature/level-diff-slider`, not merged into `dev` - not
+decided yet whether to keep this.
+
+- feature: level filter is now a 0-20 slider (LevelDiffThreshold) instead of an on/off flag (AllLevel), same idea as TitanCritLine's level-adjustment slider; `/cl level` still just toggles 0/9
+
 ## 0.7.5-dev
 
 - feature: Death Sounds dropdown order now matches Roster Settings (DPS, Tank, Healer, Boss)

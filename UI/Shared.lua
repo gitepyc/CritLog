@@ -87,6 +87,13 @@ local checkboxesByField = {}
 -- (entries with `options` instead of a plain boolean flag).
 local dropdownsByField = {}
 
+-- Same idea again, for buildToggleRows' slider rows (entries with
+-- `slider` instead of a plain boolean flag or `options`) - each value is
+-- `{ slider = <Slider frame>, updateValueText = <function(value)> }` so
+-- RefreshOptionsPanel below can both move the thumb and refresh the
+-- number/"Off" label without duplicating that logic.
+local slidersByField = {}
+
 -- Shows `text` in GameTooltip while the mouse is over `control` - shared by
 -- checkbox and dropdown rows below, replacing the static hint line that
 -- used to sit underneath every row (see CHANGELOG.md,
@@ -206,9 +213,54 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     return dropdown
 end
 
+-- `entry.slider` is `{ min, max, step }`. Mirrors TitanCritLine's level-
+-- adjustment slider (OptionsSliderTemplate, a value of `min` reads as
+-- "Off" rather than the number) - see docs/ROADMAP.md and
+-- Persistence/Database.lua's migrateAllLevelToThreshold for the feature
+-- this replaces. `entry.offText` overrides the "Off" label for a min value
+-- that doesn't mean "disabled" for some future slider; defaults to "Off".
+local function createSliderRow(parent, entry, previous, previousXOffset)
+    local slider = CreateFrame("Slider", "CritLogOptions"..entry.field, parent, "OptionsSliderTemplate")
+    slider:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset + 20, -26)
+    slider:SetWidth(180)
+    slider:SetMinMaxValues(entry.slider.min, entry.slider.max)
+    slider:SetValueStep(entry.slider.step)
+    slider:SetObeyStepOnDrag(true)
+
+    -- OptionsSliderTemplate's own Low/High/Text sub-widgets, same ones
+    -- TitanCritLine's slider template relies on.
+    _G[slider:GetName().."Low"]:SetText(tostring(entry.slider.min))
+    _G[slider:GetName().."High"]:SetText(tostring(entry.slider.max))
+    _G[slider:GetName().."Text"]:SetText(entry.label)
+
+    local valueText = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    valueText:SetPoint("TOP", slider, "BOTTOM", 0, -2)
+
+    local function updateValueText(value)
+        if value == entry.slider.min then
+            valueText:SetText(entry.offText or "Off")
+        else
+            valueText:SetText(tostring(value))
+        end
+    end
+
+    slider:SetScript("OnValueChanged", function(_, value)
+        value = math.floor(value + 0.5)
+        CritLogDB[entry.field] = value
+        updateValueText(value)
+    end)
+
+    slidersByField[entry.field] = { slider = slider, updateValueText = updateValueText }
+
+    attachTooltip(slider, entry.hint)
+
+    return valueText
+end
+
 -- Shared row-building loop for every panel: a checkbox (or, for an entry
--- with `options`, a dropdown - see createDropdownRow above), its label, an
--- optional preview button, and a `entry.hint` shown as a hover tooltip via
+-- with `options`, a dropdown - see createDropdownRow above - or with
+-- `slider`, a slider - see createSliderRow above), its label, an optional
+-- preview button, and a `entry.hint` shown as a hover tooltip via
 -- attachTooltip above instead of a static line underneath the row (see
 -- CHANGELOG.md, feature/toggle-row-tooltips). Returns the last anchor
 -- region and its x-offset so the caller can keep chaining further content
@@ -254,6 +306,11 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             -- dropdown itself, so a row anchored below it lands back in the
             -- normal checkbox column instead of drifting 16px left.
             previousXOffset = 16
+        elseif entry.slider then
+            previous = createSliderRow(parent, entry, previous, previousXOffset)
+            -- Cancels the one-time +20 createSliderRow applies to the
+            -- slider itself, same pattern as an indented checkbox row.
+            previousXOffset = -20
         else
             local indent = entry.indent and 20 or 0
             local checkSize = entry.indent and 20 or 26
@@ -432,5 +489,10 @@ function CritLog:RefreshOptionsPanel()
                 break
             end
         end
+    end
+
+    for field, entry in pairs(slidersByField) do
+        entry.slider:SetValue(CritLogDB[field])
+        entry.updateValueText(CritLogDB[field])
     end
 end
