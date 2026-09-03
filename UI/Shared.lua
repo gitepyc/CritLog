@@ -106,6 +106,13 @@ local checkboxesByField = {}
 -- (entries with `options` instead of a plain boolean flag).
 local dropdownsByField = {}
 
+-- Same idea again, for buildToggleRows' slider rows (entries with
+-- `slider` instead of a plain boolean flag or `options`) - each value is
+-- `{ slider = <Slider frame>, updateValueText = <function(value)> }` so
+-- RefreshOptionsPanel below can both move the thumb and refresh the
+-- number/"Off" label without duplicating that logic.
+local slidersByField = {}
+
 -- Shows `text` in GameTooltip while the mouse is over `control` - shared by
 -- checkbox and dropdown rows below, replacing the static hint line that
 -- used to sit underneath every row (see CHANGELOG.md,
@@ -235,9 +242,80 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     return dropdown
 end
 
+-- `entry.slider` is `{ min, max, step }`. Modeled on TitanCritLine's
+-- level-adjustment slider (OptionsSliderTemplate) - see docs/ROADMAP.md
+-- and Persistence/Database.lua's migrateAllLevelToThreshold for the
+-- feature this replaces. Whether the setting this slider controls is
+-- active at all is a separate checkbox row, not encoded in the slider's
+-- own range (in-game reported: overloading the minimum value as "off" was
+-- confusing) - see e.g. LevelFilterFlag/LevelDiffThreshold in
+-- UI/MainPanel.lua.
+--
+-- No extra x-offset for the slider itself, unlike an `indent` checkbox
+-- row - there's no reason for one, and adding it here without a matching
+-- reason to cancel it back out on the next row's offset shifted every row
+-- after the slider left, in-game reported as "wrongly indented". -40 (not
+-- the usual -10 checkbox/dropdown gap) leaves room for
+-- OptionsSliderTemplate's own "Text" label, which renders *above* the
+-- slider's own top edge, not inside its bounds.
+local function createSliderRow(parent, entry, previous, previousXOffset)
+    local slider = CreateFrame("Slider", "CritLogOptions"..entry.field, parent, "OptionsSliderTemplate")
+    slider:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -40)
+    slider:SetWidth(180)
+    slider:SetMinMaxValues(entry.slider.min, entry.slider.max)
+    slider:SetValueStep(entry.slider.step)
+    slider:SetObeyStepOnDrag(true)
+
+    -- OptionsSliderTemplate's own Low/High/Text sub-widgets, same ones
+    -- TitanCritLine's slider template relies on.
+    _G[slider:GetName().."Low"]:SetText(tostring(entry.slider.min))
+    _G[slider:GetName().."High"]:SetText(tostring(entry.slider.max))
+    _G[slider:GetName().."Text"]:SetText(entry.label)
+
+    -- Centered under the slider (TOP/BOTTOM, not TOPLEFT/BOTTOMLEFT) so
+    -- the current value reads where you'd expect it, not jammed into the
+    -- bottom-left corner on top of the slider's own "Low" label (in-game
+    -- reported/screenshotted - a left-anchored valueText used to overlap
+    -- the "1" there). Purely visual now - not used for row-chaining below,
+    -- see rowAnchor.
+    local valueText = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    valueText:SetPoint("TOP", slider, "BOTTOM", 0, -2)
+
+    local function updateValueText(value)
+        valueText:SetText(tostring(value))
+    end
+
+    slider:SetScript("OnValueChanged", function(_, value)
+        value = math.floor(value + 0.5)
+        CritLogDB[entry.field] = value
+        updateValueText(value)
+    end)
+
+    slidersByField[entry.field] = { slider = slider, updateValueText = updateValueText }
+
+    attachTooltip(slider, entry.hint)
+
+    -- A separate invisible anchor for buildToggleRows to chain the next
+    -- row from - TOPLEFT-based like every other row type, positioned
+    -- below the (centered) valueText so the next row doesn't overlap it.
+    -- Deliberately not valueText itself: an earlier version returned
+    -- valueText directly, which either had to be left-anchored (correct
+    -- column, but overlapping the slider's own "Low" label) or centered
+    -- (correct look, but its BOTTOMLEFT drifts toward the slider's middle,
+    -- shifting every row after it - see CHANGELOG.md, both were in-game
+    -- reported). Decoupling the visual element from the chaining anchor
+    -- avoids having to choose between the two.
+    local rowAnchor = CreateFrame("Frame", nil, parent)
+    rowAnchor:SetSize(1, 1)
+    rowAnchor:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -18)
+
+    return rowAnchor
+end
+
 -- Shared row-building loop for every panel: a checkbox (or, for an entry
--- with `options`, a dropdown - see createDropdownRow above), its label, an
--- optional preview button, and a `entry.hint` shown as a hover tooltip via
+-- with `options`, a dropdown - see createDropdownRow above - or with
+-- `slider`, a slider - see createSliderRow above), its label, an optional
+-- preview button, and a `entry.hint` shown as a hover tooltip via
 -- attachTooltip above instead of a static line underneath the row (see
 -- CHANGELOG.md, feature/toggle-row-tooltips). Returns the last anchor
 -- region and its x-offset so the caller can keep chaining further content
@@ -283,6 +361,12 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             -- dropdown itself, so a row anchored below it lands back in the
             -- normal checkbox column instead of drifting 16px left.
             previousXOffset = 16
+        elseif entry.slider then
+            previous = createSliderRow(parent, entry, previous, previousXOffset)
+            -- No indent quirk to cancel - createSliderRow doesn't add one
+            -- (see its own comment above), so the next row lands back at
+            -- the normal column just like after a plain checkbox row.
+            previousXOffset = 0
         else
             local indent = entry.indent and 20 or 0
             local checkSize = entry.indent and 20 or 26
@@ -461,5 +545,10 @@ function CritLog:RefreshOptionsPanel()
                 break
             end
         end
+    end
+
+    for field, entry in pairs(slidersByField) do
+        entry.slider:SetValue(CritLogDB[field])
+        entry.updateValueText(CritLogDB[field])
     end
 end
