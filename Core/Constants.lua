@@ -247,36 +247,46 @@ CritLog.Constants = {
         wipe = { "shit show", "wipe" },
         gamble = "CrossGambling: A new game has been started! Type 1 to join!",
     },
-    -- One line per slash command, shared by Commands.lua's `/cl help`
-    -- (prints each line to chat) and UI/HelpPanel.lua's Help button (shows
-    -- each line in a panel) - a single source of truth so the two can't
-    -- drift apart. "------------" entries are section dividers, rendered
-    -- as-is in both places.
-    helpLines = {
-        "/cl: prints highscores",
-        "/cl reset: clears every highscore list",
-        "/cl reset damage|whitehit|heal: clears one category's list",
-        "/cl options -> Highscore List...: delete a single entry",
-        "/cl level: toggles the level filter (options panel has a threshold slider)",
-        "/cl mute: master sound switch, overrides everything below",
-        "/cl sound: highscore (BÄM) sound",
-        "/cl allcrits: BÄM sound for every crit",
-        "/cl whitehit: BÄM sound for white-hit crits",
-        "/cl xtreme: sound for hits over 9000 (off by default)",
-        "/cl debug: diagnostic chat output (off by default)",
-        "/cl options (or /cl opt): opens/closes the options panel",
-        "/cl ready: ready-check sound",
-        "/cl aura: aura/spell sounds",
-        "/cl roll: /roll result sounds (1-100)",
-        "/cl gamble: lottery sound (CrossGambling raid chat trigger)",
-        "------------",
-        "/cl player: player death sound",
-        "/cl spirit: Spirit of Redemption sound",
-        "/cl healer/dps/tank/boss: death sound None/Both (options panel for Experimental/Roster only)",
-        "------------",
-        "/cl config: prints current settings",
-        "/cl help: lists this",
-        "------------",
-        "About: CritLog by Epyc, 2026 (original addon by Kîtten aka Chabo)",
+    -- Every slash command, shared by Commands.lua's `/cl help` (prints to
+    -- chat) and UI/HelpPanel.lua's Help panel (two-column layout, General
+    -- and Sounds side by side, matching UI/AuraSoundPanel.lua's column
+    -- pattern) - a single source of truth so the two can't drift apart.
+    -- Split into named lists instead of one flat list specifically so the
+    -- panel can lay General/Sounds out as two columns; Death Sounds and
+    -- the About line stay single-column below both (see UI/HelpPanel.lua).
+    --
+    -- `cmd` must not contain a literal "|" - WoW FontStrings/chat treat it
+    -- as the start of a color/texture escape sequence and can swallow or
+    -- garble the rest of the line (in-game reported: the
+    -- "/cl reset damage|whitehit|heal" line went missing). Use "/" instead
+    -- wherever a command lists several sub-options, same as
+    -- "/cl healer/dps/tank/boss" below already did.
+    helpGeneral = {
+        { cmd = "/cl", desc = "prints highscores" },
+        { cmd = "/cl reset", desc = "clears every highscore list" },
+        { cmd = "/cl reset damage/whitehit/heal", desc = "clears one category's list" },
+        { cmd = "/cl options -> Highscore List...", desc = "delete a single entry" },
+        { cmd = "/cl level", desc = "toggles the level filter (options panel has a threshold slider)" },
+        { cmd = "/cl options (or /cl opt)", desc = "opens/closes the options panel" },
+        { cmd = "/cl config", desc = "prints current settings" },
+        { cmd = "/cl help", desc = "lists this" },
+        { cmd = "/cl debug", desc = "diagnostic chat output (off by default)" },
     },
+    helpSounds = {
+        { cmd = "/cl mute", desc = "master sound switch, overrides everything below" },
+        { cmd = "/cl sound", desc = "highscore (BÄM) sound" },
+        { cmd = "/cl allcrits", desc = "BÄM sound for every crit" },
+        { cmd = "/cl whitehit", desc = "BÄM sound for white-hit crits" },
+        { cmd = "/cl xtreme", desc = "sound for hits over 9000 (off by default)" },
+        { cmd = "/cl ready", desc = "ready-check sound" },
+        { cmd = "/cl aura", desc = "aura/spell sounds" },
+        { cmd = "/cl roll", desc = "/roll result sounds (1-100)" },
+        { cmd = "/cl gamble", desc = "lottery sound (CrossGambling raid chat trigger)" },
+    },
+    helpDeathSounds = {
+        { cmd = "/cl player", desc = "player death sound" },
+        { cmd = "/cl spirit", desc = "Spirit of Redemption sound" },
+        { cmd = "/cl healer/dps/tank/boss", desc = "death sound None/Both (options panel for Experimental/Roster only)" },
+    },
+    helpAbout = "CritLog by Epyc, 2026 (original addon by Kîtten aka Chabo)",
 }
