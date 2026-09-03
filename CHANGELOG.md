@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.1.0-titanpanel-dev
+
+Test build on `feature/titan-panel-integration`, not merged into `dev` -
+standalone, not decided yet whether to keep this.
+
+- feature: optional TitanPanel status-bar button, inert unless Titan is installed - icon, live "D:/W:/H:" top-score text next to it, hover tooltip with full per-category detail, left-click opens `/cl options`, right-click shows a small menu (Options, Reset All Highscores)
+
 ## 0.7.7-dev
 
 - feature: shortened Help panel/`/cl help` wording throughout, merged the four healer/dps/tank/boss lines into one

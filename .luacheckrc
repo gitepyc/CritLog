@@ -43,6 +43,12 @@ stds.wow = {
         -- UI/Shared.lua: hover tooltip for each toggle row, replacing the
         -- static hint line underneath (feature/toggle-row-tooltips)
         "GameTooltip",
+        -- Events.lua/UI/TitanButton.lua: gate + build the optional
+        -- TitanPanel status-bar button (feature/titan-panel-integration)
+        "IsAddOnLoaded",
+        "TitanPanelButton_OnLoad",
+        "TitanPanelButton_OnClick",
+        "Titan_Menu",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned
@@ -72,6 +78,13 @@ globals = {
     -- mutable everywhere, not just in the one file that first creates them.
     "CritLog",
     "CritLogDB",
+    -- UI/TitanButton.lua: registry.buttonTextFunction/tooltipTextFunction
+    -- must be global function name strings (Titan calls _G[name]()), not
+    -- local functions or CritLog.* table fields - see the reference
+    -- implementation this is modeled on (TitanCritLine.lua's tcl_* globals).
+    "CritLogTitan_GetButtonText",
+    "CritLogTitan_GetTooltipText",
+    "CritLogTitan_MenuGenerator",
 }
 
 files["Commands.lua"] = {

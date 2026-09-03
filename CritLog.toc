@@ -2,8 +2,9 @@
 ## Title: CritLog
 ## Note: #CrimeTime #420 #gtrkt
 ## Author: Epyc (original by Kîtten aka Chabo)
-## Version: 0.7.7-dev
+## Version: 0.1.0-titanpanel-dev
 ## IconTexture: Interface\AddOns\CritLog\media\icon.png
+## OptionalDeps: Titan
 
 ## SavedVariablesPerCharacter: CritLogDB
 
@@ -22,5 +23,6 @@ UI/AuraSoundPanel.lua
 UI/DeathSoundPanel.lua
 UI/RosterPanel.lua
 UI/HelpPanel.lua
+UI/TitanButton.lua
 Commands.lua
 Events.lua
