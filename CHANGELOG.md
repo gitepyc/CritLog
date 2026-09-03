@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.0.0-dev
+
+- fix: white-hit crits (melee and ranged) now always play the highscore sound on a new personal record even with "Sound for white hit crits" off, matching how ability/heal crits already behaved; ranged white-hit records were also being skipped entirely (not even recorded) with that setting off - now recorded unconditionally like melee
+
 ## 0.9.8.5-dev
 
 - feature: Debug mode moved off the main "Options" group - now a small indented checkbox below the Sound Settings/Help buttons instead of grouped with the level filter, since it's dev/troubleshooting-only
