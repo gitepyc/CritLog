@@ -63,6 +63,19 @@ end
 -- "TitanPanelTextTemplate", the same template/registry shape TitanCritLine's
 -- XML-based button ultimately produces.
 function CritLog:InitTitanPanelButton()
+    -- In-game reported: Titan rejected registration with "Plugin 'CritLog'
+    -- already loaded" - this fires if InitTitanPanelButton somehow runs
+    -- twice (e.g. two CritLog addon folders both enabled at once, a common
+    -- mistake when a new test-build zip gets extracted into a new folder
+    -- instead of overwriting the old one - both would independently reach
+    -- PLAYER_LOGIN and both try to register the same Titan plugin id).
+    -- CreateFrame with an existing global name returns the *same* frame
+    -- rather than creating a new one, so this check is enough to make a
+    -- second call a no-op regardless of why it happened.
+    if _G.CritLogTitanPanelButton then
+        return
+    end
+
     local button = CreateFrame("Button", "CritLogTitanPanelButton", UIParent, "TitanPanelTextTemplate")
     button.registry = {
         id = "CritLog",

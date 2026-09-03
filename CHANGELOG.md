@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.1.3-titanpanel-dev
+
+Test build on `feature/titan-panel-integration`, not merged into `dev` -
+standalone, not decided yet whether to keep this.
+
+- fix: Titan rejected registration with "Plugin 'CritLog' already loaded" - guard against InitTitanPanelButton running twice (likely two CritLog addon folders enabled at once, check your AddOns folder for duplicates)
+
 ## 0.1.2-titanpanel-dev
 
 Test build on `feature/titan-panel-integration`, not merged into `dev` -
