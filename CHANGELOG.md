@@ -9,6 +9,21 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.0](https://github.com/gitepyc/CritLog/tree/0.3.0) (2026-09-03)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.6.1...0.3.0) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** confirm before every highscore reset, not just "Reset All"
+
+- **feature:** rework Help panel - two-column layout with real section headings, fix missing `/cl reset` line
+
+- **feature:** replace the AllLevel toggle with a configurable level-diff threshold slider
+
+- **feature:** add an optional TitanPanel status-bar button
+
+- **fix:** oversized toggle-row tooltips - explicit Hide() before every re-show
+
+- **tweak:** shorten Help panel wording, add an About line
+
 ## [0.2.6.1](https://github.com/gitepyc/CritLog/tree/0.2.6.1) (2026-09-03)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.6...0.2.6.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
