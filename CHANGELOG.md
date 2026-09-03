@@ -9,6 +9,15 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.2.5](https://github.com/gitepyc/CritLog/tree/0.2.5) (2026-09-03)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.3...0.2.5) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** remove the login sound feature entirely (had a working toggle but no code path ever read it)
+
+- **feature:** port sounds from the legacy addon (roll-result, lottery-trigger, and 6 aura/ritual sounds; a login sound was ported too, later removed)
+
+- **refactor:** split the 13 aura/ritual sounds into their own Aura Sounds panel
+
 ## [0.2.3](https://github.com/gitepyc/CritLog/tree/0.2.3) (2026-09-02)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.2.2.2...0.2.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
