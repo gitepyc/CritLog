@@ -46,7 +46,6 @@ stds.wow = {
         -- Events.lua/UI/TitanButton.lua: gate + build the optional
         -- TitanPanel status-bar button (feature/titan-panel-integration)
         "IsAddOnLoaded",
-        "TitanPanelButton_OnLoad",
         "TitanPanelButton_OnClick",
         "Titan_Menu",
     },

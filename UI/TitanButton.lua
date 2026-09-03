@@ -78,17 +78,14 @@ function CritLog:InitTitanPanelButton()
 
     local button = CreateFrame("Button", "CritLogTitanPanelButton", UIParent, "TitanPanelTextTemplate")
     button.registry = {
-        -- Not "CritLog" - in-game reported: Titan kept rejecting
-        -- registration with "Plugin 'CritLog' already loaded" even on a
-        -- freshly reloaded client with a single, guarded registration call
-        -- (see InitTitanPanelButton's guard above and CHANGELOG.md) -
-        -- likely a stale/corrupted entry in Titan's own SavedVariables
-        -- left over from the earlier (pre-guard) double-registration bug,
-        -- which a code fix alone can't clean up. A different id sidesteps
-        -- whatever's stuck under the old one entirely, no need to touch
-        -- Titan's SavedVariables by hand. Display strings (menuText,
-        -- tooltipTitle, menu labels below) still say "CritLog" - only the
-        -- internal registry key changed.
+        -- Not "CritLog" - kept from an earlier fix attempt at renaming the
+        -- id away from a suspected (and, it turned out, wrong) stale-
+        -- SavedVariables theory; the real "already loaded" cause was a
+        -- genuine double registration, now fixed below (see the comment
+        -- above the removed TitanPanelButton_OnLoad(button) call). No
+        -- reason to rename it back, "CritLogTitan" works fine. Display
+        -- strings (menuText, tooltipTitle, menu labels below) still say
+        -- "CritLog" - only the internal registry key differs.
         id = "CritLogTitan",
         category = "Combat",
         version = self.version,
@@ -115,7 +112,23 @@ function CritLog:InitTitanPanelButton()
         },
     }
 
-    TitanPanelButton_OnLoad(button)
+    -- No explicit TitanPanelButton_OnLoad(button) call here - verified
+    -- against the real Titan Panel 9.3.2 source
+    -- (Titan/TitanTemplate.xml): "TitanPanelTextTemplate" inherits
+    -- "TitanPanelButtonTemplate", which has its own baked-in
+    -- <OnLoad>TitanPanelButton_OnLoad(self)</OnLoad> - it already fires
+    -- once, synchronously, as part of the CreateFrame call above. Calling
+    -- it again here queued the *same* button frame for registration twice
+    -- (TitanUtils_PluginToRegister just appends to a deferred queue
+    -- processed later at PLAYER_ENTERING_WORLD - see TitanUtils.lua's
+    -- TitanUtils_RegisterPluginList/TitanUtils_RegisterPluginProtected),
+    -- so Titan tried to register the same id twice and rejected the
+    -- second attempt as "already loaded" - in-game reported, reproduced
+    -- even with a brand new id and a confirmed-fresh client restart,
+    -- which ruled out stale SavedVariables or a duplicate addon folder.
+    -- Setting button.registry above, before Titan actually processes the
+    -- queue at PLAYER_ENTERING_WORLD (later than PLAYER_LOGIN, where this
+    -- whole function runs), is enough - no second explicit call needed.
 
     -- Only the left-click "open options" shortcut is handled here; right-
     -- click is left entirely to Titan's own default OnClick handling, which

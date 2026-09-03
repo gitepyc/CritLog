@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.1.5-titanpanel-dev
+
+Test build on `feature/titan-panel-integration`, not merged into `dev` -
+standalone, not decided yet whether to keep this.
+
+- fix: found the real cause of "already loaded" via Titan Panel 9.3.2's actual source - `TitanPanelTextTemplate` already calls `TitanPanelButton_OnLoad` in its own baked-in XML OnLoad, our explicit second call queued the same button for registration twice; removed the redundant call
+
 ## 0.1.4-titanpanel-dev
 
 Test build on `feature/titan-panel-integration`, not merged into `dev` -
