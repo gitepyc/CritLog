@@ -34,13 +34,26 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    this, not a separate research-heavy project: once the list is editable,
    shipping a couple of quick-add preset buttons (SoD/TBC/...) is a small
    follow-up, not its own effort.
-3. TitanPanel integration - a status-bar plugin button. Researched, design
-   settled: single-addon approach works (`CritLog.toc` has no XML to
-   conflict with), wrapped in `if IsAddOnLoaded("Titan") then ... end` at
-   `PLAYER_LOGIN` so it's inert without Titan installed. `## OptionalDeps:
-   Titan` in `CritLog.toc` for load order. Button shows top score for
-   damage/white-hit/heal, left-click opens `/cl options`, right-click a
-   small context menu (contents TBD).
+3. ~~TitanPanel integration~~ - built on `feature/titan-panel-integration`
+   (`0.1.7-titanpanel-dev`, standalone test branch, not merged into `dev`
+   yet): a status-bar button with an icon, live top-score text next to it
+   (`CL: <dmg>/<white>/<heal>`, matching TitanCritLine's own format), a
+   hover tooltip with full per-category detail, left-click opening
+   `/cl options`, and a small right-click menu (Options, Reset All
+   Highscores). Single-addon approach as planned (`CritLog.toc` has no XML
+   to conflict with), wrapped in `if IsAddOnLoaded("Titan") then ... end` at
+   `PLAYER_LOGIN` so it's inert without Titan installed, `## OptionalDeps:
+   Titan` for load order. In-game confirmed: registers and shows up under
+   "Combat" correctly. Took several in-game-reported rounds to get there -
+   `IsAddOnLoaded` being nil on newer clients, a genuine double
+   registration from calling `TitanPanelButton_OnLoad` explicitly on top of
+   `TitanPanelComboTemplate`'s own baked-in `OnLoad` (root-caused against
+   the actual Titan Panel 9.3.2 source, not guessed), and the icon never
+   rendering because the first draft used `TitanPanelTextTemplate`, which
+   has no icon region at all - all fixed now, see `CHANGELOG.md` for the
+   version-by-version list. Whether the 256x256 `media/icon.png` still
+   reads clearly scaled down to a 16px button icon is the one remaining
+   open detail.
 
 ## Parked
 
