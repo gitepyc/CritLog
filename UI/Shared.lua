@@ -95,6 +95,19 @@ local dropdownsByField = {}
 -- and easy to miss with the mouse - see the SetHitRectInsets calls at each
 -- call site, which grow the hit area out to cover the row's label too so
 -- hovering the text works, not just the control itself.
+--
+-- In-game reported: the tooltip never appeared at all (not just hard to
+-- trigger). Root cause: every options panel deliberately sits on
+-- "TOOLTIP" frame strata (see createPanelFrame below, added so panels
+-- stay above other addons like WeakAuras) - the same strata GameTooltip
+-- itself defaults to. Our own panel is `SetToplevel(true)` and gets
+-- raised by normal interaction (dragging, clicking buttons), so within
+-- that shared strata it can end up with a higher frame level than
+-- GameTooltip's own default one and render on top of it, hiding the
+-- tooltip completely behind the panel's opaque background. Explicitly
+-- bumping GameTooltip's strata/level above the hovered control every time
+-- it's shown fixes that regardless of whatever level the panel happens to
+-- be at.
 local function attachTooltip(control, text)
     if not text then
         return
@@ -102,6 +115,8 @@ local function attachTooltip(control, text)
 
     control:HookScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetFrameStrata("TOOLTIP")
+        GameTooltip:SetFrameLevel(self:GetFrameLevel() + 10)
         GameTooltip:SetText(text, nil, nil, nil, nil, true)
         GameTooltip:Show()
     end)
