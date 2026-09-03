@@ -34,13 +34,23 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    this, not a separate research-heavy project: once the list is editable,
    shipping a couple of quick-add preset buttons (SoD/TBC/...) is a small
    follow-up, not its own effort.
-3. TitanPanel integration - a status-bar plugin button. Researched, design
-   settled: single-addon approach works (`CritLog.toc` has no XML to
-   conflict with), wrapped in `if IsAddOnLoaded("Titan") then ... end` at
-   `PLAYER_LOGIN` so it's inert without Titan installed. `## OptionalDeps:
-   Titan` in `CritLog.toc` for load order. Button shows top score for
-   damage/white-hit/heal, left-click opens `/cl options`, right-click a
-   small context menu (contents TBD).
+3. ~~TitanPanel integration~~ - built on `feature/titan-panel-integration`
+   (`0.1.0-titanpanel-dev`, standalone test branch, not merged into `dev`
+   yet): a status-bar button with an icon, live top-score text next to it
+   (damage/white-hit/heal, `D:/W:/H:`), a hover tooltip with full
+   per-category detail, left-click opening `/cl options`, and a small
+   right-click menu (Options, Reset All Highscores). Single-addon approach
+   as planned (`CritLog.toc` has no XML to conflict with), wrapped in
+   `if IsAddOnLoaded("Titan") then ... end` at `PLAYER_LOGIN` so it's inert
+   without Titan installed, `## OptionalDeps: Titan` for load order. Not
+   in-game verified at all - nobody working on this repo has a WoW client;
+   the Titan Panel API surface (`TitanPanelButton_OnLoad`/`OnClick`, the
+   registry table shape, `Titan_Menu.*` for the right-click menu) was
+   modeled on a separate, already-working Titan plugin rather than guessed,
+   but whether it actually behaves the same way against whatever Titan
+   Panel version is installed, and whether the 256x256 `media/icon.png`
+   still reads clearly scaled down to a 16px button icon, are both
+   genuinely open until someone tests it in-game.
 
 ## Parked
 

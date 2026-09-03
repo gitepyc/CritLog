@@ -47,7 +47,8 @@ World of Warcraft/
                 │   ├── AuraSoundPanel.lua
                 │   ├── DeathSoundPanel.lua
                 │   ├── RosterPanel.lua
-                │   └── HelpPanel.lua
+                │   ├── HelpPanel.lua
+                │   └── TitanButton.lua
                 ├── Sounds.lua
                 ├── ChatTriggers.lua
                 ├── Commands.lua
@@ -138,7 +139,8 @@ critlog/
 │   ├── AuraSoundPanel.lua # Aura Sounds panel (13 aura/ritual sounds, opened from Sound Settings)
 │   ├── DeathSoundPanel.lua # Death Sounds panel (player + heal/DPS/tank/boss, opened from Sound Settings)
 │   ├── RosterPanel.lua   # Roster Settings panel
-│   └── HelpPanel.lua     # Help panel - lists every slash command
+│   ├── HelpPanel.lua     # Help panel - lists every slash command
+│   └── TitanButton.lua   # Optional TitanPanel status-bar button, inert without Titan
 ├── Sounds.lua            # Sound playback helpers
 ├── ChatTriggers.lua       # Raid-leader/raid/roll chat trigger handling
 ├── Commands.lua           # Slash commands and chat output
