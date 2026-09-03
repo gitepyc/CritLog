@@ -7,6 +7,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.5-dev
+
+- fix: Help panel rows drifted one level further right with every single row (a growing staircase) - a chained x-offset wasn't being cancelled between rows, same class of bug this file has hit before
+- feature: Sound Settings - Roll Sounds button now sits directly under its own toggle instead of grouped with Aura/Death Sounds at the end; Aura toggle + Aura/Death Sounds button row follow after, unchanged from before
+
 ## 0.9.4-dev
 
 - feature: Roster Settings explains its own save behavior - Add/Remove take effect immediately, renaming only saves on Enter/OK

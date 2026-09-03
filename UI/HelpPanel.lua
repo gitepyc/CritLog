@@ -16,17 +16,27 @@ local helpFrame
 -- indented description line below) rather than side by side on one line -
 -- descriptions vary a lot in length (a few words to a full sentence), and
 -- fitting both on one line within a column's width would mean either
--- truncating or wrapping unpredictably. Returns the last region built, so
--- the caller can chain more content below.
-local function buildSection(parent, title, entries, anchor)
+-- truncating or wrapping unpredictably.
+--
+-- Takes and returns an x-offset alongside the anchor, same pattern
+-- UI/Shared.lua's buildToggleRows uses. In-game reported: every row in
+-- this panel drifted one level further right than the last (a growing
+-- staircase). Root cause: descText sits +8 right of its own cmdText, and
+-- the *next* cmdText anchored to that descText with a hardcoded 0 offset
+-- - inheriting the +8 drift instead of cancelling it back out, so it
+-- compounded every single row. Tracking the offset explicitly like
+-- buildToggleRows already does fixes it, and lets a caller chain more
+-- content after this section without inheriting a stray +8/-8 either.
+local function buildSection(parent, title, entries, anchor, anchorXOffset)
     local heading = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    heading:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -16)
+    heading:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", anchorXOffset or 0, -16)
     heading:SetText(title)
 
     local previous = heading
+    local previousXOffset = 0
     for _, entry in ipairs(entries) do
         local cmdText = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        cmdText:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -8)
+        cmdText:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -8)
         cmdText:SetText(entry.cmd)
 
         local descText = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
@@ -36,9 +46,10 @@ local function buildSection(parent, title, entries, anchor)
         descText:SetText(entry.desc)
 
         previous = descText
+        previousXOffset = -8
     end
 
-    return previous
+    return previous, previousXOffset
 end
 
 local function buildHelpFrame()
@@ -75,18 +86,20 @@ local function buildHelpFrame()
     colRightAnchor:SetSize(1, 1)
     colRightAnchor:SetPoint("TOPLEFT", heading, "BOTTOMLEFT", 446, 0)
 
-    local leftBottom = buildSection(f, "General", CritLog.Constants.helpGeneral, colLeftAnchor)
-    buildSection(f, "Sounds", CritLog.Constants.helpSounds, colRightAnchor)
+    local leftBottom, leftOffset = buildSection(f, "General", CritLog.Constants.helpGeneral, colLeftAnchor, 0)
+    buildSection(f, "Sounds", CritLog.Constants.helpSounds, colRightAnchor, 0)
 
     -- Continues from the left column specifically (General and Sounds
     -- have the same number of rows, so they end at roughly the same
     -- height either way) - full width again below both columns, same
     -- pattern UI/AuraSoundPanel.lua's note row uses ahead of its own two
     -- columns, just reversed (here it's after).
-    local deathSoundsBottom = buildSection(f, "Death Sounds", CritLog.Constants.helpDeathSounds, leftBottom)
+    local deathSoundsBottom, deathOffset = buildSection(
+        f, "Death Sounds", CritLog.Constants.helpDeathSounds, leftBottom, leftOffset
+    )
 
     local aboutText = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    aboutText:SetPoint("TOPLEFT", deathSoundsBottom, "BOTTOMLEFT", -8, -16)
+    aboutText:SetPoint("TOPLEFT", deathSoundsBottom, "BOTTOMLEFT", deathOffset, -16)
     aboutText:SetText(CritLog.Constants.helpAbout)
 
     return f
