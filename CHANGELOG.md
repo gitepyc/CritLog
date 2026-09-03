@@ -7,6 +7,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.7.8-dev
+
+- fix: `/cl reset damage/whitehit/heal` line went missing from the Help panel - a literal `|` in the text was being parsed as a WoW color-code escape sequence
+- feature: Help panel reworked - two columns (General/Sounds), real section headings instead of "------------", command highlighted with its description below instead of one plain line
+
 ## 0.7.7-dev
 
 - feature: shortened Help panel/`/cl help` wording throughout, merged the four healer/dps/tank/boss lines into one

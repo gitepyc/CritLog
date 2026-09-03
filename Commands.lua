@@ -22,12 +22,22 @@ local function toggleDetectionMode(field, label)
     end
 end
 
--- Shared with the Help panel (UI/HelpPanel.lua's CritLog:ShowHelp) so chat
--- and the in-game panel can't drift out of sync with each other.
-local function printHelp()
-    for _, line in ipairs(CritLog.Constants.helpLines) do
-        print(line)
+local function printHelpSection(title, entries)
+    print("-- "..title.." --")
+    for _, entry in ipairs(entries) do
+        print(entry.cmd..": "..entry.desc)
     end
+end
+
+-- Shared with the Help panel (UI/HelpPanel.lua's CritLog:ShowHelp) so chat
+-- and the in-game panel can't drift out of sync with each other. The panel
+-- lays General/Sounds out as two side-by-side columns; chat is inherently
+-- linear, so this just prints each named list in sequence instead.
+local function printHelp()
+    printHelpSection("General", CritLog.Constants.helpGeneral)
+    printHelpSection("Sounds", CritLog.Constants.helpSounds)
+    printHelpSection("Death Sounds", CritLog.Constants.helpDeathSounds)
+    print(CritLog.Constants.helpAbout)
 end
 
 local function printConfig()
