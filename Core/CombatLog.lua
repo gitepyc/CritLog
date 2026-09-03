@@ -161,7 +161,7 @@ end
 -- rather than silently dropped, since that's rare and losing a real record
 -- is worse than occasionally counting an unverified one.
 local function targetPassesLevelFilter(destGUID)
-    if CritLogDB.AllLevel then
+    if not CritLogDB.LevelFilterFlag then
         return true
     end
 
@@ -172,7 +172,8 @@ local function targetPassesLevelFilter(destGUID)
     end
 
     local passes = CritLog.Filters.passesLevelFilter(
-        UnitLevel(token), UnitClassification(token), UnitLevel("player"), CritLogDB.AllLevel
+        UnitLevel(token), UnitClassification(token), UnitLevel("player"),
+        CritLogDB.LevelFilterFlag, CritLogDB.LevelDiffThreshold
     )
     CritLog:Debug(
         "Level filter: token", token,

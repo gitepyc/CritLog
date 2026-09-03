@@ -41,7 +41,7 @@ local function printHelp()
 end
 
 local function printConfig()
-    print("/cl level: "..tostring(CritLogDB.AllLevel))
+    print("/cl level: "..tostring(CritLogDB.LevelFilterFlag).." (max "..tostring(CritLogDB.LevelDiffThreshold).." levels below you)")
     print("/cl mute: "..tostring(CritLogDB.MasterSoundFlag))
     print("/cl sound: "..tostring(CritLogDB.SoundFlag))
     print("/cl allcrits: "..tostring(CritLogDB.AllCritFlag))
@@ -172,12 +172,15 @@ function CritLog:PrintCritLogs(message)
             "CritLog Debug Mode Off"
         )
     elseif command == "level" then
-        CritLogDB.AllLevel = not CritLogDB.AllLevel
-        if CritLogDB.AllLevel then
-            print("CritLog: Enemy Level does not matter now")
-        else
-            print("CritLog: Enemy Level + 9 < Player Level to log DAMAGE Crits (GREEN Level Units) only")
-        end
+        -- The actual level-diff threshold (LevelDiffThreshold) only has a
+        -- slider in the options panel (UI/MainPanel.lua) - this just flips
+        -- the separate on/off master switch, same pattern as every other
+        -- plain toggle() call in this file.
+        toggle(
+            "LevelFilterFlag",
+            "CritLog Level Filter On",
+            "CritLog Level Filter Off"
+        )
     elseif command == "options" or command == "opt" then
         self:ShowOptions()
     elseif command == "help" then

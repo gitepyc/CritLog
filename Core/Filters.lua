@@ -144,10 +144,21 @@ end
 -- record from relevant content. `targetLevel`/`targetClassification` are
 -- already-resolved values (nil handling for "no unit token" is the caller's
 -- job, since that's a WoW-API concern, not a rule).
-function CritLog.Filters.passesLevelFilter(targetLevel, targetClassification, playerLevel, allLevel)
-    if allLevel then
+--
+-- `filterEnabled` is the separate on/off master switch (`LevelFilterFlag`);
+-- `levelDiffThreshold` is how many levels below the player a target may be
+-- before it's excluded once the filter is on - a user-configurable
+-- replacement for what used to be a hardcoded `9` behind a single plain
+-- on/off flag (`AllLevel`, see Persistence/Database.lua's
+-- migrateAllLevelToThreshold). Deliberately one-directional, unlike
+-- TitanCritLine's similar level-adjustment slider, which also excludes
+-- crits against much *higher*-level targets: for a highscore tracker, a
+-- crit against a tougher-than-you enemy is exactly the impressive case you
+-- don't want filtered out.
+function CritLog.Filters.passesLevelFilter(targetLevel, targetClassification, playerLevel, filterEnabled, levelDiffThreshold)
+    if not filterEnabled then
         return true
     end
 
-    return targetLevel > playerLevel - 9 or targetClassification == "worldboss"
+    return targetLevel > playerLevel - levelDiffThreshold or targetClassification == "worldboss"
 end

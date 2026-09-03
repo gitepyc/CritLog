@@ -7,6 +7,23 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.8.3-leveldiff-dev
+
+- fix: current slider value overlapped the "1" (Low) label at the bottom-left instead of showing centered - now centered under the slider, chained via a separate invisible anchor instead of the visible label itself
+
+## 0.8.2-leveldiff-dev
+
+- fix: Debug mode checkbox (and anything after the slider) still sat far to the right - the slider's value-number label was anchored by its center instead of its left edge, in-game screenshotted
+
+## 0.8.1-leveldiff-dev
+
+- fix: level filter reported as looking off and misaligning the rows after it - separate LevelFilterFlag checkbox added above the slider (instead of overloading 0 as "off"), slider positioning bug fixed
+- feature: `/cl level` toggles the new LevelFilterFlag checkbox; the threshold itself (default 9) is options-panel-slider-only
+
+## 0.8.0-leveldiff-dev
+
+- feature: level filter is now a 0-20 slider (LevelDiffThreshold) instead of an on/off flag (AllLevel), same idea as TitanCritLine's level-adjustment slider; `/cl level` still just toggles 0/9
+
 ## 0.7.8-dev
 
 - fix: `/cl reset damage/whitehit/heal` line went missing from the Help panel - a literal `|` in the text was being parsed as a WoW color-code escape sequence
