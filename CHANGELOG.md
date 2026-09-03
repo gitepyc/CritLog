@@ -6,6 +6,21 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.15-dev
+
+- Fixed the Highscore List popup's row count tracking `#list` (floored at
+  1 row) instead of always reserving a fixed
+  `Constants.maxDisplayEntries` (5) rows per category - a category with
+  only 1-2 real entries used to reserve just that many rows, so the next
+  category's heading shifted up to fill the gap, and the whole popup's
+  layout visibly "grew into" its final position as entries accumulated
+  (in-game reported). Every category now always lays out all 5 rows,
+  filling missing ones with the existing "No record yet" placeholder
+  (that logic already existed for a fully-empty category, just wasn't
+  reached for a partially-filled one) - the popup's layout is stable from
+  the very first crit onward. No size change to the panel itself, already
+  sized for this worst case.
+
 ## 0.6.14-dev
 
 - Filled in the still-missing Wowhead spell IDs for the `feature/legacy-
