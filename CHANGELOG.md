@@ -6,6 +6,49 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.8-dev
+
+- Split the 13 individual aura/ritual sound toggles out of Sound Settings
+  into their own new "Aura Sounds..." panel (`UI/AuraSoundPanel.lua`),
+  reached via a button placed where those 13 indented rows used to be,
+  right under the `AuraSoundFlag` master-switch row - Sound Settings had
+  grown to 950px tall across 16 rows plus a 13-row aura block, and kept
+  growing every time a new aura sound was ported. `AuraSoundFlag` itself
+  stays on Sound Settings (it's the master switch, not specific to this
+  new panel); the Aura Sounds panel has a note at the top pointing back to
+  it instead of duplicating the checkbox. Rows are full-size here (not the
+  smaller indented style they had under the master switch) since there's
+  no longer a peer master row on the same panel to visually subordinate
+  them to.
+
+## 0.6.7-dev
+
+- Ported 15 sounds from the original single-file legacy addon
+  (`feature/legacy-sound-port`, archived as the `legacy-0.1.4.2` Gitea
+  release for reference): `/roll` sounds (specific values/bands on a
+  1-100 roll: 1, 69, 95+, 100, and the two lowest bands - pure
+  classification logic in the new `Filters.classifyRoll`), a login sound
+  (`LoginSoundFlag`, off by default, matching the legacy default), a
+  lottery sound reacting to a CrossGambling raid-chat announcement
+  (`GambleSoundFlag`), and 6 more individually-toggleable aura/ritual
+  sounds under the `AuraSoundFlag` master switch: Drums of Battle, Pain
+  Suppression (the Season of Discovery Priest rune, spell id `402004`),
+  Hymn of Hope, Evocation (spell id `12051`), Mage Table (Ritual of
+  Refreshment cast by a party/raid member, cooldown-gated to once per
+  100s so multiple simultaneous casts in a group don't spam it), and the
+  Warlock Healthstone ritual (Ritual of Souls, same cooldown-gating,
+  60s). Evocation and Pain Suppression are the only two of the six
+  matched by spell ID (cross-checked against Wowhead); the rest are
+  name-only, same as the legacy addon itself always matched them - and
+  whether Drums of Battle/Mage Table/the Healthstone ritual/Hymn of Hope
+  even exist as castable spells on Classic Era/SoD is unverified (see
+  `docs/ROADMAP.md`). Not yet in-game verified for any of the 15.
+- Not ported: two personal-joke/insider features from the legacy addon
+  (a hardcoded easter-egg sound for one specific player name casting
+  Avenger's Shield, and an entirely separate alternate sound-pack toggle)
+  and a chat print for who landed a boss killing blow (CritLog already
+  has this - `PrintBossKillingBlow` in `Core/CombatLog.lua`).
+
 ## 0.6.6-dev
 
 - Moved the Help panel's "Close" button from top-right to bottom-center

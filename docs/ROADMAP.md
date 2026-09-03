@@ -9,7 +9,15 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    detection specifically, and Spirit of Redemption. Not a gate blocking
    other work anymore - bugs found during verification (e.g. the
    `0.4.2-dev` NPC-death-sound fix, the `0.4.8-dev` Escape-key fix) land on
-   `dev` as they're reported, in parallel with feature work below.
+   `dev` as they're reported, in parallel with feature work below. Also
+   still open, from `feature/legacy-sound-port`: none of the 15 sounds
+   ported from the legacy addon (login, roll, lottery, Drums of Battle,
+   Pain Suppression, Hymn of Hope, Evocation, Mage Table, Warlock
+   Healthstone ritual) have been in-game confirmed yet - and four of them
+   (Drums of Battle, Mage Table, the Healthstone ritual, Hymn of Hope) have
+   an open question of whether the underlying spell even exists to cast on
+   Classic Era/SoD at all, since the legacy addon itself was never
+   confirmed working for those (see `docs/BEHAVIOR.md`).
 2. ~~Multi-entry highscores~~ - done: list per category
    (`CritLogDB.records.*`) instead of a single value - 10 tracked
    (`Constants.maxTrackedEntries`), top 5 shown (`Constants.maxDisplayEntries`)
