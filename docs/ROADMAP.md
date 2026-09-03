@@ -36,6 +36,22 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    this, not a separate research-heavy project: once the list is editable,
    shipping a couple of quick-add preset buttons (SoD/TBC/...) is a small
    follow-up, not its own effort.
+3. Per-ability crit rate tracking - in-game requested, modeled on
+   TitanCritLine's own equivalent feature (verified against their actual
+   code, not guessed): `Core/Records.lua`'s `attack[HitType]["Value"] =
+   (attack[HitType]["Value"] or 0) + 1` counts every hit, split into a
+   `NORMAL` and a `CRIT` bucket per ability name, persisted across
+   sessions; `UI/Summary.lua`'s `tcl_GetHighestCritPercentage` computes
+   `critHits / (critHits + normalHits) * 100` per ability and finds the
+   one with the best rate. CritLog currently only tracks the single
+   highest-*value* crit per category (`CritLogDB.records`), not hit
+   counts, so this needs new state entirely: a per-ability
+   `{ normal = N, crit = M }` counter table, incremented on *every*
+   relevant hit (not just new highscores - the combat-log handlers
+   currently mostly only care about crits at all, non-crit hits would
+   need to start being counted too), plus somewhere to show the result
+   (options panel section, Titan tooltip, and/or a `/cl` command are all
+   plausible, not decided yet).
 
 ## Parked
 
