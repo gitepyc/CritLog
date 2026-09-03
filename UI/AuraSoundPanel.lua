@@ -6,8 +6,13 @@
 -- Sound Settings (it's the master switch for everything here, not
 -- specific to this panel), not duplicated here - see the note row below
 -- instead.
-local AURA_CHECKBOXES = {
-    { note = "Requires \"Aura/spell sound\" enabled on the Sound Settings panel." },
+--
+-- Laid out as two columns rather than one long list (13 rows single-column
+-- made this panel nearly as tall as Sound Settings used to be, defeating
+-- the point of splitting it out) - split by position, not by theme/
+-- category, so it's just "first 7" / "remaining 6" rather than a grouping
+-- that would need explaining.
+local AURA_CHECKBOXES_LEFT = {
     { field = "BloodlustSoundFlag", label = "Bloodlust/Heroism", sound = "bloodlust",
       hint = "Received Bloodlust or Heroism." },
     { field = "InnervateSoundFlag", label = "Innervate", sound = "innervate",
@@ -27,6 +32,9 @@ local AURA_CHECKBOXES = {
     -- name fallback), which was misleading here as a trigger description.
     { field = "SoulstoneSoundFlag", label = "Soulstone Applied", sound = "soulstone",
       hint = "Received the Soulstone buff (not the resurrection itself)." },
+}
+
+local AURA_CHECKBOXES_RIGHT = {
     { field = "DrumsSoundFlag", label = "Drums of Battle", sound = "drums",
       hint = "Received Drums of Battle." },
     { field = "PainSuppressionSoundFlag", label = "Pain Suppression", sound = "painSuppression",
@@ -44,20 +52,42 @@ local AURA_CHECKBOXES = {
 local auraSoundFrame
 
 local function buildAuraSoundFrame()
-    -- Tall enough for the heading, the note row, and all 13 checkbox rows
-    -- (each with its own hint line underneath). Not pixel-verified in-game
-    -- yet - see docs/ROADMAP.md, visual polish is a follow-up.
-    local f = CritLog.UI.createPanelFrame("CritLogAuraSoundFrame", "CritLog Aura Sounds", 490, 760)
+    -- Wide enough for two columns, each needing the same ~424px a single
+    -- column row does (checkbox + label + the Preview button's fixed
+    -- 340px-from-checkbox column - see UI/Shared.lua's buildToggleRows).
+    -- Tall enough for the heading, the note row, and the longer column (7
+    -- rows, each with its own hint line underneath). Not pixel-verified
+    -- in-game yet - see docs/ROADMAP.md, visual polish is a follow-up.
+    local f = CritLog.UI.createPanelFrame("CritLogAuraSoundFrame", "CritLog Aura Sounds", 920, 520)
     -- Offset from center so it doesn't perfectly overlap the main panel or
     -- Sound Settings when several are open at once; a one-time anchor, not
     -- a continuous one, so dragging one doesn't drag the others.
-    f:SetPoint("CENTER", UIParent, "CENTER", 260, 60)
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 60)
 
     local heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     heading:SetText("Aura Sounds")
 
-    CritLog.UI.buildToggleRows(f, AURA_CHECKBOXES, heading)
+    local noteRow = CritLog.UI.buildToggleRows(f, {
+        { note = "Requires \"Aura/spell sound\" enabled on the Sound Settings panel." },
+    }, heading)
+
+    -- Two independent anchor points at the same Y, one at the panel's left
+    -- margin (matching every other panel's row indent) and one far enough
+    -- right to clear the left column's Preview buttons (checkbox + 340px +
+    -- button width, see the width comment above) - buildToggleRows anchors
+    -- each column's own rows relative to its own start anchor, so the two
+    -- chains never interact.
+    local colLeftAnchor = CreateFrame("Frame", nil, f)
+    colLeftAnchor:SetSize(1, 1)
+    colLeftAnchor:SetPoint("TOPLEFT", noteRow, "BOTTOMLEFT", 0, -8)
+
+    local colRightAnchor = CreateFrame("Frame", nil, f)
+    colRightAnchor:SetSize(1, 1)
+    colRightAnchor:SetPoint("TOPLEFT", noteRow, "BOTTOMLEFT", 446, -8)
+
+    CritLog.UI.buildToggleRows(f, AURA_CHECKBOXES_LEFT, colLeftAnchor)
+    CritLog.UI.buildToggleRows(f, AURA_CHECKBOXES_RIGHT, colRightAnchor)
 
     CritLog.UI.createCloseButton(f)
 

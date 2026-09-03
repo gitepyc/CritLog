@@ -6,6 +6,18 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.10-dev
+
+- Added the bottom-center "Close" button (`CritLog.UI.createCloseButton`)
+  to the Sound Settings panel - it was the one panel still missing it
+  (Help/Highscore List/Roster Settings already had it, see `0.6.6-dev`).
+- Reworked the Aura Sounds panel into two columns instead of one long
+  13-row list, split by position (first 7 / remaining 6), not by theme -
+  the single-column version was nearly as tall as Sound Settings used to
+  be before that panel was split out in the first place. Panel widened to
+  920px to fit two full row-columns (each needs the checkbox + label +
+  the fixed-column Preview button, same as a single-column row).
+
 ## 0.6.9-dev
 
 - Removed the login sound (`LoginSoundFlag`, `Login.mp3`, `/cl login`) that

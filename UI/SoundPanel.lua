@@ -100,6 +100,8 @@ local function buildSoundFrame()
 
     CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_BOTTOM, auraSoundsButton)
 
+    CritLog.UI.createCloseButton(f)
+
     return f
 end
 
