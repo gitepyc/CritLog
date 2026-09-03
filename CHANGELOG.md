@@ -6,6 +6,21 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.8-dev
+
+- Split the 13 individual aura/ritual sound toggles out of Sound Settings
+  into their own new "Aura Sounds..." panel (`UI/AuraSoundPanel.lua`),
+  reached via a button placed where those 13 indented rows used to be,
+  right under the `AuraSoundFlag` master-switch row - Sound Settings had
+  grown to 950px tall across 16 rows plus a 13-row aura block, and kept
+  growing every time a new aura sound was ported. `AuraSoundFlag` itself
+  stays on Sound Settings (it's the master switch, not specific to this
+  new panel); the Aura Sounds panel has a note at the top pointing back to
+  it instead of duplicating the checkbox. Rows are full-size here (not the
+  smaller indented style they had under the master switch) since there's
+  no longer a peer master row on the same panel to visually subordinate
+  them to.
+
 ## 0.6.7-dev
 
 - Ported 15 sounds from the original single-file legacy addon

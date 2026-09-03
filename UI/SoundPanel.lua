@@ -2,7 +2,14 @@
 -- the main panel so the default /cl options view isn't 13 sound rows deep
 -- before you even see whether crit tracking itself is configured how you
 -- want.
-local SOUND_CHECKBOXES = {
+--
+-- Split into two row lists (TOP/BOTTOM) rather than one, with the "Aura
+-- Sounds..." button manually placed between them in buildSoundFrame below -
+-- the 13 individual aura/ritual sounds used to live here as indented rows
+-- under AuraSoundFlag, but got their own panel (UI/AuraSoundPanel.lua) once
+-- this one grew too tall (see CHANGELOG.md). AuraSoundFlag (the master
+-- switch) stays here, at the end of TOP.
+local SOUND_CHECKBOXES_TOP = {
     { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)",
       hint = "Mutes everything below without changing individual settings." },
     { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
@@ -22,40 +29,10 @@ local SOUND_CHECKBOXES = {
     { field = "GambleSoundFlag", label = "Lottery sound", sound = "lotteryFirst",
       hint = "A CrossGambling lottery announcement in raid chat." },
     { field = "AuraSoundFlag", label = "Aura/spell sound",
-      hint = "Master switch for the 13 spell sounds below." },
-    -- indent = true: these 7 are a sub-category under AuraSoundFlag above,
-    -- not 7 more peers of it - smaller and indented so that reads clearly.
-    { field = "BloodlustSoundFlag", label = "Bloodlust/Heroism", sound = "bloodlust", indent = true,
-      hint = "Received Bloodlust or Heroism." },
-    { field = "InnervateSoundFlag", label = "Innervate", sound = "innervate", indent = true,
-      hint = "Received Innervate." },
-    { field = "PowerInfusionSoundFlag", label = "Power Infusion", sound = "powerInfusion", indent = true,
-      hint = "Received Power Infusion." },
-    { field = "BlessingOfProtectionSoundFlag", label = "Blessing of Protection", sound = "blessingOfProtection",
-      indent = true, hint = "Received Blessing of Protection." },
-    { field = "DivineInterventionSoundFlag", label = "Divine Intervention", sound = "divineIntervention",
-      indent = true, hint = "Received Divine Intervention." },
-    { field = "ManaTideSoundFlag", label = "Mana Tide Totem", sound = "manaTide", indent = true,
-      hint = "A party/raid member summons Mana Tide Totem." },
-    -- Labeled "Applied", not "Resurrection": this fires when the Soulstone
-    -- buff itself lands on you (SPELL_AURA_APPLIED), well before it's
-    -- actually used to self-resurrect - the buff is literally named
-    -- "Soulstone Resurrection" in-game (see Core/Constants.lua's spell
-    -- name fallback), which was misleading here as a trigger description.
-    { field = "SoulstoneSoundFlag", label = "Soulstone Applied", sound = "soulstone", indent = true,
-      hint = "Received the Soulstone buff (not the resurrection itself)." },
-    { field = "DrumsSoundFlag", label = "Drums of Battle", sound = "drums", indent = true,
-      hint = "Received Drums of Battle." },
-    { field = "PainSuppressionSoundFlag", label = "Pain Suppression", sound = "painSuppression", indent = true,
-      hint = "Received Pain Suppression." },
-    { field = "HymnOfHopeSoundFlag", label = "Hymn of Hope", sound = "hymnOfHope", indent = true,
-      hint = "Received Hymn of Hope." },
-    { field = "EvocationSoundFlag", label = "Evocation", sound = "evocation", indent = true,
-      hint = "Received Evocation." },
-    { field = "MageTableSoundFlag", label = "Mage Table", sound = "mageTable", indent = true,
-      hint = "A party/raid member casts Ritual of Refreshment (max once per 100s)." },
-    { field = "HealthstoneSoundFlag", label = "Warlock Healthstone Ritual", sound = "healthstoneRitual", indent = true,
-      hint = "A party/raid member casts Ritual of Souls (max once per 60s)." },
+      hint = "Master switch for the 13 spell sounds - see the button below." },
+}
+
+local SOUND_CHECKBOXES_BOTTOM = {
     { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
       hint = "Plays when you yourself die." },
     -- These four (unlike PlayerSoundFlag above) can be driven by the live
@@ -94,15 +71,14 @@ local SOUND_CHECKBOXES = {
 local soundFrame
 
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading and all 29 sound toggle rows
-    -- (each with its own hint line underneath) - the 13 individual aura/
-    -- ritual sounds used to be a compact preview-only button grid under a
-    -- single master toggle; now each is a real checkbox row like everything
-    -- else, so it needs noticeably more height than before. The 4
-    -- detection-mode dropdown rows are taller than a checkbox row too. Not
-    -- pixel-verified in-game yet - see docs/ROADMAP.md, visual polish is a
-    -- follow-up.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 1400)
+    -- Tall enough for the toggles heading, all 16 checkbox/dropdown/note
+    -- rows (each with its own hint line underneath), and the "Aura
+    -- Sounds..." button between the two row groups - the 13 individual
+    -- aura/ritual sounds that used to live here directly now have their
+    -- own panel (UI/AuraSoundPanel.lua). The 4 detection-mode dropdown rows
+    -- are taller than a checkbox row too. Not pixel-verified in-game yet -
+    -- see docs/ROADMAP.md, visual polish is a follow-up.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 950)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
@@ -112,7 +88,19 @@ local function buildSoundFrame()
     togglesHeading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     togglesHeading:SetText("Sound Toggles")
 
-    CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES, togglesHeading)
+    local lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_TOP, togglesHeading)
+
+    local auraSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    auraSoundsButton:SetSize(140, 24)
+    auraSoundsButton:SetText("Aura Sounds...")
+    auraSoundsButton:SetNormalFontObject("GameFontNormalSmall")
+    auraSoundsButton:SetHighlightFontObject("GameFontHighlightSmall")
+    auraSoundsButton:SetPoint("TOPLEFT", lastAnchor, "BOTTOMLEFT", lastOffset, -12)
+    auraSoundsButton:SetScript("OnClick", function()
+        CritLog:ShowAuraSounds()
+    end)
+
+    CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_BOTTOM, auraSoundsButton)
 
     return f
 end

@@ -44,6 +44,7 @@ World of Warcraft/
                 │   ├── Shared.lua
                 │   ├── MainPanel.lua
                 │   ├── SoundPanel.lua
+                │   ├── AuraSoundPanel.lua
                 │   ├── RosterPanel.lua
                 │   └── HelpPanel.lua
                 ├── Sounds.lua
@@ -58,14 +59,16 @@ target is Season of Discovery on Classic Era `1.15.9`.
 
 ## Current behavior at a glance
 
-CritLog listens for four events:
+CritLog listens for six events:
 
 | WoW event | Reaction |
 | --- | --- |
-| `PLAYER_LOGIN` | Initializes per-character settings and prints stored records. |
+| `PLAYER_LOGIN` | Initializes per-character settings, prints stored records, and plays the login sound if enabled (off by default). |
 | `COMBAT_LOG_EVENT_UNFILTERED` | Detects critical spell, ranged, and melee damage; critical healing; selected auras; and deaths. |
 | `READY_CHECK` | Plays a sound when enabled. |
 | `CHAT_MSG_RAID_LEADER` | Reacts to hard-coded raid-leader phrases such as `raid end`, `raid ende`, `wipe`, and `shit show`. |
+| `CHAT_MSG_RAID` | Reacts to a CrossGambling lottery announcement in raid chat. |
+| `CHAT_MSG_SYSTEM` | Reacts to specific `/roll` results/bands on a 1-100 roll. |
 
 Highscores and settings are stored per character in `CritLogDB` through
 `SavedVariablesPerCharacter`. Most sound groups are enabled by default. Damage
@@ -131,10 +134,11 @@ critlog/
 │   ├── Shared.lua        # Frame/checkbox-row helpers, Escape-key stack
 │   ├── MainPanel.lua     # Crit-tracking panel + Highscore List popup
 │   ├── SoundPanel.lua    # Sound Settings panel
+│   ├── AuraSoundPanel.lua # Aura Sounds panel (13 aura/ritual sounds, opened from Sound Settings)
 │   ├── RosterPanel.lua   # Roster Settings panel
 │   └── HelpPanel.lua     # Help panel - lists every slash command
 ├── Sounds.lua            # Sound playback helpers
-├── ChatTriggers.lua       # Raid-leader phrase handling
+├── ChatTriggers.lua       # Raid-leader/raid/roll chat trigger handling
 ├── Commands.lua           # Slash commands and chat output
 ├── Events.lua             # Frame registration and event dispatch
 └── sounds/
