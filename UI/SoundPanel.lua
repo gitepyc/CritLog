@@ -9,7 +9,12 @@
 -- UI/DeathSoundPanel.lua), and the 6 roll-result sounds (now
 -- UI/RollSoundPanel.lua) - see CHANGELOG.md. What's left here is just the
 -- general toggles plus the buttons to reach those panels.
-local SOUND_CHECKBOXES = {
+-- Split in two so the Roll Sounds button can sit directly under the
+-- RollSoundFlag row instead of grouped with the Aura/Death Sounds buttons
+-- at the very end - in-game requested. AuraSoundFlag stays in its own
+-- list for the same reason: its button belongs right after it, then
+-- Death Sounds' button alongside it as before.
+local SOUND_CHECKBOXES_TOP = {
     { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)",
       hint = "Mutes everything below without changing individual settings." },
     { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
@@ -26,6 +31,9 @@ local SOUND_CHECKBOXES = {
       hint = "A CrossGambling lottery announcement in raid chat." },
     { field = "RollSoundFlag", label = "Roll Sounds",
       hint = "Master switch for the 6 roll-result sounds - see the button below." },
+}
+
+local SOUND_CHECKBOXES_BOTTOM = {
     { field = "AuraSoundFlag", label = "Aura/spell sound",
       hint = "Master switch for the 13 spell sounds - see the button below." },
 }
@@ -35,9 +43,9 @@ local soundFrame
 local function buildSoundFrame()
     -- Tall enough for the toggles heading, all 9 checkbox rows (hints are
     -- now a hover tooltip, not a line underneath each row - see
-    -- UI/Shared.lua), and the two button rows (Aura Sounds/Death Sounds,
-    -- then Roll Sounds below) - not pixel-verified in-game yet, see
-    -- docs/ROADMAP.md.
+    -- UI/Shared.lua), the Roll Sounds button (its own row, right under the
+    -- RollSoundFlag checkbox), and the Aura Sounds/Death Sounds button row
+    -- below that - not pixel-verified in-game yet, see docs/ROADMAP.md.
     local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 520)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
@@ -48,7 +56,19 @@ local function buildSoundFrame()
     togglesHeading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     togglesHeading:SetText("Sound Toggles")
 
-    local lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES, togglesHeading)
+    local lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_TOP, togglesHeading)
+
+    local rollSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    rollSoundsButton:SetSize(140, 24)
+    rollSoundsButton:SetText("Roll Sounds...")
+    rollSoundsButton:SetNormalFontObject("GameFontNormalSmall")
+    rollSoundsButton:SetHighlightFontObject("GameFontHighlightSmall")
+    rollSoundsButton:SetPoint("TOPLEFT", lastAnchor, "BOTTOMLEFT", lastOffset, -12)
+    rollSoundsButton:SetScript("OnClick", function()
+        CritLog:ShowRollSounds()
+    end)
+
+    lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_BOTTOM, rollSoundsButton)
 
     local auraSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     auraSoundsButton:SetSize(140, 24)
@@ -68,19 +88,6 @@ local function buildSoundFrame()
     deathSoundsButton:SetPoint("LEFT", auraSoundsButton, "RIGHT", 8, 0)
     deathSoundsButton:SetScript("OnClick", function()
         CritLog:ShowDeathSounds()
-    end)
-
-    -- On its own row below the other two rather than squeezed into the
-    -- same row - three 140px buttons plus gaps would leave very little
-    -- margin either side within this panel's width.
-    local rollSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-    rollSoundsButton:SetSize(140, 24)
-    rollSoundsButton:SetText("Roll Sounds...")
-    rollSoundsButton:SetNormalFontObject("GameFontNormalSmall")
-    rollSoundsButton:SetHighlightFontObject("GameFontHighlightSmall")
-    rollSoundsButton:SetPoint("TOPLEFT", auraSoundsButton, "BOTTOMLEFT", 0, -8)
-    rollSoundsButton:SetScript("OnClick", function()
-        CritLog:ShowRollSounds()
     end)
 
     CritLog.UI.createCloseButton(f)
