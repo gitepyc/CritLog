@@ -301,6 +301,8 @@ local function buildFrame()
         CritLog:ShowHelp()
     end)
 
+    CritLog.UI.createCloseButton(f)
+
     return f
 end
 

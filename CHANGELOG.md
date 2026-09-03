@@ -11,6 +11,8 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
   cleaner than the old layout. The checkbox/dropdown's own hit area is
   widened to cover its label too, so hovering the text also shows the
   tooltip, not just the small control itself.
+- Fixed: the main options panel (`/cl options`) was missing the bottom-
+  center Close button every other panel already has.
 
 ## 0.7.0
 
