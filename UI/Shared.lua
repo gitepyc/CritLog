@@ -243,16 +243,14 @@ local function createSliderRow(parent, entry, previous, previousXOffset)
     _G[slider:GetName().."High"]:SetText(tostring(entry.slider.max))
     _G[slider:GetName().."Text"]:SetText(entry.label)
 
-    -- TOPLEFT/BOTTOMLEFT, not a centered TOP/BOTTOM anchor: buildToggleRows
-    -- always chains rows via their left edge (see e.g. the checkbox
-    -- branch below), and this return value becomes the next row's anchor.
-    -- A center-anchored FontString's own BOTTOMLEFT sits near the middle
-    -- of the slider (offset by half its own text width from center), not
-    -- the slider's actual left edge - the next row inherited that
-    -- drift, in-game reported/screenshotted as Debug mode sitting far to
-    -- the right of the checkbox above the slider.
+    -- Centered under the slider (TOP/BOTTOM, not TOPLEFT/BOTTOMLEFT) so
+    -- the current value reads where you'd expect it, not jammed into the
+    -- bottom-left corner on top of the slider's own "Low" label (in-game
+    -- reported/screenshotted - a left-anchored valueText used to overlap
+    -- the "1" there). Purely visual now - not used for row-chaining below,
+    -- see rowAnchor.
     local valueText = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    valueText:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -2)
+    valueText:SetPoint("TOP", slider, "BOTTOM", 0, -2)
 
     local function updateValueText(value)
         valueText:SetText(tostring(value))
@@ -268,7 +266,21 @@ local function createSliderRow(parent, entry, previous, previousXOffset)
 
     attachTooltip(slider, entry.hint)
 
-    return valueText
+    -- A separate invisible anchor for buildToggleRows to chain the next
+    -- row from - TOPLEFT-based like every other row type, positioned
+    -- below the (centered) valueText so the next row doesn't overlap it.
+    -- Deliberately not valueText itself: an earlier version returned
+    -- valueText directly, which either had to be left-anchored (correct
+    -- column, but overlapping the slider's own "Low" label) or centered
+    -- (correct look, but its BOTTOMLEFT drifts toward the slider's middle,
+    -- shifting every row after it - see CHANGELOG.md, both were in-game
+    -- reported). Decoupling the visual element from the chaining anchor
+    -- avoids having to choose between the two.
+    local rowAnchor = CreateFrame("Frame", nil, parent)
+    rowAnchor:SetSize(1, 1)
+    rowAnchor:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -18)
+
+    return rowAnchor
 end
 
 -- Shared row-building loop for every panel: a checkbox (or, for an entry

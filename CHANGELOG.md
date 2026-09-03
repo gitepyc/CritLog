@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.8.3-leveldiff-dev
+
+Test build on `feature/level-diff-slider`, not merged into `dev` - not
+decided yet whether to keep this.
+
+- fix: current slider value overlapped the "1" (Low) label at the bottom-left instead of showing centered - now centered under the slider, chained via a separate invisible anchor instead of the visible label itself
+
 ## 0.8.2-leveldiff-dev
 
 Test build on `feature/level-diff-slider`, not merged into `dev` - not
