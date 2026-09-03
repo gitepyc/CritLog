@@ -29,8 +29,12 @@ local SOUND_CHECKBOXES_TOP = {
       hint = "Plays when a ready check starts." },
     { field = "GambleSoundFlag", label = "Lottery sound", sound = "lotteryFirst",
       hint = "A CrossGambling lottery announcement in raid chat." },
+    -- No exact count in the hint (matches the AuraSoundFlag hint below -
+    -- in-game requested the same treatment here), and "on the side" not
+    -- "below" - the Roll Sounds button sits on this same row now (see
+    -- buildSoundFrame), unlike the Aura/Death Sounds buttons.
     { field = "RollSoundFlag", label = "Roll Sounds",
-      hint = "Master switch for the 6 roll-result sounds - see the button below." },
+      hint = "Master switch for the roll-result sounds - see the button on the side." },
 }
 
 local SOUND_CHECKBOXES_BOTTOM = {

@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.8.4-dev
+
+- feature: colored highscore display (spell/target/amount) shared between the TitanPanel tooltip and the main options panel now, via a new `Core/Records.lua` `formatRecordTextColored` instead of a Titan-only copy
+- feature: color scheme retuned - target dark green (was red), plain text dark gold (was white), amount gradient now green-to-red
+- feature: Roll Sounds/Aura sound hints no longer state the exact sound count; Roll Sounds hint also says "on the side" instead of "below", matching its new position
+- feature: Help panel shrunk (920x660 -> 800x600)
+
 ## 0.9.8.3-dev
 
 - fix: TitanPanel button text never updated after a new crit (stayed on "-/-/-" forever, even though the hover tooltip showed the correct data) - Titan doesn't refresh button text on its own, now explicitly told to via `TitanPanelButton_UpdateButton` whenever a highscore is recorded
