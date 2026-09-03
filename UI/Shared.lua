@@ -132,6 +132,16 @@ local function attachTooltip(control, text)
     end
 
     control:HookScript("OnEnter", function(self)
+        -- Hide before re-showing: GameTooltip is a single shared frame
+        -- (used by every addon/Blizzard UI element, not just ours), and
+        -- it's a known quirk that it doesn't always shrink back down to a
+        -- new SetText's actual size if it's still showing when SetText is
+        -- called again - in-game reported: the tooltip sometimes rendered
+        -- much too large, fixed by moving the mouse away and re-hovering
+        -- (which hides and re-shows it). Hiding first forces a clean
+        -- reset every time instead of relying on that happening on its
+        -- own.
+        GameTooltip:Hide()
         GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
         GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -10, -4)
         GameTooltip:SetText(text, nil, nil, nil, nil, true)

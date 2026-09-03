@@ -10,6 +10,7 @@ commit message/PR, not here.
 ## 0.7.8-dev
 
 - fix: `/cl reset damage/whitehit/heal` line went missing from the Help panel - a literal `|` in the text was being parsed as a WoW color-code escape sequence
+- fix: toggle-row tooltips sometimes rendered much too large until moving the mouse away and re-hovering - GameTooltip now explicitly hidden before every re-show instead of relying on it resizing on its own
 - feature: Help panel reworked - two columns (General/Sounds), real section headings instead of "------------", command highlighted with its description below instead of one plain line
 
 ## 0.7.7-dev
