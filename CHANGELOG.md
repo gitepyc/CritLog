@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.1.2-titanpanel-dev
+
+Test build on `feature/titan-panel-integration`, not merged into `dev` -
+standalone, not decided yet whether to keep this.
+
+- fix: button never appeared in Titan's list at all - `IsAddOnLoaded` is nil on this client (moved to `C_AddOns.IsAddOnLoaded`), threw an error at PLAYER_LOGIN that silently skipped button setup entirely; not a "Combat" category issue, that was already correct
+
 ## 0.1.1-titanpanel-dev
 
 Test build on `feature/titan-panel-integration`, not merged into `dev` -

@@ -1,3 +1,13 @@
+-- Retail moved IsAddOnLoaded to C_AddOns.IsAddOnLoaded; fall back to the
+-- older global for clients that don't have C_AddOns yet. Same pattern
+-- CritLog.lua already uses for GetAddOnMetadata - in-game reported: the
+-- plain global is nil on this client, "attempt to call a nil value" at
+-- PLAYER_LOGIN, which silently skipped TitanPanel button setup entirely
+-- (the whole reason it never showed up in Titan's list, not a category
+-- issue - registry.category = "Combat" in UI/TitanButton.lua was already
+-- correct, it just never ran).
+local isAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
+
 local frame = CreateFrame("Frame")
 
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -18,7 +28,7 @@ function CritLog:PLAYER_LOGIN()
     -- Optional TitanPanel status-bar button (UI/TitanButton.lua) - see
     -- docs/ROADMAP.md item 3. Gated here so it's completely inert (no
     -- frame created, no error) when Titan isn't installed.
-    if IsAddOnLoaded("Titan") then
+    if isAddOnLoaded("Titan") then
         self:InitTitanPanelButton()
     end
 end
