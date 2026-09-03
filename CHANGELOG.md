@@ -7,37 +7,19 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
-## 0.8.3-leveldiff-dev
+## 0.9.0-dev
 
-- fix: current slider value overlapped the "1" (Low) label at the bottom-left instead of showing centered - now centered under the slider, chained via a separate invisible anchor instead of the visible label itself
+Merges two standalone test branches into `dev`: `feature/level-diff-slider`
+(0.8.0-0.8.3-leveldiff-dev) and `feature/titan-panel-integration`
+(0.1.0-0.1.7-titanpanel-dev), plus `dev`'s own 0.7.6-0.7.8-dev work. See
+git history for the version-by-version path each one took.
 
-## 0.8.2-leveldiff-dev
-
-- fix: Debug mode checkbox (and anything after the slider) still sat far to the right - the slider's value-number label was anchored by its center instead of its left edge, in-game screenshotted
-
-## 0.8.1-leveldiff-dev
-
-- fix: level filter reported as looking off and misaligning the rows after it - separate LevelFilterFlag checkbox added above the slider (instead of overloading 0 as "off"), slider positioning bug fixed
-- feature: `/cl level` toggles the new LevelFilterFlag checkbox; the threshold itself (default 9) is options-panel-slider-only
-
-## 0.8.0-leveldiff-dev
-
-- feature: level filter is now a 0-20 slider (LevelDiffThreshold) instead of an on/off flag (AllLevel), same idea as TitanCritLine's level-adjustment slider; `/cl level` still just toggles 0/9
-
-## 0.7.8-dev
-
-- fix: `/cl reset damage/whitehit/heal` line went missing from the Help panel - a literal `|` in the text was being parsed as a WoW color-code escape sequence
-- fix: toggle-row tooltips sometimes rendered much too large until moving the mouse away and re-hovering - GameTooltip now explicitly hidden before every re-show instead of relying on it resizing on its own
+- feature: level filter is now a separate enable checkbox (`LevelFilterFlag`) plus a 1-20 threshold slider (`LevelDiffThreshold`), replacing the old single `AllLevel` on/off flag - modeled on TitanCritLine's level-adjustment slider
+- feature: optional TitanPanel status-bar button - icon, live "CL: <dmg>/<white>/<heal>" text, hover tooltip with full per-category detail, left-click opens `/cl options`, right-click menu (Options, Reset All Highscores); entirely inert without Titan installed
+- feature: every highscore reset (per-category buttons and matching chat commands) now asks for confirmation, not just "Reset All"
 - feature: Help panel reworked - two columns (General/Sounds), real section headings instead of "------------", command highlighted with its description below instead of one plain line
-
-## 0.7.7-dev
-
-- feature: shortened Help panel/`/cl help` wording throughout, merged the four healer/dps/tank/boss lines into one
-- feature: added an "About" line at the end (author, year)
-
-## 0.7.6-dev
-
-- feature: every highscore reset (per-category buttons, and now `/cl reset`/`/cl reset damage|whitehit|heal` too) asks for confirmation, not just "Reset All"
+- fix: toggle-row tooltips sometimes rendered much too large until moving the mouse away and re-hovering - GameTooltip now explicitly hidden before every re-show
+- fix: `/cl reset damage/whitehit/heal` line had gone missing from the Help panel - a literal `|` in the text was being parsed as a WoW color-code escape sequence
 
 ## 0.7.5-dev
 
