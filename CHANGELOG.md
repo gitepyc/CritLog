@@ -7,6 +7,14 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.8.1-leveldiff-dev
+
+Test build on `feature/level-diff-slider`, not merged into `dev` - not
+decided yet whether to keep this.
+
+- fix: level filter reported as looking off and misaligning the rows after it - separate LevelFilterFlag checkbox added above the slider (instead of overloading 0 as "off"), slider positioning bug fixed
+- feature: `/cl level` toggles the new LevelFilterFlag checkbox; the threshold itself (default 9) is options-panel-slider-only
+
 ## 0.8.0-leveldiff-dev
 
 Test build on `feature/level-diff-slider`, not merged into `dev` - not

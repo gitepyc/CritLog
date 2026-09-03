@@ -3,17 +3,24 @@
 -- Highscore List popup. Label wording is lifted from Commands.lua's
 -- printHelp()/printConfig() so the panel doesn't introduce new terminology
 -- for the same settings.
--- LevelDiffThreshold replaces the old AllLevel on/off flag (see
--- Persistence/Database.lua's migrateAllLevelToThreshold and Core/
--- Filters.lua's passesLevelFilter) - a slider for how many levels below
--- you a target may be before its crit doesn't count, instead of a fixed
--- hardcoded 9. 0 reads as "Off" (counts everything), matching the old
--- AllLevel = true behavior. One-directional on purpose, unlike
--- TitanCritLine's similar level-adjustment slider (which this is modeled
--- on) - a crit against a tougher-than-you enemy is never filtered out.
+-- LevelFilterFlag/LevelDiffThreshold replace the old single AllLevel
+-- on/off flag (see Persistence/Database.lua's migrateAllLevelToThreshold
+-- and Core/Filters.lua's passesLevelFilter): a checkbox for whether the
+-- filter applies at all, plus a slider for how many levels below you a
+-- target may be before its crit doesn't count once it does - instead of a
+-- fixed hardcoded 9. Two separate controls, not one slider whose minimum
+-- doubles as "off" (in-game reported as confusing) - matches AllLevel's
+-- old on/off flag behavior more directly, and reads the same way as every
+-- other checkbox-gates-a-detail-setting pair in this addon (e.g.
+-- MasterSoundFlag above every other sound toggle). One-directional on
+-- purpose, unlike TitanCritLine's similar level-adjustment slider (which
+-- this is modeled on) - a crit against a tougher-than-you enemy is never
+-- filtered out.
 local CRIT_CHECKBOXES = {
-    { field = "LevelDiffThreshold", label = "Level filter", slider = { min = 0, max = 20, step = 1 },
-      hint = "Max levels below you a target may be and still count. Worldbosses always count. 0 = off." },
+    { field = "LevelFilterFlag", label = "Enable level filter",
+      hint = "Off: counts highscores from enemies of any level." },
+    { field = "LevelDiffThreshold", label = "Max levels below you", slider = { min = 1, max = 20, step = 1 },
+      hint = "How far below your level a target may be and still count. Worldbosses always count regardless." },
     { field = "DebugFlag", label = "Debug mode (diagnostic chat output)",
       hint = "Prints diagnostic chat messages for troubleshooting." },
 }
@@ -225,14 +232,15 @@ end
 
 local function buildFrame()
     -- Tall enough for the header block, the Highscore List button, the
-    -- level-filter slider row (taller than a plain checkbox - Low/High/
-    -- value labels) plus the Debug checkbox row, and the Sound Settings/
-    -- Help button row (Roster Settings moved to the Death Sounds panel,
-    -- so this is back to a single row - see CHANGELOG.md). Widened from
-    -- 420 so a long spell/target name in a highscore line has room before
-    -- running into that row's Reset button. Not pixel-verified in-game
-    -- yet for the slider specifically - see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 490)
+    -- level-filter checkbox, the level-filter slider row (taller than a
+    -- plain checkbox - Low/High/value labels) and the Debug checkbox row,
+    -- and the Sound Settings/Help button row (Roster Settings moved to the
+    -- Death Sounds panel, so this is back to a single row - see
+    -- CHANGELOG.md). Widened from 420 so a long spell/target name in a
+    -- highscore line has room before running into that row's Reset
+    -- button. Not pixel-verified in-game yet for the slider specifically
+    -- - see docs/ROADMAP.md.
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 520)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")

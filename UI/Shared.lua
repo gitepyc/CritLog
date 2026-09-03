@@ -213,15 +213,25 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     return dropdown
 end
 
--- `entry.slider` is `{ min, max, step }`. Mirrors TitanCritLine's level-
--- adjustment slider (OptionsSliderTemplate, a value of `min` reads as
--- "Off" rather than the number) - see docs/ROADMAP.md and
--- Persistence/Database.lua's migrateAllLevelToThreshold for the feature
--- this replaces. `entry.offText` overrides the "Off" label for a min value
--- that doesn't mean "disabled" for some future slider; defaults to "Off".
+-- `entry.slider` is `{ min, max, step }`. Modeled on TitanCritLine's
+-- level-adjustment slider (OptionsSliderTemplate) - see docs/ROADMAP.md
+-- and Persistence/Database.lua's migrateAllLevelToThreshold for the
+-- feature this replaces. Whether the setting this slider controls is
+-- active at all is a separate checkbox row, not encoded in the slider's
+-- own range (in-game reported: overloading the minimum value as "off" was
+-- confusing) - see e.g. LevelFilterFlag/LevelDiffThreshold in
+-- UI/MainPanel.lua.
+--
+-- No extra x-offset for the slider itself, unlike an `indent` checkbox
+-- row - there's no reason for one, and adding it here without a matching
+-- reason to cancel it back out on the next row's offset shifted every row
+-- after the slider left, in-game reported as "wrongly indented". -40 (not
+-- the usual -10 checkbox/dropdown gap) leaves room for
+-- OptionsSliderTemplate's own "Text" label, which renders *above* the
+-- slider's own top edge, not inside its bounds.
 local function createSliderRow(parent, entry, previous, previousXOffset)
     local slider = CreateFrame("Slider", "CritLogOptions"..entry.field, parent, "OptionsSliderTemplate")
-    slider:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset + 20, -26)
+    slider:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset, -40)
     slider:SetWidth(180)
     slider:SetMinMaxValues(entry.slider.min, entry.slider.max)
     slider:SetValueStep(entry.slider.step)
@@ -237,11 +247,7 @@ local function createSliderRow(parent, entry, previous, previousXOffset)
     valueText:SetPoint("TOP", slider, "BOTTOM", 0, -2)
 
     local function updateValueText(value)
-        if value == entry.slider.min then
-            valueText:SetText(entry.offText or "Off")
-        else
-            valueText:SetText(tostring(value))
-        end
+        valueText:SetText(tostring(value))
     end
 
     slider:SetScript("OnValueChanged", function(_, value)
@@ -308,9 +314,10 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             previousXOffset = 16
         elseif entry.slider then
             previous = createSliderRow(parent, entry, previous, previousXOffset)
-            -- Cancels the one-time +20 createSliderRow applies to the
-            -- slider itself, same pattern as an indented checkbox row.
-            previousXOffset = -20
+            -- No indent quirk to cancel - createSliderRow doesn't add one
+            -- (see its own comment above), so the next row lands back at
+            -- the normal column just like after a plain checkbox row.
+            previousXOffset = 0
         else
             local indent = entry.indent and 20 or 0
             local checkSize = entry.indent and 20 or 26

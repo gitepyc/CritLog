@@ -184,23 +184,27 @@ local function migratePriestToHeal()
     CritLogDB.playerGroups.priest = nil
 end
 
--- One-time migration: the level filter used to be a plain on/off flag
--- (AllLevel, see DEFAULTS above); now it's a configurable slider
--- (LevelDiffThreshold, 0 = off) replacing the hardcoded "9" a trivial/grey
--- target used to be compared against - see Core/Filters.lua's
--- passesLevelFilter and CHANGELOG.md. Deliberately not in DEFAULTS itself
--- (same reason HealDetectionMode isn't, see migratePriestToHeal above):
--- being in DEFAULTS would back-fill it to a value before this migration
--- runs, and the nil guard below would never trigger. AllLevel stays in
--- DEFAULTS purely as a migration source, same pattern as the
--- MeleeSoundFlag/TankSoundFlag/etc. flags above - never read again after
--- this.
+-- One-time migration: the level filter used to be a single plain on/off
+-- flag (AllLevel, see DEFAULTS above); now it's a separate enable checkbox
+-- (LevelFilterFlag) plus a configurable slider (LevelDiffThreshold)
+-- replacing the hardcoded "9" a trivial/grey target used to be compared
+-- against - see Core/Filters.lua's passesLevelFilter and CHANGELOG.md.
+-- Deliberately not in DEFAULTS itself (same reason HealDetectionMode
+-- isn't, see migratePriestToHeal above): being in DEFAULTS would
+-- back-fill these before this migration runs, and the nil guards below
+-- would never trigger. AllLevel stays in DEFAULTS purely as a migration
+-- source, same pattern as the MeleeSoundFlag/TankSoundFlag/etc. flags
+-- above - never read again after this. Each field guarded independently
+-- (not a single combined guard) since they're two independent facts
+-- derived from the same old flag, not one field being renamed.
 local function migrateAllLevelToThreshold()
-    if CritLogDB.LevelDiffThreshold ~= nil then
-        return
+    if CritLogDB.LevelDiffThreshold == nil then
+        CritLogDB.LevelDiffThreshold = 9
     end
 
-    CritLogDB.LevelDiffThreshold = CritLogDB.AllLevel and 0 or 9
+    if CritLogDB.LevelFilterFlag == nil then
+        CritLogDB.LevelFilterFlag = not CritLogDB.AllLevel
+    end
 end
 
 function CritLog:SetDefaults()
