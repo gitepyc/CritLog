@@ -2,7 +2,7 @@ CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 
 CritLog.Constants = {
     -- Options for the melee/tank/priest/boss death-sound detection mode
-    -- dropdowns in the Sound Settings panel: choose whether the live
+    -- dropdowns in the Death Sounds panel: choose whether the live
     -- class/role/classification check, the roster/name-list fallback,
     -- both (the original, still-default behavior), or neither decides
     -- whether the sound plays. See Core/Filters.lua's
@@ -126,7 +126,13 @@ CritLog.Constants = {
         -- was never actually restricted to melee, just mislabeled).
         melee = { label = "Damage Dealer" },
         tank = { label = "Tank" },
-        priest = { label = "Priest" },
+        -- Labeled "Healer" rather than "Priest", same reasoning as
+        -- "Damage Dealer" above: the live check this falls back for
+        -- (isAssignedHealer) is now role-based, not Priest-specific - a
+        -- Holy Paladin/Resto Druid/Resto Shaman belongs here too. Key
+        -- stays `priest` (CritLogDB.playerGroups.priest) - only the
+        -- display label changed.
+        priest = { label = "Healer" },
     },
     -- Class/role rules for death-sound matching, used as the primary check
     -- (see Core/Filters.lua's isMeleeClass/isAssignedTank/isPriestClass and
@@ -253,7 +259,8 @@ CritLog.Constants = {
         "/cl roll: turns Roll Sound on/off (specific /roll 1-100 results)",
         "/cl gamble: turns Lottery Sound on/off (CrossGambling raid chat trigger)",
         "------------",
-        "/cl priest: toggles Priest Sound between None/Both (see /cl options for Experimental/Roster only)",
+        "/cl healer: toggles Healer Death Sound between None/Both (see /cl options for Experimental/Roster only)",
+        "/cl spirit: turns Spirit of Redemption sound on/off (independent of /cl healer)",
         "/cl dps: toggles Damage Dealer Sound between None/Both (see /cl options for Experimental/Roster only)",
         "/cl tank: toggles Tank Sound between None/Both (see /cl options for Experimental/Roster only)",
         "/cl boss: toggles Boss Sound between None/Both (see /cl options for Experimental/Roster only)",

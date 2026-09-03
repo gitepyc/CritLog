@@ -5,8 +5,12 @@ done is in `CHANGELOG.md` and git history, not repeated here.
 
 1. **In-game verification**, ongoing: the options panel (including
    Escape-key behavior) and melee death-sound detection are now confirmed
-   working (`0.5.0`); still open are tank/boss/priest death-sound
-   detection specifically, and Spirit of Redemption. Not a gate blocking
+   working (`0.5.0`); still open are tank/boss/healer death-sound
+   detection specifically, and Spirit of Redemption - healer death-sound
+   detection changed from a Priest class check to an assigned Healer role
+   check (any class), so this needs fresh in-game verification even though
+   the general detection-mode mechanism was already partly tested. Not a
+   gate blocking
    other work anymore - bugs found during verification (e.g. the
    `0.4.2-dev` NPC-death-sound fix, the `0.4.8-dev` Escape-key fix) land on
    `dev` as they're reported, in parallel with feature work below. Also

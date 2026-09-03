@@ -506,26 +506,40 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         self:PlaySound(self.Constants.sounds.tankDeath)
     end
 
-    -- Spirit of Redemption and the plain priest-death sound share the same
-    -- mode gate - whether the priest sound plays at all is still decided
-    -- by CritLogDB.PriestDetectionMode, same as the other three categories.
-    -- Which of the two files plays is a separate, exclusive choice once
-    -- that's already true (both currently point at the same file anyway,
-    -- see Core/Constants.lua, so playing both would just double it).
     -- isGroupMember gates Spirit of Redemption too - the buff-apply
     -- tracking in rememberSpiritOfRedemption has no way to know who's in
     -- your group at that earlier point, so the check happens here instead.
-    if matchesMode(
+    local hasSpiritBuff = spiritOfRedemptionGuids[destGUID] and isGroupMember
+
+    -- Healer death (PriestDetectionMode, unchanged field name - only the
+    -- UI label changed from "Priest" to "Healer", same as the DPS/"Melee"
+    -- rename before it) and Spirit of Redemption used to share one gate,
+    -- with the buff-apply cache above only deciding which file played -
+    -- meaning you couldn't hear one without the other, and in practice
+    -- couldn't tell them apart anyway since both point at the same file.
+    -- Now independent, AND the live check itself changed: Healer death
+    -- used to require class PRIEST, same as Spirit; now it matches the
+    -- assigned Healer role instead (isAssignedHealer, same pattern as
+    -- isAssignedTank) - a Holy Paladin/Resto Druid/Resto Shaman death
+    -- counts here exactly like a Priest's. Spirit of Redemption is the one
+    -- case that still needs isPriestClass specifically, since the talent
+    -- itself is Priest-only, unlike the Healer role. Spirit is a plain
+    -- on/off flag (SpiritSoundFlag), not a 4-way detection mode - there is
+    -- no roster/name-list equivalent for "this priest had Spirit of
+    -- Redemption go off", the buff-apply cache is the only signal that
+    -- exists at all.
+    if not hasSpiritBuff and matchesMode(
         CritLogDB.PriestDetectionMode,
-        token and isGroupMember and CritLog.Filters.isPriestClass(class),
+        token and isGroupMember and CritLog.Filters.isAssignedHealer(role),
         tContains(CritLogDB.playerGroups.priest, destName)
     ) then
-        if spiritOfRedemptionGuids[destGUID] and isGroupMember then
-            self:PlaySound(self.Constants.sounds.spiritOfRedemption)
-        else
-            self:PlaySound(self.Constants.sounds.priestDeath)
-        end
+        self:PlaySound(self.Constants.sounds.priestDeath)
     end
+
+    if hasSpiritBuff and CritLogDB.SpiritSoundFlag and CritLog.Filters.isPriestClass(class) then
+        self:PlaySound(self.Constants.sounds.spiritOfRedemption)
+    end
+
     spiritOfRedemptionGuids[destGUID] = nil
 
     -- The classification (if any) has now been read for the boss check

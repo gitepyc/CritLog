@@ -103,11 +103,13 @@ spells on Classic Era/SoD is unverified; see `CHANGELOG.md`.
 
 The player's own death sound (`PlayerSoundFlag`, `/cl player`) is a plain
 on/off flag, unchanged, long-standing behavior. The other four groups
-(Damage Dealer/Tank/Priest/Boss) each have a **detection mode** instead - there is
+(Damage Dealer/Tank/Healer/Boss) each have a **detection mode** instead - there is
 no separate master switch over just these four anymore (there used to be
 one, `DeadSoundFlag`); setting all four modes to `none` is equivalent
-(`CritLogDB.<Kind>DetectionMode`, a dropdown in the Sound Settings panel,
-one of `CritLog.Constants.detectionModes`):
+(`CritLogDB.<Kind>DetectionMode`, a dropdown in the Death Sounds panel,
+one of `CritLog.Constants.detectionModes`). Spirit of Redemption
+(`SpiritSoundFlag`, `/cl spirit`) is a fifth, independent plain on/off flag
+next to these four, not a fifth detection mode - see further below for why.
 
 | Mode | Meaning |
 | --- | --- |
@@ -116,9 +118,9 @@ one of `CritLog.Constants.detectionModes`):
 | `roster` | Only a name in `CritLogDB.playerGroups.<kind>` (or the boss name lists) counts; the live check is ignored even if it matches. |
 | `both` | Either one counts - the original, still-default behavior. |
 
-`/cl priest`/`dps`/`tank`/`boss` only toggle between `none` and `both`;
+`/cl healer`/`dps`/`tank`/`boss` only toggle between `none` and `both`;
 `experimental`/`roster` need the options panel dropdown. The live checks
-are not yet in-game verified for tank/boss/priest specifically (melee's
+are not yet in-game verified for tank/boss/healer specifically (melee's
 false-positive bug is fixed and confirmed) - see
 [ROADMAP.md](ROADMAP.md).
 
@@ -128,10 +130,10 @@ false-positive bug is fixed and confirmed) - see
 | Melee-capable class not flagged Healer (`isMeleeClass`) | `MeleeDetectionMode` matches | `wilhelm.ogg` |
 | Live classification `worldboss` (`isClassifiedBoss`) | `BossDetectionMode` matches | `FFX.mp3` |
 | Assigned raid role Tank (`isAssignedTank`) | `TankDetectionMode` matches | `Tank.mp3` |
-| Class `PRIEST` (`isPriestClass`) | `PriestDetectionMode` matches | `Angels.mp3` |
-| Priest death preceded by the Spirit of Redemption buff (spell id `27827`) | `PriestDetectionMode` matches (same gate as the plain priest check - see below) | `Angels.mp3` (same file as the plain priest death sound for now, see `CHANGELOG.md`) |
+| Assigned raid role Healer (`isAssignedHealer`, any class), death NOT preceded by the Spirit of Redemption buff | `PriestDetectionMode` matches | `Angels.mp3` |
+| Class `PRIEST` specifically (`isPriestClass`) AND preceded by the Spirit of Redemption buff (spell id `27827`) | `SpiritSoundFlag` enabled - independent of `PriestDetectionMode`, see below | `Angels.mp3` (same file as the plain healer death sound for now, see `CHANGELOG.md`) |
 
-The live checks (melee/tank/priest, not boss) need a resolved unit token
+The live checks (melee/tank/healer, not boss) need a resolved unit token
 for the dying player (the current target, or a matching visible nameplate)
 — see `findUnitToken()` in `Core/CombatLog.lua` — and that token must pass
 `UnitIsPlayer()`, discarded otherwise: some enemy NPCs carry a class
@@ -155,7 +157,8 @@ sound. Boss detection accepts only the `"worldboss"` classification
 (40-man raid bosses, outdoor world bosses, SoD's level-60 raids); the name
 lists remain the only way 5-man end bosses and similarly-ranked NPCs are
 detected (that boss list is still code-only, not editable). The three
-death-sound name rosters (melee/tank/priest) are editable per character:
+death-sound name rosters (melee/tank/healer, `playerGroups.priest` key
+unchanged) are editable per character:
 `/cl options` → "Roster Settings..." shows each one with Add/Remove
 controls. `CritLogDB.playerGroups` is a per-character copy, migrated once
 from a code-only seed on first load after upgrading (see
@@ -169,10 +172,17 @@ back to the talent, so the buff's `SPELL_AURA_APPLIED` (spell id `27827`,
 matched the same ID-first-then-name pattern as the spells table above) is
 cached by GUID (`Core/CombatLog.lua`'s `rememberSpiritOfRedemption` /
 `spiritOfRedemptionGuids`, any priest in the raid, not just the player) and
-consumed once the matching death arrives. This branch is exclusive with the
-plain priest-class check right above it, not additive - both currently play
-the same file, so without the exclusivity a Spirit of Redemption death would
-double-play it.
+consumed once the matching death arrives. Originally this only decided
+which of two files played under a single shared `PriestDetectionMode` gate
+(you couldn't hear one without the other, and in practice couldn't tell
+them apart either, since both point at the same file) - now the two are
+independent: a death delayed by the buff is excluded from the plain
+healer-death check above (`PriestDetectionMode` never sees it) and instead
+gated purely by `SpiritSoundFlag`, a plain on/off flag rather than a
+detection mode. There's no meaningful roster/name-list equivalent for
+"this priest's death was Spirit-delayed" - the buff-apply cache is the
+only signal that exists at all, so a 4-way mode would just have three of
+its four options behave identically.
 
 ## Raid-leader chat
 

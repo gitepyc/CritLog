@@ -11,7 +11,7 @@ end
 -- Core/Constants.lua's detectionModes), not a plain flag - this chat
 -- command still only flips between off ("none") and the original default
 -- ("both", live check with roster fallback). For "experimental"- or
--- "roster"-only, use `/cl options` -> Sound Settings.
+-- "roster"-only, use `/cl options` -> Sound Settings -> Death Sounds.
 local function toggleDetectionMode(field, label)
     if CritLogDB[field] == "none" then
         CritLogDB[field] = "both"
@@ -43,7 +43,8 @@ local function printConfig()
     print("/cl roll: "..tostring(CritLogDB.RollSoundFlag))
     print("/cl gamble: "..tostring(CritLogDB.GambleSoundFlag))
     print("------------")
-    print("/cl priest: "..CritLogDB.PriestDetectionMode)
+    print("/cl healer: "..CritLogDB.PriestDetectionMode)
+    print("/cl spirit: "..tostring(CritLogDB.SpiritSoundFlag))
     print("/cl dps: "..CritLogDB.MeleeDetectionMode)
     print("/cl tank: "..CritLogDB.TankDetectionMode)
     print("/cl boss: "..CritLogDB.BossDetectionMode)
@@ -126,8 +127,14 @@ function CritLog:PrintCritLogs(message)
             "CritLog GambleSound On",
             "CritLog GambleSound Off"
         )
-    elseif command == "priest" then
-        toggleDetectionMode("PriestDetectionMode", "PriestSound")
+    elseif command == "healer" then
+        toggleDetectionMode("PriestDetectionMode", "HealerSound")
+    elseif command == "spirit" then
+        toggle(
+            "SpiritSoundFlag",
+            "CritLog SpiritSound On",
+            "CritLog SpiritSound Off"
+        )
     elseif command == "dps" then
         toggleDetectionMode("MeleeDetectionMode", "Damage Dealer Sound")
     elseif command == "player" then

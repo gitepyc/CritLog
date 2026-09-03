@@ -58,8 +58,27 @@ function CritLog.Filters.isAssignedTank(role)
     return role == "TANK"
 end
 
--- Straightforward class check — Priest has no role ambiguity like
--- melee/tank above.
+-- Same reasoning as isAssignedTank above, for Healer - a raid role, not a
+-- class: a Priest/Paladin/Druid/Shaman can each be a healer or something
+-- else. Used for the "Healer death" category (CritLogDB.PriestDetectionMode
+-- - field name unchanged, only the UI label/roster meaning moved from
+-- "Priest" to "assigned Healer role"), which is deliberately NOT
+-- priest-specific anymore - a Holy Paladin's death counts here exactly
+-- like a Priest's. Spirit of Redemption is the one case that still needs
+-- an actual Priest (see isPriestClass below and Core/CombatLog.lua's
+-- HandleDeath) - it's a Priest-only talent, unlike the Healer role itself.
+--
+-- Known blind spot, same as isAssignedTank: an unassigned real healer is
+-- not detected here; the playerGroups.priest name-roster fallback in
+-- HandleDeath covers this gap.
+function CritLog.Filters.isAssignedHealer(role)
+    return role == "HEALER"
+end
+
+-- Straightforward class check, used only for Spirit of Redemption now
+-- (see Core/CombatLog.lua's HandleDeath) - the talent itself is
+-- Priest-only, unlike the "Healer death" category above which matches any
+-- class's assigned Healer role.
 function CritLog.Filters.isPriestClass(class)
     return class ~= nil and tContains(CritLog.Constants.deathClasses.priest, class)
 end

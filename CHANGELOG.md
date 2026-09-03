@@ -6,6 +6,28 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
 ### Unreleased (not yet tagged)
 
+## 0.6.12-dev
+
+- Split "Priest death sound" into two independent triggers: "Healer death
+  sound" (`PriestDetectionMode`, field name unchanged, UI label only) and
+  "Spirit of Redemption" (`SpiritSoundFlag`, new plain on/off flag). They
+  used to share one gate, with the buff-apply cache only picking which
+  file played - meaning you couldn't hear one without the other, and in
+  practice couldn't tell them apart since both point at `Angels.mp3`.
+  Spirit has no meaningful roster/name-list equivalent (the buff-apply
+  cache is the only signal that exists), so it's a plain flag rather than
+  a 4-way detection mode.
+- Along with the split, Healer death's live check changed from a Priest
+  class check to an assigned raid Healer role check (`isAssignedHealer`,
+  same pattern as `isAssignedTank`) - a Holy Paladin/Resto Druid/Resto
+  Shaman death now counts here exactly like a Priest's, not just Priests.
+  Spirit of Redemption keeps the Priest class check specifically (via
+  `isPriestClass`), since the talent itself is Priest-only unlike the
+  Healer role. The `priest` roster category (`CritLogDB.playerGroups.priest`,
+  key unchanged) is relabeled "Healer" in the Roster Settings panel to
+  match. `/cl priest` renamed to `/cl healer`; new `/cl spirit`. Needs
+  fresh in-game verification - see `docs/ROADMAP.md`.
+
 ## 0.6.11-dev
 
 - Split the player/priest/DPS/tank/boss death-sound block out of Sound

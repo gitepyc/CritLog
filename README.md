@@ -104,7 +104,8 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl player` | Toggles the player's own death sound. |
 | `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Sound Settings has a dropdown for `experimental`-only or `roster`-only. Live check: melee-capable class, not flagged Healer - the roster/name-list side isn't melee-only, ranged DPS names belong there too. |
 | `/cl tank` | Same toggle, for the tank death sound. Live check: assigned raid Tank role. |
-| `/cl priest` | Same toggle, for the priest death sound (and Spirit of Redemption). Live check: class `PRIEST`. |
+| `/cl healer` | Same toggle, for the healer death sound. Live check: assigned raid Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). Excludes a death delayed by Spirit of Redemption - see `/cl spirit`. |
+| `/cl spirit` | Toggles the Spirit of Redemption sound (a Priest's death delayed ~15s by the talent - Priest-only, unlike `/cl healer` above). Independent of `/cl healer` - plain on/off, not a detection mode; there's no roster equivalent for "this death was Spirit-delayed". |
 | `/cl boss` | Same toggle, for the boss death sound. Live check: `UnitClassification` (`worldboss`). |
 
 ## Repository layout
