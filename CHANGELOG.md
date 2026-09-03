@@ -13,6 +13,12 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
   tooltip, not just the small control itself.
 - Fixed: the main options panel (`/cl options`) was missing the bottom-
   center Close button every other panel already has.
+- **Addon icon**: `CritLog.toc` now declares `## IconTexture` pointing at
+  `media/icon.png` (a comic "CRIT LOG" burst-style icon), so the Blizzard
+  AddOns list can show it next to the addon name. `media/icon.svg` is the
+  editable source, excluded from the packaged zip via `.pkgmeta` - only
+  the PNG ships. Not yet in-game confirmed that Classic Era's AddOns list
+  actually renders it.
 
 ## 0.7.0
 

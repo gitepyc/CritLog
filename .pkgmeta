@@ -14,7 +14,7 @@ manual-changelog:
 
 ignore:
   - docs
-  - media
+  - media/icon.svg
   - tests
   - scripts
   - README.md
