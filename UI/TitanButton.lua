@@ -41,13 +41,54 @@ function CritLogTitan_GetButtonText()
     return "CL: "..top("damage").."/"..top("whiteHit").."/"..top("heal")
 end
 
--- Full detail line per category for the hover tooltip, reusing
--- Core/Records.lua's formatRecordText so the wording matches the options
--- panel and /cl chat output exactly instead of a third copy of the format.
+-- Ability names blue, target names red/pink - in-game requested, picks
+-- that just read clearly against GameTooltip's dark background, not tied
+-- to any particular Blizzard convention.
+local SPELL_COLOR = "|cff69ccf0"
+local TARGET_COLOR = "|cffff8080"
+
+-- Amount colored by a rough "hotter = bigger" heat scale, in-game
+-- requested ("color the number by size or something") - thresholds are a
+-- reasonable guess for SoD-era numbers, not measured against real data;
+-- easy to retune once someone's actually looked at it in-game.
+local function amountColor(amount)
+    if amount >= 10000 then
+        return "|cffff4040" -- red
+    elseif amount >= 5000 then
+        return "|cffff8000" -- orange
+    elseif amount >= 2000 then
+        return "|cffffff00" -- yellow
+    end
+    return "|cffffffff" -- white
+end
+
+-- Full detail line per category for the hover tooltip. Not
+-- Core/Records.lua's formatRecordText anymore (a plain string, no color
+-- codes) - in-game requested styling (spell/target in their own colors,
+-- amount colored by size) is specific to this one display, so this is a
+-- deliberate second copy of the format rather than adding color-code
+-- support to the shared formatter and risking it bleeding into the
+-- options panel/chat output, which were never asked to look different.
 function CritLogTitan_GetTooltipText()
-    return CritLog.Records.formatRecordText("damage", 1).."\n"
-        ..CritLog.Records.formatRecordText("whiteHit", 1).."\n"
-        ..CritLog.Records.formatRecordText("heal", 1)
+    local function line(kind)
+        local fields = CritLog.Constants.recordKinds[kind]
+        local entry = CritLogDB.records[kind][1]
+
+        if not entry then
+            return fields.label..": no record yet"
+        end
+
+        local amountText = amountColor(entry.amount)..tostring(entry.amount).."|r"
+        local targetText = TARGET_COLOR..entry.target.."|r"
+
+        if fields.hasName then
+            local spellText = SPELL_COLOR..entry.name.."|r"
+            return fields.label.." ("..spellText.."): "..amountText.." ("..targetText..")"
+        end
+        return fields.label..": "..amountText.." ("..targetText..")"
+    end
+
+    return line("damage").."\n"..line("whiteHit").."\n"..line("heal")
 end
 
 -- Right-click context menu. The roadmap only ever said "contents TBD" for
@@ -115,7 +156,7 @@ function CritLog:InitTitanPanelButton()
         menuText = "CritLog",
         menuContextFunction = CritLogTitan_MenuGenerator,
         buttonTextFunction = "CritLogTitan_GetButtonText",
-        tooltipTitle = "CritLog",
+        tooltipTitle = "CritLog Summary",
         tooltipTextFunction = "CritLogTitan_GetTooltipText",
         -- Reuses the existing Blizzard-AddOns-list icon (media/icon.png,
         -- wired up via CritLog.toc's ## IconTexture) rather than a second

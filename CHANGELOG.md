@@ -7,6 +7,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
 commit message/PR, not here.
 
+## 0.9.6-dev
+
+- feature: TitanPanel tooltip title changed to "CritLog Summary"
+- feature: TitanPanel tooltip styled - ability/target names colored, amount colored by a rough size-based heat scale (white/yellow/orange/red)
+
 ## 0.9.5-dev
 
 - fix: Help panel rows drifted one level further right with every single row (a growing staircase) - a chained x-offset wasn't being cancelled between rows, same class of bug this file has hit before
