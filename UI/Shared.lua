@@ -113,8 +113,22 @@ local function attachTooltip(control, text)
         return
     end
 
+    -- Belt-and-suspenders: Button/CheckButton frames have mouse enabled by
+    -- default (needed for OnClick), so this shouldn't be necessary, but
+    -- OnEnter not firing at all has been hard to pin down in-game - cheap
+    -- to rule out explicitly rather than assume.
+    control:EnableMouse(true)
+
     control:HookScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        -- SetOwner(self, "ANCHOR_RIGHT") (the first attempt) is the more
+        -- common idiom, but TitanCritLine's settings panel - a confirmed
+        -- working reference - anchors manually via SetOwner(UIParent,
+        -- "ANCHOR_NONE") + an explicit SetPoint instead. Matching that
+        -- exactly, on top of the strata/level bump below (which
+        -- TitanCritLine's panel doesn't need - it doesn't sit on TOOLTIP
+        -- strata like ours does).
+        GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+        GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -10, -4)
         GameTooltip:SetFrameStrata("TOOLTIP")
         GameTooltip:SetFrameLevel(self:GetFrameLevel() + 10)
         GameTooltip:SetText(text, nil, nil, nil, nil, true)
