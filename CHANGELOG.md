@@ -9,6 +9,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.4](https://github.com/gitepyc/CritLog/tree/0.3.4) (2026-09-04)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.3...0.3.4) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** color the Highscore List popup like the main panel/tooltip
+
+- **fix:** shorten roll10 sound to 2.5s (was 9.7s)
+
 ## [0.3.3](https://github.com/gitepyc/CritLog/tree/0.3.3) (2026-09-04)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.2...0.3.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
