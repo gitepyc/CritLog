@@ -7,6 +7,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc., bolded) - as terse as possible, no prose, no
 rationale. Save the "why" for the commit message/PR, not here.
 
+## 0.9.0.1-dev
+
+- **feature:** "Sound enabled" master switch moved off the Sound Settings submenu onto the main panel, right above the Sound Settings button
+- **feature:** added missing sound previews - raid-leader chat phrases (raid end, wipe) and lottery's second clip
+
 ## 0.9.0.0-dev
 
 - **fix:** white-hit crits (melee and ranged) now always play the highscore sound on a new personal record even with "Sound for white hit crits" off, matching how ability/heal crits already behaved; ranged white-hit records were also being skipped entirely (not even recorded) with that setting off - now recorded unconditionally like melee
