@@ -9,6 +9,15 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.5](https://github.com/gitepyc/CritLog/tree/0.3.5) (2026-09-04)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.4...0.3.5) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **fix:** melee and tank death sounds fired together for a Warrior/Rogue tank
+
+- **fix:** reset confirmation popups hidden behind our own FULLSCREEN panels
+
+- **refactor:** DPS death-sound detection is now a real 3-role system; confirm Warlock Healthstone ritual sound in-game
+
 ## [0.3.4](https://github.com/gitepyc/CritLog/tree/0.3.4) (2026-09-04)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.3...0.3.4) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
