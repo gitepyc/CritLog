@@ -29,7 +29,7 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    `"worldboss"`, e.g. 5-man dungeon end bosses) is currently code-only and
    still the original Burning Crusade roster, matching nothing in Classic
    Era/SoD. Make it editable per character, the same Add/Remove pattern
-   already used for the melee/tank/heal death-sound rosters
+   already used for the dps/tank/heal death-sound rosters
    (`CritLogDB.playerGroups`, see `UI/RosterPanel.lua`) - players add the
    names they actually need instead of waiting on curated research. Folds
    in the old "presets per expansion" idea as an optional extra on top of

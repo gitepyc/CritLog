@@ -332,7 +332,7 @@ local function buildFrame()
     end)
 
     -- Roster Settings moved to the Death Sounds panel (it's only relevant
-    -- to the melee/tank/heal roster fallback used there, not to anything
+    -- to the dps/tank/heal roster fallback used there, not to anything
     -- else on this main panel) - just Sound Settings and Help remain here,
     -- side by side on one row.
     local helpButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")

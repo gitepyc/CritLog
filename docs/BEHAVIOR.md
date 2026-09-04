@@ -126,20 +126,20 @@ next to these four, not a fifth detection mode - see further below for why.
 
 `/cl healer`/`dps`/`tank`/`boss` only toggle between `none` and `both`;
 `experimental`/`roster` need the options panel dropdown. The live checks
-are not yet in-game verified for tank/boss/healer specifically (melee's
-false-positive bug is fixed and confirmed) - see
-[ROADMAP.md](ROADMAP.md).
+are not yet in-game verified for tank/boss/healer specifically (an
+earlier class-based DPS guess's false-positive bug is fixed and
+confirmed) - see [ROADMAP.md](ROADMAP.md).
 
 | Dead unit | Live check | Sound |
 | --- | --- | --- |
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
-| Melee-capable class not flagged Healer (`isMeleeClass`) | `MeleeDetectionMode` matches | `wilhelm.ogg` |
+| Not currently assigned Tank or Healer (`isAssignedDps`) - the real 3-role system's third bucket, any class | `DpsDetectionMode` matches | `wilhelm.ogg` |
 | Live classification `worldboss` (`isClassifiedBoss`) | `BossDetectionMode` matches | `FFX.mp3` |
 | Assigned raid role Tank (`isAssignedTank`) | `TankDetectionMode` matches | `Tank.mp3` |
 | Assigned raid role Healer (`isAssignedHealer`, any class), death NOT preceded by the Spirit of Redemption buff | `HealDetectionMode` matches | `Angels.mp3` |
 | Class `PRIEST` specifically (`isPriestClass`) AND preceded by the Spirit of Redemption buff (spell id `27827`) | `SpiritSoundFlag` enabled - independent of `HealDetectionMode`, see below | `Angels2.mp3` (own asset, restored from the legacy addon - see `CHANGELOG.md`) |
 
-The live checks (melee/tank/healer, not boss) need a resolved unit token
+The live checks (dps/tank/healer, not boss) need a resolved unit token
 for the dying player (the current target, or a matching visible nameplate)
 — see `findUnitToken()` in `Core/CombatLog.lua` — and that token must pass
 `UnitIsPlayer()`, discarded otherwise: some enemy NPCs carry a class
@@ -158,14 +158,15 @@ consulted in `roster`/`both` mode, and is itself NOT gated by group
 membership (it's an explicit named allowlist, not a live-detection
 heuristic). The `"Schnutz"` character no longer has a separate special
 case (removed — see `CHANGELOG.md`); they are simply one more name in
-`playerGroups.melee` like everyone else, and get the regular melee death
+`playerGroups.dps` like everyone else, and get the regular DPS death
 sound. Boss detection accepts only the `"worldboss"` classification
 (40-man raid bosses, outdoor world bosses, SoD's level-60 raids); the name
 lists remain the only way 5-man end bosses and similarly-ranked NPCs are
 detected (that boss list is still code-only, not editable). The three
-death-sound name rosters (melee/tank/heal, `playerGroups.priest` renamed
-to `playerGroups.heal` - see `Persistence/Database.lua`'s
-`migratePriestToHeal()`) are editable per character:
+death-sound name rosters (dps/tank/heal, `playerGroups.melee` renamed to
+`playerGroups.dps` and `playerGroups.priest` renamed to
+`playerGroups.heal` - see `Persistence/Database.lua`'s
+`migrateMeleeToDps()`/`migratePriestToHeal()`) are editable per character:
 `/cl options` → "Death Sounds..." → "Roster Settings..." shows each one
 with Add/Remove
 controls. `CritLogDB.playerGroups` is a per-character copy, migrated once
