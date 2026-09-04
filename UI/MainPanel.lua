@@ -233,7 +233,7 @@ local function buildHighscoreListFrame()
     resetAllButton:SetHighlightFontObject("GameFontHighlightSmall")
     resetAllButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -14, -28)
     resetAllButton:SetScript("OnClick", function()
-        StaticPopup_Show("CRITLOG_RESET_ALL_HIGHSCORES")
+        CritLog.UI.showConfirmation("CRITLOG_RESET_ALL_HIGHSCORES")
     end)
 
     CritLog.UI.createCloseButton(f)

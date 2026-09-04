@@ -81,13 +81,13 @@ function CritLog:PrintCritLogs(message)
     -- highscores should confirm first, chat commands included, not just
     -- the panel buttons.
     if command == "reset" then
-        StaticPopup_Show("CRITLOG_RESET_ALL_HIGHSCORES")
+        CritLog.UI.showConfirmation("CRITLOG_RESET_ALL_HIGHSCORES")
     elseif command == "reset damage" then
-        StaticPopup_Show("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.damage.label, nil, { kind = "damage" })
+        CritLog.UI.showConfirmation("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.damage.label, nil, { kind = "damage" })
     elseif command == "reset whitehit" then
-        StaticPopup_Show("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.whiteHit.label, nil, { kind = "whiteHit" })
+        CritLog.UI.showConfirmation("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.whiteHit.label, nil, { kind = "whiteHit" })
     elseif command == "reset heal" then
-        StaticPopup_Show("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.heal.label, nil, { kind = "heal" })
+        CritLog.UI.showConfirmation("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds.heal.label, nil, { kind = "heal" })
     elseif command == "mute" then
         toggle(
             "MasterSoundFlag",
