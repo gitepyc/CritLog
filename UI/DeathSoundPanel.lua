@@ -39,7 +39,7 @@ local DEATH_CHECKBOXES = {
     -- of each sitting wherever its own label happens to end.
     { field = "DpsDetectionMode", label = "DPS death sound", sound = "dpsDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Experimental: not currently assigned Tank or Healer." },
+      hint = "Experimental: assigned Damage Dealer role." },
     { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Experimental: assigned raid Tank role." },
