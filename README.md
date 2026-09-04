@@ -21,9 +21,16 @@ auras, and raid-leader chat triggers.
 
 ## Install
 
-There is no build or release pipeline yet. Copy this repository's contents
-into a folder named `CritLog` inside the addon directory of the Classic Era
-client:
+A release pipeline exists (`.github/workflows/release.yml`, BigWigsMods'
+packager, runs on every tag push) and packages a versioned zip attached to
+[GitHub Releases](https://github.com/gitepyc/CritLog/releases). There's no
+CurseForge/Wago listing yet though, so installation is still manual either
+way:
+
+- **Tagged release:** download the zip from GitHub Releases and extract it
+  into your AddOns folder.
+- **`dev`/unreleased:** copy this repository's contents into a folder named
+  `CritLog` inside the addon directory of the Classic Era client:
 
 ```text
 World of Warcraft/
