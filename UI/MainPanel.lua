@@ -27,7 +27,7 @@ local CRIT_CHECKBOXES = {
 -- requested: muting all sounds is common enough that it shouldn't require
 -- opening a submenu. The rest of the sound toggles stay in Sound Settings.
 local MASTER_SOUND_CHECKBOX = {
-    { field = "MasterSoundFlag", label = "Sound enabled",
+    { field = "MasterSoundFlag", label = "Sounds enabled",
       hint = "Mutes every CritLog sound without changing individual sound settings." },
 }
 
@@ -250,7 +250,7 @@ end
 local function buildFrame()
     -- Tall enough for the header block, the Highscore List button, the
     -- level-filter checkbox and slider row (taller than a plain checkbox -
-    -- Low/High/value labels), the Sound enabled master switch right above
+    -- Low/High/value labels), the Sounds enabled master switch right above
     -- the Sound Settings button (pulled in from Sound Settings - in-game
     -- requested, muting everything shouldn't require a submenu), the
     -- Sound Settings/Help button row (Roster Settings moved to the Death
