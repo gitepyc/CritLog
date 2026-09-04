@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc., bolded) - as terse as possible, no prose, no
 rationale. Save the "why" for the commit message/PR, not here.
 
+## 0.9.0.2-dev
+
+- **feature:** all 33 sound files normalized (loudness, sample rate, bitrate) - see `docs/SOUNDS.md` and `scripts/normalize-sounds.sh`
+
 ## 0.9.0.1-dev
 
 - **feature:** "Sound enabled" master switch moved off the Sound Settings submenu onto the main panel, right above the Sound Settings button
