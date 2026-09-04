@@ -40,6 +40,20 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    need to start being counted too), plus somewhere to show the result
    (options panel section, Titan tooltip, and/or a `/cl` command are all
    plausible, not decided yet).
+3. One-click post highscores to chat - in-game requested: a button (main
+   panel and/or Highscore List popup) or `/cl` command to post the
+   current top record(s) straight to a chosen chat channel (Guild, Raid/
+   Party, Whisper, ...) via `SendChatMessage`, instead of manually typing
+   or screenshotting. Needs a channel picker (Whisper additionally needs
+   a target name/edit box) and a decision on which record(s) to post -
+   just the current #1 per category (matching `/cl`'s plain-text chat
+   output, `Core/Records.lua`'s `formatRecordText`) is the obvious first
+   cut; posting a specific Highscore List entry is a possible follow-up.
+   Not decided yet: one combined message for all three categories vs. one
+   per category/click, and whether to reuse the colored
+   `formatRecordTextColored` variant (WoW chat channels do render `|c`
+   color codes for other players, unlike a plain `print()`) or stick to
+   the plain uncolored text for maximum compatibility/readability.
 
 ## Parked
 
