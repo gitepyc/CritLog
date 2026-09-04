@@ -7,6 +7,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc., bolded) - as terse as possible, no prose, no
 rationale. Save the "why" for the commit message/PR, not here.
 
+## 0.9.1-dev
+
+- **refactor:** DPS death-sound detection is now a real 3-role system (Tank/Healer/everyone else) instead of a class-based guess that silently never fired for Hunter/Mage/Warlock/Priest
+- **fix:** melee and tank death sounds fired together for a Warrior/Rogue assigned the Tank role
+- **fix:** reset confirmation popups ("Reset All" etc.) were hidden behind our own FULLSCREEN panels
+- **feature:** Warlock Healthstone ritual sound confirmed working in-game
+
 ## 0.9.0.4-dev
 
 - **fix:** roll10 sound trimmed to its first 2.5s (was 9.7s, far longer than every other roll sound)
