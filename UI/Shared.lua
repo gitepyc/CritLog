@@ -24,6 +24,22 @@ function CritLog.UI.previewSound(soundKey)
     PlaySoundFile(CritLog.soundPath..CritLog.Constants.sounds[soundKey], "Master")
 end
 
+-- Thin wrapper around StaticPopup_Show that also bumps the resulting
+-- dialog to FULLSCREEN_DIALOG strata. Our own panels sit at FULLSCREEN
+-- (see createPanelFrame below) so they stay above ordinary addon windows -
+-- but that put them ABOVE a StaticPopup's default DIALOG strata too,
+-- hiding confirmation dialogs behind whichever CritLog panel opened them.
+-- In-game reported: "Reset All"'s confirmation was invisible behind the
+-- Highscore List window. Every StaticPopup_Show call in this addon should
+-- go through here instead of calling it directly.
+function CritLog.UI.showConfirmation(which, textArg1, textArg2, data)
+    local dialog = StaticPopup_Show(which, textArg1, textArg2, data)
+    if dialog then
+        dialog:SetFrameStrata("FULLSCREEN_DIALOG")
+    end
+    return dialog
+end
+
 -- Same confirmation pattern as MainPanel.lua's "Reset All" dialog
 -- (CRITLOG_RESET_ALL_HIGHSCORES) - parameterized on the category label via
 -- StaticPopup's text_arg1 substitution instead of one dialog per kind.
@@ -56,7 +72,7 @@ function CritLog.UI.createResetButton(parent, kind, label)
     button:SetNormalFontObject("GameFontNormalSmall")
     button:SetHighlightFontObject("GameFontHighlightSmall")
     button:SetScript("OnClick", function()
-        StaticPopup_Show("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds[kind].label, nil, { kind = kind })
+        CritLog.UI.showConfirmation("CRITLOG_RESET_CATEGORY", CritLog.Constants.recordKinds[kind].label, nil, { kind = kind })
     end)
     return button
 end

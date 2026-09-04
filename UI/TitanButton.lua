@@ -67,7 +67,7 @@ function CritLogTitan_MenuGenerator(_, rootDescription)
         CritLog:ShowOptions()
     end)
     Titan_Menu.AddCommand(rootDescription, "CritLog", "Reset All Highscores", function()
-        StaticPopup_Show("CRITLOG_RESET_ALL_HIGHSCORES")
+        CritLog.UI.showConfirmation("CRITLOG_RESET_ALL_HIGHSCORES")
     end)
 end
 
