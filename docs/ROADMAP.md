@@ -53,7 +53,17 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    per category/click, and whether to reuse the colored
    `formatRecordTextColored` variant (WoW chat channels do render `|c`
    color codes for other players, unlike a plain `print()`) or stick to
-   the plain uncolored text for maximum compatibility/readability.
+   the plain uncolored text for maximum compatibility/readability. Also
+   floated: an optional toggle that repurposes the TitanPanel button's
+   left-click itself (normally opens `/cl options`, see
+   `UI/TitanButton.lua`) into a one-click chat-post shortcut instead -
+   spam risk (a single misclick posts to the whole raid/guild) probably
+   means this wants a two-click confirm (first click arms it, second
+   within some short window actually posts, or a StaticPopup
+   confirmation like the highscore Reset buttons already use via
+   `CritLog.UI.showConfirmation`) rather than firing unconditionally on
+   one click. Message styling/text layout also still open regardless of
+   which trigger UI wins.
 
 ## Parked
 
