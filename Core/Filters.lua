@@ -12,12 +12,14 @@ function CritLog.Filters.matchesSpell(spell, spellId, spellName)
     return tContains(spell.ids, spellId) or tContains(spell.names, spellName)
 end
 
--- Per Core/Constants.lua's deathClasses.meleeCapable/alwaysMelee. Warrior
--- and Rogue have no ranged/caster spec at all, so class alone identifies
--- them. The remaining hybrid classes (Paladin, Shaman, Druid) are narrowed
--- by assigned raid role: a Healer-flagged member of one of those classes is
--- excluded, since a Holy Paladin/Restoration Shaman/Restoration Druid is
--- never in melee.
+-- Per Core/Constants.lua's deathClasses.meleeCapable/alwaysMelee. Tank and
+-- Healer are their own separate death-sound categories, so both are
+-- excluded here regardless of class - including alwaysMelee ones
+-- (Warrior/Rogue): in-game reported, a Warrior assigned the Tank role
+-- matched both "melee-capable class" and "assigned Tank role" at once,
+-- playing the DPS and Tank death sounds together for the same death. The
+-- remaining hybrid classes (Paladin, Shaman, Druid) were already narrowed
+-- by role before this fix, just not against TANK too.
 --
 -- Known blind spot, accepted rather than solved: this does NOT exclude
 -- ranged-caster DPS specs of those same hybrid classes (Elemental Shaman,
@@ -30,15 +32,15 @@ function CritLog.Filters.isMeleeClass(class, role)
         return false
     end
 
+    if role == "HEALER" or role == "TANK" then
+        return false
+    end
+
     if tContains(CritLog.Constants.deathClasses.alwaysMelee, class) then
         return true
     end
 
-    if not tContains(CritLog.Constants.deathClasses.meleeCapable, class) then
-        return false
-    end
-
-    return role ~= "HEALER"
+    return tContains(CritLog.Constants.deathClasses.meleeCapable, class)
 end
 
 -- True only if the unit currently has the Tank role explicitly assigned
