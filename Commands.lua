@@ -57,7 +57,7 @@ local function printConfig()
     print("/cl spirit: "..tostring(CritLogDB.SpiritSoundFlag))
     print("/cl dps: "..CritLogDB.DpsDetectionMode)
     print("/cl tank: "..CritLogDB.TankDetectionMode)
-    print("/cl boss: "..CritLogDB.BossDetectionMode)
+    print("/cl boss: "..tostring(CritLogDB.BossSoundFlag))
     print("/cl player: "..tostring(CritLogDB.PlayerSoundFlag))
 end
 
@@ -158,7 +158,11 @@ function CritLog:PrintCritLogs(message)
     elseif command == "tank" then
         toggleDetectionMode("TankDetectionMode", "TankSound")
     elseif command == "boss" then
-        toggleDetectionMode("BossDetectionMode", "BossSound")
+        toggle(
+            "BossSoundFlag",
+            "CritLog BossSound On",
+            "CritLog BossSound Off"
+        )
     elseif command == "xtreme" then
         toggle(
             "XtremeSoundFlag",

@@ -3,9 +3,10 @@
 -- migrateToRecordLists below) but kept in DEFAULTS - and never actively
 -- written again after migration - purely so an old SavedVariables file
 -- never produces a nil field if something still reads them. Same reasoning
--- for PriestSoundFlag/TankSoundFlag/MeleeSoundFlag/BossSoundFlag, now
--- superseded by the CritLogDB.<Kind>DetectionMode strings (see
--- migrateDetectionModes below).
+-- for PriestSoundFlag/TankSoundFlag/MeleeSoundFlag, now superseded by the
+-- CritLogDB.<Kind>DetectionMode strings (see migrateDetectionModes below).
+-- BossSoundFlag is the odd one out: still actively read (see
+-- migrateBossModeToFlag below) - Boss went to a detection mode and back.
 local DEFAULTS = {
     DamageAbilityCrit = 0,
     DAC_Name = "",
@@ -135,10 +136,12 @@ local function migrateToRecordLists()
     end
 end
 
--- One-time migration: the dps/tank/heal/boss death sounds used to be a
--- plain on/off flag; now each is a 4-way mode ("none"/"experimental"/
--- "roster"/"both", see Core/Constants.lua's detectionModes and Core/
--- Filters.lua's matchesDetectionMode). Guarded per-category on the new
+-- One-time migration: the dps/tank/heal death sounds used to be a plain
+-- on/off flag; now each is a 4-way mode ("none"/"experimental"/"roster"/
+-- "both", see Core/Constants.lua's detectionModes and Core/Filters.lua's
+-- matchesDetectionMode). Boss is deliberately NOT in this list - it never
+-- had a roster to fall back to (see migrateBossModeToFlag below for its
+-- own, opposite-direction migration) - Guarded per-category on the new
 -- field itself, same pattern as the other migrations above - true becomes
 -- "both" (live check with roster fallback, the original default
 -- behavior), false becomes "none". Reads the old flag rather than a
@@ -153,12 +156,31 @@ local function migrateDetectionModes()
         { mode = "DpsDetectionMode", oldFlag = "MeleeSoundFlag" },
         { mode = "TankDetectionMode", oldFlag = "TankSoundFlag" },
         { mode = "HealDetectionMode", oldFlag = "PriestSoundFlag" },
-        { mode = "BossDetectionMode", oldFlag = "BossSoundFlag" },
     }
     for _, category in ipairs(categories) do
         if CritLogDB[category.mode] == nil then
             CritLogDB[category.mode] = CritLogDB[category.oldFlag] and "both" or "none"
         end
+    end
+end
+
+-- One-time migration, opposite direction from migrateDetectionModes above:
+-- Boss death sound went from a detection-mode dropdown back to a plain
+-- on/off flag (BossSoundFlag) - it never had a roster to fall back to (see
+-- Core/Constants.lua's bosses table and UI/DeathSoundPanel.lua), so
+-- "Roster"/"Both" on that row were dead options. Guarded on
+-- BossDetectionMode still being present (unlike every other migration
+-- here, BossSoundFlag itself is never nil - it's been in DEFAULTS from
+-- the start - so the usual "is the new field nil" guard doesn't work; the
+-- old field's presence is the only signal that this hasn't run yet).
+-- Must run after migrateDetectionModes above so a character upgrading
+-- from the oldest BossSoundFlag-only era already has a BossDetectionMode
+-- value to read here, same as every other era.
+local function migrateBossModeToFlag()
+    if CritLogDB.BossDetectionMode ~= nil then
+        CritLogDB.BossSoundFlag = CritLogDB.BossDetectionMode == "both"
+            or CritLogDB.BossDetectionMode == "experimental"
+        CritLogDB.BossDetectionMode = nil
     end
 end
 
@@ -256,6 +278,7 @@ function CritLog:SetDefaults()
     migratePriestToHeal()
     migrateMeleeToDps()
     migrateDetectionModes()
+    migrateBossModeToFlag()
     migrateAllLevelToThreshold()
 
     if initialized then

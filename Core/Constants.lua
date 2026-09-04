@@ -77,9 +77,11 @@ CritLog.Constants = {
         mageTable = "Table.mp3",
         healthstoneRitual = "healthstone.mp3",
     },
-    -- Boss detection is classification-first with the name lists as a
-    -- fallback, mirroring the spells table below: the primary signal is the
-    -- game's own data, the hardcoded names catch what that signal misses.
+    -- Boss detection is classification-only now - the hardcoded name-list
+    -- fallback (english/german) is gone: it was still the original Burning
+    -- Crusade roster and matched nothing in Classic Era/SoD, so it was
+    -- dead weight requiring manual upkeep for content it would never
+    -- actually cover. See CHANGELOG.md.
     bosses = {
         -- Accepted UnitClassification() values. "worldboss" is creature
         -- rank 3 - the "Level ?? (Boss)" tooltip - which in the Classic
@@ -88,36 +90,10 @@ CritLog.Constants = {
         -- level-60 raid encounters. Deliberately nothing else: "elite" and
         -- "rareelite" are ordinary dungeon trash and 5-man end bosses,
         -- "rare" is a leveling rare spawn - accepting those would fire the
-        -- boss sound on most pulls. The known gap this leaves is documented
-        -- in CHANGELOG.md and is exactly why the name lists below stay.
+        -- boss sound on most pulls. Known gap, accepted rather than
+        -- solved: 5-man end bosses and similarly-ranked NPCs aren't
+        -- "worldboss" and won't fire the sound at all anymore.
         classifications = { "worldboss" },
-        -- Fallback allowlist for bosses the classification check can't see.
-        -- This is still the original Burning Crusade roster and therefore
-        -- matches nothing in Classic Era/SoD; it is kept as the mechanism
-        -- for "boss NPCs that aren't flagged worldboss" (5-man end bosses,
-        -- SoD's Blackfathom Deeps/Gnomeregan raid bosses) rather than for
-        -- its current contents, which are due for replacement.
-        english = {
-            "Lady Vashj", "Kael'thas Sunstrider", "Hydross the Unstable",
-            "The Lurker Below", "Leotheras the Blind",
-            "Fathom-Lord Karathress", "Morogrim Tidewalker", "Al'ar",
-            "High Astromancer Solarian", "Void Reaver", "Rage Winterchill",
-            "Anetheron", "Kaz'rogal", "Azgalor", "Archimonde",
-            "High Warlord Naj'entus", "Supremus", "Shade of Akama",
-            "Gurtogg Bloodboil", "Reliquary of the Lost", "Teron Gorefiend",
-            "Mother Shahraz", "The Illidari Council", "Illidan Stormrage",
-        },
-        german = {
-            "Lady Vashj", "Kael'thas Sonnenwanderer", "Hydross der Unstete",
-            "Das Grauen aus der Tiefe", "Leotheras der Blinde",
-            "Tiefenlord Karathress", "Morogrim Gezeitenwandler", "Al'ar",
-            "Hochastromantin Solarian", "Leerhäscher", "Furor Winterfrost",
-            "Kaz'rogal", "Azgalor", "Archimonde",
-            "Oberster Kriegsfürst Naj'entus", "Supremus", "Akamas Schemen",
-            "Gurtogg Siedeblut", "Reliquiar der Verirrten",
-            "Teron Blutschatten", "Mutter Shahraz", "Der Rat der Illidari",
-            "Illidan Sturmgrimm",
-        },
     },
     -- Display labels for the three roster categories - Persistence's
     -- migration and UI/RosterPanel.lua both need a consistent name/order
