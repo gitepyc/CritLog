@@ -23,6 +23,14 @@ local CRIT_CHECKBOXES = {
       hint = "How far below your level a target may be and still count. Worldbosses always count regardless." },
 }
 
+-- Pulled out of Sound Settings and onto the main panel directly - in-game
+-- requested: muting all sounds is common enough that it shouldn't require
+-- opening a submenu. The rest of the sound toggles stay in Sound Settings.
+local MASTER_SOUND_CHECKBOX = {
+    { field = "MasterSoundFlag", label = "Sound enabled",
+      hint = "Mutes every CritLog sound without changing individual sound settings." },
+}
+
 -- Separate from CRIT_CHECKBOXES and rendered smaller (`indent = true`,
 -- see UI/Shared.lua's buildToggleRows) below the Sound Settings/Help
 -- button row instead of grouped with the real settings above - in-game
@@ -241,6 +249,8 @@ end
 
 local function buildFrame()
     -- Tall enough for the header block, the Highscore List button, the
+    -- Sound enabled master switch (pulled in from Sound Settings - in-game
+    -- requested, muting everything shouldn't require a submenu), the
     -- level-filter checkbox and slider row (taller than a plain checkbox -
     -- Low/High/value labels), the Sound Settings/Help button row (Roster
     -- Settings moved to the Death Sounds panel, so this is back to a
@@ -249,7 +259,7 @@ local function buildFrame()
     -- a highscore line has room before running into that row's Reset
     -- button. Not pixel-verified in-game yet for the slider specifically
     -- - see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 550)
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 576)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -301,7 +311,8 @@ local function buildFrame()
     CritLog.UI.anchorBelow(togglesHeading, f.versionText, 16)
     togglesHeading:SetText("Options")
 
-    local lastAnchor = CritLog.UI.buildToggleRows(f, CRIT_CHECKBOXES, togglesHeading)
+    local lastAnchor = CritLog.UI.buildToggleRows(f, MASTER_SOUND_CHECKBOX, togglesHeading)
+    lastAnchor = CritLog.UI.buildToggleRows(f, CRIT_CHECKBOXES, lastAnchor)
 
     local soundButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     soundButton:SetSize(140, 24)

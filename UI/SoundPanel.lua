@@ -15,8 +15,8 @@
 -- list for the same reason: its button belongs right after it, then
 -- Death Sounds' button alongside it as before.
 local SOUND_CHECKBOXES_TOP = {
-    { field = "MasterSoundFlag", label = "Sound enabled (overrides everything below)",
-      hint = "Mutes everything below without changing individual settings." },
+    -- MasterSoundFlag itself moved to the main panel (UI/MainPanel.lua) -
+    -- in-game requested, muting everything shouldn't need a submenu.
     { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
       hint = "Plays on a new personal highscore." },
     { field = "AllCritFlag", label = "Sound for all crits",
@@ -45,12 +45,13 @@ local SOUND_CHECKBOXES_BOTTOM = {
 local soundFrame
 
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading, all 9 checkbox rows (hints are
+    -- Tall enough for the toggles heading, all 8 checkbox rows (hints are
     -- now a hover tooltip, not a line underneath each row - see
-    -- UI/Shared.lua), the Roll Sounds button (its own row, right under the
-    -- RollSoundFlag checkbox), and the Aura Sounds/Death Sounds button row
-    -- below that - not pixel-verified in-game yet, see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 520)
+    -- UI/Shared.lua; MasterSoundFlag moved to the main panel, one row
+    -- fewer than before), the Roll Sounds button (its own row, right under
+    -- the RollSoundFlag checkbox), and the Aura Sounds/Death Sounds button
+    -- row below that - not pixel-verified in-game yet, see docs/ROADMAP.md.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 494)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
