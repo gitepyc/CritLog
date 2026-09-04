@@ -18,7 +18,7 @@ stds.wow = {
         "UnitGroupRolesAssigned", -- class/role-based death-sound matching (feature/class-based-death-sounds)
         "UnitInParty",
         "UnitInRaid",
-        "UnitIsPlayer", -- excludes NPCs from the melee/tank/priest death-sound class checks
+        "UnitIsPlayer", -- excludes NPCs from the dps/tank/priest death-sound role checks
         "UnitLevel",
         "tContains",
         "GetAddOnMetadata",
@@ -29,7 +29,7 @@ stds.wow = {
         -- UI/Shared.lua: registers panels so Escape closes them
         "UISpecialFrames",
         "tinsert",
-        -- UI/Shared.lua: the melee/tank/priest/boss detection-mode dropdowns
+        -- UI/Shared.lua: the dps/tank/priest/boss detection-mode dropdowns
         "UIDropDownMenu_SetWidth",
         "UIDropDownMenu_Initialize",
         "UIDropDownMenu_CreateInfo",

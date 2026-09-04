@@ -63,7 +63,11 @@ local DEFAULTS = {
 -- assigned raid role, neither of which is guaranteed available, so a name
 -- still in this list keeps firing even when the live check can't.
 local PLAYER_GROUPS_DEFAULTS = {
-    melee = {
+    -- Key is `dps`, not `melee` (see migrateMeleeToDps below for the
+    -- rename of an already-existing character's data) - this seed only
+    -- ever runs for a brand-new install, which always gets the current
+    -- key name directly.
+    dps = {
         "Schnutz", "Synday", "Kamicaze", "Alcira", "Shocksx",
         "Dripperx", "Enry", "Feniara", "Lemonsoda", "Cindarr",
         "Truffi", "Gradba", "Zoiy",
@@ -76,7 +80,7 @@ local PLAYER_GROUPS_DEFAULTS = {
     heal = { "Ilenkov", "Epyç" },
 }
 
--- One-time migration: copies PLAYER_GROUPS_DEFAULTS (melee/tank/heal name
+-- One-time migration: copies PLAYER_GROUPS_DEFAULTS (dps/tank/heal name
 -- rosters, previously code-only) into CritLogDB, so they're editable per
 -- character via the options panel. Guarded on CritLogDB.playerGroups itself
 -- (not the schema version) so it runs exactly once regardless of which
@@ -131,7 +135,7 @@ local function migrateToRecordLists()
     end
 end
 
--- One-time migration: the melee/tank/heal/boss death sounds used to be a
+-- One-time migration: the dps/tank/heal/boss death sounds used to be a
 -- plain on/off flag; now each is a 4-way mode ("none"/"experimental"/
 -- "roster"/"both", see Core/Constants.lua's detectionModes and Core/
 -- Filters.lua's matchesDetectionMode). Guarded per-category on the new
@@ -146,7 +150,7 @@ end
 -- reached the PriestDetectionMode era).
 local function migrateDetectionModes()
     local categories = {
-        { mode = "MeleeDetectionMode", oldFlag = "MeleeSoundFlag" },
+        { mode = "DpsDetectionMode", oldFlag = "MeleeSoundFlag" },
         { mode = "TankDetectionMode", oldFlag = "TankSoundFlag" },
         { mode = "HealDetectionMode", oldFlag = "PriestSoundFlag" },
         { mode = "BossDetectionMode", oldFlag = "BossSoundFlag" },
@@ -207,6 +211,29 @@ local function migrateAllLevelToThreshold()
     end
 end
 
+-- One-time migration: MeleeDetectionMode/playerGroups.melee renamed to
+-- DpsDetectionMode/playerGroups.dps - DPS detection stopped being a
+-- melee-capable-class guess (which silently never fired for Hunter/Mage/
+-- Warlock/Priest at all) and became the real 3-role system instead
+-- (Tank/Healer/everyone else, see Core/Filters.lua's isAssignedDps), so
+-- keeping "Melee" in the field/key name was actively misleading. Same
+-- pattern as migratePriestToHeal above, and must run before
+-- migrateDetectionModes below for the same reason: a character already on
+-- a real MeleeDetectionMode value (not just the oldest MeleeSoundFlag
+-- boolean) needs to carry it forward before that generic migration's
+-- nil-check would otherwise fall back to the boolean.
+local function migrateMeleeToDps()
+    if CritLogDB.DpsDetectionMode == nil and CritLogDB.MeleeDetectionMode ~= nil then
+        CritLogDB.DpsDetectionMode = CritLogDB.MeleeDetectionMode
+    end
+    CritLogDB.MeleeDetectionMode = nil
+
+    if CritLogDB.playerGroups.dps == nil and CritLogDB.playerGroups.melee ~= nil then
+        CritLogDB.playerGroups.dps = CritLogDB.playerGroups.melee
+    end
+    CritLogDB.playerGroups.melee = nil
+end
+
 function CritLog:SetDefaults()
     local initialized = not CritLogDB
     local upgraded = not initialized and CritLogDB.Version ~= self.version
@@ -227,6 +254,7 @@ function CritLog:SetDefaults()
     migratePlayerGroups()
     migrateToRecordLists()
     migratePriestToHeal()
+    migrateMeleeToDps()
     migrateDetectionModes()
     migrateAllLevelToThreshold()
 
@@ -279,7 +307,7 @@ function CritLog:ResetRecords()
     end
 end
 
--- Adds a name to a roster category (melee/tank/heal) if it's non-empty
+-- Adds a name to a roster category (dps/tank/heal) if it's non-empty
 -- and not already present. Returns true on success, false if rejected -
 -- the options panel uses that to decide whether to clear the input box.
 function CritLog:AddRosterName(kind, name)
