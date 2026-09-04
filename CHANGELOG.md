@@ -285,3 +285,84 @@ First stable release since `0.2.1`.
   mis-anchoring, checkbox-column drift, preview buttons stuck on the
   hover color, a double-played white/ranged crit sound, and previews
   doing nothing while muted.
+
+## 0.2.1
+
+Small follow-up to `0.2.0`, fixing one real gameplay bug found right
+after that tag.
+
+- **Fixed the damage-crit level filter**: it always checked the level of
+  the player's currently UI-selected target, not the actual enemy that
+  was hit (the combat log only gives a GUID) - a crit against one enemy
+  could be wrongly filtered using a completely different enemy's level.
+  Now resolves the correct unit (checking the current target first, then
+  falling back to a nameplate scan), and lets the crit through unfiltered
+  if no unit token can be found at all rather than silently dropping it.
+  Heal crits were already unaffected by this filter.
+- Removed `README.txt` (superseded by `README.md`/`docs/`); the addon
+  version is now read once from `CritLog.toc` instead of being
+  duplicated in code. Two roadmap items documented but not yet acted on:
+  replacing the hardcoded player-name rosters with class-based matching,
+  and giving Spirit of Redemption a real fix or removing it.
+
+## 0.2.0
+
+First tagged release after the addon's initial import - covers repo
+setup, a first pass of bugfixes, and an early round of sound/dead-code
+cleanup.
+
+- **Toni becomes the only sound profile**: the alternate "default" sound
+  set is dropped along with `/cl toni` and the profile-switching
+  mechanism. Sound files shrank from the original 68 down to 24 as
+  duplicates and orphaned files were removed along the way; Power
+  Infusion and Tank-death "random" sound picks turned out to be
+  non-random within Toni since their candidate files were byte-identical
+  copies of each other - they now honestly play a single fixed clip.
+- **Fixed destructive version upgrades**: `SetDefaults()` used to fully
+  wipe every character's saved highscores and toggles whenever the addon
+  version changed; it now only back-fills missing fields, preserving
+  existing data.
+- **Fixed several real bugs**: Divine Intervention referenced a missing
+  sound file and always failed to play; Soulstone's random-sound range
+  didn't cover all three of its clips, and one clip was missing from the
+  Toni profile entirely; the heal-crit path was wrongly subject to the
+  enemy-level filter meant only for damage crits; `/cl reset` was
+  silently resetting the sound-profile and custom sound-path fields
+  instead of preserving them; damage/heal highscore output printed the
+  ability name in place of the target's name (twice, effectively hiding
+  the actual target).
+- **Revived the "over 9000 damage" extreme-hit sound** as a real working
+  feature (`XtremeSoundFlag`/`/cl xtreme`, off by default) instead of
+  leaving it as dead, commented-out code.
+- **Removed the login-sound feature entirely** (toggle, command, and
+  playback code) since it had a working toggle but no code path ever
+  read it; also removed other dead code (`ZONE_CHANGED`, `Split()`) and
+  orphaned assets (`Login.mp3`, an unreferenced 14-file "more sounds"
+  folder).
+- Centralized previously scattered hardcoded sound/spell/boss/roster
+  constants into a single `CritLogData` table - no behavior change.
+- Split the single-file addon into focused modules, with a follow-up
+  pass fixing review issues (content dropped during the split restored,
+  `.luacheckrc` globals corrected).
+- Flattened the repository layout - CritLog moved out of a subdirectory
+  of the former shared `wow-addons` monorepo to its own repo root.
+- Added repository scaffolding: license, `.gitignore`/`.editorconfig`, a
+  containerized luacheck setup plus a CI lint workflow (only failing on
+  real errors, not warnings), and `.pkgmeta` packaging verified
+  end-to-end - including fixing the packager shipping its own
+  auto-generated changelog instead of ours.
+- Added `README.md`/`docs/` (behavior, sound inventory, a cleanup
+  checklist, refactoring notes), translated from the original German
+  documentation to English.
+- Added `release.yml` to build and publish a GitHub Release with the
+  packaged zip on every tag push.
+- Addon now credits Epyc as current author and Chabo as original
+  creator.
+
+## 0.1.1
+
+Initial import of the addon into this repository.
+
+- Adds `CritLog.lua`, `CritLog.toc`, `README.txt`, and the original
+  `sounds/` folder as a single self-contained addon, carried over
+  unchanged from its pre-existing legacy form.
