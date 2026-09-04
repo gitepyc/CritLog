@@ -29,6 +29,12 @@ local SOUND_CHECKBOXES_TOP = {
       hint = "Plays when a ready check starts." },
     { field = "GambleSoundFlag", label = "Lottery sound", sound = "lotteryFirst",
       hint = "A CrossGambling lottery announcement in raid chat." },
+    -- The trigger plays lotteryFirst then lotterySecond back to back (see
+    -- ChatTriggers.lua) - the checkbox row above only ever previewed the
+    -- first clip, the second had no preview anywhere. Same previewOnly
+    -- pattern as the roll/aura sub-panels, just inline here since it's a
+    -- single extra row, not enough to warrant its own panel.
+    { label = "Lottery (second clip)", sound = "lotterySecond", previewOnly = true },
     -- No exact count in the hint (matches the AuraSoundFlag hint below -
     -- in-game requested the same treatment here), and "on the side" not
     -- "below" - the Roll Sounds button sits on this same row now (see
@@ -42,16 +48,32 @@ local SOUND_CHECKBOXES_BOTTOM = {
       hint = "Master switch for the spell sounds - see the button below." },
 }
 
+-- Raid-leader/raid-chat phrase sounds (ChatTriggers.lua's
+-- CHAT_MSG_RAID_LEADER handler) had no preview anywhere - in-game
+-- requested. Unlike every other sound group here, these have no
+-- CritLogDB flag at all (they always fire, gated only by MasterSoundFlag
+-- like every CritLog:PlaySound call), so previewOnly rows with no
+-- checkbox, same mechanism as the roll/aura sub-panels' shared-master
+-- rows. Raid end plays both clips back to back (bye, then end) - two
+-- rows, matching the lottery second-clip fix above.
+local CHAT_PHRASE_PREVIEWS = {
+    { label = "Raid end (part 1)", sound = "raidEndBye", previewOnly = true },
+    { label = "Raid end (part 2)", sound = "raidEndFinal", previewOnly = true },
+    { label = "Wipe", sound = "wipe", previewOnly = true },
+}
+
 local soundFrame
 
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading, all 8 checkbox rows (hints are
-    -- now a hover tooltip, not a line underneath each row - see
-    -- UI/Shared.lua; MasterSoundFlag moved to the main panel, one row
-    -- fewer than before), the Roll Sounds button (its own row, right under
-    -- the RollSoundFlag checkbox), and the Aura Sounds/Death Sounds button
-    -- row below that - not pixel-verified in-game yet, see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 494)
+    -- Tall enough for the toggles heading, all 8 checkbox rows plus the
+    -- lottery second-clip preview row (hints are now a hover tooltip, not
+    -- a line underneath each row - see UI/Shared.lua; MasterSoundFlag
+    -- moved to the main panel, one row fewer than before), the Roll
+    -- Sounds button (its own row, right under the RollSoundFlag
+    -- checkbox), the Aura Sounds/Death Sounds button row below that, and
+    -- the new Raid Chat Phrases heading + its 3 preview-only rows at the
+    -- bottom - not pixel-verified in-game yet, see docs/ROADMAP.md.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 700)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
@@ -102,6 +124,12 @@ local function buildSoundFrame()
     deathSoundsButton:SetScript("OnClick", function()
         CritLog:ShowDeathSounds()
     end)
+
+    local chatPhraseHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    chatPhraseHeading:SetPoint("TOPLEFT", deathSoundsButton, "BOTTOMLEFT", 0, -16)
+    chatPhraseHeading:SetText("Raid Chat Phrases")
+
+    CritLog.UI.buildToggleRows(f, CHAT_PHRASE_PREVIEWS, chatPhraseHeading)
 
     CritLog.UI.createCloseButton(f)
 
