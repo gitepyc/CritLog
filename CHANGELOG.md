@@ -3,75 +3,75 @@
 **Next up:** in-game verification is the main open item across the board -
 see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 
-**Entry format:** one line per change, `type: short description`
-(`feature`/`fix`/etc.) - no prose, no rationale. Save the "why" for the
-commit message/PR, not here.
+**Entry format:** one line per change, `**type:** short bullet`
+(`feature`/`fix`/etc., bolded) - as terse as possible, no prose, no
+rationale. Save the "why" for the commit message/PR, not here.
 
 ## 0.9.0.0-dev
 
-- fix: white-hit crits (melee and ranged) now always play the highscore sound on a new personal record even with "Sound for white hit crits" off, matching how ability/heal crits already behaved; ranged white-hit records were also being skipped entirely (not even recorded) with that setting off - now recorded unconditionally like melee
+- **fix:** white-hit crits (melee and ranged) now always play the highscore sound on a new personal record even with "Sound for white hit crits" off, matching how ability/heal crits already behaved; ranged white-hit records were also being skipped entirely (not even recorded) with that setting off - now recorded unconditionally like melee
 
 ## 0.9.8.5-dev
 
-- feature: Debug mode moved off the main "Options" group - now a small indented checkbox below the Sound Settings/Help buttons instead of grouped with the level filter, since it's dev/troubleshooting-only
+- **feature:** Debug mode moved off the main "Options" group - now a small indented checkbox below the Sound Settings/Help buttons instead of grouped with the level filter, since it's dev/troubleshooting-only
 
 ## 0.9.8.4-dev
 
-- feature: colored highscore display (spell/target/amount) shared between the TitanPanel tooltip and the main options panel now, via a new `Core/Records.lua` `formatRecordTextColored` instead of a Titan-only copy
-- feature: color scheme retuned - target dark green (was red), plain text dark gold (was white), amount gradient now green-to-red
-- feature: Roll Sounds/Aura sound hints no longer state the exact sound count; Roll Sounds hint also says "on the side" instead of "below", matching its new position
-- feature: Help panel shrunk (920x660 -> 800x600)
+- **feature:** colored highscore display (spell/target/amount) shared between the TitanPanel tooltip and the main options panel now, via a new `Core/Records.lua` `formatRecordTextColored` instead of a Titan-only copy
+- **feature:** color scheme retuned - target dark green (was red), plain text dark gold (was white), amount gradient now green-to-red
+- **feature:** Roll Sounds/Aura sound hints no longer state the exact sound count; Roll Sounds hint also says "on the side" instead of "below", matching its new position
+- **feature:** Help panel shrunk (920x660 -> 800x600)
 
 ## 0.9.8.3-dev
 
-- fix: TitanPanel button text never updated after a new crit (stayed on "-/-/-" forever, even though the hover tooltip showed the correct data) - Titan doesn't refresh button text on its own, now explicitly told to via `TitanPanelButton_UpdateButton` whenever a highscore is recorded
+- **fix:** TitanPanel button text never updated after a new crit (stayed on "-/-/-" forever, even though the hover tooltip showed the correct data) - Titan doesn't refresh button text on its own, now explicitly told to via `TitanPanelButton_UpdateButton` whenever a highscore is recorded
 
 ## 0.9.8.2-dev
 
-- feature: Help panel's About/credits line now anchored to the bottom of the panel itself (centered, just above the Close button) instead of chained below the content above
+- **feature:** Help panel's About/credits line now anchored to the bottom of the panel itself (centered, just above the Close button) instead of chained below the content above
 
 ## 0.9.8.1-dev
 
-- fix: Roll Sounds button overflowed past the panel's right edge and sat awkwardly on its own row - now sized/positioned like a Preview button, same row as the RollSoundFlag checkbox
-- feature: TitanPanel tooltip colors toned down again - spell gold, target muted red, amount scale now starts at green instead of white (in-game screenshotted: the yellow/blue/heat-scale combo "didn't look good")
+- **fix:** Roll Sounds button overflowed past the panel's right edge and sat awkwardly on its own row - now sized/positioned like a Preview button, same row as the RollSoundFlag checkbox
+- **feature:** TitanPanel tooltip colors toned down again - spell gold, target muted red, amount scale now starts at green instead of white (in-game screenshotted: the yellow/blue/heat-scale combo "didn't look good")
 
 ## 0.9.8-dev
 
-- feature: TitanPanel tooltip restyled - spell yellow, target blue (was blue/red, "didn't look good"), plain text now explicitly white instead of relying on GameTooltip's own default
-- feature: Roll Sounds button moved under the shared Preview-button column instead of flush-left
-- feature: Help panel's About/credits line pushed further down and a touch brighter, reads as its own footer now
-- feature: Aura/spell sound hint no longer states the exact count ("13"), just "spell sounds"
+- **feature:** TitanPanel tooltip restyled - spell yellow, target blue (was blue/red, "didn't look good"), plain text now explicitly white instead of relying on GameTooltip's own default
+- **feature:** Roll Sounds button moved under the shared Preview-button column instead of flush-left
+- **feature:** Help panel's About/credits line pushed further down and a touch brighter, reads as its own footer now
+- **feature:** Aura/spell sound hint no longer states the exact count ("13"), just "spell sounds"
 
 ## 0.9.7-dev
 
-- feature: TitanPanel tooltip amount colors retuned - orange from 4000, red from 8000 (was 5000/10000)
+- **feature:** TitanPanel tooltip amount colors retuned - orange from 4000, red from 8000 (was 5000/10000)
 
 ## 0.9.6-dev
 
-- feature: TitanPanel tooltip title changed to "CritLog Summary"
-- feature: TitanPanel tooltip styled - ability/target names colored, amount colored by a rough size-based heat scale (white/yellow/orange/red)
+- **feature:** TitanPanel tooltip title changed to "CritLog Summary"
+- **feature:** TitanPanel tooltip styled - ability/target names colored, amount colored by a rough size-based heat scale (white/yellow/orange/red)
 
 ## 0.9.5-dev
 
-- fix: Help panel rows drifted one level further right with every single row (a growing staircase) - a chained x-offset wasn't being cancelled between rows, same class of bug this file has hit before
-- feature: Sound Settings - Roll Sounds button now sits directly under its own toggle instead of grouped with Aura/Death Sounds at the end; Aura toggle + Aura/Death Sounds button row follow after, unchanged from before
+- **fix:** Help panel rows drifted one level further right with every single row (a growing staircase) - a chained x-offset wasn't being cancelled between rows, same class of bug this file has hit before
+- **feature:** Sound Settings - Roll Sounds button now sits directly under its own toggle instead of grouped with Aura/Death Sounds at the end; Aura toggle + Aura/Death Sounds button row follow after, unchanged from before
 
 ## 0.9.4-dev
 
-- feature: Roster Settings explains its own save behavior - Add/Remove take effect immediately, renaming only saves on Enter/OK
+- **feature:** Roster Settings explains its own save behavior - Add/Remove take effect immediately, renaming only saves on Enter/OK
 
 ## 0.9.3-dev
 
-- fix: Death Sounds dropdown rows' Preview buttons were completely unclickable - the dropdown's own expanded tooltip hit rect fully covered them and won every click; same latent risk fixed proactively for every checkbox row's Preview button too, not yet reported there
+- **fix:** Death Sounds dropdown rows' Preview buttons were completely unclickable - the dropdown's own expanded tooltip hit rect fully covered them and won every click; same latent risk fixed proactively for every checkbox row's Preview button too, not yet reported there
 
 ## 0.9.2-dev
 
-- feature: new Roll Sounds panel (opened from Sound Settings, same pattern as Aura/Death Sounds) - Preview button for each of the 6 roll-result sounds; still one shared toggle (`RollSoundFlag`) for all of them, not individually toggleable
-- feature: Roll Sounds row moved to sit right after Lottery on the Sound Settings panel, renamed from "Roll sound" to "Roll Sounds"
+- **feature:** new Roll Sounds panel (opened from Sound Settings, same pattern as Aura/Death Sounds) - Preview button for each of the 6 roll-result sounds; still one shared toggle (`RollSoundFlag`) for all of them, not individually toggleable
+- **feature:** Roll Sounds row moved to sit right after Lottery on the Sound Settings panel, renamed from "Roll sound" to "Roll Sounds"
 
 ## 0.9.1-dev
 
-- feature: TitanPanel button text - numbers rendered white, matching TitanCritLine's own color scheme (separators stay the default gold)
+- **feature:** TitanPanel button text - numbers rendered white, matching TitanCritLine's own color scheme (separators stay the default gold)
 
 ## 0.9.0-dev
 
@@ -80,36 +80,36 @@ Merges two standalone test branches into `dev`: `feature/level-diff-slider`
 (0.1.0-0.1.7-titanpanel-dev), plus `dev`'s own 0.7.6-0.7.8-dev work. See
 git history for the version-by-version path each one took.
 
-- feature: level filter is now a separate enable checkbox (`LevelFilterFlag`) plus a 1-20 threshold slider (`LevelDiffThreshold`), replacing the old single `AllLevel` on/off flag - modeled on TitanCritLine's level-adjustment slider
-- feature: optional TitanPanel status-bar button - icon, live "CL: <dmg>/<white>/<heal>" text, hover tooltip with full per-category detail, left-click opens `/cl options`, right-click menu (Options, Reset All Highscores); entirely inert without Titan installed
-- feature: every highscore reset (per-category buttons and matching chat commands) now asks for confirmation, not just "Reset All"
-- feature: Help panel reworked - two columns (General/Sounds), real section headings instead of "------------", command highlighted with its description below instead of one plain line
-- fix: toggle-row tooltips sometimes rendered much too large until moving the mouse away and re-hovering - GameTooltip now explicitly hidden before every re-show
-- fix: `/cl reset damage/whitehit/heal` line had gone missing from the Help panel - a literal `|` in the text was being parsed as a WoW color-code escape sequence
+- **feature:** level filter is now a separate enable checkbox (`LevelFilterFlag`) plus a 1-20 threshold slider (`LevelDiffThreshold`), replacing the old single `AllLevel` on/off flag - modeled on TitanCritLine's level-adjustment slider
+- **feature:** optional TitanPanel status-bar button - icon, live "CL: <dmg>/<white>/<heal>" text, hover tooltip with full per-category detail, left-click opens `/cl options`, right-click menu (Options, Reset All Highscores); entirely inert without Titan installed
+- **feature:** every highscore reset (per-category buttons and matching chat commands) now asks for confirmation, not just "Reset All"
+- **feature:** Help panel reworked - two columns (General/Sounds), real section headings instead of "------------", command highlighted with its description below instead of one plain line
+- **fix:** toggle-row tooltips sometimes rendered much too large until moving the mouse away and re-hovering - GameTooltip now explicitly hidden before every re-show
+- **fix:** `/cl reset damage/whitehit/heal` line had gone missing from the Help panel - a literal `|` in the text was being parsed as a WoW color-code escape sequence
 
 ## 0.7.5-dev
 
-- feature: Death Sounds dropdown order now matches Roster Settings (DPS, Tank, Healer, Boss)
-- feature: dropdown hints say "Experimental:" instead of "Live check:", matching the mode's actual name
+- **feature:** Death Sounds dropdown order now matches Roster Settings (DPS, Tank, Healer, Boss)
+- **feature:** dropdown hints say "Experimental:" instead of "Live check:", matching the mode's actual name
 
 ## 0.7.4-dev
 
-- fix: toggle-row tooltips reported still not showing - root cause was our own options panels sitting on TOOLTIP frame strata, competing with GameTooltip itself; panels now use FULLSCREEN (matching TitanCritLine's settings panel), tooltip code back to the plain TitanCritLine pattern
+- **fix:** toggle-row tooltips reported still not showing - root cause was our own options panels sitting on TOOLTIP frame strata, competing with GameTooltip itself; panels now use FULLSCREEN (matching TitanCritLine's settings panel), tooltip code back to the plain TitanCritLine pattern
 
 ## 0.7.3-dev
 
-- fix: toggle-row tooltips reported still not showing - anchor now matches TitanCritLine's proven pattern, plus explicit EnableMouse
+- **fix:** toggle-row tooltips reported still not showing - anchor now matches TitanCritLine's proven pattern, plus explicit EnableMouse
 
 ## 0.7.2-dev
 
-- fix: toggle-row tooltips still didn't show (hit-rect expansion used a width that read as 0)
+- **fix:** toggle-row tooltips still didn't show (hit-rect expansion used a width that read as 0)
 
 ## 0.7.1-dev
 
-- feature: hover tooltips instead of static hint text under each toggle row
-- fix: main options panel was missing its Close button
-- feature: addon icon (`media/icon.png`), wired up via `## IconTexture`
-- fix: toggle-row tooltips didn't show at all (GameTooltip vs. our own TOOLTIP-strata panels)
+- **feature:** hover tooltips instead of static hint text under each toggle row
+- **fix:** main options panel was missing its Close button
+- **feature:** addon icon (`media/icon.png`), wired up via `## IconTexture`
+- **fix:** toggle-row tooltips didn't show at all (GameTooltip vs. our own TOOLTIP-strata panels)
 
 ## 0.7.0
 
