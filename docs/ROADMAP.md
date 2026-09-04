@@ -13,13 +13,13 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    renders it). Also still open from `0.9.0-dev`: the TitanPanel button's
    icon legibility scaled down to 16px, and the level-diff slider's actual
    in-game look after its latest anchor fix. Also still open, from
-   `feature/legacy-sound-port`: none of the 14 sounds ported from the
-   legacy addon (roll, lottery, Drums of Battle, Pain Suppression,
-   Evocation, Mage Table, Warlock Healthstone ritual) have been in-game
-   confirmed yet. Three of them (Drums of Battle, Mage Table, the
-   Healthstone ritual) have a confirmed Wowhead spell ID but are confirmed
-   TBC-introduced spells (didn't exist in vanilla WoW) - having the right
-   ID doesn't confirm SoD availability. Hymn of Hope is excluded entirely:
+   `feature/legacy-sound-port`: 13 of the 14 sounds ported from the legacy
+   addon (roll, lottery, Drums of Battle, Pain Suppression, Evocation,
+   Mage Table) remain in-game unconfirmed - Warlock Healthstone ritual is
+   now confirmed working in-game. Two of the still-unconfirmed ones
+   (Drums of Battle, Mage Table) have a confirmed Wowhead spell ID but are
+   confirmed TBC-introduced spells (didn't exist in vanilla WoW) - having
+   the right ID doesn't confirm SoD availability. Hymn of Hope is excluded entirely:
    confirmed to not exist under that name before WotLK, cannot fire on
    Classic Era/SoD. Not a gate blocking other work - bugs found during
    verification land on `dev` as they're reported, in parallel with
@@ -29,7 +29,7 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    `"worldboss"`, e.g. 5-man dungeon end bosses) is currently code-only and
    still the original Burning Crusade roster, matching nothing in Classic
    Era/SoD. Make it editable per character, the same Add/Remove pattern
-   already used for the melee/tank/heal death-sound rosters
+   already used for the dps/tank/heal death-sound rosters
    (`CritLogDB.playerGroups`, see `UI/RosterPanel.lua`) - players add the
    names they actually need instead of waiting on curated research. Folds
    in the old "presets per expansion" idea as an optional extra on top of

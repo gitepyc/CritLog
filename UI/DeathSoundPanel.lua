@@ -19,17 +19,17 @@ local DEATH_CHECKBOXES = {
       hint = "A Priest's death delayed ~15s by the talent (own sound file)." },
     -- These four (unlike PlayerSoundFlag/SpiritSoundFlag above) can be
     -- driven by the live class/role/classification detection in
-    -- Core/CombatLog.lua (isMeleeClass, isAssignedTank, isAssignedHealer,
+    -- Core/CombatLog.lua (isAssignedDps, isAssignedTank, isAssignedHealer,
     -- isClassifiedBoss), the hardcoded name roster, both, or neither - a
     -- dropdown instead of a checkbox. No shared master switch anymore
     -- (there used to be one, DeadSoundFlag) - setting all four to "None"
     -- is equivalent, and the dropdown is already the one place that
     -- controls all of this. "Experimental" isn't yet in-game verified for
-    -- tank/boss/heal specifically (melee's false-positive bug is fixed
-    -- and confirmed); "Roster" and "Both" (the original default) aren't
-    -- affected by that.
+    -- tank/boss/heal specifically (an earlier class-based DPS guess's
+    -- false-positive bug is fixed and confirmed); "Roster" and "Both"
+    -- (the original default) aren't affected by that.
     --
-    -- Order matches UI/RosterPanel.lua's ROSTER_ORDER (melee/dmg, tank,
+    -- Order matches UI/RosterPanel.lua's ROSTER_ORDER (dps, tank,
     -- heal) - Boss has no roster category, so it stays last regardless.
     --
     -- Labeled "DPS", not "Damage Dealer", specifically here (unlike the
@@ -37,9 +37,9 @@ local DEATH_CHECKBOXES = {
     -- it's close to the same length as Healer/Tank/Boss below, which
     -- keeps all four rows' Preview buttons in one aligned column instead
     -- of each sitting wherever its own label happens to end.
-    { field = "MeleeDetectionMode", label = "DPS death sound", sound = "meleeDeath",
+    { field = "DpsDetectionMode", label = "DPS death sound", sound = "dpsDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Experimental: melee-capable class. Roster: ranged OK too." },
+      hint = "Experimental: not currently assigned Tank or Healer." },
     { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Experimental: assigned raid Tank role." },
@@ -85,7 +85,7 @@ local function buildDeathSoundFrame()
 
     local lastAnchor = CritLog.UI.buildToggleRows(f, DEATH_CHECKBOXES, heading)
 
-    -- Moved here from the main panel: the melee/tank/heal name rosters are
+    -- Moved here from the main panel: the dps/tank/heal name rosters are
     -- only ever consulted as a fallback for the four detection-mode
     -- dropdowns above (Roster/Both modes), so this button is more at home
     -- next to them than on the main panel, where it was otherwise

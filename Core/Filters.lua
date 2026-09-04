@@ -12,35 +12,15 @@ function CritLog.Filters.matchesSpell(spell, spellId, spellName)
     return tContains(spell.ids, spellId) or tContains(spell.names, spellName)
 end
 
--- Per Core/Constants.lua's deathClasses.meleeCapable/alwaysMelee. Tank and
--- Healer are their own separate death-sound categories, so both are
--- excluded here regardless of class - including alwaysMelee ones
--- (Warrior/Rogue): in-game reported, a Warrior assigned the Tank role
--- matched both "melee-capable class" and "assigned Tank role" at once,
--- playing the DPS and Tank death sounds together for the same death. The
--- remaining hybrid classes (Paladin, Shaman, Druid) were already narrowed
--- by role before this fix, just not against TANK too.
---
--- Known blind spot, accepted rather than solved: this does NOT exclude
--- ranged-caster DPS specs of those same hybrid classes (Elemental Shaman,
--- Balance Druid, ...), which will still be flagged as "melee" here. There
--- is no reliable API to tell a melee spec from a caster spec of the same
--- class for another player without inspecting talents, which isn't always
--- possible. See CHANGELOG.md.
-function CritLog.Filters.isMeleeClass(class, role)
-    if not class then
-        return false
-    end
-
-    if role == "HEALER" or role == "TANK" then
-        return false
-    end
-
-    if tContains(CritLog.Constants.deathClasses.alwaysMelee, class) then
-        return true
-    end
-
-    return tContains(CritLog.Constants.deathClasses.meleeCapable, class)
+-- DPS is not a class, it's the real in-game 3-role system's third bucket:
+-- Tank, Healer, or everyone else - a Mage counts exactly like a Warrior
+-- does, as long as neither is currently assigned Tank or Healer. Replaces
+-- the old class-based guess (isMeleeClass, matched only Warrior/Rogue/
+-- Paladin/Shaman/Druid and silently never fired for Hunter/Mage/Warlock/
+-- Priest at all) - in-game requested, a real role check instead of
+-- approximating "DPS" by which classes can melee.
+function CritLog.Filters.isAssignedDps(role)
+    return role ~= "TANK" and role ~= "HEALER"
 end
 
 -- True only if the unit currently has the Tank role explicitly assigned
@@ -92,9 +72,9 @@ function CritLog.Filters.isBossClassification(classification)
         and tContains(CritLog.Constants.bosses.classifications, classification)
 end
 
--- Decides whether a melee/tank/heal/boss death sound should play, given
+-- Decides whether a dps/tank/heal/boss death sound should play, given
 -- the selected detection mode and the two already-computed match results
--- (live class/role/classification check, and name-roster check). "none"
+-- (live role/classification check, and name-roster check). "none"
 -- (or any unrecognized value) always returns false - deliberately fails
 -- closed rather than falling back to some other mode if CritLogDB ever
 -- holds something unexpected.

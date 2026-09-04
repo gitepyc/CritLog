@@ -32,7 +32,7 @@ metadata as before - no more `n/a` entries.
 | Divine Intervention | `divineInt.mp3` | Player receives Divine Intervention |
 | Soulstone | `soulstone.mp3` | Player receives the Soulstone buff (not the resurrection itself) |
 | Player death | `MarioDeath.mp3` | Player dies |
-| Damage Dealer death | `wilhelm.ogg` | Live melee-capable class and/or Damage Dealer roster, per detection mode - see `docs/BEHAVIOR.md` |
+| Damage Dealer death | `wilhelm.ogg` | Live: not currently assigned Tank or Healer (any class); and/or Damage Dealer roster, per detection mode - see `docs/BEHAVIOR.md` |
 | Tank death | `Tank.mp3` | Live assigned Tank role and/or tank roster, per detection mode |
 | Healer death | `Angels.mp3` | Live assigned Healer role (any class) and/or Healer roster, per detection mode; excludes a Spirit-of-Redemption-delayed death |
 | Spirit of Redemption | `Angels2.mp3` (own asset, restored from the legacy addon - see `CHANGELOG.md`) | A Priest's death (class-specific, not role-based) delayed by the talent; independent on/off toggle, not a detection mode |

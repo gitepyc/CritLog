@@ -7,7 +7,7 @@ local function toggle(field, enabledMessage, disabledMessage)
     end
 end
 
--- Melee/tank/heal/boss death sounds are a 4-way mode now (see
+-- DPS/tank/heal/boss death sounds are a 4-way mode now (see
 -- Core/Constants.lua's detectionModes), not a plain flag - this chat
 -- command still only flips between off ("none") and the original default
 -- ("both", live check with roster fallback). For "experimental"- or
@@ -55,7 +55,7 @@ local function printConfig()
     print("------------")
     print("/cl healer: "..CritLogDB.HealDetectionMode)
     print("/cl spirit: "..tostring(CritLogDB.SpiritSoundFlag))
-    print("/cl dps: "..CritLogDB.MeleeDetectionMode)
+    print("/cl dps: "..CritLogDB.DpsDetectionMode)
     print("/cl tank: "..CritLogDB.TankDetectionMode)
     print("/cl boss: "..CritLogDB.BossDetectionMode)
     print("/cl player: "..tostring(CritLogDB.PlayerSoundFlag))
@@ -148,7 +148,7 @@ function CritLog:PrintCritLogs(message)
             "CritLog SpiritSound Off"
         )
     elseif command == "dps" then
-        toggleDetectionMode("MeleeDetectionMode", "Damage Dealer Sound")
+        toggleDetectionMode("DpsDetectionMode", "Damage Dealer Sound")
     elseif command == "player" then
         toggle(
             "PlayerSoundFlag",

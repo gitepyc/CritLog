@@ -458,7 +458,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- UnitGroupRolesAssigned() aren't guaranteed nil for NPCs (some enemy
     -- units carry a class internally for combat/AI purposes), which let
     -- enemy deaths in instances - a Necromancer trash mob at Mount Hyjal,
-    -- reported in-game - wrongly trigger the melee/tank/heal death
+    -- reported in-game - wrongly trigger the dps/tank/heal death
     -- sounds. Nilling it here makes every check below fall back to the
     -- name roster exactly like an unresolved token already does.
     if token and not UnitIsPlayer(token) then
@@ -474,7 +474,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         role = UnitGroupRolesAssigned(token)
     end
 
-    -- The live class/role checks below (melee/tank/heal, and Spirit of
+    -- The live role checks below (dps/tank/heal, and Spirit of
     -- Redemption) are gated on group membership - without this, any player
     -- death that happens to resolve a unit token (e.g. an enemy player in
     -- PvP, or an unrelated player on a visible nameplate) could trigger
@@ -494,11 +494,11 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     local matchesMode = CritLog.Filters.matchesDetectionMode
 
     if matchesMode(
-        CritLogDB.MeleeDetectionMode,
-        token and isGroupMember and CritLog.Filters.isMeleeClass(class, role),
-        tContains(CritLogDB.playerGroups.melee, destName)
+        CritLogDB.DpsDetectionMode,
+        token and isGroupMember and CritLog.Filters.isAssignedDps(role),
+        tContains(CritLogDB.playerGroups.dps, destName)
     ) then
-        self:PlaySound(self.Constants.sounds.meleeDeath)
+        self:PlaySound(self.Constants.sounds.dpsDeath)
     end
 
     if matchesMode(

@@ -7,7 +7,7 @@ auras, and raid-leader chat triggers.
 > **Project status:** Working legacy addon under active documentation and
 > modernization. CritLog `0.5.0` targets Season of Discovery on Classic Era
 > `1.15.9` (Interface `11509`). The options panel, the Escape-key behavior,
-> and editable melee/tank/heal rosters are now in-game confirmed; the
+> and editable dps/tank/heal rosters are now in-game confirmed; the
 > class/role-based death-sound detection for tank/boss specifically and
 > Spirit of Redemption are not yet — see [CHANGELOG.md](CHANGELOG.md) for
 > the versioned list.
@@ -104,7 +104,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl gamble` | Toggles the lottery sound (CrossGambling raid-chat announcement). |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl player` | Toggles the player's own death sound. |
-| `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Death Sounds has a dropdown for `experimental`-only or `roster`-only. Experimental: melee-capable class, not flagged Healer - the roster/name-list side isn't melee-only, ranged DPS names belong there too. |
+| `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Death Sounds has a dropdown for `experimental`-only or `roster`-only. Experimental: not currently assigned Tank or Healer, any class - the real 3-role system's third bucket. |
 | `/cl tank` | Same toggle, for the tank death sound. Experimental: assigned raid Tank role. |
 | `/cl healer` | Same toggle, for the healer death sound. Experimental: assigned raid Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). Excludes a death delayed by Spirit of Redemption - see `/cl spirit`. |
 | `/cl spirit` | Toggles the Spirit of Redemption sound (a Priest's death delayed ~15s by the talent - Priest-only, unlike `/cl healer` above; own sound file, not shared with the plain healer death sound). Independent of `/cl healer` - plain on/off, not a detection mode; there's no roster equivalent for "this death was Spirit-delayed". |
@@ -168,7 +168,7 @@ on every tag push, matching what manual installation above does by hand.
 
 The following data is centralized in `Core/Constants.lua`. The options panel
 (`/cl options`) can toggle whether each feature fires at all, and the
-melee/tank/heal name rosters are now editable too (see below) — everything
+dps/tank/heal name rosters are now editable too (see below) — everything
 else in this list is still code-only, not editable through the panel or a
 configuration file:
 
@@ -182,7 +182,7 @@ configuration file:
 - a nine-level threshold for relevant damage targets
 - defaults for all feature toggles
 
-The melee/tank/heal death-sound rosters are seeded from
+The dps/tank/heal death-sound rosters are seeded from
 `Persistence/Database.lua` once, then live in `CritLogDB.playerGroups` per
 character — editable via
 `/cl options` → "Death Sounds..." → "Roster Settings..." (Add/Remove per
@@ -193,7 +193,7 @@ category), not just a fallback for the live class/role check anymore.
 The options panel (including Escape-key behavior) and roster editing are
 now in-game confirmed. Still not in-game verified: class/role/
 classification-based death-sound detection for tank and boss specifically
-(melee's false-positive bug is fixed and confirmed), spell-ID aura matching
+(an earlier class-based DPS guess's false-positive bug is fixed and confirmed), spell-ID aura matching
 (all fall back to the old name-based matching when the live check doesn't
 resolve), and Spirit of Redemption detection. No CurseForge/Wago project
 configured yet - releases only reach GitHub for now. Audio-file rights are

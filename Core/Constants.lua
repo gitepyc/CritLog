@@ -1,7 +1,7 @@
 CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 
 CritLog.Constants = {
-    -- Options for the melee/tank/heal/boss death-sound detection mode
+    -- Options for the dps/tank/heal/boss death-sound detection mode
     -- dropdowns in the Death Sounds panel: choose whether the live
     -- class/role/classification check, the roster/name-list fallback,
     -- both (the original, still-default behavior), or neither decides
@@ -35,7 +35,7 @@ CritLog.Constants = {
     sounds = {
         crit = "at_bam_babam.mp3",
         xtremeDamage = "Xtreme.mp3",
-        meleeDeath = "wilhelm.ogg",
+        dpsDeath = "wilhelm.ogg",
         playerDeath = "MarioDeath.mp3",
         bossDeath = "FFX.mp3",
         tankDeath = "Tank.mp3",
@@ -123,12 +123,14 @@ CritLog.Constants = {
     -- migration and UI/RosterPanel.lua both need a consistent name/order
     -- for them.
     rosterKinds = {
-        -- Labeled "Damage Dealer" rather than "Melee" so it's clear ranged
-        -- DPS names belong here too - the roster is a free-form name list,
-        -- unrelated to the live "melee-capable class" check in deathClasses
-        -- below (that stays melee-specific; the roster/name-list fallback
-        -- was never actually restricted to melee, just mislabeled).
-        melee = { label = "Damage Dealer" },
+        -- Key `dps`, renamed from `melee` (see Persistence/Database.lua's
+        -- migrateMeleeToDps) once the live check itself stopped being a
+        -- melee-capable-class guess and became the real 3-role system
+        -- (Tank/Healer/everyone else, see Core/Filters.lua's
+        -- isAssignedDps) - "Melee" in the key/field name was misleading
+        -- even before that, since ranged DPS names always belonged in
+        -- this free-form roster too.
+        dps = { label = "Damage Dealer" },
         tank = { label = "Tank" },
         -- Labeled "Healer" (key `heal`, renamed from `priest` - see
         -- Persistence/Database.lua's migratePriestToHeal), same reasoning
@@ -137,26 +139,17 @@ CritLog.Constants = {
         -- Paladin/Resto Druid/Resto Shaman belongs here too.
         heal = { label = "Healer" },
     },
-    -- Class/role rules for death-sound matching, used as the primary check
-    -- (see Core/Filters.lua's isMeleeClass/isAssignedTank/isPriestClass and
-    -- Core/CombatLog.lua's HandleDeath) before falling back to
-    -- CritLogDB.playerGroups. See CHANGELOG.md for the reasoning and known
-    -- trade-offs behind each rule.
+    -- Class rule for Spirit of Redemption only now (see Core/Filters.lua's
+    -- isPriestClass and Core/CombatLog.lua's HandleDeath) - the talent
+    -- itself is Priest-specific, unlike every other death-sound category,
+    -- which is role-based (isAssignedDps/isAssignedTank/isAssignedHealer)
+    -- and needs no class table at all. Used to also hold meleeCapable/
+    -- alwaysMelee for the old class-based DPS guess - removed once that
+    -- became a real role check, see CHANGELOG.md.
     deathClasses = {
         -- Priest maps 1:1 onto WoW's class system, so this is a plain
-        -- UnitClass check — no ambiguity like melee/tank below.
+        -- UnitClass check.
         priest = { "PRIEST" },
-        -- Classes with at least one melee-capable spec in Season of
-        -- Discovery. Hunter is deliberately excluded (functionally a
-        -- ranged class even though it can equip melee weapons); Mage and
-        -- Warlock are never melee. Paladin, Shaman, and Druid are hybrids —
-        -- narrowed further by assigned role in isMeleeClass().
-        meleeCapable = { "WARRIOR", "ROGUE", "PALADIN", "SHAMAN", "DRUID" },
-        -- Subset of meleeCapable with no ranged/caster spec at all -
-        -- Tank/Healer role is still checked for these two in
-        -- isMeleeClass(), just not the meleeCapable/ranged-spec ambiguity
-        -- the other three hybrids have.
-        alwaysMelee = { "WARRIOR", "ROGUE" },
     },
     -- Matched by spell ID first (Season of Discovery, cross-checked against
     -- Wowhead's current Classic database - see CHANGELOG.md), with the
