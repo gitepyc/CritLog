@@ -174,25 +174,32 @@ local function layoutHighscoreList(f)
             row.rankText:Show()
             previous = row.rankText
 
+            -- Colored the same way as the main panel's top-3 summary and
+            -- the TitanPanel tooltip (Core/Records.lua's shared palette) -
+            -- in-game requested. Each column here is its own FontString
+            -- (unlike those two, which build one combined string), so
+            -- `colored()` just wraps that cell's whole text in one color
+            -- instead of needing per-segment wrapping.
+            local Records = CritLog.Records
             if not entry then
-                row.rankText:SetText("No record yet")
+                row.rankText:SetText(Records.colored(Records.NORMAL_COLOR, "No record yet"))
                 row.amountText:Hide()
                 row.abilityText:Hide()
                 row.targetText:Hide()
                 row.deleteButton:Hide()
             else
-                row.rankText:SetText(index..".")
+                row.rankText:SetText(Records.colored(Records.NORMAL_COLOR, index.."."))
 
                 row.amountText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.amount - COLUMN_X.rank, 0)
-                row.amountText:SetText(entry.amount)
+                row.amountText:SetText(Records.colored(Records.amountColor(entry.amount), tostring(entry.amount)))
                 row.amountText:Show()
 
                 row.abilityText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.ability - COLUMN_X.rank, 0)
-                row.abilityText:SetText(entry.name or "-")
+                row.abilityText:SetText(Records.colored(Records.SPELL_COLOR, entry.name or "-"))
                 row.abilityText:Show()
 
                 row.targetText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.target - COLUMN_X.rank, 0)
-                row.targetText:SetText(entry.target)
+                row.targetText:SetText(Records.colored(Records.TARGET_COLOR, entry.target))
                 row.targetText:Show()
 
                 row.deleteButton:SetPoint("TOP", row.rankText, "TOP", 0, 0)
