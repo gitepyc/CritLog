@@ -7,6 +7,12 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc., bolded) - as terse as possible, no prose, no
 rationale. Save the "why" for the commit message/PR, not here.
 
+## 0.9.0.3-dev
+
+- **fix:** Raid Chat Phrases section on Sound Settings was anchored off-panel (labels/Preview buttons ran off the right edge)
+- **fix:** main panel master switch label - "Sounds enabled" instead of "Sound enabled"
+- **feature:** note explaining exactly which raid-leader chat phrases trigger the raid end/wipe sounds
+
 ## 0.9.0.2-dev
 
 - **feature:** all 33 sound files normalized (loudness, sample rate, bitrate) - see `docs/SOUNDS.md` and `scripts/normalize-sounds.sh`
