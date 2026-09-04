@@ -3,13 +3,19 @@
 ## Overview
 
 The catalog contains **33 files**, all in active use, totaling approximately
-**3.0 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
+**2.5 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
 consolidation, random-pick removal, the `feature/legacy-sound-port` batch of
 14 files ported from the original single-file addon); [ROADMAP.md](ROADMAP.md)
 for what's still outstanding — the asset-rights review below is the big one.
 
-Duration and bitrate values come from Windows audio metadata; `n/a` means
-Windows did not expose the value.
+Every file has been loudness-, sample-rate-, and bitrate-normalized (see
+`feature/sound-normalization` in `CHANGELOG.md` and
+`scripts/normalize-sounds.sh`): two-pass EBU R128 loudnorm to -16 LUFS
+integrated / -1.5 dBTP true peak, resampled to 44.1kHz, re-encoded at a
+consistent bitrate per format (mp3 128k CBR, ogg libvorbis q5, wav PCM).
+Filenames/extensions/codec families are unchanged. Duration and bitrate
+values below come from `ffprobe` against the normalized files, not Windows
+metadata as before - no more `n/a` entries.
 
 ## Sounds requested by code
 
@@ -55,39 +61,39 @@ complete trigger conditions.
 
 | File | Duration | Bitrate | Size | Used by |
 | --- | ---: | ---: | ---: | --- |
-| `Angels.mp3` | 5 s | 178 kbps | 121,680 B | healer death |
-| `Angels2.mp3` | n/a | n/a | 161,568 B | Spirit of Redemption |
-| `at_bam_babam.mp3` | 1 s | 128 kbps | 17,553 B | crit/highscore |
-| `Bloodlust.mp3` | 3 s | 128 kbps | 56,134 B | Bloodlust/Heroism |
-| `Bubble.mp3` | 1 s | 128 kbps | 27,305 B | Blessing of Protection |
-| `bye.mp3` | 4 s | 128 kbps | 66,980 B | raid end, first clip |
-| `divineInt.mp3` | 4 s | 128 kbps | 66,486 B | Divine Intervention |
-| `dkRapL.mp3` | n/a | n/a | 41,933 B | Drums of Battle |
-| `end.mp3` | 9 s | 160 kbps | 183,508 B | raid end, second clip |
-| `evo.mp3` | n/a | n/a | 84,018 B | Evocation |
-| `FFX.mp3` | 4 s | 128 kbps | 67,495 B | boss death |
-| `healthstone.mp3` | n/a | n/a | 85,855 B | Warlock Healthstone ritual |
-| `HymnOfHope.mp3` | n/a | n/a | 26,330 B | Hymn of Hope |
-| `Innervate.mp3` | 2 s | 128 kbps | 47,754 B | Innervate |
-| `lottery2.wav` | n/a | n/a | 706,330 B | lottery, first clip |
-| `lottery3.mp3` | n/a | n/a | 29,603 B | lottery, second clip |
-| `Manatide.mp3` | 2 s | 320 kbps | 82,684 B | Mana Tide Totem |
-| `MarioDeath.mp3` | 2 s | 128 kbps | 37,305 B | player death |
-| `Painsup.mp3` | n/a | n/a | 75,996 B | Pain Suppression |
-| `Ready.mp3` | 1 s | 128 kbps | 30,336 B | ready check |
-| `roll1.mp3` | n/a | n/a | 64,711 B | roll result 1 |
-| `roll10.mp3` | n/a | n/a | 116,491 B | roll result 8-10% band |
-| `roll100.mp3` | n/a | n/a | 86,241 B | roll result 100 |
-| `roll5.mp3` | n/a | n/a | 81,633 B | roll result 2-7% band |
-| `roll69.mp3` | n/a | n/a | 81,639 B | roll result 69 |
-| `roll95.mp3` | n/a | n/a | 116,466 B | roll result 92-99% band |
-| `soulstone.mp3` | 1 s | 128 kbps | 26,487 B | Soulstone |
-| `Surprise.mp3` | 5 s | 128 kbps | 83,280 B | Power Infusion |
-| `Table.mp3` | n/a | n/a | 59,488 B | Mage Table |
-| `Tank.mp3` | 1 s | 128 kbps | 31,763 B | tank death |
-| `wilhelm.ogg` | n/a | n/a | 12,524 B | Damage Dealer death |
-| `wipe.mp3` | 10 s | 234 kbps | 298,605 B | wipe chat phrase |
-| `Xtreme.mp3` | 2 s | 128 kbps | 42,214 B | extreme hit (off by default) |
+| `Angels.mp3` | 5 s | 129 kbps | 86,995 B | healer death |
+| `Angels2.mp3` | 7 s | 129 kbps | 108,712 B | Spirit of Redemption |
+| `at_bam_babam.mp3` | 1 s | 134 kbps | 17,597 B | crit/highscore |
+| `Bloodlust.mp3` | 3 s | 130 kbps | 56,133 B | Bloodlust/Heroism |
+| `Bubble.mp3` | 2 s | 134 kbps | 26,467 B | Blessing of Protection |
+| `bye.mp3` | 4 s | 130 kbps | 67,009 B | raid end, first clip |
+| `divineInt.mp3` | 4 s | 129 kbps | 67,357 B | Divine Intervention |
+| `dkRapL.mp3` | 3 s | 131 kbps | 55,828 B | Drums of Battle |
+| `end.mp3` | 9 s | 129 kbps | 146,830 B | raid end, second clip |
+| `evo.mp3` | 4 s | 129 kbps | 67,334 B | Evocation |
+| `FFX.mp3` | 4 s | 130 kbps | 67,922 B | boss death |
+| `healthstone.mp3` | 2 s | 131 kbps | 35,151 B | Warlock Healthstone ritual |
+| `HymnOfHope.mp3` | 2 s | 132 kbps | 25,120 B | Hymn of Hope |
+| `Innervate.mp3` | 3 s | 131 kbps | 47,783 B | Innervate |
+| `lottery2.wav` | 4 s | 1,411 kbps | 705,718 B | lottery, first clip |
+| `lottery3.mp3` | 2 s | 132 kbps | 29,811 B | lottery, second clip |
+| `Manatide.mp3` | 2 s | 132 kbps | 33,154 B | Mana Tide Totem |
+| `MarioDeath.mp3` | 2 s | 131 kbps | 37,334 B | player death |
+| `Painsup.mp3` | 3 s | 131 kbps | 50,709 B | Pain Suppression |
+| `Ready.mp3` | 2 s | 132 kbps | 29,718 B | ready check |
+| `roll1.mp3` | 3 s | 131 kbps | 43,185 B | roll result 1 |
+| `roll10.mp3` | 10 s | 129 kbps | 155,523 B | roll result 8-10% band |
+| `roll100.mp3` | 5 s | 129 kbps | 86,657 B | roll result 100 |
+| `roll5.mp3` | 2 s | 132 kbps | 31,503 B | roll result 2-7% band |
+| `roll69.mp3` | 3 s | 131 kbps | 53,634 B | roll result 69 |
+| `roll95.mp3` | 4 s | 130 kbps | 62,840 B | roll result 92-99% band |
+| `soulstone.mp3` | 2 s | 132 kbps | 26,885 B | Soulstone |
+| `Surprise.mp3` | 5 s | 129 kbps | 83,309 B | Power Infusion |
+| `Table.mp3` | 4 s | 130 kbps | 59,904 B | Mage Table |
+| `Tank.mp3` | 2 s | 131 kbps | 31,807 B | tank death |
+| `wilhelm.ogg` | 1 s | 72 kbps | 10,861 B | Damage Dealer death |
+| `wipe.mp3` | 10 s | 128 kbps | 163,883 B | wipe chat phrase |
+| `Xtreme.mp3` | 3 s | 130 kbps | 43,092 B | extreme hit (off by default) |
 
 ## Required human review
 
@@ -95,7 +101,9 @@ The technical and code-usage inventory is complete. Before cleanup or public
 distribution, every clip still needs a listening and rights review:
 
 - clear content description instead of only a historical filename
-- acceptable loudness and duration in game
+- acceptable loudness and duration in game - the normalization pass above
+  gives every file the same *technical* loudness target, but that's not a
+  substitute for actually listening to each one in game
 - language and potentially offensive or unwanted content
 - source, author, license, and redistribution permission
 - decision to keep, replace, retain for private use only, or remove
