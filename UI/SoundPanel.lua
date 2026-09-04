@@ -126,7 +126,15 @@ local function buildSoundFrame()
     end)
 
     local chatPhraseHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    chatPhraseHeading:SetPoint("TOPLEFT", deathSoundsButton, "BOTTOMLEFT", 0, -16)
+    -- Two separate anchor points, not a single TOPLEFT relative to
+    -- deathSoundsButton: that button sits well right of the panel's left
+    -- margin (it's anchored off auraSoundsButton's RIGHT edge, not the
+    -- panel itself), so chaining straight off it pushed this heading - and
+    -- every previewOnly row's Preview button under it, 340px further right
+    -- again - past the panel's right edge. TOP for vertical chaining, LEFT
+    -- pinned to the panel's own standard column instead.
+    chatPhraseHeading:SetPoint("TOP", deathSoundsButton, "BOTTOM", 0, -16)
+    chatPhraseHeading:SetPoint("LEFT", f, "LEFT", 14, 0)
     chatPhraseHeading:SetText("Raid Chat Phrases")
 
     CritLog.UI.buildToggleRows(f, CHAT_PHRASE_PREVIEWS, chatPhraseHeading)
