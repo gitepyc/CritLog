@@ -42,7 +42,7 @@ local DEATH_CHECKBOXES = {
       hint = "Experimental: assigned Damage Dealer role." },
     { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Experimental: assigned raid Tank role." },
+      hint = "Experimental: assigned Tank role." },
     -- Field renamed HealDetectionMode (was PriestDetectionMode - see
     -- Persistence/Database.lua's migratePriestToHeal) once the live check
     -- stopped being Priest-specific: it now reads the assigned raid
@@ -53,7 +53,7 @@ local DEATH_CHECKBOXES = {
     -- now, no cross-reference needed.
     { field = "HealDetectionMode", label = "Healer death sound", sound = "healDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Experimental: assigned raid Healer role." },
+      hint = "Experimental: assigned Healer role." },
     { field = "BossDetectionMode", label = "Boss death sound", sound = "bossDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Experimental: live classification (worldboss)." },
