@@ -121,6 +121,7 @@ critlog/
 ├── tests/                # How to verify changes — see tests/README.md
 │   └── lint/Dockerfile   # Containerized luacheck (Lua 5.1 + WoW globals)
 ├── scripts/lint.sh        # Convenience wrapper to build and run the lint container
+├── scripts/normalize-sounds.sh # Batch loudness/sample-rate/bitrate normalization for sounds/ (see docs/SOUNDS.md)
 ├── .luacheckrc           # luacheck config; stds.wow lists only the WoW API CritLog calls
 ├── .pkgmeta              # BigWigsMods/packager config, used by release.yml on tag push
 ├── .github/workflows/    # CI (runs against the GitHub push mirror; Gitea has no runner yet)
