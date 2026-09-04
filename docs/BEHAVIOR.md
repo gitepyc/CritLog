@@ -108,33 +108,37 @@ introduces an equivalent rune.
 ## Deaths
 
 The player's own death sound (`PlayerSoundFlag`, `/cl player`) is a plain
-on/off flag, unchanged, long-standing behavior. The other four groups
-(Damage Dealer/Tank/Healer/Boss) each have a **detection mode** instead - there is
-no separate master switch over just these four anymore (there used to be
-one, `DeadSoundFlag`); setting all four modes to `none` is equivalent
+on/off flag, unchanged, long-standing behavior. Boss (`BossSoundFlag`,
+`/cl boss`) is also a plain on/off flag - it went through a detection-mode
+phase and back (see `CHANGELOG.md`) since it never had a name-roster
+fallback to justify one. The remaining three groups (Damage Dealer/Tank/
+Healer) each have a **detection mode** instead - there is no separate
+master switch over just these three anymore (there used to be one,
+`DeadSoundFlag`); setting all three modes to `none` is equivalent
 (`CritLogDB.<Kind>DetectionMode`, a dropdown in the Death Sounds panel,
 one of `CritLog.Constants.detectionModes`). Spirit of Redemption
-(`SpiritSoundFlag`, `/cl spirit`) is a fifth, independent plain on/off flag
-next to these four, not a fifth detection mode - see further below for why.
+(`SpiritSoundFlag`, `/cl spirit`) is another independent plain on/off flag
+next to these, not a detection mode - see further below for why.
 
 | Mode | Meaning |
 | --- | --- |
 | `none` | Sound never plays for this category. |
 | `experimental` | Only the live class/role/classification check counts (see below); the name roster is ignored even if it matches. |
-| `roster` | Only a name in `CritLogDB.playerGroups.<kind>` (or the boss name lists) counts; the live check is ignored even if it matches. |
+| `roster` | Only a name in `CritLogDB.playerGroups.<kind>` counts; the live check is ignored even if it matches. |
 | `both` | Either one counts - the original, still-default behavior. |
 
-`/cl healer`/`dps`/`tank`/`boss` only toggle between `none` and `both`;
-`experimental`/`roster` need the options panel dropdown. The live checks
-are not yet in-game verified for tank/boss/healer specifically (an
-earlier class-based DPS guess's false-positive bug is fixed and
-confirmed) - see [ROADMAP.md](ROADMAP.md).
+`/cl healer`/`dps`/`tank` only toggle between `none` and `both`;
+`experimental`/`roster` need the options panel dropdown. `/cl boss` is a
+plain on/off toggle, not a mode - see above. The live checks are not yet
+in-game verified for tank/boss/healer specifically (an earlier
+class-based DPS guess's false-positive bug is fixed and confirmed) - see
+[ROADMAP.md](ROADMAP.md).
 
 | Dead unit | Live check | Sound |
 | --- | --- | --- |
 | Player | `/cl player` enabled | `MarioDeath.mp3` |
 | Not currently assigned Tank or Healer (`isAssignedDps`) - the real 3-role system's third bucket, any class | `DpsDetectionMode` matches | `wilhelm.ogg` |
-| Live classification `worldboss` (`isClassifiedBoss`) | `BossDetectionMode` matches | `FFX.mp3` |
+| Live classification `worldboss` (`isClassifiedBoss`) | `BossSoundFlag` enabled | `FFX.mp3` |
 | Assigned raid role Tank (`isAssignedTank`) | `TankDetectionMode` matches | `Tank.mp3` |
 | Assigned raid role Healer (`isAssignedHealer`, any class), death NOT preceded by the Spirit of Redemption buff | `HealDetectionMode` matches | `Angels.mp3` |
 | Class `PRIEST` specifically (`isPriestClass`) AND preceded by the Spirit of Redemption buff (spell id `27827`) | `SpiritSoundFlag` enabled - independent of `HealDetectionMode`, see below | `Angels2.mp3` (own asset, restored from the legacy addon - see `CHANGELOG.md`) |
@@ -160,10 +164,10 @@ heuristic). The `"Schnutz"` character no longer has a separate special
 case (removed — see `CHANGELOG.md`); they are simply one more name in
 `playerGroups.dps` like everyone else, and get the regular DPS death
 sound. Boss detection accepts only the `"worldboss"` classification
-(40-man raid bosses, outdoor world bosses, SoD's level-60 raids); the name
-lists remain the only way 5-man end bosses and similarly-ranked NPCs are
-detected (that boss list is still code-only, not editable). The three
-death-sound name rosters (dps/tank/heal, `playerGroups.melee` renamed to
+(40-man raid bosses, outdoor world bosses, SoD's level-60 raids) - there
+is no name-list fallback anymore (removed, see `CHANGELOG.md`), so 5-man
+end bosses and similarly-ranked NPCs don't play a boss death sound at
+all. The three death-sound name rosters (dps/tank/heal, `playerGroups.melee` renamed to
 `playerGroups.dps` and `playerGroups.priest` renamed to
 `playerGroups.heal` - see `Persistence/Database.lua`'s
 `migrateMeleeToDps()`/`migratePriestToHeal()`) are editable per character:
@@ -243,7 +247,7 @@ ported near-verbatim from the legacy addon.
 
 | Function | Status |
 | --- | --- |
-| Boss killing-blow output | Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is either live-classified `worldboss` or its name is in the English or German boss list - same three-way check as the death sound below. |
+| Boss killing-blow output | Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is live-classified `worldboss` - same check as the death sound below, minus the death-only token/group-membership gating. |
 
 ## Stored data
 

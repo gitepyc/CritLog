@@ -24,19 +24,7 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    Classic Era/SoD. Not a gate blocking other work - bugs found during
    verification land on `dev` as they're reported, in parallel with
    feature work below.
-2. Configurable boss name list - `CritLog.Constants.bosses`' name-list
-   fallback (used when live `UnitClassification` doesn't return
-   `"worldboss"`, e.g. 5-man dungeon end bosses) is currently code-only and
-   still the original Burning Crusade roster, matching nothing in Classic
-   Era/SoD. Make it editable per character, the same Add/Remove pattern
-   already used for the dps/tank/heal death-sound rosters
-   (`CritLogDB.playerGroups`, see `UI/RosterPanel.lua`) - players add the
-   names they actually need instead of waiting on curated research. Folds
-   in the old "presets per expansion" idea as an optional extra on top of
-   this, not a separate research-heavy project: once the list is editable,
-   shipping a couple of quick-add preset buttons (SoD/TBC/...) is a small
-   follow-up, not its own effort.
-3. Per-ability crit rate tracking - in-game requested, modeled on
+2. Per-ability crit rate tracking - in-game requested, modeled on
    TitanCritLine's own equivalent feature (verified against their actual
    code, not guessed): `Core/Records.lua`'s `attack[HitType]["Value"] =
    (attack[HitType]["Value"] or 0) + 1` counts every hit, split into a

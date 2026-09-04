@@ -424,13 +424,9 @@ function CritLog:PrintBossKillingBlow(
         return
     end
 
-    -- Name fallback now checks both languages, same as the death-sound
-    -- check below - was English-only, a pre-existing asymmetry with no
-    -- reason behind it (both lists have always existed side by side).
-    if isClassifiedBoss(destGUID)
-        or tContains(self.Constants.bosses.english, destName)
-        or tContains(self.Constants.bosses.german, destName)
-    then
+    -- Classification-only now - the hardcoded name-list fallback (english/
+    -- german) is gone, see Core/Constants.lua's bosses table.
+    if isClassifiedBoss(destGUID) then
         print(sourceName.." killed "..destName)
     end
 end
@@ -501,11 +497,10 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         self:PlaySound(self.Constants.sounds.dpsDeath)
     end
 
-    if matchesMode(
-        CritLogDB.BossDetectionMode,
-        isClassifiedBoss(destGUID),
-        tContains(self.Constants.bosses.english, destName) or tContains(self.Constants.bosses.german, destName)
-    ) then
+    -- Plain flag again, not a detection mode: no roster to fall back to
+    -- (see UI/DeathSoundPanel.lua and Core/Constants.lua's bosses table),
+    -- so live classification is the only signal.
+    if CritLogDB.BossSoundFlag and isClassifiedBoss(destGUID) then
         self:PlaySound(self.Constants.sounds.bossDeath)
     end
 

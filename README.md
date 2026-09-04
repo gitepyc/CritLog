@@ -108,7 +108,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl tank` | Same toggle, for the tank death sound. Experimental: assigned raid Tank role. |
 | `/cl healer` | Same toggle, for the healer death sound. Experimental: assigned raid Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). Excludes a death delayed by Spirit of Redemption - see `/cl spirit`. |
 | `/cl spirit` | Toggles the Spirit of Redemption sound (a Priest's death delayed ~15s by the talent - Priest-only, unlike `/cl healer` above; own sound file, not shared with the plain healer death sound). Independent of `/cl healer` - plain on/off, not a detection mode; there's no roster equivalent for "this death was Spirit-delayed". |
-| `/cl boss` | Same toggle, for the boss death sound. Experimental: `UnitClassification` (`worldboss`). |
+| `/cl boss` | Toggles the boss death sound - plain on/off, not a detection mode: `UnitClassification` (`worldboss`) is the only signal, there's no roster fallback. |
 
 ## Repository layout
 
@@ -175,9 +175,6 @@ configuration file:
 - installation paths and filenames for every requested sound
 - spell IDs for selected abilities and auras, with English/German display
   names kept as a fallback if an ID doesn't match
-- English and German Burning Crusade boss names, used as a fallback for NPCs
-  that live `UnitClassification` doesn't identify as `worldboss` — this list
-  is still code-only, not editable through the panel
 - raid-leader phrases that trigger sounds
 - a nine-level threshold for relevant damage targets
 - defaults for all feature toggles
