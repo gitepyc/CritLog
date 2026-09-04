@@ -9,6 +9,23 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.3](https://github.com/gitepyc/CritLog/tree/0.3.3) (2026-09-04)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.2...0.3.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** move Sound enabled master switch onto main panel
+
+- **feature:** add missing sound previews (raid chat phrases, lottery 2nd clip); normalize all 33 sound files' loudness, sample rate, and bitrate
+
+- **feature:** explain when the raid chat phrase sounds trigger
+
+- **fix:** white-hit new-record sound no longer gated by WhiteHitFlag
+
+- **fix:** Raid Chat Phrases section anchored off panel edge, not the left margin
+
+- **fix:** main panel master switch label - "Sounds enabled" instead of "Sound enabled"
+
+- **tweak:** reorder Sound enabled below level filter, above Sound Settings button
+
 ## [0.3.2](https://github.com/gitepyc/CritLog/tree/0.3.2) (2026-09-03)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.1...0.3.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
