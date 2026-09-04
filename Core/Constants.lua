@@ -152,8 +152,10 @@ CritLog.Constants = {
         -- Warlock are never melee. Paladin, Shaman, and Druid are hybrids —
         -- narrowed further by assigned role in isMeleeClass().
         meleeCapable = { "WARRIOR", "ROGUE", "PALADIN", "SHAMAN", "DRUID" },
-        -- Subset of meleeCapable with no ranged/caster spec at all, so
-        -- assigned role doesn't need to be checked for these two.
+        -- Subset of meleeCapable with no ranged/caster spec at all -
+        -- Tank/Healer role is still checked for these two in
+        -- isMeleeClass(), just not the meleeCapable/ranged-spec ambiguity
+        -- the other three hybrids have.
         alwaysMelee = { "WARRIOR", "ROGUE" },
     },
     -- Matched by spell ID first (Season of Discovery, cross-checked against
