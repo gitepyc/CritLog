@@ -7,6 +7,10 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 (`feature`/`fix`/etc., bolded) - as terse as possible, no prose, no
 rationale. Save the "why" for the commit message/PR, not here.
 
+## 0.9.0.4-dev
+
+- **fix:** roll10 sound trimmed to its first 2.5s (was 9.7s, far longer than every other roll sound)
+
 ## 0.9.0.3-dev
 
 - **fix:** Raid Chat Phrases section on Sound Settings was anchored off-panel (labels/Preview buttons ran off the right edge)
