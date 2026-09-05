@@ -113,6 +113,17 @@ function CritLog.UI.createPreviewButton(parent, soundKey, width)
     return button
 end
 
+-- Fixed x-offset (from a checkbox/dropdown row's own left edge) for the
+-- shared Preview-button column used throughout buildToggleRows below, and
+-- by SoundPanel.lua's own "Roll Sounds..." button which lines up with it.
+-- Exposed here (not a private local) so panels needing extra width for
+-- that column (e.g. a wider-than-Preview button sharing it) can compute
+-- their own minimum safe width from it instead of duplicating the number.
+-- Lowered from 340 to 300 (in-game requested smaller panels overall) -
+-- still comfortably past every current row label's estimated width, not
+-- pixel-verified in-game.
+CritLog.UI.PREVIEW_COLUMN_X = 300
+
 -- Every checkbox created by buildToggleRows across all panels, keyed by
 -- CritLogDB field name - RefreshOptionsPanel below re-syncs all of them on
 -- every panel OnShow, regardless of which panel actually owns a given row.
@@ -226,10 +237,10 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     label:SetText(entry.label)
 
     if entry.sound then
-        -- 340 relative to the checkbox rows' own baseline, same column as
-        -- their Preview buttons - but this dropdown sits 16px left of that
-        -- baseline (see the -16 nudge above), so +16 on top of 340 lands
-        -- back in the same column instead of 16px short of it. Labels here
+        -- PREVIEW_COLUMN_X relative to the checkbox rows' own baseline, same
+        -- column as their Preview buttons - but this dropdown sits 16px left
+        -- of that baseline (see the -16 nudge above), so +16 on top of it
+        -- lands back in the same column instead of 16px short of it. Labels here
         -- are kept close in length to each other (see the DPS/"Damage
         -- Dealer" comment in UI/SoundPanel.lua) specifically so this fixed
         -- column doesn't run into any of them - it did once, when one
@@ -237,7 +248,7 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
         -- reported/screenshotted, fixed by shortening the label instead of
         -- abandoning the shared column).
         local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
-        previewButton:SetPoint("LEFT", dropdown, "LEFT", 340 + 16, 0)
+        previewButton:SetPoint("LEFT", dropdown, "LEFT", CritLog.UI.PREVIEW_COLUMN_X + 16, 0)
         -- Raised above the dropdown explicitly - the dropdown's own
         -- expanded hit rect (SetHitRectInsets below) reaches right up to
         -- x=450 from its own left edge, which fully covers this button
@@ -258,11 +269,11 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     -- and a FontString that's never been drawn yet reliably reports a
     -- width of 0, which silently shrank this back down to a few px past
     -- the dropdown itself (in-game reported: tooltip never appeared at
-    -- all). 340 matches the fixed Preview-button column used everywhere
-    -- else in this file, comfortably past every label in use. Same fix
+    -- all). PREVIEW_COLUMN_X matches the fixed Preview-button column used
+    -- everywhere else in this file, comfortably past every label in use. Same fix
     -- TitanCritLine's settings panel uses (a flat XML HitRectInsets, not
     -- a computed one).
-    dropdown:SetHitRectInsets(0, -340, 0, 0)
+    dropdown:SetHitRectInsets(0, -CritLog.UI.PREVIEW_COLUMN_X, 0, 0)
 
     return dropdown
 end
@@ -407,7 +418,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             label:SetText(entry.label)
 
             local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
-            previewButton:SetPoint("LEFT", label, "LEFT", 340, 0)
+            previewButton:SetPoint("LEFT", label, "LEFT", CritLog.UI.PREVIEW_COLUMN_X, 0)
 
             previous = label
             previousXOffset = 0
@@ -437,7 +448,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
                 -- rather than to the label, so button position doesn't
                 -- depend on how long a given label happens to be.
                 local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
-                previewButton:SetPoint("LEFT", check, "LEFT", 340 - indent, 0)
+                previewButton:SetPoint("LEFT", check, "LEFT", CritLog.UI.PREVIEW_COLUMN_X - indent, 0)
                 -- Raised above the checkbox explicitly - same fix as
                 -- createDropdownRow's identical comment above, for the
                 -- same reason: the checkbox's own expanded hit rect
@@ -461,7 +472,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             -- comment above for why a computed width silently broke this
             -- entirely (checkboxes are built while the panel is still
             -- hidden, so the label's width reads as 0 at this point).
-            check:SetHitRectInsets(0, -340, 0, 0)
+            check:SetHitRectInsets(0, -CritLog.UI.PREVIEW_COLUMN_X, 0, 0)
 
             previous = check
             previousXOffset = -indent

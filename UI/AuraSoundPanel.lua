@@ -52,14 +52,13 @@ local AURA_CHECKBOXES_RIGHT = {
 local auraSoundFrame
 
 local function buildAuraSoundFrame()
-    -- Wide enough for two columns, each needing the same ~424px a single
-    -- column row does (checkbox + label + the Preview button's fixed
-    -- 340px-from-checkbox column - see UI/Shared.lua's buildToggleRows).
-    -- Tall enough for the heading, the note row, and the longer column (7
-    -- rows; hints are now a hover tooltip, not a line underneath each row).
-    -- Not pixel-verified in-game yet - see docs/ROADMAP.md, visual polish
-    -- is a follow-up.
-    local f = CritLog.UI.createPanelFrame("CritLogAuraSoundFrame", "CritLog Aura Sounds", 920, 460)
+    -- Wide enough for two columns, each needing ~384px (checkbox + label +
+    -- the Preview button's fixed PREVIEW_COLUMN_X(300)-from-checkbox
+    -- column - see UI/Shared.lua's buildToggleRows). Tall enough for the
+    -- heading, the note row, and the longer column (7 rows; hints are now
+    -- a hover tooltip, not a line underneath each row). Not pixel-verified
+    -- in-game yet - see docs/ROADMAP.md, visual polish is a follow-up.
+    local f = CritLog.UI.createPanelFrame("CritLogAuraSoundFrame", "CritLog Aura Sounds", 820, 400)
     -- Offset from center so it doesn't perfectly overlap the main panel or
     -- Sound Settings when several are open at once; a one-time anchor, not
     -- a continuous one, so dragging one doesn't drag the others.
@@ -75,17 +74,17 @@ local function buildAuraSoundFrame()
 
     -- Two independent anchor points at the same Y, one at the panel's left
     -- margin (matching every other panel's row indent) and one far enough
-    -- right to clear the left column's Preview buttons (checkbox + 340px +
-    -- button width, see the width comment above) - buildToggleRows anchors
-    -- each column's own rows relative to its own start anchor, so the two
-    -- chains never interact.
+    -- right to clear the left column's Preview buttons (checkbox +
+    -- PREVIEW_COLUMN_X + button width, see the width comment above) -
+    -- buildToggleRows anchors each column's own rows relative to its own
+    -- start anchor, so the two chains never interact.
     local colLeftAnchor = CreateFrame("Frame", nil, f)
     colLeftAnchor:SetSize(1, 1)
     colLeftAnchor:SetPoint("TOPLEFT", noteRow, "BOTTOMLEFT", 0, -8)
 
     local colRightAnchor = CreateFrame("Frame", nil, f)
     colRightAnchor:SetSize(1, 1)
-    colRightAnchor:SetPoint("TOPLEFT", noteRow, "BOTTOMLEFT", 446, -8)
+    colRightAnchor:SetPoint("TOPLEFT", noteRow, "BOTTOMLEFT", 400, -8)
 
     CritLog.UI.buildToggleRows(f, AURA_CHECKBOXES_LEFT, colLeftAnchor)
     CritLog.UI.buildToggleRows(f, AURA_CHECKBOXES_RIGHT, colRightAnchor)
