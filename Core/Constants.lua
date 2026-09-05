@@ -259,5 +259,5 @@ CritLog.Constants = {
         { cmd = "/cl spirit", desc = "Spirit of Redemption sound" },
         { cmd = "/cl healer/dps/tank/boss", desc = "death sound None/Both (options panel for Experimental/Roster only)" },
     },
-    helpAbout = "CritLog by Epyc, 2026 (original addon by Kîtten aka Chabo)",
+    helpAbout = "CritLog\nby Epyc, 2026 (original addon by Kîtten aka Chabo)",
 }

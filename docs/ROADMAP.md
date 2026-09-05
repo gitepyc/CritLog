@@ -62,8 +62,13 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    within some short window actually posts, or a StaticPopup
    confirmation like the highscore Reset buttons already use via
    `CritLog.UI.showConfirmation`) rather than firing unconditionally on
-   one click. Message styling/text layout also still open regardless of
-   which trigger UI wins.
+   one click. Also floated as a second, additive trigger option (not
+   instead of the TitanPanel idea, alongside it): a dedicated post button
+   shown directly on the Highscore List popup (`UI/MainPanel.lua`'s
+   `layoutHighscoreList`), next to/near the existing per-entry delete
+   buttons - would need its own decision on posting just the visible
+   entry vs. the whole list. Message styling/text layout also still open
+   regardless of which trigger UI(s) win.
 
 ## Parked
 
