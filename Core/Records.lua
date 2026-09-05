@@ -49,15 +49,24 @@ local function colored(color, text)
 end
 CritLog.Records.colored = colored
 
--- Amount colored by a rough "hotter = bigger" heat scale (green -> yellow
--- -> orange -> red). Thresholds are a reasonable guess, not measured
--- against real data.
+-- Amount colored by a rough "hotter = bigger" heat scale (green -> yellow ->
+-- amber -> orange -> orange-red -> red -> dark red). Thresholds are a
+-- reasonable guess, not measured against real data. The top tier reuses
+-- 9000 - the same "extreme hit" threshold XtremeSoundFlag already sounds
+-- on - so the color scale's hottest step lines up with that existing
+-- concept instead of being an arbitrary new number.
 function CritLog.Records.amountColor(amount)
-    if amount >= 8000 then
+    if amount >= 9000 then
+        return "|cffcc0000" -- dark red
+    elseif amount >= 7000 then
         return "|cffff4040" -- red
-    elseif amount >= 4000 then
+    elseif amount >= 6000 then
+        return "|cffff5020" -- orange-red
+    elseif amount >= 4500 then
         return "|cffff8000" -- orange
-    elseif amount >= 2000 then
+    elseif amount >= 3000 then
+        return "|cffffbf00" -- amber
+    elseif amount >= 1500 then
         return "|cffffff00" -- yellow
     end
     return "|cff40ff40" -- green
