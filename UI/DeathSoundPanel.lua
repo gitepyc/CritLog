@@ -14,7 +14,7 @@ local DEATH_CHECKBOXES = {
     -- name-list equivalent to fall back to. Placed right after Player
     -- death and before the four detection-mode dropdowns, rather than at
     -- the very end, since it's conceptually closer to those two plain
-    -- flags than to the Experimental/Roster/Both system below it.
+    -- flags than to the Role/Roster/Both system below it.
     { field = "SpiritSoundFlag", label = "Spirit of Redemption", sound = "spiritOfRedemption",
       hint = "A Priest's death delayed ~15s by the talent (own sound file)." },
     -- These three (unlike PlayerSoundFlag/SpiritSoundFlag above, and
@@ -24,8 +24,8 @@ local DEATH_CHECKBOXES = {
     -- a checkbox. No shared master switch anymore (there used to be one,
     -- DeadSoundFlag) - setting all three to "None" is equivalent, and the
     -- dropdown is already the one place that controls all of this.
-    -- "Experimental" isn't yet in-game verified for tank/heal specifically
-    -- (an earlier class-based DPS guess's false-positive bug is fixed and
+    -- "Role" isn't yet in-game verified for tank/heal specifically (an
+    -- earlier class-based DPS guess's false-positive bug is fixed and
     -- confirmed); "Roster" and "Both" (the original default) aren't
     -- affected by that.
     --
@@ -44,10 +44,10 @@ local DEATH_CHECKBOXES = {
     -- sitting wherever its own label happens to end.
     { field = "DpsDetectionMode", label = "DPS death sound", sound = "dpsDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Experimental: assigned Damage Dealer role." },
+      hint = "Role: assigned Damage Dealer role." },
     { field = "TankDetectionMode", label = "Tank death sound", sound = "tankDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Experimental: assigned Tank role." },
+      hint = "Role: assigned Tank role." },
     -- Field renamed HealDetectionMode (was PriestDetectionMode - see
     -- Persistence/Database.lua's migratePriestToHeal) once the live check
     -- stopped being Priest-specific: it now reads the assigned raid
@@ -58,18 +58,17 @@ local DEATH_CHECKBOXES = {
     -- now, no cross-reference needed.
     { field = "HealDetectionMode", label = "Healer death sound", sound = "healDeath",
       options = CritLog.Constants.detectionModes,
-      hint = "Experimental: assigned Healer role." },
-    -- The None/Experimental/Roster/Both explanation applies to the three
+      hint = "Role: assigned Healer role." },
+    -- The None/Role/Roster/Both explanation applies to the three
     -- dropdowns above only - a note row after them, not before, same
-    -- reasoning as the Sound Settings panel's dropdown note. "Experimental"
-    -- in each row's own hint above ties back to this same word, not a
-    -- separate "live check" concept.
-    { note = "None = nothing\nExperimental = live check only\nRoster = name list only\nBoth = Experimental + Roster" },
+    -- reasoning as the Sound Settings panel's dropdown note. "Role" in
+    -- each row's own hint above ties back to this same word.
+    { note = "None = never plays\nRole = assigned role only\nRoster = saved name list only\nBoth = either matches" },
     -- Plain checkbox again, not a detection-mode dropdown: the hardcoded
     -- boss name list (Core/Constants.lua's bosses.english/german) is gone
     -- - it was still the original Burning Crusade roster and matched
     -- nothing in Classic Era/SoD, so "Roster"/"Both" here never actually
-    -- did anything beyond what "Experimental" already did alone. Live
+    -- did anything beyond what "Role" already did alone. Live
     -- `worldboss` classification is now the only signal, on or off.
     { field = "BossSoundFlag", label = "Boss death sound", sound = "bossDeath",
       hint = "Plays on a live worldboss classification (40-man raid bosses, outdoor world bosses, SoD's level-60 raids)." },

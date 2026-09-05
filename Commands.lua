@@ -7,15 +7,16 @@ local function toggle(field, enabledMessage, disabledMessage)
     end
 end
 
--- DPS/tank/heal/boss death sounds are a 4-way mode now (see
--- Core/Constants.lua's detectionModes), not a plain flag - this chat
--- command still only flips between off ("none") and the original default
--- ("both", live check with roster fallback). For "experimental"- or
--- "roster"-only, use `/cl options` -> Sound Settings -> Death Sounds.
+-- DPS/tank/heal death sounds are a 4-way mode now (see Core/Constants.lua's
+-- detectionModes), not a plain flag - this chat command still only flips
+-- between off ("none") and the original default ("both", live check with
+-- roster fallback). For "experimental"- or "roster"-only, use
+-- `/cl options` -> Sound Settings -> Death Sounds. Boss isn't part of this
+-- system - see CHANGELOG.md.
 local function toggleDetectionMode(field, label)
     if CritLogDB[field] == "none" then
         CritLogDB[field] = "both"
-        print("CritLog "..label.." On (both) - see /cl options for Experimental/Roster only")
+        print("CritLog "..label.." On (both) - see /cl options for Role/Roster only")
     else
         CritLogDB[field] = "none"
         print("CritLog "..label.." Off (none)")

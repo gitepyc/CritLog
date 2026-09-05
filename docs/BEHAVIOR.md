@@ -123,7 +123,7 @@ next to these, not a detection mode - see further below for why.
 | Mode | Meaning |
 | --- | --- |
 | `none` | Sound never plays for this category. |
-| `experimental` | Only the live class/role/classification check counts (see below); the name roster is ignored even if it matches. |
+| `experimental` (shown as "Role" in the options panel) | Only the live assigned-role check counts (see below); the name roster is ignored even if it matches. |
 | `roster` | Only a name in `CritLogDB.playerGroups.<kind>` counts; the live check is ignored even if it matches. |
 | `both` | Either one counts - the original, still-default behavior. |
 
