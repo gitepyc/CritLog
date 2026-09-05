@@ -478,14 +478,15 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     end
 
     -- Live unit token for the dying player, used by the class/role checks
-    -- below. findUnitToken first (cheap: covers the common case where the
-    -- dying player is your current target or nameplated), then
-    -- findGroupUnitToken as a fallback - a raid member is often neither
-    -- (see its own comment). May still end up nil (e.g. someone who left
-    -- the group before dying) — every check below falls back to the
-    -- legacy name roster when that happens, same as when the token
-    -- resolves but the class/role check itself doesn't match.
-    local token = findUnitToken(destGUID) or findGroupUnitToken(destGUID)
+    -- below. Straight to findGroupUnitToken, not findUnitToken - the
+    -- dying unit is by definition a group member here (isGroupMember below
+    -- gates on exactly that), so party/raid roster tokens are the reliable
+    -- standard path, not a fallback after target/nameplate. May still end
+    -- up nil (e.g. someone who left the group before dying) — every check
+    -- below falls back to the legacy name roster when that happens, same
+    -- as when the token resolves but the class/role check itself doesn't
+    -- match.
+    local token = findGroupUnitToken(destGUID)
 
     -- Discard a resolved token unless it's actually a player: UnitClass()/
     -- UnitGroupRolesAssigned() aren't guaranteed nil for NPCs (some enemy
