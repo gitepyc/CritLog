@@ -2,7 +2,7 @@
 ## Title: CritLog
 ## Note: #CrimeTime #420 #gtrkt
 ## Author: Epyc (original by Kîtten aka Chabo)
-## Version: 0.9.1-dev
+## Version: 0.9.1.1-dev
 ## IconTexture: Interface\AddOns\CritLog\media\icon.png
 ## OptionalDeps: Titan
 
