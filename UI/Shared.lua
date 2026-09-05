@@ -434,9 +434,18 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             -- Hook rather than replace OnClick, so the template's default
             -- click sound still plays; GetChecked() returns 1/nil on some
             -- clients, so normalize to a real boolean before writing it
-            -- back to the DB.
+            -- back to the DB. RefreshOptionsPanel() afterward so a toggle
+            -- with a visible effect elsewhere (e.g. DebugFlag showing/
+            -- hiding and resizing the Sound Settings panel's Raid Chat
+            -- Phrases section) applies immediately instead of only on the
+            -- next time a panel is opened - in-game reported having to
+            -- close and reopen Sound Settings to see it. Harmless for
+            -- every other checkbox: the registered refresh callbacks just
+            -- re-read CritLogDB and re-apply the same state, a cheap no-op
+            -- when nothing relevant changed.
             check:HookScript("OnClick", function(self)
                 CritLogDB[entry.field] = self:GetChecked() and true or false
+                CritLog:RefreshOptionsPanel()
             end)
             checkboxesByField[entry.field] = check
 
