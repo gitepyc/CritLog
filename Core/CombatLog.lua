@@ -43,7 +43,20 @@ end
 -- us a GUID, but UnitLevel/UnitClassification need an actual unit token
 -- (target, mouseover, a nameplate, ...) - there's no UnitLevel(GUID). Checks
 -- the current target first (cheap, no allocation), then falls back to
--- scanning visible nameplates.
+-- scanning visible nameplates, then to party/raid roster tokens.
+--
+-- In-game reported: dps/tank/heal death-sound live role detection seemed
+-- to only fire for party members, not raid members. Root cause: this
+-- function only ever checked "target" and visible nameplates - both far
+-- more likely to be true for a party member (a handful of people, usually
+-- nearby) than for a raid member (up to 40 people, often spread out well
+-- outside nameplate range and not your current target when they die).
+-- party1-4/raid1-40 tokens resolve by roster membership regardless of
+-- range or visibility, so checking them directly fixes this for any
+-- group size. Harmless for the other callers of this function (boss
+-- classification, the damage-crit level filter) - those GUIDs belong to
+-- an enemy NPC, which will never match a party/raid token, so this is
+-- just a few extra no-op checks for them, not a behavior change.
 local function findUnitToken(guid)
     if UnitGUID("target") == guid then
         return "target"
@@ -55,6 +68,24 @@ local function findUnitToken(guid)
             if token and UnitGUID(token) == guid then
                 return token
             end
+        end
+    end
+
+    if UnitGUID("player") == guid then
+        return "player"
+    end
+
+    for i = 1, 4 do
+        local token = "party" .. i
+        if UnitGUID(token) == guid then
+            return token
+        end
+    end
+
+    for i = 1, 40 do
+        local token = "raid" .. i
+        if UnitGUID(token) == guid then
+            return token
         end
     end
 
