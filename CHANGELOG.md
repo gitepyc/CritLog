@@ -9,6 +9,13 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.5.2](https://github.com/gitepyc/CritLog/tree/0.3.5.2) (2026-09-05)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.5.1...0.3.5.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **refactor:** consolidate lottery sound into a single file
+
+- **refactor:** consolidate raid-end sound into a single file
+
 ## [0.3.5.1](https://github.com/gitepyc/CritLog/tree/0.3.5.1) (2026-09-05)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.5...0.3.5.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
