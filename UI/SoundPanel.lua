@@ -27,14 +27,8 @@ local SOUND_CHECKBOXES_TOP = {
       hint = "Extra sound when a hit deals over 9000 damage." },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },
-    { field = "GambleSoundFlag", label = "Lottery sound", sound = "lotteryFirst",
+    { field = "GambleSoundFlag", label = "Lottery sound", sound = "lottery",
       hint = "A CrossGambling lottery announcement in raid chat." },
-    -- The trigger plays lotteryFirst then lotterySecond back to back (see
-    -- ChatTriggers.lua) - the checkbox row above only ever previewed the
-    -- first clip, the second had no preview anywhere. Same previewOnly
-    -- pattern as the roll/aura sub-panels, just inline here since it's a
-    -- single extra row, not enough to warrant its own panel.
-    { label = "Lottery (second clip)", sound = "lotterySecond", previewOnly = true },
     -- No exact count in the hint (matches the AuraSoundFlag hint below -
     -- in-game requested the same treatment here), and "on the side" not
     -- "below" - the Roll Sounds button sits on this same row now (see

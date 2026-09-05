@@ -2,11 +2,12 @@
 
 ## Overview
 
-The catalog contains **33 files**, all in active use, totaling approximately
-**2.5 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
+The catalog contains **32 files**, all in active use, totaling approximately
+**1.9 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
 consolidation, random-pick removal, the `feature/legacy-sound-port` batch of
-14 files ported from the original single-file addon); [ROADMAP.md](ROADMAP.md)
-for what's still outstanding — the asset-rights review below is the big one.
+14 files ported from the original single-file addon, the lottery
+two-clip-to-one-file consolidation); [ROADMAP.md](ROADMAP.md) for what's
+still outstanding — the asset-rights review below is the big one.
 
 Every file has been loudness-, sample-rate-, and bitrate-normalized (see
 `feature/sound-normalization` in `CHANGELOG.md` and
@@ -36,10 +37,10 @@ metadata as before - no more `n/a` entries.
 | Tank death | `Tank.mp3` | Live assigned Tank role and/or tank roster, per detection mode |
 | Healer death | `Angels.mp3` | Live assigned Healer role (any class) and/or Healer roster, per detection mode; excludes a Spirit-of-Redemption-delayed death |
 | Spirit of Redemption | `Angels2.mp3` (own asset, restored from the legacy addon - see `CHANGELOG.md`) | A Priest's death (class-specific, not role-based) delayed by the talent; independent on/off toggle, not a detection mode |
-| Boss death | `FFX.mp3` | Live `worldboss` classification and/or boss name list, per detection mode |
+| Boss death | `FFX.mp3` | Live `worldboss` classification |
 | Raid end | `bye.mp3`, then `end.mp3` | Matching raid-leader message, both immediately |
 | Wipe | `wipe.mp3` | Matching raid-leader message |
-| Lottery | `lottery2.wav`, then `lottery3.mp3` | Matching CrossGambling message in raid chat, both immediately |
+| Lottery | `lottery.mp3` | Matching CrossGambling message in raid chat |
 | Roll (exact 1) | `roll1.mp3` | `/roll` result is the lowest possible value on a 1-100 roll |
 | Roll (low band) | `roll5.mp3` | `/roll` result in the roughly-2-7% band on a 1-100 roll |
 | Roll (10 band) | `roll10.mp3` | `/roll` result in the roughly-8-10% band on a 1-100 roll |
@@ -75,8 +76,7 @@ complete trigger conditions.
 | `healthstone.mp3` | 2 s | 131 kbps | 35,151 B | Warlock Healthstone ritual |
 | `HymnOfHope.mp3` | 2 s | 132 kbps | 25,120 B | Hymn of Hope |
 | `Innervate.mp3` | 3 s | 131 kbps | 47,783 B | Innervate |
-| `lottery2.wav` | 4 s | 1,411 kbps | 705,718 B | lottery, first clip |
-| `lottery3.mp3` | 2 s | 132 kbps | 29,811 B | lottery, second clip |
+| `lottery.mp3` | 4 s | 130 kbps | 62,781 B | lottery (consolidated, see `CHANGELOG.md`) |
 | `Manatide.mp3` | 2 s | 132 kbps | 33,154 B | Mana Tide Totem |
 | `MarioDeath.mp3` | 2 s | 131 kbps | 37,334 B | player death |
 | `Painsup.mp3` | 3 s | 131 kbps | 50,709 B | Pain Suppression |

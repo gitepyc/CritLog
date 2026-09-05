@@ -60,8 +60,7 @@ CritLog.Constants = {
         raidEndBye = "bye.mp3",
         raidEndFinal = "end.mp3",
         wipe = "wipe.mp3",
-        lotteryFirst = "lottery2.wav",
-        lotterySecond = "lottery3.mp3",
+        lottery = "lottery.mp3",
         -- roll1/69/100 hit exact values; roll5/roll10/roll95 are percentage
         -- bands - see Filters.classifyRoll for the exact thresholds.
         roll1 = "roll1.mp3",
@@ -259,5 +258,5 @@ CritLog.Constants = {
         { cmd = "/cl spirit", desc = "Spirit of Redemption sound" },
         { cmd = "/cl healer/dps/tank/boss", desc = "death sound None/Both (options panel for Experimental/Roster only)" },
     },
-    helpAbout = "CritLog by Epyc, 2026 (original addon by Kîtten aka Chabo)",
+    helpAbout = "CritLog\nby Epyc, 2026 (original addon by Kîtten aka Chabo)",
 }
