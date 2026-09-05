@@ -58,9 +58,7 @@ local function buildAuraSoundFrame()
     -- heading, the note row, and the longer column (7 rows; hints are now
     -- a hover tooltip, not a line underneath each row). Narrowed further
     -- each round (920->820->790->710, colRightAnchor 446->400->390->350) -
-    -- in-game screenshotted repeatedly: still real slack on the right
-    -- margin and in the column gutter each time. Not pixel-verified
-    -- in-game yet - see docs/ROADMAP.md, visual polish is a follow-up.
+    -- in-game confirmed good at this size.
     local f = CritLog.UI.createPanelFrame("CritLogAuraSoundFrame", "CritLog Aura Sounds", 710, 400)
     -- Offset from center so it doesn't perfectly overlap the main panel or
     -- Sound Settings when several are open at once; a one-time anchor, not

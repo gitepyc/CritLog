@@ -58,8 +58,7 @@ local function buildHelpFrame()
     -- (descText/colRightAnchor shrunk to match) - but the second pass's
     -- widescreen 720x530 shape read wrong in-game ("doesn't fit"), so this
     -- round narrows further (640) while going back taller (640) instead of
-    -- shrinking both dimensions - a real reduction each time, but still
-    -- just an estimate, not pixel-verified in-game.
+    -- shrinking both dimensions - in-game confirmed good at 640x640.
     local f = CritLog.UI.createPanelFrame("CritLogHelpFrame", "CritLog Help", 640, 640)
     f:SetPoint("CENTER")
 

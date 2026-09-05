@@ -194,14 +194,16 @@ category), not just a fallback for the live class/role check anymore.
 
 ## Known technical issues and risks
 
-The options panel (including Escape-key behavior) and roster editing are
-now in-game confirmed. Still not in-game verified: class/role/
-classification-based death-sound detection for tank and boss specifically
-(an earlier class-based DPS guess's false-positive bug is fixed and confirmed), spell-ID aura matching
-(all fall back to the old name-based matching when the live check doesn't
-resolve), and Spirit of Redemption detection. No CurseForge/Wago project
-configured yet - releases only reach GitHub for now. Audio-file rights are
-undocumented and must be reviewed before public distribution.
+The options panel (including Escape-key behavior), roster editing, and
+the live DPS/Tank/Healer role-based death-sound detection are now
+in-game confirmed for party members (an earlier class-based DPS guess's
+false-positive bug is fixed and confirmed too). Still open: the same
+detection for raid members specifically (a fix has landed, pending a
+real raid test), spell-ID aura matching (all fall back to the old
+name-based matching when the live check doesn't resolve), and Spirit of
+Redemption detection. No CurseForge/Wago project configured yet -
+releases only reach GitHub for now. Audio-file rights are undocumented
+and must be reviewed before public distribution.
 Full prioritized list: [Roadmap](docs/ROADMAP.md).
 
 ## Development

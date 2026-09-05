@@ -34,10 +34,11 @@ local DEATH_CHECKBOXES = {
     -- a checkbox. No shared master switch anymore (there used to be one,
     -- DeadSoundFlag) - setting all three to "None" is equivalent, and the
     -- dropdown is already the one place that controls all of this.
-    -- "Role" isn't yet in-game verified for tank/heal specifically (an
-    -- earlier class-based DPS guess's false-positive bug is fixed and
-    -- confirmed); "Roster" and "Both" (the original default) aren't
-    -- affected by that.
+    -- "Role" confirmed in-game for tank/heal specifically (an earlier
+    -- class-based DPS guess's false-positive bug is fixed and confirmed
+    -- too); "Roster" and "Both" (the original default) aren't affected by
+    -- either. Confirmed for party members - raid members specifically
+    -- still pending a real raid test (see findGroupUnitToken above).
     --
     -- Order matches UI/RosterPanel.lua's ROSTER_ORDER (dps, tank, heal).
     --
@@ -76,9 +77,8 @@ local function buildDeathSoundFrame()
     -- Tall enough for the heading, all 7 rows (PlayerSoundFlag,
     -- SpiritSoundFlag, BossSoundFlag, the 3 taller dropdown rows, and the
     -- note; hints are now a hover tooltip, not a line underneath each row),
-    -- and the Roster
-    -- Settings button below them - not pixel-verified in-game yet, see
-    -- docs/ROADMAP.md.
+    -- and the Roster Settings button below them - in-game confirmed good
+    -- at this size.
     -- Height cut further (490->390, in-game screenshotted: still a lot of
     -- empty space below the Roster Settings button down to Close), then
     -- bumped back up a bit (390->420, in-game requested "a tick longer

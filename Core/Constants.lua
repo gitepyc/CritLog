@@ -262,11 +262,11 @@ CritLog.Constants = {
     -- UI/HelpPanel.lua renders these as two separate FontStrings so the
     -- subtitle can use a smaller font than the title (in-game requested);
     -- Commands.lua's `/cl help` just joins them with a blank line, chat
-    -- has no font-size concept anyway. "©" (in-game requested) - not
-    -- pixel-verified: WoW's bundled Classic Era fonts aren't guaranteed to
-    -- have this glyph, same risk noted for the roster panel's OK-button
-    -- Unicode checkmark (see UI/RosterPanel.lua) - could render as a tofu
-    -- box, only a real client can confirm.
+    -- has no font-size concept anyway. "©" in-game confirmed to render
+    -- fine (not a given - WoW's bundled Classic Era fonts aren't
+    -- guaranteed to have every Unicode glyph, which is why the roster
+    -- panel's OK button deliberately stuck with plain "OK" instead of a
+    -- checkmark glyph, see UI/RosterPanel.lua).
     helpAboutTitle = "CritLog",
     helpAboutSubtitle = "© by Epyc, 2026\n(original addon by Kîtten aka Chabo)",
 }

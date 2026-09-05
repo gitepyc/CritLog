@@ -124,9 +124,10 @@ function CritLog:InitTitanPanelButton()
         -- Reuses the existing Blizzard-AddOns-list icon (media/icon.png,
         -- wired up via CritLog.toc's ## IconTexture) rather than a second
         -- image asset. It's a 256x256 comic "CRIT LOG" burst; iconWidth
-        -- below scales it down to a normal Titan button icon (16px), but
-        -- that scaling hasn't been in-game confirmed to still read clearly
-        -- at that size - see docs/ROADMAP.md.
+        -- below scales it down to a normal Titan button icon (16px). In-game
+        -- confirmed: not very legible at that size, but accepted as-is
+        -- ("was ist das schon in der Größe") - not worth a dedicated
+        -- smaller icon asset for this.
         icon = "Interface\\AddOns\\CritLog\\media\\icon.png",
         iconWidth = 16,
         controlVariables = {

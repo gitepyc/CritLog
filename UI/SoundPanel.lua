@@ -50,7 +50,7 @@ local SOUND_CHECKBOXES_BOTTOM = {
 -- `/cl debug` is on - see buildSoundFrame's chatPhraseFrame below - so
 -- it's not discoverable through the normal options UI either.
 local CHAT_PHRASE_PREVIEWS = {
-    { note = "Fires when the raid leader says \"raid end\"/\"raid ende\" or \"wipe\"/\"shit show\" in raid chat." },
+    { note = "Fires when the raid leader says \"raid end\"/\"raid ende\"\nor \"wipe\"/\"shit show\" in raid chat." },
     { label = "Raid end", sound = "raidEnd", previewOnly = true },
     { label = "Wipe", sound = "wipe", previewOnly = true },
 }
@@ -64,16 +64,20 @@ local soundFrame
 -- sizes instead of measuring real content height/width at runtime
 -- (GetHeight()/GetWidth() on freshly-created FontStrings/rows unreliably
 -- report 0 before the panel has ever been shown - see UI/Shared.lua's
--- SetHitRectInsets comments for the same class of problem) - all
--- estimates, not pixel-verified in-game. In-game screenshotted: the first
--- non-debug height (400) was too small, Close crowded right up against
--- the Aura/Death Sounds button row; bumped back up. Width also grows in
--- debug mode now (not just height) - the Raid Chat Phrases rows read too
--- cramped against the right edge otherwise.
+-- SetHitRectInsets comments for the same class of problem). In-game
+-- screenshotted: the first non-debug height (400) was too small, Close
+-- crowded right up against the Aura/Death Sounds button row; bumped back
+-- up, now in-game confirmed good both with and without debug mode.
+-- Width used to also grow in debug mode (the Raid Chat Phrases note read
+-- too cramped against the right edge at the base width otherwise) - in-
+-- game requested keeping width the same in both modes instead, so the
+-- note is now manually split across two lines (see CHAT_PHRASE_PREVIEWS
+-- above) rather than growing the panel to fit it on one.
 local SOUND_FRAME_WIDTH = 460
-local SOUND_FRAME_WIDTH_DEBUG = 520
 local SOUND_FRAME_HEIGHT = 460
-local SOUND_FRAME_HEIGHT_DEBUG = 590
+-- +14 over the previous 590: the note above now wraps across two lines
+-- instead of one, needs a bit more vertical room.
+local SOUND_FRAME_HEIGHT_DEBUG = 604
 
 local function buildSoundFrame()
     -- SOUND_FRAME_HEIGHT tall enough for the toggles heading, all 8
@@ -83,8 +87,7 @@ local function buildSoundFrame()
     -- row, right under the RollSoundFlag checkbox), and the Aura Sounds/
     -- Death Sounds button row below that - the Raid Chat Phrases section
     -- isn't part of this base height at all, see the registerRefresh
-    -- height toggle below. Not pixel-verified in-game yet, see
-    -- docs/ROADMAP.md.
+    -- height toggle below.
     -- Kept wider than the other single-column panels (420) after the
     -- general size-reduction pass: the Roll Sounds button above needs
     -- PREVIEW_COLUMN_X(300) + its own 110px width + margin, more room than
@@ -172,7 +175,6 @@ local function buildSoundFrame()
     CritLog.UI.registerRefresh(function()
         chatPhraseFrame:SetShown(CritLogDB.DebugFlag)
         f:SetHeight(CritLogDB.DebugFlag and SOUND_FRAME_HEIGHT_DEBUG or SOUND_FRAME_HEIGHT)
-        f:SetWidth(CritLogDB.DebugFlag and SOUND_FRAME_WIDTH_DEBUG or SOUND_FRAME_WIDTH)
     end)
 
     CritLog.UI.createCloseButton(f)

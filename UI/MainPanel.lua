@@ -273,11 +273,12 @@ local function buildFrame()
     -- Sounds panel, so this is back to a single row - see CHANGELOG.md),
     -- and the small indented Debug checkbox below that. Widened from 420
     -- so a long spell/target name in a highscore line has room before
-    -- running into that row's Reset button. Not pixel-verified in-game
-    -- yet for the slider specifically - see docs/ROADMAP.md.
+    -- running into that row's Reset button. The slider's own look is now
+    -- in-game confirmed okay too.
     -- Height cut from 576 to 500 (in-game screenshotted: a lot of empty
     -- space below the Debug checkbox down to the Close button) - width
-    -- left untouched, see the "Widened from 420" note above.
+    -- left untouched, see the "Widened from 420" note above. This size
+    -- overall in-game confirmed good.
     local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 500)
     f:SetPoint("CENTER")
 

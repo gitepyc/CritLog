@@ -120,9 +120,9 @@ end
 -- that column (e.g. a wider-than-Preview button sharing it) can compute
 -- their own minimum safe width from it instead of duplicating the number.
 -- Lowered from 340 to 300, then again to 260 (in-game requested smaller
--- panels overall/less gap before the Preview column) - still comfortably
--- past every current row label's estimated width (longest is Aura
--- Sounds' "Warlock Healthstone Ritual"), not pixel-verified in-game.
+-- panels overall/less gap before the Preview column) - in-game confirmed
+-- good, comfortably past every row label including Aura Sounds'
+-- "Warlock Healthstone Ritual", the longest one.
 CritLog.UI.PREVIEW_COLUMN_X = 260
 
 -- Every checkbox created by buildToggleRows across all panels, keyed by
