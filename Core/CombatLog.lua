@@ -43,20 +43,9 @@ end
 -- us a GUID, but UnitLevel/UnitClassification need an actual unit token
 -- (target, mouseover, a nameplate, ...) - there's no UnitLevel(GUID). Checks
 -- the current target first (cheap, no allocation), then falls back to
--- scanning visible nameplates, then to party/raid roster tokens.
---
--- In-game reported: dps/tank/heal death-sound live role detection seemed
--- to only fire for party members, not raid members. Root cause: this
--- function only ever checked "target" and visible nameplates - both far
--- more likely to be true for a party member (a handful of people, usually
--- nearby) than for a raid member (up to 40 people, often spread out well
--- outside nameplate range and not your current target when they die).
--- party1-4/raid1-40 tokens resolve by roster membership regardless of
--- range or visibility, so checking them directly fixes this for any
--- group size. Harmless for the other callers of this function (boss
--- classification, the damage-crit level filter) - those GUIDs belong to
--- an enemy NPC, which will never match a party/raid token, so this is
--- just a few extra no-op checks for them, not a behavior change.
+-- scanning visible nameplates. Used for enemy NPC GUIDs (boss
+-- classification, the damage-crit level filter) - see findGroupUnitToken
+-- below for the separate group-member version.
 local function findUnitToken(guid)
     if UnitGUID("target") == guid then
         return "target"
@@ -71,6 +60,20 @@ local function findUnitToken(guid)
         end
     end
 
+    return nil
+end
+
+-- Finds a live unit token for a GUID known to belong to a group member
+-- (party/raid), independent of findUnitToken above - that one only checks
+-- "target" and visible nameplates, both far less likely to be true for a
+-- raid member (up to 40 people, often out of nameplate range and not your
+-- current target when they die) than a party member (a handful of people,
+-- usually nearby). In-game reported: dps/tank/heal death-sound live role
+-- detection seemed to only fire for party members because of exactly
+-- this. party1-4/raid1-40 tokens resolve by roster membership regardless
+-- of range or visibility, so checking them directly fixes this for any
+-- group size.
+local function findGroupUnitToken(guid)
     if UnitGUID("player") == guid then
         return "player"
     end
@@ -475,11 +478,14 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     end
 
     -- Live unit token for the dying player, used by the class/role checks
-    -- below. May be nil (e.g. no nameplate on screen and not the current
-    -- target) — every check below falls back to the legacy name roster
-    -- when that happens, same as when the token resolves but the
-    -- class/role check itself doesn't match.
-    local token = findUnitToken(destGUID)
+    -- below. findUnitToken first (cheap: covers the common case where the
+    -- dying player is your current target or nameplated), then
+    -- findGroupUnitToken as a fallback - a raid member is often neither
+    -- (see its own comment). May still end up nil (e.g. someone who left
+    -- the group before dying) — every check below falls back to the
+    -- legacy name roster when that happens, same as when the token
+    -- resolves but the class/role check itself doesn't match.
+    local token = findUnitToken(destGUID) or findGroupUnitToken(destGUID)
 
     -- Discard a resolved token unless it's actually a player: UnitClass()/
     -- UnitGroupRolesAssigned() aren't guaranteed nil for NPCs (some enemy
