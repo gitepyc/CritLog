@@ -9,6 +9,15 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.6.1](https://github.com/gitepyc/CritLog/tree/0.3.6.1) (2026-09-05)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.6...0.3.6.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **fix:** findUnitToken only checked target/nameplates, missed most raid members
+
+- **refactor:** split raid/party token lookup into its own function
+
+- **tweak:** drop target/nameplate fallback for death-sound token lookup
+
 ## [0.3.6](https://github.com/gitepyc/CritLog/tree/0.3.6) (2026-09-05)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.5.3...0.3.6) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
