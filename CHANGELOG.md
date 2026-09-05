@@ -359,6 +359,20 @@ cleanup.
 - Addon now credits Epyc as current author and Chabo as original
   creator.
 
+## legacy-0.1.4.2
+
+Not a release of this repository's own CritLog rewrite - listed here for
+completeness, between `0.1.1` and `0.2.0` by version number rather than by
+when the git tag was actually created (which was much later, once the
+rewrite below was already largely done).
+
+This tag archives a newer version of the *original, standalone*
+single-file legacy addon (version `0.1.4.2`, its own independent
+numbering), obtained directly from the original creator (Kîtten aka
+Chabo) after this repo's `0.1.1` import already existed. Kept as a Gitea/
+GitHub release for reference, and later used as the source for
+`feature/legacy-sound-port`'s 14 backported sounds (see `0.7.0` above).
+
 ## 0.1.1
 
 Initial import of the addon into this repository.
