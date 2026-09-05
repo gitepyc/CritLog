@@ -9,6 +9,23 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.5.1](https://github.com/gitepyc/CritLog/tree/0.3.5.1) (2026-09-05)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.5...0.3.5.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** declare multi-flavor Interface versions in CritLog.toc
+
+- **docs:** correct README Install section - a release pipeline exists
+
+- **fix:** DPS death sound hint reads assigned Damage Dealer role instead of internal not-Tank/not-Healer logic
+
+- **fix:** drop raid from Tank/Healer death-sound hints, matching DPS wording
+
+- **fix:** strip the sound-rights carve-out from LICENSE, keep it pure MIT
+
+- **fix:** simplify LICENSE copyright line, match canonical MIT wrapping
+
+- **refactor:** Boss death sound back to a plain toggle, drop hardcoded name list
+
 ## [0.3.5](https://github.com/gitepyc/CritLog/tree/0.3.5) (2026-09-04)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.4...0.3.5) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
