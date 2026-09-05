@@ -9,6 +9,7 @@ rationale. Save the "why" for the commit message/PR, not here.
 
 ## 0.9.1-dev
 
+- **chore:** `CritLog.toc`'s `## Interface:` now declares Retail, MoP Classic, TBC Classic, and Classic Era/SoD (matching TitanCritLine), not just Classic Era/SoD
 - **refactor:** DPS death-sound detection is now a real 3-role system (Tank/Healer/everyone else) instead of a class-based guess that silently never fired for Hunter/Mage/Warlock/Priest
 - **fix:** melee and tank death sounds fired together for a Warrior/Rogue assigned the Tank role
 - **fix:** reset confirmation popups ("Reset All" etc.) were hidden behind our own FULLSCREEN panels
