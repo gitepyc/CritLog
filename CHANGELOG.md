@@ -9,6 +9,17 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.6](https://github.com/gitepyc/CritLog/tree/0.3.6) (2026-09-05)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.5.3...0.3.6) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **tweak:** reorder Death Sounds panel - Boss under Spirit, above role dropdowns
+
+- **tweak:** in-game feedback on panel sizes - screenshotted round
+
+- **tweak:** third in-game round - Sound Settings bigger, Death Sounds taller
+
+- **tweak:** add a copyright symbol to the Help panel credit line
+
 ## [0.3.5.3](https://github.com/gitepyc/CritLog/tree/0.3.5.3) (2026-09-05)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.5.2...0.3.5.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
