@@ -9,6 +9,17 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.5.3](https://github.com/gitepyc/CritLog/tree/0.3.5.3) (2026-09-05)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.5.2...0.3.5.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** raid-leader chat-phrase sounds are an Easter egg
+
+- **tweak:** rename death-sound detection mode label Experimental to Role
+
+- **tweak:** expand highscore heat scale from 4 to 7 tiers
+
+- **tweak:** bold amounts >= 9000 in the Highscore List popup
+
 ## [0.3.5.2](https://github.com/gitepyc/CritLog/tree/0.3.5.2) (2026-09-05)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.5.1...0.3.5.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
