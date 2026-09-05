@@ -48,12 +48,10 @@ local SOUND_CHECKBOXES_BOTTOM = {
 -- CritLogDB flag at all (they always fire, gated only by MasterSoundFlag
 -- like every CritLog:PlaySound call), so previewOnly rows with no
 -- checkbox, same mechanism as the roll/aura sub-panels' shared-master
--- rows. Raid end plays both clips back to back (bye, then end) - two
--- rows, matching the lottery second-clip fix above.
+-- rows.
 local CHAT_PHRASE_PREVIEWS = {
     { note = "Fires when the raid leader says \"raid end\"/\"raid ende\" or \"wipe\"/\"shit show\" in raid chat." },
-    { label = "Raid end (part 1)", sound = "raidEndBye", previewOnly = true },
-    { label = "Raid end (part 2)", sound = "raidEndFinal", previewOnly = true },
+    { label = "Raid end", sound = "raidEnd", previewOnly = true },
     { label = "Wipe", sound = "wipe", previewOnly = true },
 }
 
@@ -66,9 +64,9 @@ local function buildSoundFrame()
     -- moved to the main panel, one row fewer than before), the Roll
     -- Sounds button (its own row, right under the RollSoundFlag
     -- checkbox), the Aura Sounds/Death Sounds button row below that, and
-    -- the new Raid Chat Phrases heading + its trigger-phrase note and 3
-    -- preview-only rows at the
-    -- bottom - not pixel-verified in-game yet, see docs/ROADMAP.md.
+    -- the Raid Chat Phrases heading + its trigger-phrase note and 2
+    -- preview-only rows at the bottom - not pixel-verified in-game yet,
+    -- see docs/ROADMAP.md.
     local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 700)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
