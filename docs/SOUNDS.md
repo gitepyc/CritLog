@@ -79,7 +79,7 @@ complete trigger conditions.
 | `MarioDeath.mp3` | 2 s | 131 kbps | 37,334 B | player death |
 | `Painsup.mp3` | 3 s | 131 kbps | 50,709 B | Pain Suppression |
 | `Ready.mp3` | 2 s | 132 kbps | 29,718 B | ready check |
-| `raidend.mp3` | 9 s | 129 kbps | 146,746 B | raid end (overlap variant for comparison, see `CHANGELOG.md`) |
+| `raidend.mp3` | 9 s | 129 kbps | 146,746 B | raid end (consolidated, overlapping mix - see `CHANGELOG.md`) |
 | `roll1.mp3` | 3 s | 131 kbps | 43,185 B | roll result 1 |
 | `roll10.mp3` | 10 s | 129 kbps | 155,523 B | roll result 8-10% band |
 | `roll100.mp3` | 5 s | 129 kbps | 86,657 B | roll result 100 |
