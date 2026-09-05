@@ -9,6 +9,7 @@ rationale. Save the "why" for the commit message/PR, not here.
 
 ## 0.9.1-dev
 
+- **tweak:** Death Sounds detection-mode dropdown's "Experimental" option renamed to "Role" (clearer, describes the mechanism instead of its verification status), hints/notes/README/docs updated to match; internal stored value (`"experimental"`) unchanged, no migration needed
 - **refactor:** lottery sound consolidated into one file (`lottery.mp3`, trimmed+concatenated from `lottery2.wav`+`lottery3.mp3`), single `PlaySound` call instead of two - the two previously overlapped rather than sequenced (the dead silence was trailing in the first file, not leading in the second)
 - **refactor:** raid-end sound consolidated into one file (`raidend.mp3`, mixed from `bye.mp3`+`end.mp3` overlapping from t=0, matching the original in-game timing - a sequential concat variant was also built and compared in-game, overlap was the preferred pick), single `PlaySound` call instead of two
 - **tweak:** Help panel's credit line is now two lines (`CritLog` / `by Epyc, 2026 ...`) instead of one, smaller/greyed-out font (`GameFontDisableSmall`) so it reads as a footer, not a heading

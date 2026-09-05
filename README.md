@@ -111,9 +111,9 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl gamble` | Toggles the lottery sound (CrossGambling raid-chat announcement). |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl player` | Toggles the player's own death sound. |
-| `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Death Sounds has a dropdown for `experimental`-only or `roster`-only. Experimental: not currently assigned Tank or Healer, any class - the real 3-role system's third bucket. |
-| `/cl tank` | Same toggle, for the tank death sound. Experimental: assigned raid Tank role. |
-| `/cl healer` | Same toggle, for the healer death sound. Experimental: assigned raid Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). Excludes a death delayed by Spirit of Redemption - see `/cl spirit`. |
+| `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Death Sounds has a dropdown for `experimental`(Role)-only or `roster`-only. Role: not currently assigned Tank or Healer, any class - the real 3-role system's third bucket. |
+| `/cl tank` | Same toggle, for the tank death sound. Role: assigned Tank role. |
+| `/cl healer` | Same toggle, for the healer death sound. Role: assigned Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). Excludes a death delayed by Spirit of Redemption - see `/cl spirit`. |
 | `/cl spirit` | Toggles the Spirit of Redemption sound (a Priest's death delayed ~15s by the talent - Priest-only, unlike `/cl healer` above; own sound file, not shared with the plain healer death sound). Independent of `/cl healer` - plain on/off, not a detection mode; there's no roster equivalent for "this death was Spirit-delayed". |
 | `/cl boss` | Toggles the boss death sound - plain on/off, not a detection mode: `UnitClassification` (`worldboss`) is the only signal, there's no roster fallback. |
 

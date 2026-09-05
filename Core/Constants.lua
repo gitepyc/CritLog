@@ -1,15 +1,15 @@
 CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 
 CritLog.Constants = {
-    -- Options for the dps/tank/heal/boss death-sound detection mode
-    -- dropdowns in the Death Sounds panel: choose whether the live
-    -- class/role/classification check, the roster/name-list fallback,
-    -- both (the original, still-default behavior), or neither decides
-    -- whether the sound plays. See Core/Filters.lua's
-    -- matchesDetectionMode.
+    -- Options for the dps/tank/heal death-sound detection mode dropdowns
+    -- in the Death Sounds panel: choose whether the live assigned-role
+    -- check, the roster/name-list fallback, both (the original,
+    -- still-default behavior), or neither decides whether the sound
+    -- plays. See Core/Filters.lua's matchesDetectionMode. Boss doesn't use
+    -- this system - plain on/off flag instead, see CHANGELOG.md.
     detectionModes = {
         { value = "none", label = "None" },
-        { value = "experimental", label = "Experimental" },
+        { value = "experimental", label = "Role" },
         { value = "roster", label = "Roster" },
         { value = "both", label = "Both" },
     },
@@ -255,7 +255,8 @@ CritLog.Constants = {
     helpDeathSounds = {
         { cmd = "/cl player", desc = "player death sound" },
         { cmd = "/cl spirit", desc = "Spirit of Redemption sound" },
-        { cmd = "/cl healer/dps/tank/boss", desc = "death sound None/Both (options panel for Experimental/Roster only)" },
+        { cmd = "/cl healer/dps/tank", desc = "death sound None/Both (options panel for Role/Roster only)" },
+        { cmd = "/cl boss", desc = "boss death sound (plain on/off)" },
     },
     helpAbout = "CritLog\nby Epyc, 2026 (original addon by Kîtten aka Chabo)",
 }
