@@ -192,6 +192,15 @@ local function layoutHighscoreList(f)
 
                 row.amountText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.amount - COLUMN_X.rank, 0)
                 row.amountText:SetText(Records.colored(Records.amountColor(entry.amount), tostring(entry.amount)))
+                -- Bold (via an outline flag - no inline bold escape code
+                -- exists) only works here, not on the main panel's combined
+                -- summary lines or the TitanPanel tooltip: this column is
+                -- its own dedicated FontString containing only the amount,
+                -- unlike those, which build one string mixing label/ability/
+                -- amount/target together - bolding just the number there
+                -- would mean bolding the whole line instead.
+                local path, size = row.amountText:GetFont()
+                row.amountText:SetFont(path, size, Records.isExtremeAmount(entry.amount) and "THICKOUTLINE" or "")
                 row.amountText:Show()
 
                 row.abilityText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.ability - COLUMN_X.rank, 0)

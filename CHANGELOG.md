@@ -9,6 +9,7 @@ rationale. Save the "why" for the commit message/PR, not here.
 
 ## 0.9.1-dev
 
+- **tweak:** amounts >= 9000 now render bold (outlined font) in the Highscore List popup - only there, since it's the only place the amount has its own dedicated FontString column; the main panel's summary lines and the TitanPanel tooltip build one combined string per line (label+ability+amount+target together), so isolating just the number for bold isn't possible there without also bolding the whole line
 - **tweak:** highscore-amount heat scale expanded from 4 to 7 tiers (green/yellow/amber/orange/orange-red/red/dark-red), yellow now starts at 1500 (was 2000), red at 7000 (was 8000), new dark-red top tier at 9000 (matches the existing Xtreme-hit threshold)
 - **feature:** raid-leader/raid-chat phrase sounds (raid end, wipe) are now a deliberate Easter egg - their Sound Settings preview row is hidden unless `/cl debug` is on, no toggle (they already had none)
 - **tweak:** Death Sounds detection-mode dropdown's "Experimental" option renamed to "Role" (clearer, describes the mechanism instead of its verification status), hints/notes/README/docs updated to match; internal stored value (`"experimental"`) unchanged, no migration needed
