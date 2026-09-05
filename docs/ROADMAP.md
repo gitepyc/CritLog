@@ -69,6 +69,23 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    buttons - would need its own decision on posting just the visible
    entry vs. the whole list. Message styling/text layout also still open
    regardless of which trigger UI(s) win.
+4. CritLogDB migration/versioning cleanup - discussed in-game: there's
+   currently no schema-version counter at all, only `CritLogDB.Version`
+   (the addon version string, compared against `CritLog.toc` on login to
+   decide whether to back-fill `DEFAULTS` and print the "updated to..."
+   message). The actual migrations (`Persistence/Database.lua`'s
+   `migratePlayerGroups`/`migrateToRecordLists`/`migratePriestToHeal`/
+   `migrateMeleeToDps`/`migrateDetectionModes`/`migrateBossModeToFlag`/
+   `migrateAllLevelToThreshold`) each run unconditionally on every login,
+   guarded only by their own field's presence/absence - cheap today (7
+   functions, each a nil-check), but an ever-growing list with no way to
+   ever prune an old migration, since nothing records which schema
+   version a character's saved data is actually on. A real incrementing
+   `CritLogDB.SchemaVersion` (separate from the addon version) that each
+   migration bumps past once applied would let old migrations eventually
+   be deleted once a minimum supported schema version is declared -
+   not designed yet, just flagged as worth doing before this list gets
+   much longer.
 
 ## Parked
 
