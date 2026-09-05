@@ -23,7 +23,7 @@ local SOUND_CHECKBOXES_TOP = {
       hint = "Plays on every crit, not just new highscores." },
     { field = "WhiteHitFlag", label = "Sound for white hit crits",
       hint = "White-hit highscores need this; ability crits don't." },
-    { field = "XtremeSoundFlag", label = "Xtreme damage sound (over 9000)", sound = "xtremeDamage",
+    { field = "XtremeSoundFlag", label = "Xtreme damage sound", sound = "xtremeDamage",
       hint = "Extra sound when a hit deals over 9000 damage." },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },

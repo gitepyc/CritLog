@@ -258,10 +258,15 @@ CritLog.Constants = {
         { cmd = "/cl healer/dps/tank", desc = "death sound None/Both (options panel for Role/Roster only)" },
         { cmd = "/cl boss", desc = "boss death sound (plain on/off)" },
     },
-    -- "©" (in-game requested) - not pixel-verified: WoW's bundled Classic
-    -- Era fonts aren't guaranteed to have this glyph, same risk noted for
-    -- the roster panel's OK-button Unicode checkmark (see
-    -- UI/RosterPanel.lua) - could render as a tofu box, only a real client
-    -- can confirm.
-    helpAbout = "CritLog\n© by Epyc, 2026 (original addon by Kîtten aka Chabo)",
+    -- Split into a title (CritLog) and a smaller two-line subtitle -
+    -- UI/HelpPanel.lua renders these as two separate FontStrings so the
+    -- subtitle can use a smaller font than the title (in-game requested);
+    -- Commands.lua's `/cl help` just joins them with a blank line, chat
+    -- has no font-size concept anyway. "©" (in-game requested) - not
+    -- pixel-verified: WoW's bundled Classic Era fonts aren't guaranteed to
+    -- have this glyph, same risk noted for the roster panel's OK-button
+    -- Unicode checkmark (see UI/RosterPanel.lua) - could render as a tofu
+    -- box, only a real client can confirm.
+    helpAboutTitle = "CritLog",
+    helpAboutSubtitle = "© by Epyc, 2026\n(original addon by Kîtten aka Chabo)",
 }

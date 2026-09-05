@@ -107,9 +107,22 @@ local function buildHelpFrame()
     -- Anchoring to the panel directly (not the content above) means this
     -- always sits at the same fixed spot regardless of how tall the
     -- sections above happen to be.
-    local aboutText = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    aboutText:SetPoint("BOTTOM", f, "BOTTOM", 0, 44)
-    aboutText:SetText(CritLog.Constants.helpAbout)
+    --
+    -- Two FontStrings, not one - in-game requested the subtitle (by
+    -- Epyc/original-author line) render one size smaller than the title
+    -- ("CritLog") above it, which a single FontString can't do (one font
+    -- per widget). Subtitle anchored to the fixed bottom spot (so it
+    -- keeps the same fixed position the combined text used to have),
+    -- title chained above it.
+    local aboutSubtitle = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    aboutSubtitle:SetPoint("BOTTOM", f, "BOTTOM", 0, 44)
+    aboutSubtitle:SetText(CritLog.Constants.helpAboutSubtitle)
+    local subtitlePath, subtitleSize, subtitleFlags = aboutSubtitle:GetFont()
+    aboutSubtitle:SetFont(subtitlePath, subtitleSize - 2, subtitleFlags)
+
+    local aboutTitle = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    aboutTitle:SetPoint("BOTTOM", aboutSubtitle, "TOP", 0, 2)
+    aboutTitle:SetText(CritLog.Constants.helpAboutTitle)
 
     return f
 end

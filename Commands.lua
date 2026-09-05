@@ -38,7 +38,7 @@ local function printHelp()
     printHelpSection("General", CritLog.Constants.helpGeneral)
     printHelpSection("Sounds", CritLog.Constants.helpSounds)
     printHelpSection("Death Sounds", CritLog.Constants.helpDeathSounds)
-    print(CritLog.Constants.helpAbout)
+    print(CritLog.Constants.helpAboutTitle.."\n"..CritLog.Constants.helpAboutSubtitle)
 end
 
 local function printConfig()

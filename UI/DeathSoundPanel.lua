@@ -26,7 +26,7 @@ local DEATH_CHECKBOXES = {
     -- only signal, on or off. In-game requested position: under Spirit,
     -- above the three role-based dropdowns below.
     { field = "BossSoundFlag", label = "Boss death sound", sound = "bossDeath",
-      hint = "Plays on a live worldboss classification (40-man raid bosses, outdoor world bosses, SoD's level-60 raids)." },
+      hint = "Plays on a live worldboss classification (40-man raid bosses, outdoor world bosses, and other level-60 raid encounters)." },
     -- These three (unlike PlayerSoundFlag/SpiritSoundFlag/BossSoundFlag
     -- above) can be driven by the live role detection in
     -- Core/CombatLog.lua (isAssignedDps, isAssignedTank, isAssignedHealer),
@@ -67,7 +67,7 @@ local DEATH_CHECKBOXES = {
     -- dropdowns above only - a note row after them, not before, same
     -- reasoning as the Sound Settings panel's dropdown note. "Role" in
     -- each row's own hint above ties back to this same word.
-    { note = "None = never plays\nRole = assigned role only\nRoster = saved name list only\nBoth = either matches" },
+    { note = "None = no sound\nRole = assigned role only\nRoster = saved name list only\nBoth = either matches" },
 }
 
 local deathSoundFrame
