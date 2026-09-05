@@ -43,12 +43,12 @@ local SOUND_CHECKBOXES_BOTTOM = {
 }
 
 -- Raid-leader/raid-chat phrase sounds (ChatTriggers.lua's
--- CHAT_MSG_RAID_LEADER handler) had no preview anywhere - in-game
--- requested. Unlike every other sound group here, these have no
--- CritLogDB flag at all (they always fire, gated only by MasterSoundFlag
--- like every CritLog:PlaySound call), so previewOnly rows with no
--- checkbox, same mechanism as the roll/aura sub-panels' shared-master
--- rows.
+-- CHAT_MSG_RAID_LEADER handler) - deliberately an Easter egg, in-game
+-- requested: no CritLogDB flag at all (they always fire, gated only by
+-- MasterSoundFlag like every CritLog:PlaySound call) and no toggle, so
+-- previewOnly rows with no checkbox. The whole section is hidden unless
+-- `/cl debug` is on - see buildSoundFrame's chatPhraseFrame below - so
+-- it's not discoverable through the normal options UI either.
 local CHAT_PHRASE_PREVIEWS = {
     { note = "Fires when the raid leader says \"raid end\"/\"raid ende\" or \"wipe\"/\"shit show\" in raid chat." },
     { label = "Raid end", sound = "raidEnd", previewOnly = true },
@@ -58,14 +58,14 @@ local CHAT_PHRASE_PREVIEWS = {
 local soundFrame
 
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading, all 8 checkbox rows plus the
-    -- lottery second-clip preview row (hints are now a hover tooltip, not
-    -- a line underneath each row - see UI/Shared.lua; MasterSoundFlag
-    -- moved to the main panel, one row fewer than before), the Roll
-    -- Sounds button (its own row, right under the RollSoundFlag
-    -- checkbox), the Aura Sounds/Death Sounds button row below that, and
-    -- the Raid Chat Phrases heading + its trigger-phrase note and 2
-    -- preview-only rows at the bottom - not pixel-verified in-game yet,
+    -- Tall enough for the toggles heading, all 8 checkbox rows (hints are
+    -- now a hover tooltip, not a line underneath each row - see
+    -- UI/Shared.lua; MasterSoundFlag moved to the main panel, one row
+    -- fewer than before), the Roll Sounds button (its own row, right
+    -- under the RollSoundFlag checkbox), the Aura Sounds/Death Sounds
+    -- button row below that, and (debug mode only - see chatPhraseFrame
+    -- below) the Raid Chat Phrases heading + its trigger-phrase note and
+    -- 2 preview-only rows at the bottom - not pixel-verified in-game yet,
     -- see docs/ROADMAP.md.
     local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 700)
     -- Offset from center so it doesn't perfectly overlap the main panel
@@ -119,7 +119,18 @@ local function buildSoundFrame()
         CritLog:ShowDeathSounds()
     end)
 
-    local chatPhraseHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    -- Easter egg: these sounds always fire (no CritLogDB flag, no toggle -
+    -- see CHAT_PHRASE_PREVIEWS' own comment above), and the whole point is
+    -- that they're not meant to be discoverable through the normal options
+    -- UI. The section lives in its own child frame (not directly on `f`
+    -- like every other row) purely so it can be shown/hidden as one unit -
+    -- CritLog.UI.registerRefresh below toggles it based on DebugFlag every
+    -- time any options panel opens.
+    local chatPhraseFrame = CreateFrame("Frame", nil, f)
+    chatPhraseFrame:SetSize(1, 1)
+    chatPhraseFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
+
+    local chatPhraseHeading = chatPhraseFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     -- Two separate anchor points, not a single TOPLEFT relative to
     -- deathSoundsButton: that button sits well right of the panel's left
     -- margin (it's anchored off auraSoundsButton's RIGHT edge, not the
@@ -131,7 +142,11 @@ local function buildSoundFrame()
     chatPhraseHeading:SetPoint("LEFT", f, "LEFT", 14, 0)
     chatPhraseHeading:SetText("Raid Chat Phrases")
 
-    CritLog.UI.buildToggleRows(f, CHAT_PHRASE_PREVIEWS, chatPhraseHeading)
+    CritLog.UI.buildToggleRows(chatPhraseFrame, CHAT_PHRASE_PREVIEWS, chatPhraseHeading)
+
+    CritLog.UI.registerRefresh(function()
+        chatPhraseFrame:SetShown(CritLogDB.DebugFlag)
+    end)
 
     CritLog.UI.createCloseButton(f)
 
