@@ -9,6 +9,15 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.6.2](https://github.com/gitepyc/CritLog/tree/0.3.6.2) (2026-09-05)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.6.1...0.3.6.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **fix:** make checkbox side effects (e.g. Debug mode resize) apply live
+
+- **tweak:** fourth in-game round - wording, spacing, Help credit line
+
+- **tweak:** keep Sound Settings width constant between debug modes
+
 ## [0.3.6.1](https://github.com/gitepyc/CritLog/tree/0.3.6.1) (2026-09-05)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.6...0.3.6.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
