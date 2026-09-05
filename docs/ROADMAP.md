@@ -3,44 +3,7 @@
 Open, forward-looking items only, in priority order. Everything already
 done is in `CHANGELOG.md` and git history, not repeated here.
 
-1. **In-game verification**, ongoing: still open are tank/boss/healer
-   death-sound detection specifically (healer changed from a Priest class
-   check to an assigned Healer role check, any class - needs fresh
-   verification even though the general detection-mode mechanism is
-   already partly tested), Spirit of Redemption, the `0.7.0` multi-entry
-   highscores and fixed-row Highscore List layout, and the `0.7.1-dev`
-   `## IconTexture` (unclear whether Classic Era's AddOns list actually
-   renders it). Also still open from `0.9.0-dev`: the TitanPanel button's
-   icon legibility scaled down to 16px, and the level-diff slider's actual
-   in-game look after its latest anchor fix. Also still open, from
-   `feature/legacy-sound-port`: 13 of the 14 sounds ported from the legacy
-   addon (roll, lottery, Drums of Battle, Pain Suppression, Evocation,
-   Mage Table) remain in-game unconfirmed - Warlock Healthstone ritual is
-   now confirmed working in-game. Two of the still-unconfirmed ones
-   (Drums of Battle, Mage Table) have a confirmed Wowhead spell ID but are
-   confirmed TBC-introduced spells (didn't exist in vanilla WoW) - having
-   the right ID doesn't confirm SoD availability. Hymn of Hope is excluded entirely:
-   confirmed to not exist under that name before WotLK, cannot fire on
-   Classic Era/SoD. Not a gate blocking other work - bugs found during
-   verification land on `dev` as they're reported, in parallel with
-   feature work below.
-2. Per-ability crit rate tracking - in-game requested, modeled on
-   TitanCritLine's own equivalent feature (verified against their actual
-   code, not guessed): `Core/Records.lua`'s `attack[HitType]["Value"] =
-   (attack[HitType]["Value"] or 0) + 1` counts every hit, split into a
-   `NORMAL` and a `CRIT` bucket per ability name, persisted across
-   sessions; `UI/Summary.lua`'s `tcl_GetHighestCritPercentage` computes
-   `critHits / (critHits + normalHits) * 100` per ability and finds the
-   one with the best rate. CritLog currently only tracks the single
-   highest-*value* crit per category (`CritLogDB.records`), not hit
-   counts, so this needs new state entirely: a per-ability
-   `{ normal = N, crit = M }` counter table, incremented on *every*
-   relevant hit (not just new highscores - the combat-log handlers
-   currently mostly only care about crits at all, non-crit hits would
-   need to start being counted too), plus somewhere to show the result
-   (options panel section, Titan tooltip, and/or a `/cl` command are all
-   plausible, not decided yet).
-3. One-click post highscores to chat - in-game requested: a button (main
+1. One-click post highscores to chat - in-game requested: a button (main
    panel and/or Highscore List popup) or `/cl` command to post the
    current top record(s) straight to a chosen chat channel (Guild, Raid/
    Party, Whisper, ...) via `SendChatMessage`, instead of manually typing
@@ -69,7 +32,7 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    buttons - would need its own decision on posting just the visible
    entry vs. the whole list. Message styling/text layout also still open
    regardless of which trigger UI(s) win.
-4. CritLogDB migration/versioning cleanup - discussed in-game: there's
+2. CritLogDB migration/versioning cleanup - discussed in-game: there's
    currently no schema-version counter at all, only `CritLogDB.Version`
    (the addon version string, compared against `CritLog.toc` on login to
    decide whether to back-fill `DEFAULTS` and print the "updated to..."
@@ -86,6 +49,23 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    be deleted once a minimum supported schema version is declared -
    not designed yet, just flagged as worth doing before this list gets
    much longer.
+3. Per-ability crit rate tracking - lowest priority, not committed to yet
+   (may not happen at all). In-game requested, modeled on TitanCritLine's
+   own equivalent feature (verified against their actual code, not
+   guessed): `Core/Records.lua`'s `attack[HitType]["Value"] =
+   (attack[HitType]["Value"] or 0) + 1` counts every hit, split into a
+   `NORMAL` and a `CRIT` bucket per ability name, persisted across
+   sessions; `UI/Summary.lua`'s `tcl_GetHighestCritPercentage` computes
+   `critHits / (critHits + normalHits) * 100` per ability and finds the
+   one with the best rate. CritLog currently only tracks the single
+   highest-*value* crit per category (`CritLogDB.records`), not hit
+   counts, so this needs new state entirely: a per-ability
+   `{ normal = N, crit = M }` counter table, incremented on *every*
+   relevant hit (not just new highscores - the combat-log handlers
+   currently mostly only care about crits at all, non-crit hits would
+   need to start being counted too), plus somewhere to show the result
+   (options panel section, Titan tooltip, and/or a `/cl` command are all
+   plausible, not decided yet).
 
 ## Parked
 
