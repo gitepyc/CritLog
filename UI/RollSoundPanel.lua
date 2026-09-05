@@ -22,7 +22,7 @@ local ROLL_CHECKBOXES = {
 local rollSoundFrame
 
 local function buildRollSoundFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogRollSoundFrame", "CritLog Roll Sounds", 480, 360)
+    local f = CritLog.UI.createPanelFrame("CritLogRollSoundFrame", "CritLog Roll Sounds", 420, 320)
     -- Offset from center so it doesn't perfectly overlap the main panel or
     -- Sound Settings when several are open at once; a one-time anchor, not
     -- a continuous one, so dragging one doesn't drag the others.

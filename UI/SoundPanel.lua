@@ -67,7 +67,11 @@ local function buildSoundFrame()
     -- below) the Raid Chat Phrases heading + its trigger-phrase note and
     -- 2 preview-only rows at the bottom - not pixel-verified in-game yet,
     -- see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 700)
+    -- Kept wider than the other single-column panels (420) after the
+    -- general size-reduction pass: the Roll Sounds button above needs
+    -- PREVIEW_COLUMN_X(300) + its own 110px width + margin, more room than
+    -- the standard 70px Preview button the other panels only ever use.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 460, 620)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
@@ -86,13 +90,16 @@ local function buildSoundFrame()
     -- button instead - same row as the checkbox, same column, close to
     -- the same size (Preview buttons are 70x20) - "Roll Sounds..." needs
     -- a bit more width than "Preview" to stay readable, 110px comfortably
-    -- fits within this panel's right margin at this column.
+    -- fits within this panel's right margin at this column. This button's
+    -- extra width (110 vs. the standard 70) is the reason this panel keeps
+    -- a bit more width than the other single-column panels after the
+    -- general size-reduction pass - see buildSoundFrame's width comment.
     local rollSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     rollSoundsButton:SetSize(110, 20)
     rollSoundsButton:SetText("Roll Sounds...")
     rollSoundsButton:SetNormalFontObject("GameFontNormalSmall")
     rollSoundsButton:SetHighlightFontObject("GameFontHighlightSmall")
-    rollSoundsButton:SetPoint("LEFT", lastAnchor, "LEFT", 340 + lastOffset, 0)
+    rollSoundsButton:SetPoint("LEFT", lastAnchor, "LEFT", CritLog.UI.PREVIEW_COLUMN_X + lastOffset, 0)
     rollSoundsButton:SetScript("OnClick", function()
         CritLog:ShowRollSounds()
     end)

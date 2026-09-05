@@ -9,6 +9,7 @@ rationale. Save the "why" for the commit message/PR, not here.
 
 ## 0.9.1-dev
 
+- **tweak:** most options panels shrunk (Sound Settings, Death Sounds, Roll Sounds, Aura Sounds, Help) - the shared Preview-button column offset (`UI/Shared.lua`'s `PREVIEW_COLUMN_X`) dropped from 340 to 300 and each panel's width/internal column offsets recalculated to match, instead of just shrinking outer dimensions (which would have overflowed the Preview-button column, a bug already fixed once before). Main options panel and the Highscore List popup left unchanged - both have prior in-game reports of being too narrow at a similar size. Not pixel-verified in-game
 - **tweak:** Death Sounds panel row order - Boss moved up to sit under Spirit of Redemption, above the DPS/Tank/Healer role dropdowns
 - **tweak:** amounts >= 9000 now render bold (outlined font) in the Highscore List popup - only there, since it's the only place the amount has its own dedicated FontString column; the main panel's summary lines and the TitanPanel tooltip build one combined string per line (label+ability+amount+target together), so isolating just the number for bold isn't possible there without also bolding the whole line
 - **tweak:** highscore-amount heat scale expanded from 4 to 7 tiers (green/yellow/amber/orange/orange-red/red/dark-red), yellow now starts at 1500 (was 2000), red at 7000 (was 8000), new dark-red top tier at 9000 (matches the existing Xtreme-hit threshold)
