@@ -104,7 +104,7 @@ local function buildHelpFrame()
     -- Anchoring to the panel directly (not the content above) means this
     -- always sits at the same fixed spot regardless of how tall the
     -- sections above happen to be.
-    local aboutText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    local aboutText = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     aboutText:SetPoint("BOTTOM", f, "BOTTOM", 0, 44)
     aboutText:SetText(CritLog.Constants.helpAbout)
 
