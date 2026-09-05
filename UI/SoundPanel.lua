@@ -58,16 +58,22 @@ local CHAT_PHRASE_PREVIEWS = {
 local soundFrame
 
 -- The Raid Chat Phrases section (chatPhraseFrame below) only shows in
--- debug mode - the panel's own height now follows that instead of always
+-- debug mode - the panel's own size now follows that instead of always
 -- reserving room for it, in-game requested ("sound settings without debug
--- mode should be smaller, only the extra entries in debug mode"). Two
--- fixed heights instead of measuring real content height at runtime
--- (GetHeight() on freshly-created FontStrings/rows unreliably reports 0
--- before the panel has ever been shown - see UI/Shared.lua's
--- SetHitRectInsets comments for the same class of problem) - both
--- estimates, not pixel-verified in-game.
-local SOUND_FRAME_HEIGHT = 400
-local SOUND_FRAME_HEIGHT_DEBUG = 540
+-- mode should be smaller, only the extra entries in debug mode"). Fixed
+-- sizes instead of measuring real content height/width at runtime
+-- (GetHeight()/GetWidth() on freshly-created FontStrings/rows unreliably
+-- report 0 before the panel has ever been shown - see UI/Shared.lua's
+-- SetHitRectInsets comments for the same class of problem) - all
+-- estimates, not pixel-verified in-game. In-game screenshotted: the first
+-- non-debug height (400) was too small, Close crowded right up against
+-- the Aura/Death Sounds button row; bumped back up. Width also grows in
+-- debug mode now (not just height) - the Raid Chat Phrases rows read too
+-- cramped against the right edge otherwise.
+local SOUND_FRAME_WIDTH = 460
+local SOUND_FRAME_WIDTH_DEBUG = 520
+local SOUND_FRAME_HEIGHT = 460
+local SOUND_FRAME_HEIGHT_DEBUG = 590
 
 local function buildSoundFrame()
     -- SOUND_FRAME_HEIGHT tall enough for the toggles heading, all 8
@@ -83,7 +89,7 @@ local function buildSoundFrame()
     -- general size-reduction pass: the Roll Sounds button above needs
     -- PREVIEW_COLUMN_X(300) + its own 110px width + margin, more room than
     -- the standard 70px Preview button the other panels only ever use.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 460, SOUND_FRAME_HEIGHT)
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", SOUND_FRAME_WIDTH, SOUND_FRAME_HEIGHT)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
@@ -166,6 +172,7 @@ local function buildSoundFrame()
     CritLog.UI.registerRefresh(function()
         chatPhraseFrame:SetShown(CritLogDB.DebugFlag)
         f:SetHeight(CritLogDB.DebugFlag and SOUND_FRAME_HEIGHT_DEBUG or SOUND_FRAME_HEIGHT)
+        f:SetWidth(CritLogDB.DebugFlag and SOUND_FRAME_WIDTH_DEBUG or SOUND_FRAME_WIDTH)
     end)
 
     CritLog.UI.createCloseButton(f)

@@ -80,8 +80,10 @@ local function buildDeathSoundFrame()
     -- Settings button below them - not pixel-verified in-game yet, see
     -- docs/ROADMAP.md.
     -- Height cut further (490->390, in-game screenshotted: still a lot of
-    -- empty space below the Roster Settings button down to Close).
-    local f = CritLog.UI.createPanelFrame("CritLogDeathSoundFrame", "CritLog Death Sounds", 420, 390)
+    -- empty space below the Roster Settings button down to Close), then
+    -- bumped back up a bit (390->420, in-game requested "a tick longer
+    -- again" - 390 read a little too tight against Roster Settings/Close).
+    local f = CritLog.UI.createPanelFrame("CritLogDeathSoundFrame", "CritLog Death Sounds", 420, 420)
     -- Offset from center so it doesn't perfectly overlap the main panel or
     -- Sound Settings when several are open at once; a one-time anchor, not
     -- a continuous one, so dragging one doesn't drag the others.
