@@ -57,8 +57,7 @@ CritLog.Constants = {
         divineIntervention = "divineInt.mp3",
         soulstone = "soulstone.mp3",
         readyCheck = "Ready.mp3",
-        raidEndBye = "bye.mp3",
-        raidEndFinal = "end.mp3",
+        raidEnd = "raidend.mp3",
         wipe = "wipe.mp3",
         lottery = "lottery.mp3",
         -- roll1/69/100 hit exact values; roll5/roll10/roll95 are percentage

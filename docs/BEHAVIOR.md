@@ -207,7 +207,7 @@ check for a specific sender is commented out.
 
 | Case-insensitive message | Reaction |
 | --- | --- |
-| `raid ende` or `raid end` | Starts `bye.mp3` and immediately starts `end.mp3`. The clips may overlap. |
+| `raid ende` or `raid end` | Plays `raidend.mp3`. |
 | `shit show` or `wipe` | Plays `wipe.mp3`. |
 
 These chat sounds have no feature flag - `/cl sound` doesn't disable them.
