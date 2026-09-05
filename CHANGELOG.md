@@ -11,6 +11,7 @@ rationale. Save the "why" for the commit message/PR, not here.
 
 - **refactor:** lottery sound consolidated into one file (`lottery.mp3`, trimmed+concatenated from `lottery2.wav`+`lottery3.mp3`), single `PlaySound` call instead of two - the two previously overlapped rather than sequenced (the dead silence was trailing in the first file, not leading in the second)
 - **refactor:** raid-end sound consolidated into one file (`raidend.mp3`, concatenated from `bye.mp3`+`end.mp3`), single `PlaySound` call instead of two - the two previously fired at the same instant with no gap/silence between them at all, so they fully overlapped for `bye.mp3`'s ~4s duration
+- **experiment:** `feature/sound-consolidation-raidend-overlap` branch/tag: `raidend.mp3` swapped for an overlap-mixed variant (both original clips summed from t=0, matching the old in-game behavior) instead of the sequential concat above - built for an in-game A/B comparison between the two, not intended to land on `dev` as-is
 - **tweak:** Help panel's credit line is now two lines (`CritLog` / `by Epyc, 2026 ...`) instead of one, smaller/greyed-out font (`GameFontDisableSmall`) so it reads as a footer, not a heading
 - **chore:** `CritLog.toc`'s `## Interface:` now declares Retail, MoP Classic, TBC Classic, and Classic Era/SoD (matching TitanCritLine), not just Classic Era/SoD
 - **refactor:** DPS death-sound detection is now a real 3-role system (Tank/Healer/everyone else) instead of a class-based guess that silently never fired for Hunter/Mage/Warlock/Priest
