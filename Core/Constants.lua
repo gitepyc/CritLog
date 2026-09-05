@@ -258,5 +258,10 @@ CritLog.Constants = {
         { cmd = "/cl healer/dps/tank", desc = "death sound None/Both (options panel for Role/Roster only)" },
         { cmd = "/cl boss", desc = "boss death sound (plain on/off)" },
     },
-    helpAbout = "CritLog\nby Epyc, 2026 (original addon by Kîtten aka Chabo)",
+    -- "©" (in-game requested) - not pixel-verified: WoW's bundled Classic
+    -- Era fonts aren't guaranteed to have this glyph, same risk noted for
+    -- the roster panel's OK-button Unicode checkmark (see
+    -- UI/RosterPanel.lua) - could render as a tofu box, only a real client
+    -- can confirm.
+    helpAbout = "CritLog\n© by Epyc, 2026 (original addon by Kîtten aka Chabo)",
 }

@@ -57,17 +57,39 @@ local CHAT_PHRASE_PREVIEWS = {
 
 local soundFrame
 
+-- The Raid Chat Phrases section (chatPhraseFrame below) only shows in
+-- debug mode - the panel's own size now follows that instead of always
+-- reserving room for it, in-game requested ("sound settings without debug
+-- mode should be smaller, only the extra entries in debug mode"). Fixed
+-- sizes instead of measuring real content height/width at runtime
+-- (GetHeight()/GetWidth() on freshly-created FontStrings/rows unreliably
+-- report 0 before the panel has ever been shown - see UI/Shared.lua's
+-- SetHitRectInsets comments for the same class of problem) - all
+-- estimates, not pixel-verified in-game. In-game screenshotted: the first
+-- non-debug height (400) was too small, Close crowded right up against
+-- the Aura/Death Sounds button row; bumped back up. Width also grows in
+-- debug mode now (not just height) - the Raid Chat Phrases rows read too
+-- cramped against the right edge otherwise.
+local SOUND_FRAME_WIDTH = 460
+local SOUND_FRAME_WIDTH_DEBUG = 520
+local SOUND_FRAME_HEIGHT = 460
+local SOUND_FRAME_HEIGHT_DEBUG = 590
+
 local function buildSoundFrame()
-    -- Tall enough for the toggles heading, all 8 checkbox rows (hints are
-    -- now a hover tooltip, not a line underneath each row - see
-    -- UI/Shared.lua; MasterSoundFlag moved to the main panel, one row
-    -- fewer than before), the Roll Sounds button (its own row, right
-    -- under the RollSoundFlag checkbox), the Aura Sounds/Death Sounds
-    -- button row below that, and (debug mode only - see chatPhraseFrame
-    -- below) the Raid Chat Phrases heading + its trigger-phrase note and
-    -- 2 preview-only rows at the bottom - not pixel-verified in-game yet,
-    -- see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", 490, 700)
+    -- SOUND_FRAME_HEIGHT tall enough for the toggles heading, all 8
+    -- checkbox rows (hints are now a hover tooltip, not a line underneath
+    -- each row - see UI/Shared.lua; MasterSoundFlag moved to the main
+    -- panel, one row fewer than before), the Roll Sounds button (its own
+    -- row, right under the RollSoundFlag checkbox), and the Aura Sounds/
+    -- Death Sounds button row below that - the Raid Chat Phrases section
+    -- isn't part of this base height at all, see the registerRefresh
+    -- height toggle below. Not pixel-verified in-game yet, see
+    -- docs/ROADMAP.md.
+    -- Kept wider than the other single-column panels (420) after the
+    -- general size-reduction pass: the Roll Sounds button above needs
+    -- PREVIEW_COLUMN_X(300) + its own 110px width + margin, more room than
+    -- the standard 70px Preview button the other panels only ever use.
+    local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", SOUND_FRAME_WIDTH, SOUND_FRAME_HEIGHT)
     -- Offset from center so it doesn't perfectly overlap the main panel
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
@@ -86,13 +108,16 @@ local function buildSoundFrame()
     -- button instead - same row as the checkbox, same column, close to
     -- the same size (Preview buttons are 70x20) - "Roll Sounds..." needs
     -- a bit more width than "Preview" to stay readable, 110px comfortably
-    -- fits within this panel's right margin at this column.
+    -- fits within this panel's right margin at this column. This button's
+    -- extra width (110 vs. the standard 70) is the reason this panel keeps
+    -- a bit more width than the other single-column panels after the
+    -- general size-reduction pass - see buildSoundFrame's width comment.
     local rollSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     rollSoundsButton:SetSize(110, 20)
     rollSoundsButton:SetText("Roll Sounds...")
     rollSoundsButton:SetNormalFontObject("GameFontNormalSmall")
     rollSoundsButton:SetHighlightFontObject("GameFontHighlightSmall")
-    rollSoundsButton:SetPoint("LEFT", lastAnchor, "LEFT", 340 + lastOffset, 0)
+    rollSoundsButton:SetPoint("LEFT", lastAnchor, "LEFT", CritLog.UI.PREVIEW_COLUMN_X + lastOffset, 0)
     rollSoundsButton:SetScript("OnClick", function()
         CritLog:ShowRollSounds()
     end)
@@ -146,6 +171,8 @@ local function buildSoundFrame()
 
     CritLog.UI.registerRefresh(function()
         chatPhraseFrame:SetShown(CritLogDB.DebugFlag)
+        f:SetHeight(CritLogDB.DebugFlag and SOUND_FRAME_HEIGHT_DEBUG or SOUND_FRAME_HEIGHT)
+        f:SetWidth(CritLogDB.DebugFlag and SOUND_FRAME_WIDTH_DEBUG or SOUND_FRAME_WIDTH)
     end)
 
     CritLog.UI.createCloseButton(f)
