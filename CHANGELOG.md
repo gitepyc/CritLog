@@ -35,6 +35,13 @@ rationale. Save the "why" for the commit message/PR, not here.
 
 ## 0.9.0.0-dev
 
+Version-number rollback point: everything from here down through
+`## 0.9.0-dev` below uses the OLD pre-rollback numbering (deliberately
+higher-looking than `0.9.0.0-dev` despite being chronologically older -
+those tags were deleted once the numbers were freed up again). Sections
+are ordered by actual date, not by comparing version strings - do not
+resort this file by parsing version numbers.
+
 - **fix:** white-hit crits (melee and ranged) now always play the highscore sound on a new personal record even with "Sound for white hit crits" off, matching how ability/heal crits already behaved; ranged white-hit records were also being skipped entirely (not even recorded) with that setting off - now recorded unconditionally like melee
 
 ## 0.9.8.5-dev
@@ -95,7 +102,13 @@ rationale. Save the "why" for the commit message/PR, not here.
 - **feature:** new Roll Sounds panel (opened from Sound Settings, same pattern as Aura/Death Sounds) - Preview button for each of the 6 roll-result sounds; still one shared toggle (`RollSoundFlag`) for all of them, not individually toggleable
 - **feature:** Roll Sounds row moved to sit right after Lottery on the Sound Settings panel, renamed from "Roll sound" to "Roll Sounds"
 
-## 0.9.1-dev
+## 0.9.1-dev (pre-rollback, unrelated to the 0.9.1-dev section above)
+
+Old version-number scheme, from before the 0.9.0.0-dev version rollback
+(see the `## 0.9.0.0-dev` section above) reused this exact number for an
+unrelated later release. This tag no longer exists in git (deleted during
+that rollback) - kept here for historical record only, ordered by actual
+date rather than by the now-ambiguous version string.
 
 - **feature:** TitanPanel button text - numbers rendered white, matching TitanCritLine's own color scheme (separators stay the default gold)
 
