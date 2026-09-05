@@ -12,13 +12,23 @@ local DEATH_CHECKBOXES = {
     -- checkbox, not a detection-mode dropdown: the only signal this has
     -- at all is having actually seen the buff applied, there's no roster/
     -- name-list equivalent to fall back to. Placed right after Player
-    -- death and before the four detection-mode dropdowns, rather than at
-    -- the very end, since it's conceptually closer to those two plain
-    -- flags than to the Role/Roster/Both system below it.
+    -- death, before Boss and the three detection-mode dropdowns, rather
+    -- than at the very end, since it's conceptually closer to those two
+    -- plain flags than to the Role/Roster/Both system below it.
     { field = "SpiritSoundFlag", label = "Spirit of Redemption", sound = "spiritOfRedemption",
       hint = "A Priest's death delayed ~15s by the talent (own sound file)." },
-    -- These three (unlike PlayerSoundFlag/SpiritSoundFlag above, and
-    -- BossSoundFlag below) can be driven by the live role detection in
+    -- Plain checkbox, not a detection-mode dropdown, same shape as Player/
+    -- Spirit above: the hardcoded boss name list (Core/Constants.lua's
+    -- bosses.english/german) is gone - it was still the original Burning
+    -- Crusade roster and matched nothing in Classic Era/SoD, so
+    -- "Roster"/"Both" on this row never actually did anything beyond what
+    -- "Role" already did alone. Live `worldboss` classification is now the
+    -- only signal, on or off. In-game requested position: under Spirit,
+    -- above the three role-based dropdowns below.
+    { field = "BossSoundFlag", label = "Boss death sound", sound = "bossDeath",
+      hint = "Plays on a live worldboss classification (40-man raid bosses, outdoor world bosses, SoD's level-60 raids)." },
+    -- These three (unlike PlayerSoundFlag/SpiritSoundFlag/BossSoundFlag
+    -- above) can be driven by the live role detection in
     -- Core/CombatLog.lua (isAssignedDps, isAssignedTank, isAssignedHealer),
     -- the hardcoded name roster, both, or neither - a dropdown instead of
     -- a checkbox. No shared master switch anymore (there used to be one,
@@ -30,12 +40,6 @@ local DEATH_CHECKBOXES = {
     -- affected by that.
     --
     -- Order matches UI/RosterPanel.lua's ROSTER_ORDER (dps, tank, heal).
-    -- Boss used to sit here too as a fourth dropdown, but it never had a
-    -- roster category to fall back to in the first place (see
-    -- Core/Constants.lua's bosses table) - "Roster"/"Both" on that row
-    -- were dead options wearing the same UI as three rows where they
-    -- actually did something. Reverted to a plain checkbox below instead,
-    -- same shape as Player/Spirit above.
     --
     -- Labeled "DPS", not "Damage Dealer", specifically here (unlike the
     -- roster category label, which stays "Damage Dealer") - kept short so
@@ -64,22 +68,15 @@ local DEATH_CHECKBOXES = {
     -- reasoning as the Sound Settings panel's dropdown note. "Role" in
     -- each row's own hint above ties back to this same word.
     { note = "None = never plays\nRole = assigned role only\nRoster = saved name list only\nBoth = either matches" },
-    -- Plain checkbox again, not a detection-mode dropdown: the hardcoded
-    -- boss name list (Core/Constants.lua's bosses.english/german) is gone
-    -- - it was still the original Burning Crusade roster and matched
-    -- nothing in Classic Era/SoD, so "Roster"/"Both" here never actually
-    -- did anything beyond what "Role" already did alone. Live
-    -- `worldboss` classification is now the only signal, on or off.
-    { field = "BossSoundFlag", label = "Boss death sound", sound = "bossDeath",
-      hint = "Plays on a live worldboss classification (40-man raid bosses, outdoor world bosses, SoD's level-60 raids)." },
 }
 
 local deathSoundFrame
 
 local function buildDeathSoundFrame()
     -- Tall enough for the heading, all 7 rows (PlayerSoundFlag,
-    -- SpiritSoundFlag, the 4 taller dropdown rows, and the note; hints are
-    -- now a hover tooltip, not a line underneath each row), and the Roster
+    -- SpiritSoundFlag, BossSoundFlag, the 3 taller dropdown rows, and the
+    -- note; hints are now a hover tooltip, not a line underneath each row),
+    -- and the Roster
     -- Settings button below them - not pixel-verified in-game yet, see
     -- docs/ROADMAP.md.
     local f = CritLog.UI.createPanelFrame("CritLogDeathSoundFrame", "CritLog Death Sounds", 490, 560)
