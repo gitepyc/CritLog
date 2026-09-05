@@ -221,7 +221,7 @@ this is purely a chat-string match, same mechanism as raid end/wipe above.
 
 | Raid chat message contains | Reaction |
 | --- | --- |
-| `CrossGambling: A new game has been started! Type 1 to join!` | Starts `lottery2.wav` and immediately starts `lottery3.mp3`. |
+| `CrossGambling: A new game has been started! Type 1 to join!` | Plays `lottery.mp3`. |
 
 ## Rolls
 

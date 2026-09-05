@@ -60,8 +60,7 @@ CritLog.Constants = {
         raidEndBye = "bye.mp3",
         raidEndFinal = "end.mp3",
         wipe = "wipe.mp3",
-        lotteryFirst = "lottery2.wav",
-        lotterySecond = "lottery3.mp3",
+        lottery = "lottery.mp3",
         -- roll1/69/100 hit exact values; roll5/roll10/roll95 are percentage
         -- bands - see Filters.classifyRoll for the exact thresholds.
         roll1 = "roll1.mp3",

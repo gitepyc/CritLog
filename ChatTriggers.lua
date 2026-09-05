@@ -20,8 +20,7 @@ function CritLog:CHAT_MSG_RAID(message)
     end
 
     if string.find(message, self.Constants.chatTriggers.gamble, 1, true) then
-        self:PlaySound(self.Constants.sounds.lotteryFirst)
-        self:PlaySound(self.Constants.sounds.lotterySecond)
+        self:PlaySound(self.Constants.sounds.lottery)
     end
 end
 

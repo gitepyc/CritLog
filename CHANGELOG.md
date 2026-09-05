@@ -9,6 +9,7 @@ rationale. Save the "why" for the commit message/PR, not here.
 
 ## 0.9.1-dev
 
+- **refactor:** lottery sound consolidated into one file (`lottery.mp3`, trimmed+concatenated from `lottery2.wav`+`lottery3.mp3`), single `PlaySound` call instead of two - the two previously overlapped rather than sequenced (the dead silence was trailing in the first file, not leading in the second)
 - **tweak:** Help panel's credit line is now two lines (`CritLog` / `by Epyc, 2026 ...`) instead of one, smaller/greyed-out font (`GameFontDisableSmall`) so it reads as a footer, not a heading
 - **chore:** `CritLog.toc`'s `## Interface:` now declares Retail, MoP Classic, TBC Classic, and Classic Era/SoD (matching TitanCritLine), not just Classic Era/SoD
 - **refactor:** DPS death-sound detection is now a real 3-role system (Tank/Healer/everyone else) instead of a class-based guess that silently never fired for Hunter/Mage/Warlock/Priest
