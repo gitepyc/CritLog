@@ -41,7 +41,7 @@ local function buildSection(parent, title, entries, anchor, anchorXOffset)
 
         local descText = parent:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
         descText:SetPoint("TOPLEFT", cmdText, "BOTTOMLEFT", 8, -1)
-        descText:SetWidth(300)
+        descText:SetWidth(340)
         descText:SetJustifyH("LEFT")
         descText:SetText(entry.desc)
 
@@ -54,12 +54,10 @@ end
 
 local function buildHelpFrame()
     -- In-game reported: too big overall. Shrunk from 920x660 to 800x600
-    -- (descText's width below shrunk to match), then again to 720x530
-    -- (in-game requested smaller panels overall - descText/colRightAnchor
-    -- shrunk to match, see below) - a real reduction each time, but still
-    -- just an estimate like the original size was, not pixel-verified
-    -- in-game yet, see docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogHelpFrame", "CritLog Help", 720, 530)
+    -- (descText's width below shrunk to match) - a real reduction, but
+    -- still just an estimate like the original size was, not
+    -- pixel-verified in-game yet, see docs/ROADMAP.md.
+    local f = CritLog.UI.createPanelFrame("CritLogHelpFrame", "CritLog Help", 800, 600)
     f:SetPoint("CENTER")
 
     local heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -85,7 +83,7 @@ local function buildHelpFrame()
 
     local colRightAnchor = CreateFrame("Frame", nil, f)
     colRightAnchor:SetSize(1, 1)
-    colRightAnchor:SetPoint("TOPLEFT", heading, "BOTTOMLEFT", 350, 0)
+    colRightAnchor:SetPoint("TOPLEFT", heading, "BOTTOMLEFT", 386, 0)
 
     local leftBottom, leftOffset = buildSection(f, "General", CritLog.Constants.helpGeneral, colLeftAnchor, 0)
     buildSection(f, "Sounds", CritLog.Constants.helpSounds, colRightAnchor, 0)

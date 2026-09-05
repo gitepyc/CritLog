@@ -79,7 +79,7 @@ local function buildDeathSoundFrame()
     -- and the Roster
     -- Settings button below them - not pixel-verified in-game yet, see
     -- docs/ROADMAP.md.
-    local f = CritLog.UI.createPanelFrame("CritLogDeathSoundFrame", "CritLog Death Sounds", 420, 490)
+    local f = CritLog.UI.createPanelFrame("CritLogDeathSoundFrame", "CritLog Death Sounds", 490, 560)
     -- Offset from center so it doesn't perfectly overlap the main panel or
     -- Sound Settings when several are open at once; a one-time anchor, not
     -- a continuous one, so dragging one doesn't drag the others.
