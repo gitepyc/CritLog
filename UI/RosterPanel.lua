@@ -175,10 +175,7 @@ end
 -- Sized generously tall since a roster has no fixed entry cap, unlike the
 -- highscore list popup.
 local function buildRosterFrame()
-    -- Reverted back to its original size (in-game requested) after the
-    -- general size-reduction pass - unlike the other panels, this one
-    -- wasn't actually too big.
-    local f = CritLog.UI.createPanelFrame("CritLogRosterFrame", "CritLog Roster Settings", 440, 775)
+    local f = CritLog.UI.createPanelFrame("CritLogRosterFrame", "CritLog Roster Settings", 390, 680)
     f:SetPoint("CENTER", UIParent, "CENTER", -260, -80)
 
     f.heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")

@@ -275,10 +275,7 @@ local function buildFrame()
     -- so a long spell/target name in a highscore line has room before
     -- running into that row's Reset button. Not pixel-verified in-game
     -- yet for the slider specifically - see docs/ROADMAP.md.
-    -- Height cut from 576 to 500 (in-game screenshotted: a lot of empty
-    -- space below the Debug checkbox down to the Close button) - width
-    -- left untouched, see the "Widened from 420" note above.
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 500)
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 576)
     f:SetPoint("CENTER")
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
