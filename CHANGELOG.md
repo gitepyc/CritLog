@@ -9,6 +9,15 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.7](https://github.com/gitepyc/CritLog/tree/0.3.7) (2026-09-06)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.6.2...0.3.7) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **fix:** closing the main panel now closes every open sub-window too
+
+- **tweak:** Help panel command order matches panels, descriptions expanded
+
+- **tweak:** generalize panel auto-close to a real parent-child tree
+
 ## [0.3.6.2](https://github.com/gitepyc/CritLog/tree/0.3.6.2) (2026-09-05)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.6.1...0.3.6.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
