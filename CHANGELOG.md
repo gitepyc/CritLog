@@ -9,6 +9,15 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.7.2](https://github.com/gitepyc/CritLog/tree/0.3.7.2) (2026-09-06)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.1...0.3.7.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **fix:** death-sound roster fallback could false-positive on a namesake NPC
+
+- **fix:** classifyRoll only rejected smaller custom roll ranges, not larger
+
+- **fix:** drop 40-man from Boss death sound wording; make DPS-investigation debug log unconditional (temporary, not gated behind /cl debug)
+
 ## [0.3.7.1](https://github.com/gitepyc/CritLog/tree/0.3.7.1) (2026-09-06)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7...0.3.7.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
