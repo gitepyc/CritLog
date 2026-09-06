@@ -143,27 +143,46 @@ class-based DPS guess's false-positive bug is fixed and confirmed) - see
 | Assigned raid role Healer (`isAssignedHealer`, any class), death NOT preceded by the Spirit of Redemption buff | `HealDetectionMode` matches | `Angels.mp3` |
 | Class `PRIEST` specifically (`isPriestClass`) AND preceded by the Spirit of Redemption buff (spell id `27827`) | `SpiritSoundFlag` enabled - independent of `HealDetectionMode`, see below | `Angels2.mp3` (own asset, restored from the legacy addon - see `CHANGELOG.md`) |
 
-The live checks (dps/tank/healer, not boss) need a resolved unit token
-for the dying player (the current target, or a matching visible nameplate)
-— see `findUnitToken()` in `Core/CombatLog.lua` — and that token must pass
-`UnitIsPlayer()`, discarded otherwise: some enemy NPCs carry a class
-internally, so `UnitClass()`/`UnitGroupRolesAssigned()` aren't reliably
-`nil` for them, which let enemy deaths in instances wrongly trigger these
-sounds (fixed after an in-game report - a Necromancer trash mob at Mount
-Hyjal). They also require `UnitInParty(destName) or UnitInRaid(destName)`
-— without that, any player death that happens to resolve a token (an enemy
-player in PvP, or an unrelated player on a visible nameplate) could match
+The live checks (dps/tank/healer, not boss) need a resolved unit token for
+the dying player - `findGroupUnitToken()` in `Core/CombatLog.lua`, which
+checks `party1-4`/`raid1-40` (and `player`) tokens directly by GUID, not
+`target`/nameplates (that's `findUnitToken()`, used elsewhere for enemy
+NPCs - see below and the boss/level-filter rows above). Group-roster
+tokens resolve regardless of range or visibility, unlike target/nameplate
+scanning, which is why this exists as its own function (in-game reported:
+the live checks barely ever fired for raid members specifically, since
+they're rarely your current target or on-screen, unlike party members).
+That token must also pass `UnitIsPlayer()`, discarded otherwise: some
+enemy NPCs carry a class internally, so `UnitClass()`/
+`UnitGroupRolesAssigned()` aren't reliably `nil` for them, which let enemy
+deaths in instances wrongly trigger these sounds (fixed after an in-game
+report - a Necromancer trash mob at Mount Hyjal). They also require
+`UnitInParty(destName) or UnitInRaid(destName)` — without that, any player
+death that happens to resolve a token (an enemy player in PvP) could match
 by class/role alone even though they're nobody in your group; in-game
 reported. This also gates the Spirit of Redemption branch below, checked
 against the same `destName`. When the detection mode is `experimental`,
 losing any of these (no token, not a player, not a group member, or a
 class/role mismatch) means no sound at all - the name roster is only
-consulted in `roster`/`both` mode, and is itself NOT gated by group
-membership (it's an explicit named allowlist, not a live-detection
-heuristic). The `"Schnutz"` character no longer has a separate special
-case (removed — see `CHANGELOG.md`); they are simply one more name in
-`playerGroups.dps` like everyone else, and get the regular DPS death
-sound. Boss detection accepts only the `"worldboss"` classification
+consulted in `roster`/`both` mode.
+
+The name roster is a separate, independent fallback - matched purely on
+`destName`, no group-membership requirement of its own (it's an explicit
+named allowlist, not a live-detection heuristic). It does share one
+safety check with the live path though: `findUnitToken()` (target/
+nameplate, works for non-group-members unlike `findGroupUnitToken()`
+above) is tried for the dying GUID regardless of detection mode, and if
+that resolves to something confirmed *not* a player, the roster match is
+suppressed - in-game reported: an NPC (raid trash, an add, a totem, ...)
+can coincidentally share a display name with someone already in a
+roster, triggering a false-positive death sound in a raid for something
+that was neither a player nor the current target. An unresolved token
+(off-screen, not targeted) can't disprove anything, so the roster match
+is still trusted as before in that case. The `"Schnutz"` character no
+longer has a separate special case (removed — see `CHANGELOG.md`); they
+are simply one more name in `playerGroups.dps` like everyone else, and
+get the regular DPS death sound. Boss detection accepts only the
+`"worldboss"` classification
 (40-man raid bosses, outdoor world bosses, and other level-60 raid
 encounters) - there
 is no name-list fallback anymore (removed, see `CHANGELOG.md`), so 5-man

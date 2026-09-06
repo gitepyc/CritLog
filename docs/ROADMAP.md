@@ -57,6 +57,18 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    need to start being counted too), plus somewhere to show the result
    (options panel section, Titan tooltip, and/or a `/cl` command are all
    plausible, not decided yet).
+4. Watch a custom/user-created chat channel for the lottery trigger, not
+   just raid/party - in-game floated: what if someone runs the gambling
+   announcement through a dedicated custom channel (e.g. a "World"-style
+   channel joined via `/join`) instead of raid/party chat? Technically
+   possible: named channels all funnel through one shared event,
+   `CHAT_MSG_CHANNEL`, which also passes the channel name
+   (`channelName`/`channelBaseName`) - filtering on that name (not the
+   channel *number*, which is unstable across clients/join order) would
+   catch it. Needs the channel name to be **configurable** (an options
+   panel text field and/or a `/cl` command), not hardcoded like the
+   raid/party phrases are - different users would name their channel
+   differently. Not started, no UI mockup yet.
 
 ## Parked
 

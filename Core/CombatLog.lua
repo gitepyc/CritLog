@@ -520,6 +520,23 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- a live-detection heuristic that needs a sanity check.
     local isGroupMember = UnitInParty(destName) or UnitInRaid(destName)
 
+    -- Roster-fallback safety net: a name in the roster is normally trusted
+    -- as-is (deliberately not gated on isGroupMember, see the comment
+    -- above) - but in-game reported: an occasional false-positive death
+    -- sound in a raid for something that definitely wasn't a player or
+    -- the current target. Root cause: an NPC (raid trash, an add, a
+    -- totem, ...) can happen to share a display name with someone already
+    -- in a roster, and the roster check is pure name-matching with no
+    -- player/NPC distinction at all. findUnitToken (target/nameplate scan,
+    -- unlike findGroupUnitToken's group-only scan above) can sometimes
+    -- resolve a token for the dying unit regardless of group membership -
+    -- if it does and it's definitely not a player, the roster "match" is
+    -- definitely wrong. An unresolved token (e.g. off-screen, not
+    -- targeted) can't disprove anything, so it keeps the previous
+    -- permissive behavior of trusting the name.
+    local rosterUnitToken = findUnitToken(destGUID)
+    local rosterMatchTrustworthy = not rosterUnitToken or UnitIsPlayer(rosterUnitToken)
+
     -- Each category's sound now has a 4-way mode instead of a plain
     -- on/off flag: "experimental" only trusts the live check, "roster"
     -- only the name list, "both" either one (the original default
@@ -530,7 +547,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     if matchesMode(
         CritLogDB.DpsDetectionMode,
         token and isGroupMember and CritLog.Filters.isAssignedDps(role),
-        tContains(CritLogDB.playerGroups.dps, destName)
+        rosterMatchTrustworthy and tContains(CritLogDB.playerGroups.dps, destName)
     ) then
         self:PlaySound(self.Constants.sounds.dpsDeath)
     end
@@ -545,7 +562,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     if matchesMode(
         CritLogDB.TankDetectionMode,
         token and isGroupMember and CritLog.Filters.isAssignedTank(role),
-        tContains(CritLogDB.playerGroups.tank, destName)
+        rosterMatchTrustworthy and tContains(CritLogDB.playerGroups.tank, destName)
     ) then
         self:PlaySound(self.Constants.sounds.tankDeath)
     end
@@ -576,7 +593,7 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     if not hasSpiritBuff and matchesMode(
         CritLogDB.HealDetectionMode,
         token and isGroupMember and CritLog.Filters.isAssignedHealer(role),
-        tContains(CritLogDB.playerGroups.heal, destName)
+        rosterMatchTrustworthy and tContains(CritLogDB.playerGroups.heal, destName)
     ) then
         self:PlaySound(self.Constants.sounds.healDeath)
     end
