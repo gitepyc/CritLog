@@ -547,24 +547,21 @@ local function popEscapeFrame(name)
     setRegisteredFrame(escapeFrameStack[#escapeFrameStack])
 end
 
--- Closes every other currently-open CritLog panel - in-game reported:
--- closing the main options panel left any open sub-window (Sound
--- Settings, Death Sounds, Roster Settings, the Highscore List, ...)
--- sitting open. Only the main panel hooks this (see UI/MainPanel.lua);
--- every other panel keeps closing just itself. escapeFrameStack already
--- tracks every currently-shown panel's frame name (see pushEscapeFrame/
--- popEscapeFrame above) - copied first since hiding a frame runs its own
--- OnHide, which mutates this same table via popEscapeFrame, corrupting
--- an in-progress ipairs over it.
-function CritLog.UI.closeAllOtherPanels(exceptName)
-    local names = {}
-    for _, name in ipairs(escapeFrameStack) do
-        table.insert(names, name)
-    end
-
-    for _, name in ipairs(names) do
-        if name ~= exceptName and _G[name] then
-            _G[name]:Hide()
+-- Closes a panel's own direct children (by frame name) when it closes -
+-- in-game reported: closing a panel left any sub-window it opened sitting
+-- open, generalized from an earlier main-panel-only fix to every parent
+-- panel in the tree (main -> Sound Settings/Help/Highscore List; Sound
+-- Settings -> Aura/Death/Roll Sounds; Death Sounds -> Roster Settings).
+-- Each panel hooks this with its own literal list of the frame names it
+-- opens (see each UI/*.lua file's own buildXFrame) - no dynamic parent-
+-- tracking needed, the tree is small and fixed at code-design time.
+-- Cascades naturally: hiding a child here triggers that child's own
+-- OnHide, which closes its own children the same way, all the way down.
+function CritLog.UI.closeChildPanels(childNames)
+    for _, name in ipairs(childNames) do
+        local child = _G[name]
+        if child then
+            child:Hide()
         end
     end
 end

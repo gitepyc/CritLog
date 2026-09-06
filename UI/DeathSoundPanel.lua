@@ -88,6 +88,11 @@ local function buildDeathSoundFrame()
     -- Sound Settings when several are open at once; a one-time anchor, not
     -- a continuous one, so dragging one doesn't drag the others.
     f:SetPoint("CENTER", UIParent, "CENTER", 260, -60)
+    -- Closes its own child (Roster Settings) when it closes - see
+    -- CritLog.UI.closeChildPanels' own comment.
+    f:HookScript("OnHide", function()
+        CritLog.UI.closeChildPanels({ "CritLogRosterFrame" })
+    end)
 
     local heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)

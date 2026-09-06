@@ -97,6 +97,17 @@ local function buildSoundFrame()
     -- when both are open at once; a one-time anchor, not a continuous one,
     -- so dragging either panel doesn't drag the other.
     f:SetPoint("CENTER", UIParent, "CENTER", 260, 0)
+    -- Closes its own children (Aura/Death/Roll Sounds) when it closes -
+    -- see CritLog.UI.closeChildPanels' own comment. Death Sounds closes
+    -- its own child (Roster Settings) the same way, so that closes
+    -- transitively from here too.
+    f:HookScript("OnHide", function()
+        CritLog.UI.closeChildPanels({
+            "CritLogAuraSoundFrame",
+            "CritLogDeathSoundFrame",
+            "CritLogRollSoundFrame",
+        })
+    end)
 
     local togglesHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     togglesHeading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
