@@ -183,7 +183,7 @@ longer has a separate special case (removed — see `CHANGELOG.md`); they
 are simply one more name in `playerGroups.dps` like everyone else, and
 get the regular DPS death sound. Boss detection accepts only the
 `"worldboss"` classification
-(40-man raid bosses, outdoor world bosses, and other level-60 raid
+(raid bosses, outdoor world bosses, and other level-60 raid
 encounters) - there
 is no name-list fallback anymore (removed, see `CHANGELOG.md`), so 5-man
 end bosses and similarly-ranked NPCs don't play a boss death sound at

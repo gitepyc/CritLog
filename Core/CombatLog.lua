@@ -537,6 +537,24 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     local rosterUnitToken = findUnitToken(destGUID)
     local rosterMatchTrustworthy = not rosterUnitToken or UnitIsPlayer(rosterUnitToken)
 
+    -- In-game reported: a false-positive DPS death sound happened even
+    -- with DpsDetectionMode set to "experimental" (role-only, no roster
+    -- involved at all) - the roster-fallback fix above can't explain that
+    -- case, so this exists to actually see what's resolving instead of
+    -- guessing further. TEMPORARY: a plain print(), not self:Debug() -
+    -- deliberately NOT gated on DebugFlag, since that mode logs a lot of
+    -- unrelated stuff too (aura triggers, level-filter decisions, ...)
+    -- and would bury this specific case in noise while hunting an
+    -- intermittent bug. Remove this (or move it back behind
+    -- self:Debug()) once the root cause is confirmed and fixed - it'll
+    -- otherwise print on every single death in the game, forever.
+    print(
+        "|cff33ff99CritLog Debug:|r HandleDeath", destName, destGUID,
+        "token:", token or "none",
+        "class:", class or "n/a", "role:", role or "n/a",
+        "isGroupMember:", tostring(isGroupMember)
+    )
+
     -- Each category's sound now has a 4-way mode instead of a plain
     -- on/off flag: "experimental" only trusts the live check, "roster"
     -- only the name list, "both" either one (the original default
