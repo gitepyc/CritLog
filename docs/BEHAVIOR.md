@@ -213,12 +213,16 @@ check for a specific sender is commented out.
 
 These chat sounds have no feature flag - `/cl sound` doesn't disable them.
 
-## Raid chat (lottery)
+## Raid/party chat (lottery)
 
-`CHAT_MSG_RAID`, gated by `GambleSoundFlag` (`/cl gamble`). Reacts to a
-fixed announcement phrase from a third-party lottery addon (e.g.
-CrossGambling) - CritLog does not run or understand any lottery itself,
-this is purely a chat-string match, same mechanism as raid end/wipe above.
+`CHAT_MSG_RAID` and `CHAT_MSG_PARTY`, gated by `GambleSoundFlag`
+(`/cl gamble`). Reacts to a fixed announcement phrase from a third-party
+lottery addon (e.g. CrossGambling) - CritLog does not run or understand
+any lottery itself, this is purely a chat-string match, same mechanism as
+raid end/wipe above. Both events needed since the third-party addon
+announces to whichever group chat is actually active - raid chat in a
+raid, party chat otherwise (in-game reported: party announcements weren't
+triggering the sound at all).
 
 | Raid chat message contains | Reaction |
 | --- | --- |

@@ -69,7 +69,7 @@ target is Season of Discovery on Classic Era `1.15.9`.
 
 ## Current behavior at a glance
 
-CritLog listens for six events:
+CritLog listens for seven events:
 
 | WoW event | Reaction |
 | --- | --- |
@@ -77,7 +77,7 @@ CritLog listens for six events:
 | `COMBAT_LOG_EVENT_UNFILTERED` | Detects critical spell, ranged, and melee damage; critical healing; selected auras; and deaths. |
 | `READY_CHECK` | Plays a sound when enabled. |
 | `CHAT_MSG_RAID_LEADER` | Reacts to hard-coded raid-leader phrases such as `raid end`, `raid ende`, `wipe`, and `shit show`. |
-| `CHAT_MSG_RAID` | Reacts to a CrossGambling lottery announcement in raid chat. |
+| `CHAT_MSG_RAID` / `CHAT_MSG_PARTY` | Reacts to a CrossGambling lottery announcement in raid or party chat. |
 | `CHAT_MSG_SYSTEM` | Reacts to specific `/roll` results/bands on a 1-100 roll. |
 
 Highscores and settings are stored per character in `CritLogDB` through

@@ -15,6 +15,7 @@ frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("READY_CHECK")
 frame:RegisterEvent("CHAT_MSG_RAID_LEADER")
 frame:RegisterEvent("CHAT_MSG_RAID")
+frame:RegisterEvent("CHAT_MSG_PARTY")
 frame:RegisterEvent("CHAT_MSG_SYSTEM")
 
 frame:SetScript("OnEvent", function(_, event, ...)

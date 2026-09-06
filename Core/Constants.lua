@@ -254,7 +254,7 @@ CritLog.Constants = {
         { cmd = "/cl whitehit", desc = "includes white-hit (auto-attack/ranged) crits in the sounds above - ability crits count either way" },
         { cmd = "/cl xtreme", desc = "extra sound when a hit deals over 9000 damage (off by default)" },
         { cmd = "/cl ready", desc = "sound when a ready check starts" },
-        { cmd = "/cl gamble", desc = "lottery sound (CrossGambling raid chat trigger)" },
+        { cmd = "/cl gamble", desc = "lottery sound (CrossGambling raid or party chat trigger)" },
         { cmd = "/cl roll", desc = "master switch for the 6 roll-result sounds (1, 69, 100, and three percentage bands) - see the Roll Sounds panel for each one individually" },
         { cmd = "/cl aura", desc = "master switch for 13 individually-toggleable aura/ritual sounds - see the Aura Sounds panel" },
     },

@@ -28,7 +28,7 @@ local SOUND_CHECKBOXES_TOP = {
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },
     { field = "GambleSoundFlag", label = "Lottery sound", sound = "lottery",
-      hint = "A CrossGambling lottery announcement in raid chat." },
+      hint = "A CrossGambling lottery announcement in raid or party chat." },
     -- No exact count in the hint (matches the AuraSoundFlag hint below -
     -- in-game requested the same treatment here), and "on the side" not
     -- "below" - the Roll Sounds button sits on this same row now (see

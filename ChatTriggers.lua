@@ -12,15 +12,27 @@ end
 
 -- Matches a third-party lottery addon's raid-chat announcement (e.g.
 -- CrossGambling) - not anything CritLog itself understands or runs, just a
--- fixed phrase to react to, same as raid end/wipe above.
-function CritLog:CHAT_MSG_RAID(message)
+-- fixed phrase to react to, same as raid end/wipe above. In-game reported:
+-- only fired in a raid, not a party - CrossGambling (and similar addons)
+-- announce to whichever group chat you're actually in, which is party
+-- chat outside a raid. Shared by both CHAT_MSG_RAID and CHAT_MSG_PARTY
+-- below instead of duplicating the check.
+local function handleGambleMessage(message)
     if not CritLogDB.GambleSoundFlag then
         return
     end
 
-    if string.find(message, self.Constants.chatTriggers.gamble, 1, true) then
-        self:PlaySound(self.Constants.sounds.lottery)
+    if string.find(message, CritLog.Constants.chatTriggers.gamble, 1, true) then
+        CritLog:PlaySound(CritLog.Constants.sounds.lottery)
     end
+end
+
+function CritLog:CHAT_MSG_RAID(message)
+    handleGambleMessage(message)
+end
+
+function CritLog:CHAT_MSG_PARTY(message)
+    handleGambleMessage(message)
 end
 
 -- /roll results arrive as a system message, not a real chat channel -
