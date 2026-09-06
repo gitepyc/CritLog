@@ -9,6 +9,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.7.1](https://github.com/gitepyc/CritLog/tree/0.3.7.1) (2026-09-06)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7...0.3.7.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **fix:** lottery/gamble trigger only fired in raid chat, not party
+
 ## [0.3.7](https://github.com/gitepyc/CritLog/tree/0.3.7) (2026-09-06)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.6.2...0.3.7) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
