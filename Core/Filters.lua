@@ -94,13 +94,18 @@ end
 -- Classifies a /roll result into a Constants.sounds key, or nil for a roll
 -- that doesn't hit any of the specific values/bands below. Ported near
 -- verbatim from the legacy single-file addon (see CHANGELOG.md); only
--- applies to a plain 1-100 roll (rollMin == 1, rollMax >= 100) - any other
--- range (e.g. a /roll 1 5 for loot) is deliberately ignored. Checked in
--- this order because the bands overlap at their edges (e.g. 100 would
--- also satisfy ">= 92%"), so the more specific exact-value checks must run
--- first.
+-- applies to a plain 1-100 roll (rollMin == 1, rollMax == 100) - any other
+-- range (e.g. a /roll 1 5 for loot, or a larger custom range like
+-- /roll 1-1000) is deliberately ignored. In-game reported: a sound played
+-- for a roll that wasn't anywhere near 100 - root cause was `rollMax < 100`
+-- here, which only rejected *smaller* custom ranges, not larger ones; a
+-- big custom roll (e.g. 1-1000) passed through and got misclassified by
+-- the percentage-based bands below (roll5/roll10/roll95/roll100), which
+-- only make sense for a genuine 1-100 roll. Checked in this order because
+-- the bands overlap at their edges (e.g. 100 would also satisfy ">= 92%"),
+-- so the more specific exact-value checks must run first.
 function CritLog.Filters.classifyRoll(rollResult, rollMin, rollMax)
-    if rollMin ~= 1 or rollMax < 100 then
+    if rollMin ~= 1 or rollMax ~= 100 then
         return nil
     end
 
