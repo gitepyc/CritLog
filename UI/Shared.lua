@@ -547,6 +547,28 @@ local function popEscapeFrame(name)
     setRegisteredFrame(escapeFrameStack[#escapeFrameStack])
 end
 
+-- Closes every other currently-open CritLog panel - in-game reported:
+-- closing the main options panel left any open sub-window (Sound
+-- Settings, Death Sounds, Roster Settings, the Highscore List, ...)
+-- sitting open. Only the main panel hooks this (see UI/MainPanel.lua);
+-- every other panel keeps closing just itself. escapeFrameStack already
+-- tracks every currently-shown panel's frame name (see pushEscapeFrame/
+-- popEscapeFrame above) - copied first since hiding a frame runs its own
+-- OnHide, which mutates this same table via popEscapeFrame, corrupting
+-- an in-progress ipairs over it.
+function CritLog.UI.closeAllOtherPanels(exceptName)
+    local names = {}
+    for _, name in ipairs(escapeFrameStack) do
+        table.insert(names, name)
+    end
+
+    for _, name in ipairs(names) do
+        if name ~= exceptName and _G[name] then
+            _G[name]:Hide()
+        end
+    end
+end
+
 -- Every panel needs to stay above other addon UI (a WeakAuras display was
 -- covering the panel before this was added) and share the same drag/close
 -- behavior, so this sets up everything but the content.

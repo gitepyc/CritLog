@@ -281,6 +281,16 @@ local function buildFrame()
     -- overall in-game confirmed good.
     local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 500)
     f:SetPoint("CENTER")
+    -- In-game reported: closing the main panel left any open sub-window
+    -- (Sound Settings, Death Sounds, Roster Settings, the Highscore
+    -- List, ...) sitting open. Every sub-window still closes just itself
+    -- on its own Close button/corner X/Escape - only the main panel also
+    -- closes everything else when it closes. HookScript, not SetScript,
+    -- so createPanelFrame's own OnHide (the Escape-stack bookkeeping)
+    -- still runs too, not replaced.
+    f:HookScript("OnHide", function()
+        CritLog.UI.closeAllOtherPanels(f:GetName())
+    end)
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     -- Anchored directly to the frame rather than f.Inset: that child region
