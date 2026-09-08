@@ -163,6 +163,16 @@ CritLog.Constants = {
             ids = { 27827 },
             names = { "Spirit of Redemption", "Geist der Erlösung" },
         },
+        -- Hunter's Feign Death (5384) - a stable, unchanged-since-vanilla
+        -- ID across every WoW version. In-game reported: it fires a real
+        -- UNIT_DIED combat-log event for the feigning hunter (a
+        -- well-known WoW quirk, not a bug in the addon's event handling),
+        -- so it needs to be explicitly excluded - see Core/CombatLog.lua's
+        -- HandleDeath.
+        feignDeath = {
+            ids = { 5384 },
+            names = { "Feign Death", "Totstellen" },
+        },
         -- Evocation's ID (12051) is confirmed on Wowhead Classic (a
         -- genuine vanilla/Classic Era Mage spell). Pain Suppression's ID
         -- (402004) is confirmed as the Season of Discovery Priest rune.

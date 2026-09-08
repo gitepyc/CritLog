@@ -19,6 +19,14 @@ end
 -- back once in HandleDeath, then cleared.
 local spiritOfRedemptionGuids = {}
 
+-- Hunter's Feign Death fires a real UNIT_DIED combat-log event for the
+-- feigning hunter (in-game reported: the DPS death sound triggered on a
+-- Feign Death) - a well-known WoW quirk, not a bug in listening to
+-- UNIT_DIED itself. Same cache-on-apply, read-on-death pattern as Spirit
+-- of Redemption above, since the buff application is the only signal
+-- that ties the upcoming UNIT_DIED back to this.
+local feignDeathGuids = {}
+
 -- Cooldown gates for the two group-member ritual sounds below (Mage Table,
 -- Warlock Healthstone ritual): every party/raid member's SPELL_CAST_SUCCESS
 -- fires its own combat-log event, so without this a 5-person group would
@@ -36,6 +44,14 @@ local function rememberSpiritOfRedemption(subevent, destGUID, spellId, spellName
         and CritLog.Filters.matchesSpell(CritLog.Constants.spells.spiritOfRedemption, spellId, spellName)
     then
         spiritOfRedemptionGuids[destGUID] = true
+    end
+end
+
+local function rememberFeignDeath(subevent, destGUID, spellId, spellName)
+    if subevent == "SPELL_AURA_APPLIED"
+        and CritLog.Filters.matchesSpell(CritLog.Constants.spells.feignDeath, spellId, spellName)
+    then
+        feignDeathGuids[destGUID] = true
     end
 end
 
@@ -470,6 +486,14 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         return
     end
 
+    -- Feign Death fires a real UNIT_DIED for the feigning unit - checked
+    -- first, before even the player's own death sound below, since a
+    -- hunter feigning themselves would otherwise trigger it too.
+    if feignDeathGuids[destGUID] then
+        feignDeathGuids[destGUID] = nil
+        return
+    end
+
     if destGUID == UnitGUID("Player") then
         if CritLogDB.PlayerSoundFlag then
             self:PlaySound(self.Constants.sounds.playerDeath)
@@ -536,24 +560,6 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- permissive behavior of trusting the name.
     local rosterUnitToken = findUnitToken(destGUID)
     local rosterMatchTrustworthy = not rosterUnitToken or UnitIsPlayer(rosterUnitToken)
-
-    -- In-game reported: a false-positive DPS death sound happened even
-    -- with DpsDetectionMode set to "experimental" (role-only, no roster
-    -- involved at all) - the roster-fallback fix above can't explain that
-    -- case, so this exists to actually see what's resolving instead of
-    -- guessing further. TEMPORARY: a plain print(), not self:Debug() -
-    -- deliberately NOT gated on DebugFlag, since that mode logs a lot of
-    -- unrelated stuff too (aura triggers, level-filter decisions, ...)
-    -- and would bury this specific case in noise while hunting an
-    -- intermittent bug. Remove this (or move it back behind
-    -- self:Debug()) once the root cause is confirmed and fixed - it'll
-    -- otherwise print on every single death in the game, forever.
-    print(
-        "|cff33ff99CritLog Debug:|r HandleDeath", destName, destGUID,
-        "token:", token or "none",
-        "class:", class or "n/a", "role:", role or "n/a",
-        "isGroupMember:", tostring(isGroupMember)
-    )
 
     -- Each category's sound now has a 4-way mode instead of a plain
     -- on/off flag: "experimental" only trusts the live check, "roster"
@@ -645,6 +651,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
     self:HandleAuraSounds(subevent, sourceName, destGUID, sv1, sv2)
     self:HandleXtremeDamage(subevent, sourceGUID, sv4)
     rememberSpiritOfRedemption(subevent, destGUID, sv1, sv2)
+    rememberFeignDeath(subevent, destGUID, sv1, sv2)
 
     if isPlayerSource(sourceGUID) then
         if subevent == "SWING_DAMAGE" then
