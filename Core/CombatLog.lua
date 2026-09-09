@@ -573,12 +573,23 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- Remove this (or move it back behind self:Debug()) once confirmed
     -- there's nothing left to find - it'll otherwise print on every
     -- single death in the game, forever.
-    print(
-        "|cff33ff99CritLog Debug:|r HandleDeath", destName, destGUID,
-        "token:", token or "none",
-        "class:", class or "n/a", "role:", role or "n/a",
-        "isGroupMember:", tostring(isGroupMember)
-    )
+    --
+    -- Gated on isGroupMember: in-game reported this printed for every
+    -- creature death too (trash, adds, critters, ...), not just players -
+    -- HandleDeath runs on every UNIT_DIED regardless of what died, and
+    -- this line sat before anything narrowed that down, making it
+    -- unusable to actually debug in a raid. Every relevant path this is
+    -- investigating (the live role checks) already requires
+    -- isGroupMember anyway, so filtering on it here loses no real
+    -- candidate case - only the never-relevant NPC noise.
+    if isGroupMember then
+        print(
+            "|cff33ff99CritLog Debug:|r HandleDeath", destName, destGUID,
+            "token:", token or "none",
+            "class:", class or "n/a", "role:", role or "n/a",
+            "isGroupMember:", tostring(isGroupMember)
+        )
+    end
 
     -- Each category's sound now has a 4-way mode instead of a plain
     -- on/off flag: "experimental" only trusts the live check, "roster"
