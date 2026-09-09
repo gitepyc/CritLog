@@ -256,6 +256,29 @@ local function migrateMeleeToDps()
     CritLogDB.playerGroups.melee = nil
 end
 
+-- Migrations, in the order they must actually run - several depend on an
+-- earlier one's output (see each function's own comment above for why:
+-- migratePlayerGroups must precede anything touching playerGroups.*,
+-- migratePriestToHeal/migrateMeleeToDps must precede migrateDetectionModes,
+-- etc.). CritLogDB.SchemaVersion (see SetDefaults below) is this table's
+-- index after a migration has run - migratePlayerGroups is schema 1,
+-- migrateAllLevelToThreshold is schema 7, and so on. Each function keeps
+-- its own internal guard (checking the specific field it touches) as a
+-- one-time bridge for characters upgrading from before SchemaVersion
+-- existed at all (see SetDefaults) - once a character reaches
+-- CURRENT_SCHEMA_VERSION, none of these run again, so the internal guards
+-- stop mattering in practice from that point on.
+local MIGRATIONS = {
+    migratePlayerGroups,
+    migrateToRecordLists,
+    migratePriestToHeal,
+    migrateMeleeToDps,
+    migrateDetectionModes,
+    migrateBossModeToFlag,
+    migrateAllLevelToThreshold,
+}
+local CURRENT_SCHEMA_VERSION = #MIGRATIONS
+
 function CritLog:SetDefaults()
     local initialized = not CritLogDB
     local upgraded = not initialized and CritLogDB.Version ~= self.version
@@ -273,13 +296,30 @@ function CritLog:SetDefaults()
         CritLogDB.Version = self.version
     end
 
-    migratePlayerGroups()
-    migrateToRecordLists()
-    migratePriestToHeal()
-    migrateMeleeToDps()
-    migrateDetectionModes()
-    migrateBossModeToFlag()
-    migrateAllLevelToThreshold()
+    if initialized then
+        -- Nothing to migrate FROM - DEFAULTS above already seeded the
+        -- current shape directly, so a brand-new character starts at the
+        -- current schema version outright instead of running every
+        -- migration function against an already-current table (each is
+        -- idempotent and would just no-op, but skipping them is more
+        -- honest about what's actually happening for a fresh install).
+        CritLogDB.SchemaVersion = CURRENT_SCHEMA_VERSION
+    else
+        -- An existing character predating this field entirely defaults to
+        -- 0 - safe regardless of how far they'd already progressed under
+        -- the old unconditional-every-login scheme, since every migration
+        -- below still has its own internal guard as a one-time bridge.
+        -- After this single login, SchemaVersion reaches
+        -- CURRENT_SCHEMA_VERSION and none of these run again on future
+        -- logins - unlike before, where all 7 ran unconditionally, forever.
+        CritLogDB.SchemaVersion = CritLogDB.SchemaVersion or 0
+        for schemaVersion, migrate in ipairs(MIGRATIONS) do
+            if CritLogDB.SchemaVersion < schemaVersion then
+                migrate()
+                CritLogDB.SchemaVersion = schemaVersion
+            end
+        end
+    end
 
     if initialized then
         print("CritLog Initialized")

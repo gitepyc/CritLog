@@ -23,24 +23,7 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    would need a two-click confirm or a `CritLog.UI.showConfirmation`
    StaticPopup first, since a single misclick would post to the whole
    raid/guild.
-2. CritLogDB migration/versioning cleanup - discussed in-game: there's
-   currently no schema-version counter at all, only `CritLogDB.Version`
-   (the addon version string, compared against `CritLog.toc` on login to
-   decide whether to back-fill `DEFAULTS` and print the "updated to..."
-   message). The actual migrations (`Persistence/Database.lua`'s
-   `migratePlayerGroups`/`migrateToRecordLists`/`migratePriestToHeal`/
-   `migrateMeleeToDps`/`migrateDetectionModes`/`migrateBossModeToFlag`/
-   `migrateAllLevelToThreshold`) each run unconditionally on every login,
-   guarded only by their own field's presence/absence - cheap today (7
-   functions, each a nil-check), but an ever-growing list with no way to
-   ever prune an old migration, since nothing records which schema
-   version a character's saved data is actually on. A real incrementing
-   `CritLogDB.SchemaVersion` (separate from the addon version) that each
-   migration bumps past once applied would let old migrations eventually
-   be deleted once a minimum supported schema version is declared -
-   not designed yet, just flagged as worth doing before this list gets
-   much longer.
-3. Per-ability crit rate tracking - lowest priority, not committed to yet
+2. Per-ability crit rate tracking - lowest priority, not committed to yet
    (may not happen at all). In-game requested, modeled on TitanCritLine's
    own equivalent feature (verified against their actual code, not
    guessed): `Core/Records.lua`'s `attack[HitType]["Value"] =
@@ -57,7 +40,7 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    need to start being counted too), plus somewhere to show the result
    (options panel section, Titan tooltip, and/or a `/cl` command are all
    plausible, not decided yet).
-4. Watch a custom/user-created chat channel for the lottery trigger, not
+3. Watch a custom/user-created chat channel for the lottery trigger, not
    just raid/party - in-game floated: what if someone runs the gambling
    announcement through a dedicated custom channel (e.g. a "World"-style
    channel joined via `/join`) instead of raid/party chat? Technically
@@ -73,6 +56,15 @@ done is in `CHANGELOG.md` and git history, not repeated here.
 
 Not active priorities, revisit only if the situation changes:
 
+- **Pruning old `Persistence/Database.lua` migrations** - now that
+  `CritLogDB.SchemaVersion` exists (see `CHANGELOG.md`), a character's
+  saved data records exactly which migrations it still needs. Once a
+  minimum supported schema version is eventually declared (i.e. "nobody's
+  realistically still upgrading from before schema N"), the migration
+  functions below that version - and the now-dead `DEFAULTS` fields that
+  exist purely as their source data - can be deleted outright. Not yet -
+  needs real time/version-spread first, declaring one now would be a
+  guess.
 - **Publishing (CurseForge/Wago) and the audio/asset rights review** - the
   review found the sound files' origin/license undocumented (see
   [SOUNDS.md#required-human-review](SOUNDS.md#required-human-review)),
