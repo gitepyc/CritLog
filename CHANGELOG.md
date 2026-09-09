@@ -9,6 +9,24 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.7.3-dev](https://github.com/gitepyc/CritLog/tree/0.3.7.3-dev) (2026-09-09)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.2...0.3.7.3-dev) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** bump actions/checkout to v6 (Node.js 24)
+
+- **debug:** restore unconditional death-sound debug log
+
+- **fix:** DPS death sound triggered on a Hunter's Feign Death
+
+## [0.3.7.3](https://github.com/gitepyc/CritLog/tree/0.3.7.3) (2026-09-09)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.2...0.3.7.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** bump actions/checkout to v6 (Node.js 24)
+
+- **debug:** restore unconditional death-sound debug log
+
+- **fix:** DPS death sound triggered on a Hunter's Feign Death
+
 ## [0.3.7.2](https://github.com/gitepyc/CritLog/tree/0.3.7.2) (2026-09-06)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.1...0.3.7.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
