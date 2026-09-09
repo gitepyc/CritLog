@@ -143,14 +143,17 @@ class-based DPS guess's false-positive bug is fixed and confirmed) - see
 | Assigned raid role Healer (`isAssignedHealer`, any class), death NOT preceded by the Spirit of Redemption buff | `HealDetectionMode` matches | `Angels.mp3` |
 | Class `PRIEST` specifically (`isPriestClass`) AND preceded by the Spirit of Redemption buff (spell id `27827`) | `SpiritSoundFlag` enabled - independent of `HealDetectionMode`, see below | `Angels2.mp3` (own asset, restored from the legacy addon - see `CHANGELOG.md`) |
 
-Hunter's Feign Death (spell id `5384`) fires a real `UNIT_DIED` for the
-feigning hunter - a well-known WoW quirk, not a bug in listening to
-`UNIT_DIED` itself (in-game reported: the DPS death sound triggered on a
-Feign Death). Checked first in `HandleDeath`, before even the player's own
-death sound - the buff's `SPELL_AURA_APPLIED` is cached by GUID
-(`rememberFeignDeath`/`feignDeathGuids`, same pattern as Spirit of
-Redemption below) and consumed on the matching `UNIT_DIED`, skipping every
-death sound entirely for that event.
+Hunter's Feign Death fires a real `UNIT_DIED` for the feigning hunter - a
+well-known WoW quirk, not a bug in listening to `UNIT_DIED` itself
+(in-game reported: the DPS death sound triggered on a Feign Death, still
+happened even after an initial fix, most visibly during a raid-wide
+mass-feign). Checked first in `HandleDeath`, before even the player's own
+death sound - live `UnitBuff` scan on the resolved group token
+(`hasFeignDeathBuff`, spell id `5384` matched ID-first-then-name-fallback
+like every other spell check), not a cached combat-log
+`SPELL_AURA_APPLIED` match - the earlier cache-based version still missed
+real Feign Deaths, most likely an exact spell-ID/name mismatch that the
+live scan's fallback matching doesn't depend on getting right.
 
 The live checks (dps/tank/healer, not boss) need a resolved unit token for
 the dying player - `findGroupUnitToken()` in `Core/CombatLog.lua`, which

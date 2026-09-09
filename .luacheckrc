@@ -12,6 +12,7 @@ stds.wow = {
         "CombatLogGetCurrentEventInfo",
         "PlaySoundFile",
         "GetTime", -- cooldown gate for the Mage Table/Healthstone ritual sounds (feature/legacy-sound-port)
+        "UnitBuff", -- live Feign Death detection (see Core/CombatLog.lua's hasFeignDeathBuff)
         "UnitClass", -- class/role-based death-sound matching (feature/class-based-death-sounds)
         "UnitClassification",
         "UnitGUID",

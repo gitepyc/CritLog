@@ -19,14 +19,6 @@ end
 -- back once in HandleDeath, then cleared.
 local spiritOfRedemptionGuids = {}
 
--- Hunter's Feign Death fires a real UNIT_DIED combat-log event for the
--- feigning hunter (in-game reported: the DPS death sound triggered on a
--- Feign Death) - a well-known WoW quirk, not a bug in listening to
--- UNIT_DIED itself. Same cache-on-apply, read-on-death pattern as Spirit
--- of Redemption above, since the buff application is the only signal
--- that ties the upcoming UNIT_DIED back to this.
-local feignDeathGuids = {}
-
 -- Cooldown gates for the two group-member ritual sounds below (Mage Table,
 -- Warlock Healthstone ritual): every party/raid member's SPELL_CAST_SUCCESS
 -- fires its own combat-log event, so without this a 5-person group would
@@ -44,14 +36,6 @@ local function rememberSpiritOfRedemption(subevent, destGUID, spellId, spellName
         and CritLog.Filters.matchesSpell(CritLog.Constants.spells.spiritOfRedemption, spellId, spellName)
     then
         spiritOfRedemptionGuids[destGUID] = true
-    end
-end
-
-local function rememberFeignDeath(subevent, destGUID, spellId, spellName)
-    if subevent == "SPELL_AURA_APPLIED"
-        and CritLog.Filters.matchesSpell(CritLog.Constants.spells.feignDeath, spellId, spellName)
-    then
-        feignDeathGuids[destGUID] = true
     end
 end
 
@@ -109,6 +93,31 @@ local function findGroupUnitToken(guid)
     end
 
     return nil
+end
+
+-- True if the unit currently has Feign Death active - checked live via
+-- UnitBuff at the moment of death (see HandleDeath), not a cached
+-- combat-log SPELL_AURA_APPLIED match. In-game reported: the earlier
+-- cache-based version (matching only a hardcoded spell ID/name) still
+-- missed real Feign Deaths - a raid-wide mass-feign showed multiple
+-- hunters' deaths all still resolving to a live DPS role match, meaning
+-- the cache was never actually getting set. Scanning the live buff
+-- instead sidesteps needing to get an exact ID or name right at all: it
+-- reuses the same ID-first-then-name-fallback matching every other spell
+-- check in this codebase already uses (CritLog.Filters.matchesSpell), so
+-- either one being slightly off (a rune-modified ID, a locale mismatch)
+-- still doesn't lose the detection.
+local function hasFeignDeathBuff(unit)
+    for i = 1, 40 do
+        local name, _, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
+        if not name then
+            return false
+        end
+        if CritLog.Filters.matchesSpell(CritLog.Constants.spells.feignDeath, spellId, name) then
+            return true
+        end
+    end
+    return false
 end
 
 -- Boss detection, part 1: remembering what a unit is while it still exists.
@@ -486,11 +495,24 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         return
     end
 
+    -- Live unit token for the dying player, resolved up front now (used
+    -- both by the Feign Death check right below and the class/role checks
+    -- further down). Straight to findGroupUnitToken, not findUnitToken -
+    -- the dying unit is by definition a group member here (isGroupMember
+    -- below gates on exactly that), so party/raid roster tokens are the
+    -- reliable standard path, not a fallback after target/nameplate. May
+    -- still end up nil (e.g. someone who left the group before dying) —
+    -- every check below falls back to the legacy name roster when that
+    -- happens, same as when the token resolves but the class/role check
+    -- itself doesn't match.
+    local token = findGroupUnitToken(destGUID)
+
     -- Feign Death fires a real UNIT_DIED for the feigning unit - checked
     -- first, before even the player's own death sound below, since a
-    -- hunter feigning themselves would otherwise trigger it too.
-    if feignDeathGuids[destGUID] then
-        feignDeathGuids[destGUID] = nil
+    -- hunter feigning themselves would otherwise trigger it too. See
+    -- hasFeignDeathBuff's own comment for why this is a live buff scan,
+    -- not a cached combat-log match.
+    if token and hasFeignDeathBuff(token) then
         return
     end
 
@@ -500,17 +522,6 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         end
         return
     end
-
-    -- Live unit token for the dying player, used by the class/role checks
-    -- below. Straight to findGroupUnitToken, not findUnitToken - the
-    -- dying unit is by definition a group member here (isGroupMember below
-    -- gates on exactly that), so party/raid roster tokens are the reliable
-    -- standard path, not a fallback after target/nameplate. May still end
-    -- up nil (e.g. someone who left the group before dying) — every check
-    -- below falls back to the legacy name roster when that happens, same
-    -- as when the token resolves but the class/role check itself doesn't
-    -- match.
-    local token = findGroupUnitToken(destGUID)
 
     -- Discard a resolved token unless it's actually a player: UnitClass()/
     -- UnitGroupRolesAssigned() aren't guaranteed nil for NPCs (some enemy
@@ -681,7 +692,6 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
     self:HandleAuraSounds(subevent, sourceName, destGUID, sv1, sv2)
     self:HandleXtremeDamage(subevent, sourceGUID, sv4)
     rememberSpiritOfRedemption(subevent, destGUID, sv1, sv2)
-    rememberFeignDeath(subevent, destGUID, sv1, sv2)
 
     if isPlayerSource(sourceGUID) then
         if subevent == "SWING_DAMAGE" then
