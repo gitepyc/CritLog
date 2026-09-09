@@ -5,12 +5,11 @@ critical-heal highscores and plays event-driven sounds for crits, deaths,
 auras, and raid-leader chat triggers.
 
 > **Project status:** Working legacy addon under active documentation and
-> modernization. CritLog `0.5.0` targets Season of Discovery on Classic Era
-> `1.15.9` (Interface `11509`). The options panel, the Escape-key behavior,
-> and editable dps/tank/heal rosters are now in-game confirmed; the
-> class/role-based death-sound detection for tank/boss specifically and
-> Spirit of Redemption are not yet — see [CHANGELOG.md](CHANGELOG.md) for
-> the versioned list.
+> modernization. Targets Season of Discovery on Classic Era `1.15.9`
+> (Interface `11509`). The options panel, the Escape-key behavior, editable
+> dps/tank/heal rosters, and class/role-based death-sound detection
+> (party and raid) are in-game confirmed; Spirit of Redemption is not yet —
+> see [CHANGELOG.md](CHANGELOG.md) for the versioned list.
 
 ## Documentation
 

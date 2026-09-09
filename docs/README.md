@@ -1,11 +1,9 @@
 # CritLog Wiki
 
-This documentation describes the current state of CritLog `0.3.2-dev`. It
-distinguishes user-confirmed runtime behavior, behavior derived from static code
-review, and checks that are still outstanding. The last in-game-verified
-release is `0.2.1`; everything added since then (the options panel,
-class/role-based death sounds, spell-ID matching) is a first draft pending
-in-game verification — see the `Unreleased` section of `../CHANGELOG.md`.
+This documentation describes the current state of CritLog. It distinguishes
+user-confirmed runtime behavior, behavior derived from static code review, and
+checks that are still outstanding — see [`../CHANGELOG.md`](../CHANGELOG.md)
+for the versioned list of what changed when.
 
 ## Target environment
 
@@ -36,7 +34,7 @@ after future client patches.
 | Page | Content |
 | --- | --- |
 | [Behavior and triggers](BEHAVIOR.md) | Which event and condition cause which state change or sound? |
-| [Sound catalog](SOUNDS.md) | All 18 audio files and their code usage. |
+| [Sound catalog](SOUNDS.md) | Every audio file and its code usage. |
 | [Roadmap](ROADMAP.md) | Prioritized list of what's still outstanding. |
 | [Project README](../README.md) | Installation, commands, layout, and known risks. |
 
