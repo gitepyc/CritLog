@@ -69,6 +69,34 @@ done is in `CHANGELOG.md` and git history, not repeated here.
    panel text field and/or a `/cl` command), not hardcoded like the
    raid/party phrases are - different users would name their channel
    differently. Not started, no UI mockup yet.
+5. Roll-sound range handling - bring back percentage-based bands for
+   custom roll ranges, refined from the original legacy behavior (not a
+   straight revert). `Core/Filters.lua`'s `classifyRoll` currently
+   requires an exact `1-100` roll; anything else plays no sound. Agreed
+   design - drop the size gate entirely (`rollMin == 1` is the only
+   requirement, same as the original legacy code, minus its
+   `rollMax >= 100` floor):
+   - `roll1`/`roll100`/`roll69` are **exact-value** matches (rolled
+     literally `1`, literally `rollMax`, or literally `69`) - not
+     percentage-based, not even `roll1`. The original legacy code
+     checked `roll1` against `1% of rollMax` (rarely a whole number,
+     e.g. `0.5` for a `1-50` roll - effectively dead for most ranges);
+     tying it to the literal minimum instead mirrors `roll100` and is
+     meaningful for every range size. Checked early in the match order
+     (before the percentage bands below), so a literal roll of `1`
+     always plays `roll1`, never `roll10`.
+   - `roll5`/`roll10`/`roll95` are **percentage-based**
+     (`<8%`/`8-10%`/`>=92%` of `rollMax`, matching the original bands).
+     No explicit minimum-range guard needed: for a small custom range
+     (e.g. `/roll 1-10`), the bands are naturally unreachable by the
+     math itself (the exact-value checks above already claim the only
+     candidate values, or the threshold falls below the smallest
+     possible roll) - not a bug, just falls silent for that range, same
+     net effect as an explicit floor without needing one.
+   A plain `/roll` (1-100) is unaffected either way, since it already
+   satisfies every check the same as before. Wording/hints on the Roll
+   Sounds panel need updating to describe the new exact-vs-percentage
+   split once implemented.
 
 ## Parked
 
