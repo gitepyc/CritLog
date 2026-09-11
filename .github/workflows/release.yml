@@ -47,5 +47,14 @@ jobs:
               "${{ github.server_url }}/${{ github.repository }}" >> release-notes.trunc.md
             mv release-notes.trunc.md release-notes.md
           fi
-          gh release edit "$TAG" --notes-file release-notes.md --repo "$REPO"
+
+          # SemVer convention: a tag with a hyphen (prerelease identifier,
+          # e.g. 0.3.8-dev.1) is not yet a real release - mark it as such on
+          # GitHub instead of relying on a separate branch to signal that.
+          PRERELEASE=false
+          if [[ "$TAG" == *-* ]]; then
+            PRERELEASE=true
+          fi
+
+          gh release edit "$TAG" --notes-file release-notes.md --prerelease="$PRERELEASE" --repo "$REPO"
           rm -f release-notes.md

@@ -12,6 +12,8 @@ drafting pass.
 ## [0.3.7.5-dev.1](https://github.com/gitepyc/CritLog/tree/0.3.7.5-dev.1) (2026-09-11)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.4-dev...0.3.7.5-dev.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
+- **chore:** adopt a single-branch release process (SemVer prerelease tags, full CHANGELOG regen, GitHub prerelease flag)
+
 - **docs:** drop stale hardcoded addon versions from README/docs, use generic wording
 
 - **docs:** add roll-sound percentage-range handling to the roadmap

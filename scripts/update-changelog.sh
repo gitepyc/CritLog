@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
-# Regenerates CHANGELOG.md's newest section from commits since the last
-# real tag, via git-cliff (see cliff.toml), and prepends it above the
-# existing file - existing sections are untouched. Run this locally right
-# before creating a new tag (after bumping CritLog.toc's version, before
-# `git tag`), not in CI - CI (release.yml) independently regenerates its
-# own release notes from the same commits, it doesn't read this file.
+# Regenerates CHANGELOG.md in full via git-cliff (see cliff.toml), reading
+# real tags directly from git history - not an incremental --prepend,
+# which self-duplicates every prior entry once any tag predates git-cliff's
+# own adoption commit (root-caused during the CritLog history rebuild,
+# 2026-09). Run this AFTER creating the new tag (so git-cliff can read its
+# real commit date), then fold the result into the release commit:
 #
-# Usage: scripts/update-changelog.sh <new-version>
-#   e.g. scripts/update-changelog.sh 0.9.1.12-dev
+#   sed -i 's/^## Version:.*/## Version: X.Y.Z/' CritLog.toc
+#   git add CritLog.toc && git commit -m "chore: bump version to X.Y.Z for release"
+#   git tag -f X.Y.Z
+#   scripts/update-changelog.sh
+#   git add CHANGELOG.md && git commit --amend --no-edit
+#   git tag -f X.Y.Z
+#
+# Not run in CI - release.yml independently regenerates its own release
+# notes from the same commits, it doesn't read this file.
 set -euo pipefail
-
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 <new-version>" >&2
-    exit 1
-fi
 
 cd "$(dirname "$0")/.."
 
@@ -21,4 +23,4 @@ docker run --rm \
     -v "$PWD":/repo \
     -w /repo \
     orhunp/git-cliff:latest \
-    --config cliff.toml --unreleased --tag "$1" --prepend CHANGELOG.md
+    --config cliff.toml -o CHANGELOG.md
