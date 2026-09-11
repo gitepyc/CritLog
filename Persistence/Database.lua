@@ -266,7 +266,7 @@ end
 -- its own internal guard (checking the specific field it touches) as a
 -- one-time bridge for characters upgrading from before SchemaVersion
 -- existed at all (see SetDefaults) - once a character reaches
--- CURRENT_SCHEMA_VERSION, none of these run again, so the internal guards
+-- #MIGRATIONS (the highest schema version), none of these run again, so the internal guards
 -- stop mattering in practice from that point on.
 local MIGRATIONS = {
     migratePlayerGroups,
@@ -277,7 +277,6 @@ local MIGRATIONS = {
     migrateBossModeToFlag,
     migrateAllLevelToThreshold,
 }
-local CURRENT_SCHEMA_VERSION = #MIGRATIONS
 
 function CritLog:SetDefaults()
     local initialized = not CritLogDB
@@ -296,28 +295,26 @@ function CritLog:SetDefaults()
         CritLogDB.Version = self.version
     end
 
-    if initialized then
-        -- Nothing to migrate FROM - DEFAULTS above already seeded the
-        -- current shape directly, so a brand-new character starts at the
-        -- current schema version outright instead of running every
-        -- migration function against an already-current table (each is
-        -- idempotent and would just no-op, but skipping them is more
-        -- honest about what's actually happening for a fresh install).
-        CritLogDB.SchemaVersion = CURRENT_SCHEMA_VERSION
-    else
-        -- An existing character predating this field entirely defaults to
-        -- 0 - safe regardless of how far they'd already progressed under
-        -- the old unconditional-every-login scheme, since every migration
-        -- below still has its own internal guard as a one-time bridge.
-        -- After this single login, SchemaVersion reaches
-        -- CURRENT_SCHEMA_VERSION and none of these run again on future
-        -- logins - unlike before, where all 7 ran unconditionally, forever.
-        CritLogDB.SchemaVersion = CritLogDB.SchemaVersion or 0
-        for schemaVersion, migrate in ipairs(MIGRATIONS) do
-            if CritLogDB.SchemaVersion < schemaVersion then
-                migrate()
-                CritLogDB.SchemaVersion = schemaVersion
-            end
+    -- No special case for a brand-new character: DEFAULTS above only
+    -- back-fills scalar fields, several migrations below are the ONLY
+    -- place that seed a fresh character's playerGroups roster, level
+    -- filter, and dps/tank/heal detection mode - skipping them for
+    -- `initialized` would leave those nil (found in review before this
+    -- ever shipped - would've silently disabled dps/tank/heal death
+    -- sounds and the roster for every new install). A character predating
+    -- this field entirely (nil SchemaVersion) also defaults to 0 here -
+    -- safe regardless of how far they'd already progressed under the old
+    -- unconditional-every-login scheme, since every migration below still
+    -- has its own internal guard as a one-time bridge. Either way, this
+    -- loop runs each migration at most once per character, ever - after
+    -- this login SchemaVersion reaches #MIGRATIONS (the highest schema version) and none of
+    -- these run again on future logins, unlike before, where all 7 ran
+    -- unconditionally, forever.
+    CritLogDB.SchemaVersion = CritLogDB.SchemaVersion or 0
+    for schemaVersion, migrate in ipairs(MIGRATIONS) do
+        if CritLogDB.SchemaVersion < schemaVersion then
+            migrate()
+            CritLogDB.SchemaVersion = schemaVersion
         end
     end
 
