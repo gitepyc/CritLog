@@ -262,12 +262,18 @@ triggering the sound at all).
 ## Rolls
 
 `CHAT_MSG_SYSTEM`, gated by `RollSoundFlag` (`/cl roll`). Reacts to any
-`/roll` (or the localized equivalent) starting at 1 - a plain 1-100 roll or
-a custom range (e.g. `/roll 1-1000`); a loot roll with a different minimum
-(e.g. `/roll 1 5`) is ignored. The message is parsed for both the English
-(`"X rolls N (min-max)"`) and German (`"X würfelt. Ergebnis: N
-(min-max)"`) client phrasing; classification of the parsed numbers into a
-sound (or no sound) is `CritLog.Filters.classifyRoll` - pure, no WoW API.
+`/roll` starting at 1 - a plain 1-100 roll or a custom range (e.g.
+`/roll 1-1000`); a loot roll with a different minimum (e.g. `/roll 1 5`) is
+ignored. Doesn't parse an exact wording (the client phrases your own roll
+differently from someone else's - "You roll N (min-max)" vs "PlayerName
+rolls N (min-max)", on top of the English/German split - in-game reported:
+the sound only ever fired off someone else's roll, never the player's own,
+which only became obvious once solo). Instead just requires a "roll"/"ürfel"
+substring anywhere in the message (case-insensitive - covers every
+tense/person/locale conjugation) and reads the trailing "N (min-max)"
+numbers, which every phrasing shares; classification of the parsed numbers
+into a sound (or no sound) is `CritLog.Filters.classifyRoll` - pure, no WoW
+API.
 
 | Roll result | Sound |
 | --- | --- |

@@ -35,20 +35,30 @@ function CritLog:CHAT_MSG_PARTY(message)
     handleGambleMessage(message)
 end
 
--- /roll results arrive as a system message, not a real chat channel -
--- English and German client locales phrase it differently, so both
--- patterns are tried. Actual classification is CritLog.Filters.classifyRoll
--- (pure, no WoW API) - this just parses the message and hands the numbers
--- off.
+-- /roll results arrive as a system message, not a real chat channel. Not
+-- just an English/German wording split: the client also phrases your own
+-- roll differently from someone else's ("You roll 47 (1-100)" vs
+-- "PlayerName rolls 47 (1-100)", presumably a similar self-vs-other split
+-- in German) - in-game reported: the sound only ever fired off someone
+-- else's roll, never the player's own, which only stood out once solo
+-- (nobody else around to roll and mask it). Rather than pin down every
+-- exact self/other/locale verb form, this only requires the message to
+-- mention rolling at all ("roll"/"ürfel" substring, case-insensitive -
+-- matches "roll"/"rolls"/"rolled" and any würfeln conjugation) and reads
+-- the trailing "N (min-max)" numbers, which every phrasing shares.
+-- Actual classification is CritLog.Filters.classifyRoll (pure, no WoW
+-- API) - this just parses the message and hands the numbers off.
 function CritLog:CHAT_MSG_SYSTEM(message)
     if not CritLogDB.RollSoundFlag then
         return
     end
 
-    local _, rollResult, rollMin, rollMax = string.match(message, "(.+) rolls (%d+) %((%d+)%-(%d+)%)")
-    if not rollResult then
-        _, rollResult, rollMin, rollMax = string.match(message, "(.+) würfelt%. Ergebnis: (%d+) %((%d+)%-(%d+)%)")
+    local lowerMessage = string.lower(message)
+    if not string.find(lowerMessage, "roll") and not string.find(lowerMessage, "ürfel") then
+        return
     end
+
+    local rollResult, rollMin, rollMax = string.match(message, "(%d+) %((%d+)%-(%d+)%)$")
     if not rollResult then
         return
     end
