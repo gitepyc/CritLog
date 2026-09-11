@@ -245,7 +245,7 @@ CritLog.Constants = {
         { cmd = "/cl reset", desc = "clears every highscore list" },
         { cmd = "/cl reset damage/whitehit/heal", desc = "clears one category's list" },
         { cmd = "/cl options -> Highscore List...", desc = "delete a single entry" },
-        { cmd = "/cl level", desc = "toggles the level filter (options panel has a threshold slider for how many levels below you still counts)" },
+        { cmd = "/cl level", desc = "toggles the level filter (on by default, 9 levels below you still counts - options panel has a slider to change the threshold)" },
         { cmd = "/cl options (or /cl opt)", desc = "opens/closes the options panel" },
         { cmd = "/cl config", desc = "prints current settings" },
         { cmd = "/cl help", desc = "lists this" },
@@ -258,24 +258,24 @@ CritLog.Constants = {
     -- everything below, even though its own checkbox lives on the main
     -- options panel now, not here.
     helpSounds = {
-        { cmd = "/cl mute", desc = "master sound switch, overrides everything below" },
-        { cmd = "/cl sound", desc = "sound on a new personal highscore (the \"BÄM\" sound)" },
-        { cmd = "/cl allcrits", desc = "plays the BÄM sound on every crit, not just new highscores" },
-        { cmd = "/cl whitehit", desc = "includes white-hit (auto-attack/ranged) crits in the sounds above - ability crits count either way" },
+        { cmd = "/cl mute", desc = "master sound switch, overrides everything below (on by default)" },
+        { cmd = "/cl sound", desc = "sound on a new personal highscore (the \"BÄM\" sound) (on by default)" },
+        { cmd = "/cl allcrits", desc = "plays the BÄM sound on every crit, not just new highscores (off by default)" },
+        { cmd = "/cl whitehit", desc = "includes white-hit (auto-attack/ranged) crits in the sounds above - ability crits count either way (on by default)" },
         { cmd = "/cl xtreme", desc = "extra sound when a hit deals over 9000 damage (off by default)" },
-        { cmd = "/cl ready", desc = "sound when a ready check starts" },
-        { cmd = "/cl gamble", desc = "lottery sound (CrossGambling raid or party chat trigger)" },
-        { cmd = "/cl roll", desc = "master switch for the 6 roll-result sounds (1, 69, 100, and three percentage bands) - see the Roll Sounds panel for each one individually" },
-        { cmd = "/cl aura", desc = "master switch for 13 individually-toggleable aura/ritual sounds - see the Aura Sounds panel" },
+        { cmd = "/cl ready", desc = "sound when a ready check starts (on by default)" },
+        { cmd = "/cl gamble", desc = "lottery sound (CrossGambling raid or party chat trigger) (on by default)" },
+        { cmd = "/cl roll", desc = "master switch for the 6 roll-result sounds (1, 69, 100, and three percentage bands) - see the Roll Sounds panel for each one individually (on by default)" },
+        { cmd = "/cl aura", desc = "master switch for 13 individually-toggleable aura/ritual sounds - see the Aura Sounds panel (on by default, all 13 individually on too)" },
     },
     -- Order matches UI/DeathSoundPanel.lua's actual row order (player,
     -- spirit, boss, then dps/tank/healer) - in-game requested, boss used
     -- to be listed last here even though it sits third on the panel.
     helpDeathSounds = {
-        { cmd = "/cl player", desc = "player death sound" },
-        { cmd = "/cl spirit", desc = "Spirit of Redemption sound (a Priest's death delayed ~15s by the talent, own sound file)" },
-        { cmd = "/cl boss", desc = "boss death sound - plain on/off, live worldboss classification is the only signal" },
-        { cmd = "/cl dps/tank/healer", desc = "toggles that role's death sound off/on (\"None\"/\"Both\"); the options panel dropdown adds Role-only (live assigned role) or Roster-only (saved name list) - see the Death Sounds panel" },
+        { cmd = "/cl player", desc = "player death sound (on by default)" },
+        { cmd = "/cl spirit", desc = "Spirit of Redemption sound (a Priest's death delayed ~15s by the talent, own sound file) (on by default)" },
+        { cmd = "/cl boss", desc = "boss death sound - plain on/off, live worldboss classification is the only signal (on by default)" },
+        { cmd = "/cl dps/tank/healer", desc = "toggles that role's death sound off/on (\"None\"/\"Both\"); the options panel dropdown adds Role-only (live assigned role) or Roster-only (saved name list) - see the Death Sounds panel (Both by default)" },
     },
     -- Split into a title (CritLog) and a smaller two-line subtitle -
     -- UI/HelpPanel.lua renders these as two separate FontStrings so the
