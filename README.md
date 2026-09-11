@@ -17,6 +17,7 @@ auras, and raid-leader chat triggers.
 - [Behavior and triggers](docs/BEHAVIOR.md)
 - [Complete sound catalog](docs/SOUNDS.md)
 - [Roadmap](docs/ROADMAP.md)
+- [Contributing](CONTRIBUTING.md) — bug report checklist, pull request guidelines, and the release process
 
 ## Install
 
@@ -121,6 +122,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 ```text
 critlog/
 ├── README.md
+├── CONTRIBUTING.md       # Bug report checklist, PR guidelines, release process
 ├── LICENSE               # MIT, code only — see License section below
 ├── CHANGELOG.md
 ├── docs/                 # Behavior, sounds, and refactoring wiki
