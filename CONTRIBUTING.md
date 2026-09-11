@@ -43,3 +43,8 @@ asks for:
   generated CHANGELOG.md section reads the tag's real commit date.
 - `.github/workflows/release.yml` marks the GitHub Release as a prerelease
   automatically whenever the tag contains a `-`.
+- Keep incrementing `-dev.N` for the same target version across iterations -
+  only bump the version itself when starting toward a genuinely new target,
+  not on every change. Once a `-dev.N` build is confirmed working in-game,
+  tag the same commit again without the suffix (the real release) and
+  delete the now-superseded `-dev.N` tag(s) for that target.
