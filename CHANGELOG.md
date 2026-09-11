@@ -9,6 +9,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.7.6](https://github.com/gitepyc/CritLog/tree/0.3.7.6) (2026-09-11)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.6-dev.2...0.3.7.6) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** promote 0.3.7.6-dev.2 to the 0.3.7.6 release, confirmed in-game
+
 ## [0.3.7.6-dev.2](https://github.com/gitepyc/CritLog/tree/0.3.7.6-dev.2) (2026-09-11)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.6-dev.1...0.3.7.6-dev.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 

@@ -3,7 +3,7 @@
 ## Note: #CrimeTime #420 #gtrkt
 ## Author: Epyc (original by Kîtten aka Chabo)
 ## Category: Combat
-## Version: 0.3.7.6-dev.2
+## Version: 0.3.7.6
 ## IconTexture: Interface\AddOns\CritLog\media\icon.png
 ## OptionalDeps: Titan
 
