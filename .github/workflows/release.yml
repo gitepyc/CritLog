@@ -37,8 +37,32 @@ jobs:
           TAG="${{ github.ref_name }}"
           REPO="${{ github.repository }}"
 
-          docker run --rm -v "$PWD":/repo -w /repo orhunp/git-cliff:latest \
-            --config cliff.toml --current --strip header -o release-notes.md
+          # SemVer convention: a tag with a hyphen (prerelease identifier,
+          # e.g. 0.3.8-dev.1) is not yet a real release - mark it as such on
+          # GitHub instead of relying on a separate branch to signal that.
+          PRERELEASE=false
+          if [[ "$TAG" == *-* ]]; then
+            PRERELEASE=true
+          fi
+
+          # cliff.toml's ignore_tags folds every -dev.N tag's own commits
+          # into the next real release's section (see CONTRIBUTING.md) -
+          # so git-cliff no longer sees a prerelease tag as a real boundary
+          # and `--current` errors out for one ("No tag exists for the
+          # current commit"). Give a prerelease tag an explicit commit
+          # range instead: everything since the last real (non-prerelease)
+          # tag - same content `--current` would show if this tag weren't
+          # ignored. A real release keeps using `--current`, which (thanks
+          # to the same ignore_tags) now naturally includes every -dev.N
+          # iteration folded into it too, not just the promotion commit.
+          if [ "$PRERELEASE" = true ]; then
+            PREV_TAG=$(git describe --tags --abbrev=0 --exclude '*-*' "$TAG^" 2>/dev/null || true)
+            docker run --rm -v "$PWD":/repo -w /repo orhunp/git-cliff:latest \
+              --config cliff.toml "${PREV_TAG:+$PREV_TAG..}$TAG" --strip header -o release-notes.md
+          else
+            docker run --rm -v "$PWD":/repo -w /repo orhunp/git-cliff:latest \
+              --config cliff.toml --current --strip header -o release-notes.md
+          fi
 
           MAX_CHARS=4000
           if [ "$(wc -c < release-notes.md)" -gt "$MAX_CHARS" ]; then
@@ -46,14 +70,6 @@ jobs:
             printf '\n\n…truncated - see the full changelog: %s/blob/main/CHANGELOG.md\n' \
               "${{ github.server_url }}/${{ github.repository }}" >> release-notes.trunc.md
             mv release-notes.trunc.md release-notes.md
-          fi
-
-          # SemVer convention: a tag with a hyphen (prerelease identifier,
-          # e.g. 0.3.8-dev.1) is not yet a real release - mark it as such on
-          # GitHub instead of relying on a separate branch to signal that.
-          PRERELEASE=false
-          if [[ "$TAG" == *-* ]]; then
-            PRERELEASE=true
           fi
 
           gh release edit "$TAG" --notes-file release-notes.md --prerelease="$PRERELEASE" --repo "$REPO"

@@ -48,3 +48,13 @@ asks for:
   not on every change. Once a `-dev.N` build is confirmed working in-game,
   tag the same commit again without the suffix (the real release) and
   delete the now-superseded `-dev.N` tag(s) for that target.
+- `cliff.toml`'s `ignore_tags` folds every `-dev.N` tag's commits into the
+  next real release's section automatically - `CHANGELOG.md` never shows
+  `X.Y.Z-dev.1`/`.2`/... as separate permanent entries, only the final
+  `X.Y.Z` heading with everything since the previous real release. The
+  in-progress, not-yet-tagged-clean work shows as `## Unreleased` until
+  then. `release.yml`'s release-notes step accounts for this: a real
+  release keeps using git-cliff's `--current` (which now naturally
+  includes every folded-in `-dev.N` commit too), a prerelease tag gets an
+  explicit commit range instead, since `--current` can't resolve a tag
+  that `ignore_tags` excludes.

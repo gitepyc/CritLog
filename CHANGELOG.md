@@ -9,31 +9,22 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
-## [0.3.8-dev.1](https://github.com/gitepyc/CritLog/tree/0.3.8-dev.1) (2026-09-11)
-[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.6...0.3.8-dev.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+## Unreleased
+
+- **docs:** restyle roadmap as heading+summary per item, drop sound-rights review references
 
 - **feature:** add CritLogDB.SchemaVersion, gate migrations on it instead of running unconditionally
 
 - **fix:** run migrations for a brand-new character too, not just upgrades
 
 ## [0.3.7.6](https://github.com/gitepyc/CritLog/tree/0.3.7.6) (2026-09-11)
-[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.6-dev.2...0.3.7.6) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
-
-- **chore:** promote 0.3.7.6-dev.2 to the 0.3.7.6 release, confirmed in-game
-
-## [0.3.7.6-dev.2](https://github.com/gitepyc/CritLog/tree/0.3.7.6-dev.2) (2026-09-11)
-[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.6-dev.1...0.3.7.6-dev.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
-
-- **docs:** document the dev.N-iterate-then-clean-release-tag workflow in CONTRIBUTING.md
-
-- **fix:** roll sound never fired on the player's own roll, only others'
-
-## [0.3.7.6-dev.1](https://github.com/gitepyc/CritLog/tree/0.3.7.6-dev.1) (2026-09-11)
-[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.2...0.3.7.6-dev.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.2...0.3.7.6) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
 - **chore:** bump actions/checkout to v6 (Node.js 24)
 
 - **chore:** adopt a single-branch release process (SemVer prerelease tags, full CHANGELOG regen, GitHub prerelease flag)
+
+- **chore:** promote 0.3.7.6-dev.2 to the 0.3.7.6 release, confirmed in-game
 
 - **debug:** restore unconditional death-sound debug log
 
@@ -44,6 +35,8 @@ drafting pass.
 - **docs:** add roll-sound percentage-range handling to the roadmap
 
 - **docs:** add CONTRIBUTING.md (bug report checklist, PR guidelines, release process)
+
+- **docs:** document the dev.N-iterate-then-clean-release-tag workflow in CONTRIBUTING.md
 
 - **feature:** declare Category: Combat in CritLog.toc
 
@@ -56,6 +49,8 @@ drafting pass.
 - **fix:** DPS death sound triggered on a Hunter's Feign Death
 
 - **fix:** detect Feign Death via a live buff scan, not a cached combat-log match
+
+- **fix:** roll sound never fired on the player's own roll, only others'
 
 ## [0.3.7.2](https://github.com/gitepyc/CritLog/tree/0.3.7.2) (2026-09-06)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.1...0.3.7.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)

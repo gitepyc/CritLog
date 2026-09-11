@@ -44,7 +44,12 @@ split_commits = false
 protect_breaking_commits = false
 filter_commits = false
 tag_pattern = "[0-9]*"
-ignore_tags = ""
+# Prerelease tags (X.Y.Z-dev.N) get folded into the next real release's
+# section instead of a heading of their own - see CONTRIBUTING.md's
+# "Releasing" section. Verified in an isolated repo copy before adopting:
+# a matched tag's commits roll up into the next non-matched tag (or
+# "Unreleased" if there isn't one yet), not duplicated or dropped.
+ignore_tags = '-dev\.[0-9]+$'
 topo_order = false
 sort_commits = "oldest"
 
