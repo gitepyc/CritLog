@@ -53,10 +53,9 @@ local RECORD_ORDER = { "damage", "whiteHit", "heal" }
 local frame
 local highscoreListFrame
 
--- A "reset everything at once" action (unlike a single category's Reset or
--- a single entry's Delete, both one click, no confirmation) needs a
--- confirmation dialog - it's the one highscore action that can't be
--- undone by re-adding a single entry. Registered once at file scope, the
+-- Every highscore-deleting action needs a confirmation dialog - a single
+-- misclick used to lose a category's highscores (or, before this, a single
+-- entry) instantly with no way back. Registered once at file scope, the
 -- standard StaticPopupDialogs convention.
 StaticPopupDialogs["CRITLOG_RESET_ALL_HIGHSCORES"] = {
     text = "Delete ALL highscore entries in every category? This cannot be undone.",
@@ -64,6 +63,27 @@ StaticPopupDialogs["CRITLOG_RESET_ALL_HIGHSCORES"] = {
     button2 = "Cancel",
     OnAccept = function()
         CritLog:ResetRecords()
+        CritLog:RefreshOptionsPanel()
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,
+}
+
+-- Same confirmation pattern as CRITLOG_RESET_ALL_HIGHSCORES above and
+-- UI/Shared.lua's CRITLOG_RESET_CATEGORY - in-game requested, a single
+-- entry's Delete button used to remove it immediately on one click.
+-- text_arg1 is the formatted record line (CritLog.Records.formatRecordText),
+-- computed at click time in createDeleteEntryButton below, so the dialog
+-- shows exactly which entry is about to go even if the list shifted since
+-- the button was created.
+StaticPopupDialogs["CRITLOG_DELETE_ENTRY"] = {
+    text = "Delete this highscore entry?\n%s",
+    button1 = "Delete",
+    button2 = "Cancel",
+    OnAccept = function(_, data)
+        CritLog:RemoveRecordEntry(data.kind, data.index)
         CritLog:RefreshOptionsPanel()
     end,
     timeout = 0,
@@ -84,8 +104,7 @@ local function createDeleteEntryButton(parent, kind, index)
     button:SetNormalFontObject("GameFontNormalSmall")
     button:SetHighlightFontObject("GameFontHighlightSmall")
     button:SetScript("OnClick", function()
-        CritLog:RemoveRecordEntry(kind, index)
-        CritLog:RefreshOptionsPanel()
+        CritLog.UI.showConfirmation("CRITLOG_DELETE_ENTRY", CritLog.Records.formatRecordText(kind, index), nil, { kind = kind, index = index })
     end)
     return button
 end
