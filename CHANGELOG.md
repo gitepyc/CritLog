@@ -9,10 +9,21 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.7.5-dev.2](https://github.com/gitepyc/CritLog/tree/0.3.7.5-dev.2) (2026-09-11)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.5-dev.1...0.3.7.5-dev.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **docs:** add CONTRIBUTING.md (bug report checklist, PR guidelines, release process)
+
 ## [0.3.7.5-dev.1](https://github.com/gitepyc/CritLog/tree/0.3.7.5-dev.1) (2026-09-11)
-[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.4-dev...0.3.7.5-dev.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.2...0.3.7.5-dev.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** bump actions/checkout to v6 (Node.js 24)
 
 - **chore:** adopt a single-branch release process (SemVer prerelease tags, full CHANGELOG regen, GitHub prerelease flag)
+
+- **debug:** restore unconditional death-sound debug log
+
+- **debug:** gate the DPS-investigation death log on isGroupMember
 
 - **docs:** drop stale hardcoded addon versions from README/docs, use generic wording
 
@@ -22,21 +33,9 @@ drafting pass.
 
 - **feature:** bring back percentage-based roll-sound bands for custom ranges
 
-- **fix:** detect Feign Death via a live buff scan, not a cached combat-log match
-
-## [0.3.7.4-dev](https://github.com/gitepyc/CritLog/tree/0.3.7.4-dev) (2026-09-09)
-[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.3-dev...0.3.7.4-dev) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
-
-- **debug:** gate the DPS-investigation death log on isGroupMember
-
-## [0.3.7.3-dev](https://github.com/gitepyc/CritLog/tree/0.3.7.3-dev) (2026-09-09)
-[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.2...0.3.7.3-dev) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
-
-- **chore:** bump actions/checkout to v6 (Node.js 24)
-
-- **debug:** restore unconditional death-sound debug log
-
 - **fix:** DPS death sound triggered on a Hunter's Feign Death
+
+- **fix:** detect Feign Death via a live buff scan, not a cached combat-log match
 
 ## [0.3.7.2](https://github.com/gitepyc/CritLog/tree/0.3.7.2) (2026-09-06)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.1...0.3.7.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
