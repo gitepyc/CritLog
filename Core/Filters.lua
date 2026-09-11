@@ -92,26 +92,28 @@ function CritLog.Filters.matchesDetectionMode(mode, liveMatch, rosterMatch)
 end
 
 -- Classifies a /roll result into a Constants.sounds key, or nil for a roll
--- that doesn't hit any of the specific values/bands below. Ported near
--- verbatim from the legacy single-file addon (see CHANGELOG.md); only
--- applies to a plain 1-100 roll (rollMin == 1, rollMax == 100) - any other
--- range (e.g. a /roll 1 5 for loot, or a larger custom range like
--- /roll 1-1000) is deliberately ignored. In-game reported: a sound played
--- for a roll that wasn't anywhere near 100 - root cause was `rollMax < 100`
--- here, which only rejected *smaller* custom ranges, not larger ones; a
--- big custom roll (e.g. 1-1000) passed through and got misclassified by
--- the percentage-based bands below (roll5/roll10/roll95/roll100), which
--- only make sense for a genuine 1-100 roll. Checked in this order because
--- the bands overlap at their edges (e.g. 100 would also satisfy ">= 92%"),
--- so the more specific exact-value checks must run first.
+-- that doesn't hit any of the specific values/bands below. Requires
+-- rollMin == 1 (a loot roll like /roll 1 5 starts elsewhere and is ignored)
+-- but, unlike the legacy addon this was ported from, no longer requires
+-- rollMax == 100 - any custom range starting at 1 (e.g. /roll 1-1000) is
+-- classified too.
+--
+-- roll1/roll100/roll69 are exact-value matches (rolled literally 1,
+-- literally rollMax, or literally 69) and are checked first, so a literal
+-- roll of 1 always plays roll1, never one of the percentage bands below.
+-- roll5/roll10/roll95 are percentage bands (<8% / 8-10% / >=92% of
+-- rollMax) - for a small custom range these are naturally unreachable (the
+-- exact checks above already claim the only candidate integer values, or
+-- the threshold falls below the smallest possible roll); that's fine, it
+-- just falls silent for that range instead of needing an explicit floor.
 function CritLog.Filters.classifyRoll(rollResult, rollMin, rollMax)
-    if rollMin ~= 1 or rollMax ~= 100 then
+    if rollMin ~= 1 then
         return nil
     end
 
     if rollResult == rollMax then
         return "roll100"
-    elseif rollResult == 1 * rollMax / 100 then
+    elseif rollResult == 1 then
         return "roll1"
     elseif rollResult == 69 then
         return "roll69"

@@ -261,23 +261,28 @@ triggering the sound at all).
 
 ## Rolls
 
-`CHAT_MSG_SYSTEM`, gated by `RollSoundFlag` (`/cl roll`). Only reacts to a
-plain 1-100 `/roll` (or the localized equivalent) - any other range (e.g.
-loot rolls with a custom range) is ignored. The message is parsed for both
-the English (`"X rolls N (min-max)"`) and German (`"X würfelt. Ergebnis: N
+`CHAT_MSG_SYSTEM`, gated by `RollSoundFlag` (`/cl roll`). Reacts to any
+`/roll` (or the localized equivalent) starting at 1 - a plain 1-100 roll or
+a custom range (e.g. `/roll 1-1000`); a loot roll with a different minimum
+(e.g. `/roll 1 5`) is ignored. The message is parsed for both the English
+(`"X rolls N (min-max)"`) and German (`"X würfelt. Ergebnis: N
 (min-max)"`) client phrasing; classification of the parsed numbers into a
-sound (or no sound) is `CritLog.Filters.classifyRoll` - pure, no WoW API,
-ported near-verbatim from the legacy addon.
+sound (or no sound) is `CritLog.Filters.classifyRoll` - pure, no WoW API.
 
 | Roll result | Sound |
 | --- | --- |
+| Exactly the maximum | `roll100.mp3` |
 | Exactly 1 | `roll1.mp3` |
-| 2 to ~7% of max (below the 8% band) | `roll5.mp3` |
-| ~8-10% of max | `roll10.mp3` |
 | Exactly 69 | `roll69.mp3` |
-| ~92-99% of max | `roll95.mp3` |
-| The maximum (100) | `roll100.mp3` |
+| >= 92% of max | `roll95.mp3` |
+| < 8% of max | `roll5.mp3` |
+| 8-10% of max | `roll10.mp3` |
 | Anything else | No sound. |
+
+The percentage bands (`roll5`/`roll10`/`roll95`) are naturally unreachable
+for a small custom range - not a bug, the exact-value checks above already
+claim the only candidate values, or the threshold falls below the smallest
+possible roll.
 
 ## Other code paths
 

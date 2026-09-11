@@ -106,7 +106,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl debug` | Toggles diagnostic chat output (spell ID/name seen by aura triggers, level-filter decisions). Off by default. |
 | `/cl options` (or `/cl opt`) | Opens/closes the in-game options panel (checkboxes for every toggle above, plus preview buttons for triggerable sounds). First draft, not yet in-game verified — see [CHANGELOG.md](CHANGELOG.md). |
 | `/cl ready` | Toggles the ready-check sound. |
-| `/cl roll` | Toggles sounds for specific `/roll` results on a 1-100 roll (1, 69, 95+, 100, lowest range). |
+| `/cl roll` | Toggles sounds for specific `/roll` results/bands - exact 1/69/max, plus percentage-based low/high bands that work for any custom range starting at 1, not just 1-100. |
 | `/cl gamble` | Toggles the lottery sound (CrossGambling raid-chat announcement). |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl player` | Toggles the player's own death sound. |

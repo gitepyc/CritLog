@@ -11,12 +11,12 @@
 -- the exact result/band each one fires on.
 local ROLL_CHECKBOXES = {
     { note = "Requires \"Roll Sounds\" enabled on the Sound Settings panel." },
-    { label = "Roll 1", sound = "roll1", previewOnly = true },
-    { label = "Roll 2-7", sound = "roll5", previewOnly = true },
-    { label = "Roll 8-10", sound = "roll10", previewOnly = true },
-    { label = "Roll 69", sound = "roll69", previewOnly = true },
-    { label = "Roll 92-99", sound = "roll95", previewOnly = true },
-    { label = "Roll 100", sound = "roll100", previewOnly = true },
+    { label = "Roll 1 (exact)", sound = "roll1", previewOnly = true },
+    { label = "Low roll (<8%)", sound = "roll5", previewOnly = true },
+    { label = "Low roll (8-10%)", sound = "roll10", previewOnly = true },
+    { label = "Roll 69 (exact)", sound = "roll69", previewOnly = true },
+    { label = "High roll (>=92%)", sound = "roll95", previewOnly = true },
+    { label = "Max roll (exact)", sound = "roll100", previewOnly = true },
 }
 
 local rollSoundFrame
