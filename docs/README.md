@@ -47,8 +47,6 @@ after future client patches.
 | Sound files and technical metadata | Fully inventoried |
 | Byte-identical duplicates | Verified through SHA-256 comparison |
 | In-game playback of every trigger on SoD | Not yet recorded as a test matrix |
-| Listening review of every clip | Outstanding |
-| Copyright and redistribution rights | Outstanding |
 
 ## Maintenance rule
 

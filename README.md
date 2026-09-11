@@ -203,8 +203,7 @@ detection for raid members specifically (a fix has landed, pending a
 real raid test), spell-ID aura matching (all fall back to the old
 name-based matching when the live check doesn't resolve), and Spirit of
 Redemption detection. No CurseForge/Wago project configured yet -
-releases only reach GitHub for now. Audio-file rights are undocumented
-and must be reviewed before public distribution.
+releases only reach GitHub for now.
 Full prioritized list: [Roadmap](docs/ROADMAP.md).
 
 ## Development
@@ -225,8 +224,4 @@ manual in-game testing.
 
 ## License
 
-The Lua source code is MIT-licensed — see [LICENSE](LICENSE). The audio
-files under `sounds/` are **not** covered by that license: their
-origin and redistribution rights are undocumented and must be reviewed
-before public distribution — see
-[docs/SOUNDS.md](docs/SOUNDS.md#required-human-review).
+The Lua source code is MIT-licensed — see [LICENSE](LICENSE).

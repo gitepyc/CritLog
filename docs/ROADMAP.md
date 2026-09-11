@@ -3,75 +3,53 @@
 Open, forward-looking items only, in priority order. Everything already
 done is in `CHANGELOG.md` and git history, not repeated here.
 
-1. One-click post highscores to chat - **next feature up.** Chosen trigger:
-   a dedicated post button directly on the Highscore List popup
-   (`UI/MainPanel.lua`'s `layoutHighscoreList`), next to/near the existing
-   per-entry Delete buttons - posts the current top record(s) straight to
-   a chosen chat channel (Guild, Raid/Party, Whisper, ...) via
-   `SendChatMessage`, instead of manually typing or screenshotting. Needs
-   a channel picker (Whisper additionally needs a target name/edit box)
-   and a decision on posting just the visible entry vs. the whole list.
-   Not decided yet: one combined message for all three categories vs. one
-   per category/click, and whether to reuse the colored
-   `formatRecordTextColored` variant (WoW chat channels do render `|c`
-   color codes for other players, unlike a plain `print()`) or stick to
-   the plain uncolored text for maximum compatibility/readability.
-   Message styling/text layout also still open. The earlier idea of
-   repurposing the TitanPanel button's left-click itself (normally opens
-   `/cl options`, see `UI/TitanButton.lua`) into a one-click chat-post
-   shortcut is parked for now, not the chosen approach - if revisited, it
-   would need a two-click confirm or a `CritLog.UI.showConfirmation`
-   StaticPopup first, since a single misclick would post to the whole
-   raid/guild.
-2. Per-ability crit rate tracking - lowest priority, not committed to yet
-   (may not happen at all). In-game requested, modeled on TitanCritLine's
-   own equivalent feature (verified against their actual code, not
-   guessed): `Core/Records.lua`'s `attack[HitType]["Value"] =
-   (attack[HitType]["Value"] or 0) + 1` counts every hit, split into a
-   `NORMAL` and a `CRIT` bucket per ability name, persisted across
-   sessions; `UI/Summary.lua`'s `tcl_GetHighestCritPercentage` computes
-   `critHits / (critHits + normalHits) * 100` per ability and finds the
-   one with the best rate. CritLog currently only tracks the single
-   highest-*value* crit per category (`CritLogDB.records`), not hit
-   counts, so this needs new state entirely: a per-ability
-   `{ normal = N, crit = M }` counter table, incremented on *every*
-   relevant hit (not just new highscores - the combat-log handlers
-   currently mostly only care about crits at all, non-crit hits would
-   need to start being counted too), plus somewhere to show the result
-   (options panel section, Titan tooltip, and/or a `/cl` command are all
-   plausible, not decided yet).
-3. Watch a custom/user-created chat channel for the lottery trigger, not
-   just raid/party - in-game floated: what if someone runs the gambling
-   announcement through a dedicated custom channel (e.g. a "World"-style
-   channel joined via `/join`) instead of raid/party chat? Technically
-   possible: named channels all funnel through one shared event,
-   `CHAT_MSG_CHANNEL`, which also passes the channel name
-   (`channelName`/`channelBaseName`) - filtering on that name (not the
-   channel *number*, which is unstable across clients/join order) would
-   catch it. Needs the channel name to be **configurable** (an options
-   panel text field and/or a `/cl` command), not hardcoded like the
-   raid/party phrases are - different users would name their channel
-   differently. Not started, no UI mockup yet.
+### 1. One-click post highscores to chat (next up)
+
+Add a post button on the Highscore List popup (`UI/MainPanel.lua`, next to
+the per-entry Delete buttons) that sends the current top record(s) to a
+chosen chat channel via `SendChatMessage`, instead of manually typing or
+screenshotting.
+
+Still open: a channel picker (Whisper needs a target name field), one
+combined message for all three categories vs. one per category/click, and
+plain vs. colored text (`formatRecordTextColored` - WoW chat channels do
+render `|c` color codes for other players). Repurposing the TitanPanel
+button's left-click into a post shortcut was considered and parked - too
+easy to misclick into the whole raid/guild without a confirm step first.
+
+### 2. Per-ability crit rate tracking (low priority, not committed to)
+
+Track normal-vs-crit hit counts per ability, not just the single
+highest-value crit per category like today, to show which ability crits
+most often - modeled on TitanCritLine's own equivalent feature.
+
+Needs new persisted state (a `{ normal = N, crit = M }` counter per
+ability, updated on every relevant hit, not just new highscores) and a
+place to display the result (options panel, Titan tooltip, or a `/cl`
+command - undecided). May not happen at all.
+
+### 3. Watch a custom chat channel for the lottery trigger
+
+Let the CrossGambling-style lottery trigger react in a user-joined custom
+channel too, not just raid/party chat.
+
+Technically simple - named channels funnel through `CHAT_MSG_CHANNEL`,
+which passes the channel name - just needs a configurable channel-name
+setting (options panel field and/or `/cl` command) instead of the
+hardcoded raid/party phrases. Not started, no UI mockup yet.
+
 ## Parked
 
-Not active priorities, revisit only if the situation changes:
+Not active priorities, revisit only if the situation changes.
 
-- **Pruning old `Persistence/Database.lua` migrations** - now that
-  `CritLogDB.SchemaVersion` exists (see `CHANGELOG.md`), a character's
-  saved data records exactly which migrations it still needs. Once a
-  minimum supported schema version is eventually declared (i.e. "nobody's
-  realistically still upgrading from before schema N"), the migration
-  functions below that version - and the now-dead `DEFAULTS` fields that
-  exist purely as their source data - can be deleted outright. Not yet -
-  needs real time/version-spread first, declaring one now would be a
-  guess.
-- **Publishing (CurseForge/Wago) and the audio/asset rights review** - the
-  review found the sound files' origin/license undocumented (see
-  [SOUNDS.md#required-human-review](SOUNDS.md#required-human-review)),
-  which likely rules out public distribution as-is. A sounds-stripped
-  build was floated as one possible way around that, but it's an early
-  idea, not a plan - low priority either way since staying internal/
-  guild-only is a perfectly fine outcome.
+### Pruning old `Persistence/Database.lua` migrations
+
+`CritLogDB.SchemaVersion` now records exactly which migrations a
+character still needs (see `CHANGELOG.md`). Once a minimum supported
+schema version is declared, the migration functions below it - and the
+`DEFAULTS` fields that exist purely as their source data - can be deleted.
+Not yet: needs real time/version-spread first, declaring one now would be
+a guess.
 
 ## Known constraint
 

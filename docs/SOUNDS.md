@@ -7,7 +7,7 @@ The catalog contains **31 files**, all in active use, totaling approximately
 consolidation, random-pick removal, the `feature/legacy-sound-port` batch of
 14 files ported from the original single-file addon, the lottery and
 raid-end two-clip-to-one-file consolidations); [ROADMAP.md](ROADMAP.md) for
-what's still outstanding — the asset-rights review below is the big one.
+what's still outstanding.
 
 Every file has been loudness-, sample-rate-, and bitrate-normalized (see
 `feature/sound-normalization` in `CHANGELOG.md` and
@@ -93,19 +93,3 @@ complete trigger conditions.
 | `wilhelm.ogg` | 1 s | 72 kbps | 10,861 B | Damage Dealer death |
 | `wipe.mp3` | 10 s | 128 kbps | 163,883 B | wipe chat phrase |
 | `Xtreme.mp3` | 3 s | 130 kbps | 43,092 B | extreme hit (off by default) |
-
-## Required human review
-
-The technical and code-usage inventory is complete. Before cleanup or public
-distribution, every clip still needs a listening and rights review:
-
-- clear content description instead of only a historical filename
-- acceptable loudness and duration in game - the normalization pass above
-  gives every file the same *technical* loudness target, but that's not a
-  substitute for actually listening to each one in game
-- language and potentially offensive or unwanted content
-- source, author, license, and redistribution permission
-- decision to keep, replace, retain for private use only, or remove
-
-Until this review is complete, filenames must not be treated as reliable content
-descriptions and existing files must not be treated as approved assets.
