@@ -50,6 +50,9 @@ stds.wow = {
         "TitanPanelButton_OnClick",
         "TitanPanelButton_UpdateButton",
         "Titan_Menu",
+        -- UI/MainPanel.lua: Highscore List popup's Post button
+        -- (feature/post-highscores-to-chat)
+        "SendChatMessage",
     },
     globals = {
         -- Blizzard slash-command convention: SlashCmdList is a client-owned
