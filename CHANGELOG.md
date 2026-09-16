@@ -11,11 +11,17 @@ GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
 ## Unreleased
 
+- **chore:** consolidate -dev.N prerelease tags into their real release's CHANGELOG section
+
 - **docs:** restyle roadmap as heading+summary per item, drop sound-rights review references
 
 - **feature:** add CritLogDB.SchemaVersion, gate migrations on it instead of running unconditionally
 
+- **feature:** post highscores to chat from the Highscore List popup
+
 - **fix:** run migrations for a brand-new character too, not just upgrades
+
+- **tweak:** post row below the list, test colored text on real channels too
 
 ## [0.3.7.6](https://github.com/gitepyc/CritLog/tree/0.3.7.6) (2026-09-11)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.2...0.3.7.6) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
