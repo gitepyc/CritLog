@@ -113,20 +113,20 @@ end
 -- yet) as its own SendChatMessage call, not one combined message - chat
 -- doesn't render embedded newlines, so multiple lines need multiple calls
 -- either way, and a separate call per category reads more naturally than
--- cramming three lines into one 255-char message. FOR_ME isn't a real
--- chat channel - it's a local print (the colored variant, matching how
--- every other on-screen highscore display in this addon looks), so a
--- misclick can't spam anyone by accident even before the channel picker
--- is touched (see PostChannel's FOR_ME default in Persistence/Database.lua).
+-- cramming three lines into one 255-char message. Colored (the same
+-- variant used everywhere else on-screen) for every destination, not just
+-- FOR_ME - WoW chat channels do render |c color codes for other players
+-- too, not just locally; in-game testing to decide if this stays or
+-- switches to formatRecordText's plain variant.
 local function postHighscores(channel, whisperTarget)
     for _, kind in ipairs(RECORD_ORDER) do
         if CritLogDB.records[kind][1] then
             if channel == "FOR_ME" then
                 print(CritLog.Records.formatRecordTextColored(kind, 1))
             elseif channel == "WHISPER" then
-                SendChatMessage(CritLog.Records.formatRecordText(kind, 1), "WHISPER", nil, whisperTarget)
+                SendChatMessage(CritLog.Records.formatRecordTextColored(kind, 1), "WHISPER", nil, whisperTarget)
             else
-                SendChatMessage(CritLog.Records.formatRecordText(kind, 1), channel)
+                SendChatMessage(CritLog.Records.formatRecordTextColored(kind, 1), channel)
             end
         end
     end
@@ -134,10 +134,10 @@ end
 
 -- Post row: a channel dropdown + Post button on one line, plus a target
 -- name box that only shows up for Whisper (every other channel needs
--- nothing extra). Anchored below `anchor` (the popup's own heading);
--- layoutHighscoreList below anchors the category listings below this
--- row's bottom instead of directly below the heading, so this doesn't
--- overlap anything.
+-- nothing extra). Anchored below `anchor` - buildHighscoreListFrame
+-- passes the bottom of the whole highscore list (last row of the last
+-- category), not the heading, so this sits between the list and the
+-- Close button.
 local function createPostRow(f, anchor)
     local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     label:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -12)
@@ -290,7 +290,7 @@ end
 -- need a brand new crit to refill it, the next-best already-tracked
 -- entry just shifts into view on the next refresh.
 local function layoutHighscoreList(f)
-    local previous = f.postRow
+    local previous = f.heading
 
     for _, kind in ipairs(RECORD_ORDER) do
         f.categoryHeadings[kind]:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, -14)
@@ -355,6 +355,8 @@ local function layoutHighscoreList(f)
             end
         end
     end
+
+    return previous
 end
 
 -- Sized for the worst case (Constants.maxDisplayEntries rows in every
@@ -362,10 +364,12 @@ end
 -- character has built up a real history, which is expected for a first
 -- draft - see docs/ROADMAP.md. Widened from 420 for the table columns
 -- (Ability names in particular need more room than a single combined line
--- did). Height grown from 520 to 560 for the Post row + its conditional
--- Whisper-target row below the heading (see createPostRow).
+-- did). Height grown from 520 to 600 for the Post row + its conditional
+-- Whisper-target row below the highscore list, above the Close button
+-- (see createPostRow) - exact fit still pending in-game verification,
+-- like every other size in this panel.
 local function buildHighscoreListFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 560)
+    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 600)
     -- Opens to the left of center, mirroring the sound panel opening to the
     -- right, so both can be open next to the main panel at once.
     f:SetPoint("CENTER", UIParent, "CENTER", -260, 0)
@@ -373,8 +377,6 @@ local function buildHighscoreListFrame()
     f.heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     f.heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     f.heading:SetText("Highscores")
-
-    f.postRow = createPostRow(f, f.heading)
 
     local resetAllButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     resetAllButton:SetSize(90, 20)
@@ -399,7 +401,15 @@ local function buildHighscoreListFrame()
         f.columnHeaders[kind] = createColumnHeaderRow(f)
     end
 
-    layoutHighscoreList(f)
+    -- Post row goes below the whole list (last row of the last category),
+    -- not below the heading - in-game requested, reads more naturally
+    -- right above the Close button than competing with Reset All at the
+    -- top. The list's per-category height is fixed regardless of actual
+    -- entry count (see layoutHighscoreList's own comment), so this anchor
+    -- point never shifts between refreshes - built once here, not redone
+    -- on every layoutHighscoreList call below.
+    local lastRow = layoutHighscoreList(f)
+    f.postRow = createPostRow(f, lastRow)
 
     return f
 end
