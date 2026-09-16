@@ -50,6 +50,14 @@ local DEFAULTS = {
     XtremeSoundFlag = false,
     DebugFlag = false,
     MasterSoundFlag = true,
+    -- Highscore List popup's "Post" dropdown/target box (see
+    -- UI/MainPanel.lua's postHighscores) - remembers the last-picked
+    -- channel/whisper target between sessions, same as any other setting.
+    -- FOR_ME (a local print, not a real chat channel) as the default
+    -- rather than a real channel: a stray click on "Post" should never
+    -- spam guild/raid chat by accident.
+    PostChannel = "FOR_ME",
+    PostWhisperTarget = "",
 }
 
 -- Seed for CritLogDB.playerGroups on first install (migratePlayerGroups
