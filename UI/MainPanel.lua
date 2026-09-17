@@ -113,20 +113,21 @@ end
 -- yet) as its own SendChatMessage call, not one combined message - chat
 -- doesn't render embedded newlines, so multiple lines need multiple calls
 -- either way, and a separate call per category reads more naturally than
--- cramming three lines into one 255-char message. Colored (the same
--- variant used everywhere else on-screen) for every destination, not just
--- FOR_ME - WoW chat channels do render |c color codes for other players
--- too, not just locally; in-game testing to decide if this stays or
--- switches to formatRecordText's plain variant.
+-- cramming three lines into one 255-char message. FOR_ME prints the
+-- colored variant locally (same as everywhere else on-screen), but real
+-- chat channels get the plain variant - confirmed in-game that WoW's
+-- server silently drops SendChatMessage text containing |c color escapes
+-- on Party/Raid/Guild/Whisper (anti-spoofing filtering), so colored text
+-- never arrives there at all.
 local function postHighscores(channel, whisperTarget)
     for _, kind in ipairs(RECORD_ORDER) do
         if CritLogDB.records[kind][1] then
             if channel == "FOR_ME" then
                 print(CritLog.Records.formatRecordTextColored(kind, 1))
             elseif channel == "WHISPER" then
-                SendChatMessage(CritLog.Records.formatRecordTextColored(kind, 1), "WHISPER", nil, whisperTarget)
+                SendChatMessage(CritLog.Records.formatRecordText(kind, 1), "WHISPER", nil, whisperTarget)
             else
-                SendChatMessage(CritLog.Records.formatRecordTextColored(kind, 1), channel)
+                SendChatMessage(CritLog.Records.formatRecordText(kind, 1), channel)
             end
         end
     end
