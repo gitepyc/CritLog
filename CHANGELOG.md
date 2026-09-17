@@ -21,6 +21,8 @@ drafting pass.
 
 - **fix:** run migrations for a brand-new character too, not just upgrades
 
+- **fix:** use plain (not colored) chat text for real channels
+
 - **tweak:** post row below the list, test colored text on real channels too
 
 ## [0.3.7.6](https://github.com/gitepyc/CritLog/tree/0.3.7.6) (2026-09-11)
