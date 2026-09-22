@@ -37,21 +37,21 @@ jobs:
           TAG="${{ github.ref_name }}"
           REPO="${{ github.repository }}"
 
-          # SemVer convention: a tag with a hyphen (prerelease identifier,
-          # e.g. 0.3.8-dev.1) is not yet a real release - mark it as such on
-          # GitHub instead of relying on a separate branch to signal that.
+          # SemVer: a tag with a `-` (0.8.8-dev.1) is a prerelease, a plain
+          # tag (0.8.8) is a real release - single source of truth for the
+          # prerelease flag, no separate branch needed to signal it.
           PRERELEASE=false
-          if [[ "$TAG" == *-* ]]; then
-            PRERELEASE=true
-          fi
+          case "$TAG" in
+            *-*) PRERELEASE=true ;;
+          esac
 
           # cliff.toml's ignore_tags folds every -dev.N tag's own commits
-          # into the next real release's section (see CONTRIBUTING.md) -
-          # so git-cliff no longer sees a prerelease tag as a real boundary
-          # and `--current` errors out for one ("No tag exists for the
-          # current commit"). Give a prerelease tag an explicit commit
-          # range instead: everything since the last real (non-prerelease)
-          # tag - same content `--current` would show if this tag weren't
+          # into the next real release's section (see CONTRIBUTING.md) - so
+          # git-cliff no longer sees a prerelease tag as a real boundary and
+          # `--current` errors out for one ("No tag exists for the current
+          # commit"). Give a prerelease tag an explicit commit range
+          # instead: everything since the last real (non-prerelease) tag -
+          # same content `--current` would show if this tag weren't
           # ignored. A real release keeps using `--current`, which (thanks
           # to the same ignore_tags) now naturally includes every -dev.N
           # iteration folded into it too, not just the promotion commit.
@@ -72,5 +72,6 @@ jobs:
             mv release-notes.trunc.md release-notes.md
           fi
 
-          gh release edit "$TAG" --notes-file release-notes.md --prerelease="$PRERELEASE" --repo "$REPO"
+          gh release edit "$TAG" --notes-file release-notes.md --repo "$REPO" \
+            --prerelease="$PRERELEASE" --latest="$([ "$PRERELEASE" = true ] && echo false || echo true)"
           rm -f release-notes.md
