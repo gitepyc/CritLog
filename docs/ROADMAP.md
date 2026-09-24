@@ -3,16 +3,19 @@
 Open, forward-looking items only, in priority order. Everything already
 done is in `CHANGELOG.md` and git history, not repeated here.
 
-### 1. Per-ability crit rate tracking (low priority, not committed to)
+### 1. Per-ability crit rate tracking
 
 Track normal-vs-crit hit counts per ability, not just the single
 highest-value crit per category like today, to show which ability crits
 most often - modeled on TitanCritLine's own equivalent feature.
 
-Needs new persisted state (a `{ normal = N, crit = M }` counter per
-ability, updated on every relevant hit, not just new highscores) and a
-place to display the result (options panel, Titan tooltip, or a `/cl`
-command - undecided). May not happen at all.
+A genuinely large overhaul, not a small addition: today CritLog only ever
+persists the current #1 (or top-N) highscore per category, discarding
+every other hit. This needs every single attack recorded (at least a
+running `{ normal = N, crit = M }` counter per ability, updated on every
+hit, not just new highscores), which touches the combat-log handling path
+throughout. Also needs a place to display the result (options panel,
+Titan tooltip, or a `/cl` command - undecided).
 
 ## Parked
 
