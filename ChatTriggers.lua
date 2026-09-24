@@ -10,13 +10,11 @@ function CritLog:CHAT_MSG_RAID_LEADER(message)
     end
 end
 
--- Matches a third-party lottery addon's raid-chat announcement (e.g.
+-- Matches a third-party lottery addon's chat announcement (e.g.
 -- CrossGambling) - not anything CritLog itself understands or runs, just a
--- fixed phrase to react to, same as raid end/wipe above. In-game reported:
--- only fired in a raid, not a party - CrossGambling (and similar addons)
--- announce to whichever group chat you're actually in, which is party
--- chat outside a raid. Shared by both CHAT_MSG_RAID and CHAT_MSG_PARTY
--- below instead of duplicating the check.
+-- fixed phrase to react to, same as raid end/wipe above. CrossGambling's
+-- own chat-destination options are Party/Raid/Guild only (no custom
+-- channel support), so all three are covered here.
 local function handleGambleMessage(message)
     if not CritLogDB.GambleSoundFlag then
         return
@@ -32,6 +30,10 @@ function CritLog:CHAT_MSG_RAID(message)
 end
 
 function CritLog:CHAT_MSG_PARTY(message)
+    handleGambleMessage(message)
+end
+
+function CritLog:CHAT_MSG_GUILD(message)
     handleGambleMessage(message)
 end
 

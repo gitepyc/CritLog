@@ -47,19 +47,10 @@ CritLog.Constants = {
         crit = "at_bam_babam.mp3",
         xtremeDamage = "Xtreme.mp3",
         dpsDeath = "wilhelm.ogg",
-        playerDeath = "MarioDeath.mp3",
+        playerDeath = "Toni.mp3",
         bossDeath = "FFX.mp3",
         tankDeath = "Tank.mp3",
         healDeath = "Angels.mp3",
-        -- Legacy addon randomly alternated between Angels1.mp3/Angels2.mp3
-        -- for the same "priest death" trigger (see CHANGELOG.md); the 0.4.0
-        -- cleanup that removed random multi-clip selection kept only one
-        -- (as `Angels.mp3`, used by healDeath above) and dropped the other.
-        -- Now that Spirit of Redemption is an independently toggleable
-        -- trigger rather than just a file choice under the same gate as
-        -- healDeath, it gets the previously-dropped clip back as its own
-        -- dedicated asset instead of reusing healDeath's file.
-        spiritOfRedemption = "Angels2.mp3",
         innervate = "Innervate.mp3",
         manaTide = "Manatide.mp3",
         bloodlust = "Bloodlust.mp3",
@@ -124,18 +115,6 @@ CritLog.Constants = {
         -- Paladin/Resto Druid/Resto Shaman belongs here too.
         heal = { label = "Healer" },
     },
-    -- Class rule for Spirit of Redemption only now (see Core/Filters.lua's
-    -- isPriestClass and Core/CombatLog.lua's HandleDeath) - the talent
-    -- itself is Priest-specific, unlike every other death-sound category,
-    -- which is role-based (isAssignedDps/isAssignedTank/isAssignedHealer)
-    -- and needs no class table at all. Used to also hold meleeCapable/
-    -- alwaysMelee for the old class-based DPS guess - removed once that
-    -- became a real role check, see CHANGELOG.md.
-    deathClasses = {
-        -- Priest maps 1:1 onto WoW's class system, so this is a plain
-        -- UnitClass check.
-        priest = { "PRIEST" },
-    },
     -- Matched by spell ID first (Season of Discovery, cross-checked against
     -- Wowhead's current Classic database - see CHANGELOG.md), with the
     -- English/German display name kept as a fallback in case an ID turns
@@ -169,10 +148,6 @@ CritLog.Constants = {
         soulstone = {
             ids = { 20707 },
             names = { "Seelenstein Auferstehung", "Soulstone Resurrection" },
-        },
-        spiritOfRedemption = {
-            ids = { 27827 },
-            names = { "Spirit of Redemption", "Geist der Erlösung" },
         },
         -- Hunter's Feign Death (5384) - a stable, unchanged-since-vanilla
         -- ID across every WoW version. In-game reported: it fires a real
@@ -280,12 +255,11 @@ CritLog.Constants = {
         { cmd = "/cl aura", desc = "master switch for 13 individually-toggleable aura/ritual sounds - see the Aura Sounds panel (on by default, all 13 individually on too)" },
     },
     -- Order matches UI/DeathSoundPanel.lua's actual row order (player,
-    -- spirit, boss, then dps/tank/healer) - in-game requested, boss used
-    -- to be listed last here even though it sits third on the panel.
+    -- boss, then dps/tank/healer).
     helpDeathSounds = {
         { cmd = "/cl player", desc = "player death sound (on by default)" },
-        { cmd = "/cl spirit", desc = "Spirit of Redemption sound (a Priest's death delayed ~15s by the talent, own sound file) (on by default)" },
         { cmd = "/cl boss", desc = "boss death sound - plain on/off, live worldboss classification is the only signal (on by default)" },
+        { cmd = "/cl bosskill", desc = "chat message naming who landed the killing blow on a live worldboss (on by default)" },
         { cmd = "/cl dps/tank/healer", desc = "toggles that role's death sound off/on (\"None\"/\"Both\"); the options panel dropdown adds Role-only (live assigned role) or Roster-only (saved name list) - see the Death Sounds panel (Both by default)" },
     },
     -- Split into a title (CritLog) and a smaller two-line subtitle -

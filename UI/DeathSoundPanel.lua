@@ -7,27 +7,15 @@
 local DEATH_CHECKBOXES = {
     { field = "PlayerSoundFlag", label = "Player death sound", sound = "playerDeath",
       hint = "Plays when you yourself die." },
-    -- Independent of Healer death below now (used to be folded into it -
-    -- see CHANGELOG.md and Core/CombatLog.lua's HandleDeath). Plain
-    -- checkbox, not a detection-mode dropdown: the only signal this has
-    -- at all is having actually seen the buff applied, there's no roster/
-    -- name-list equivalent to fall back to. Placed right after Player
-    -- death, before Boss and the three detection-mode dropdowns, rather
-    -- than at the very end, since it's conceptually closer to those two
-    -- plain flags than to the Role/Roster/Both system below it.
-    { field = "SpiritSoundFlag", label = "Spirit of Redemption", sound = "spiritOfRedemption",
-      hint = "A Priest's death delayed ~15s by the talent (own sound file)." },
-    -- Plain checkbox, not a detection-mode dropdown, same shape as Player/
-    -- Spirit above: the hardcoded boss name list (Core/Constants.lua's
-    -- bosses.english/german) is gone - it was still the original Burning
-    -- Crusade roster and matched nothing in Classic Era/SoD, so
-    -- "Roster"/"Both" on this row never actually did anything beyond what
-    -- "Role" already did alone. Live `worldboss` classification is now the
-    -- only signal, on or off. In-game requested position: under Spirit,
-    -- above the three role-based dropdowns below.
+    -- Plain checkbox, not a detection-mode dropdown: the hardcoded boss
+    -- name list (Core/Constants.lua's bosses.english/german) is gone - it
+    -- was still the original Burning Crusade roster and matched nothing
+    -- in Classic Era/SoD, so "Roster"/"Both" on this row never actually
+    -- did anything beyond what "Role" already did alone. Live `worldboss`
+    -- classification is now the only signal, on or off.
     { field = "BossSoundFlag", label = "Boss death sound", sound = "bossDeath",
       hint = "Plays on a live worldboss classification (raid bosses, outdoor world bosses, and other level-60 raid encounters)." },
-    -- These three (unlike PlayerSoundFlag/SpiritSoundFlag/BossSoundFlag
+    -- These three (unlike PlayerSoundFlag/BossSoundFlag
     -- above) can be driven by the live role detection in
     -- Core/CombatLog.lua (isAssignedDps, isAssignedTank, isAssignedHealer),
     -- the hardcoded name roster, both, or neither - a dropdown instead of
@@ -58,9 +46,7 @@ local DEATH_CHECKBOXES = {
     -- stopped being Priest-specific: it now reads the assigned raid
     -- Healer role (isAssignedHealer, same pattern as Tank), not class - a
     -- Holy Paladin/Resto Druid/Resto Shaman death counts the same as a
-    -- Priest's. Doesn't mention excluding a Spirit-of-Redemption-delayed
-    -- death in its hint anymore - SpiritSoundFlag sits directly above it
-    -- now, no cross-reference needed.
+    -- Priest's.
     { field = "HealDetectionMode", label = "Healer death sound", sound = "healDeath",
       options = CritLog.Constants.detectionModes,
       hint = "Role: assigned Healer role." },
@@ -74,11 +60,10 @@ local DEATH_CHECKBOXES = {
 local deathSoundFrame
 
 local function buildDeathSoundFrame()
-    -- Tall enough for the heading, all 7 rows (PlayerSoundFlag,
-    -- SpiritSoundFlag, BossSoundFlag, the 3 taller dropdown rows, and the
-    -- note; hints are now a hover tooltip, not a line underneath each row),
-    -- and the Roster Settings button below them - in-game confirmed good
-    -- at this size.
+    -- Tall enough for the heading, all 6 rows (PlayerSoundFlag,
+    -- BossSoundFlag, the 3 taller dropdown rows, and the note; hints are
+    -- now a hover tooltip, not a line underneath each row), and the
+    -- Roster Settings button below them.
     -- Height cut further (490->390, in-game screenshotted: still a lot of
     -- empty space below the Roster Settings button down to Close), then
     -- bumped back up a bit (390->420, in-game requested "a tick longer

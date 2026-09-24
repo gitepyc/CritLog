@@ -94,9 +94,7 @@ also still unverified in-game.
 plain on/off flags. The Damage Dealer/Tank/Healer groups each use a
 **detection mode** instead (`CritLogDB.<Kind>DetectionMode`, a dropdown
 in the Death Sounds panel, one of `CritLog.Constants.detectionModes`);
-setting all three to `none` is the equivalent of a master switch. Spirit
-of Redemption (`SpiritSoundFlag`, `/cl spirit`) is an independent plain
-on/off flag, not a detection mode.
+setting all three to `none` is the equivalent of a master switch.
 
 | Mode | Meaning |
 | --- | --- |
@@ -111,12 +109,11 @@ plain toggle, not a mode.
 
 | Dead unit | Live check | Sound |
 | --- | --- | --- |
-| Player | `/cl player` enabled | `MarioDeath.mp3` |
+| Player | `/cl player` enabled | `Toni.mp3` |
 | Not currently assigned Tank or Healer (`isAssignedDps`), any class | `DpsDetectionMode` matches | `wilhelm.ogg` |
 | Live classification `worldboss` (`isClassifiedBoss`) | `BossSoundFlag` enabled | `FFX.mp3` |
 | Assigned raid role Tank (`isAssignedTank`) | `TankDetectionMode` matches | `Tank.mp3` |
-| Assigned raid role Healer (`isAssignedHealer`, any class), not preceded by Spirit of Redemption | `HealDetectionMode` matches | `Angels.mp3` |
-| Class `PRIEST` (`isPriestClass`), preceded by Spirit of Redemption (spell id `27827`) | `SpiritSoundFlag` enabled | `Angels2.mp3` |
+| Assigned raid role Healer (`isAssignedHealer`, any class) | `HealDetectionMode` matches | `Angels.mp3` |
 
 Hunter's Feign Death fires a real `UNIT_DIED`. Checked first in
 `HandleDeath` via a live `UnitBuff` scan on the resolved group token
@@ -148,16 +145,6 @@ controls. `CritLogDB.playerGroups` is a per-character copy, seeded once
 from code defaults on first load (`migratePlayerGroups()`); only the
 `CritLogDB` copy is read or written afterward.
 
-Spirit of Redemption (the Priest talent delaying death by 15s): the real
-`UNIT_DIED` only fires once the buff expires, so the buff's
-`SPELL_AURA_APPLIED` (spell id `27827`) is cached by GUID
-(`Core/CombatLog.lua`'s `rememberSpiritOfRedemption`/
-`spiritOfRedemptionGuids`, any priest in the raid) and consumed once the
-matching death arrives. A death delayed by the buff is excluded from the
-plain healer-death check (`HealDetectionMode` never sees it) and instead
-gated purely by `SpiritSoundFlag`, playing its own dedicated file
-(`Angels2.mp3`) instead of sharing `Angels.mp3` with the plain healer sound.
-
 ## Raid-leader chat
 
 `CHAT_MSG_RAID_LEADER`, no feature flag (`/cl sound` doesn't disable
@@ -168,16 +155,17 @@ these).
 | `raid ende` or `raid end` | Plays `raidend.mp3`. |
 | `shit show` or `wipe` | Plays `wipe.mp3`. |
 
-## Raid/party chat (lottery)
+## Raid/party/guild chat (lottery)
 
-`CHAT_MSG_RAID` and `CHAT_MSG_PARTY`, gated by `GambleSoundFlag`
-(`/cl gamble`). Reacts to a fixed announcement phrase from a third-party
-lottery addon (e.g. CrossGambling) - a chat-string match only, CritLog
-does not run or understand any lottery itself. CrossGambling's own
-chat-destination options are `PARTY`/`RAID`/`GUILD` only (no custom
-channel support); CritLog currently listens to the first two.
+`CHAT_MSG_RAID`, `CHAT_MSG_PARTY`, and `CHAT_MSG_GUILD`, gated by
+`GambleSoundFlag` (`/cl gamble`). Reacts to a fixed announcement phrase
+from a third-party lottery addon (e.g. CrossGambling) - a chat-string
+match only, CritLog does not run or understand any lottery itself.
+CrossGambling's own chat-destination options are `PARTY`/`RAID`/`GUILD`
+only (no custom channel support), matching the three events listened to
+here.
 
-| Raid/party chat message contains | Reaction |
+| Raid/party/guild chat message contains | Reaction |
 | --- | --- |
 | `CrossGambling: A new game has been started! Type 1 to join!` | Plays `lottery.mp3`. |
 
@@ -210,7 +198,7 @@ candidate values, or the threshold falls below the smallest possible roll.
 
 | Function | Status |
 | --- | --- |
-| Boss killing-blow output | Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is live-classified `worldboss`. |
+| Boss killing-blow output | `BossKillFlag` (`/cl bosskill`, on by default). Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is live-classified `worldboss`. |
 
 ## Stored data
 

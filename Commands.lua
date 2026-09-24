@@ -55,10 +55,10 @@ local function printConfig()
     print("/cl gamble: "..tostring(CritLogDB.GambleSoundFlag))
     print("------------")
     print("/cl healer: "..CritLogDB.HealDetectionMode)
-    print("/cl spirit: "..tostring(CritLogDB.SpiritSoundFlag))
     print("/cl dps: "..CritLogDB.DpsDetectionMode)
     print("/cl tank: "..CritLogDB.TankDetectionMode)
     print("/cl boss: "..tostring(CritLogDB.BossSoundFlag))
+    print("/cl bosskill: "..tostring(CritLogDB.BossKillFlag))
     print("/cl player: "..tostring(CritLogDB.PlayerSoundFlag))
 end
 
@@ -142,12 +142,6 @@ function CritLog:PrintCritLogs(message)
         )
     elseif command == "healer" then
         toggleDetectionMode("HealDetectionMode", "HealerSound")
-    elseif command == "spirit" then
-        toggle(
-            "SpiritSoundFlag",
-            "CritLog SpiritSound On",
-            "CritLog SpiritSound Off"
-        )
     elseif command == "dps" then
         toggleDetectionMode("DpsDetectionMode", "Damage Dealer Sound")
     elseif command == "player" then
@@ -163,6 +157,12 @@ function CritLog:PrintCritLogs(message)
             "BossSoundFlag",
             "CritLog BossSound On",
             "CritLog BossSound Off"
+        )
+    elseif command == "bosskill" then
+        toggle(
+            "BossKillFlag",
+            "CritLog BossKillMessage On",
+            "CritLog BossKillMessage Off"
         )
     elseif command == "xtreme" then
         toggle(
