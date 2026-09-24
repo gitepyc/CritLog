@@ -13,20 +13,14 @@
 local helpFrame
 
 -- One command/description pair per row, stacked (command line, then an
--- indented description line below) rather than side by side on one line -
--- descriptions vary a lot in length (a few words to a full sentence), and
--- fitting both on one line within a column's width would mean either
+-- indented description line below) rather than side by side, since
+-- descriptions vary too much in length to share a line without
 -- truncating or wrapping unpredictably.
 --
 -- Takes and returns an x-offset alongside the anchor, same pattern
--- UI/Shared.lua's buildToggleRows uses. In-game reported: every row in
--- this panel drifted one level further right than the last (a growing
--- staircase). Root cause: descText sits +8 right of its own cmdText, and
--- the *next* cmdText anchored to that descText with a hardcoded 0 offset
--- - inheriting the +8 drift instead of cancelling it back out, so it
--- compounded every single row. Tracking the offset explicitly like
--- buildToggleRows already does fixes it, and lets a caller chain more
--- content after this section without inheriting a stray +8/-8 either.
+-- UI/Shared.lua's buildToggleRows uses: descText sits +8 right of its own
+-- cmdText, so the next row's cmdText needs a -8 offset to cancel that
+-- back out instead of compounding it down the column.
 local function buildSection(parent, title, entries, anchor, anchorXOffset)
     local heading = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     heading:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", anchorXOffset or 0, -16)
@@ -53,12 +47,6 @@ local function buildSection(parent, title, entries, anchor, anchorXOffset)
 end
 
 local function buildHelpFrame()
-    -- In-game reported: too big overall. Shrunk from 920x660 to 800x600
-    -- (descText's width below shrunk to match), then again to 720x530
-    -- (descText/colRightAnchor shrunk to match) - but the second pass's
-    -- widescreen 720x530 shape read wrong in-game ("doesn't fit"), so this
-    -- round narrows further (640) while going back taller (640) instead of
-    -- shrinking both dimensions - in-game confirmed good at 640x640.
     local f = CritLog.UI.createPanelFrame("CritLogHelpFrame", "CritLog Help", 640, 640)
     f:SetPoint("CENTER")
 
@@ -66,19 +54,16 @@ local function buildHelpFrame()
     heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     heading:SetText("Commands")
 
-    -- In-game reported: no way to close this panel; the button was also
-    -- reported as being in the wrong spot (top-right) - moved to
-    -- bottom-center via the shared helper (also used by the Highscore
-    -- List and Roster Settings popups now, for consistency).
+    -- Bottom-center via the shared helper, also used by the Highscore
+    -- List and Roster Settings popups for consistency.
     CritLog.UI.createCloseButton(f)
 
     -- Built once at creation, not re-laid-out on refresh: the command
-    -- list is static, unlike the highscore/roster panels' data.
+    -- list is static.
     --
     -- Two independent anchor points at the same Y, same technique as
     -- UI/AuraSoundPanel.lua's colLeftAnchor/colRightAnchor - each column
-    -- lays out its own rows relative to its own start anchor, so the two
-    -- chains never interact.
+    -- lays out its own rows relative to its own start anchor.
     local colLeftAnchor = CreateFrame("Frame", nil, f)
     colLeftAnchor:SetSize(1, 1)
     colLeftAnchor:SetPoint("TOPLEFT", heading, "BOTTOMLEFT", 0, 0)
@@ -92,27 +77,15 @@ local function buildHelpFrame()
 
     -- Continues from the left column specifically (General and Sounds
     -- have the same number of rows, so they end at roughly the same
-    -- height either way) - full width again below both columns, same
-    -- pattern UI/AuraSoundPanel.lua's note row uses ahead of its own two
-    -- columns, just reversed (here it's after).
+    -- height either way) - full width again below both columns.
     buildSection(f, "Death Sounds", CritLog.Constants.helpDeathSounds, leftBottom, leftOffset)
 
     -- Anchored to the panel's own bottom edge instead of chained below
-    -- Death Sounds - in-game requested "all the way down, but still above
-    -- the Close button" (which sits at y=14 from the bottom, 22 tall, so
-    -- its top edge is at y=36 - 44 leaves it a small gap above that).
-    -- Centered rather than left-aligned like the rest of the panel, which
-    -- also reads as a distinct footer rather than another content row.
-    -- Anchoring to the panel directly (not the content above) means this
-    -- always sits at the same fixed spot regardless of how tall the
-    -- sections above happen to be.
+    -- Death Sounds, so this always sits at the same fixed spot above the
+    -- Close button regardless of how tall the sections above are.
     --
-    -- Two FontStrings, not one - in-game requested the subtitle (by
-    -- Epyc/original-author line) render one size smaller than the title
-    -- ("CritLog") above it, which a single FontString can't do (one font
-    -- per widget). Subtitle anchored to the fixed bottom spot (so it
-    -- keeps the same fixed position the combined text used to have),
-    -- title chained above it.
+    -- Two FontStrings, not one, since the subtitle renders one size
+    -- smaller than the title and a single FontString can't mix fonts.
     local aboutSubtitle = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     aboutSubtitle:SetPoint("BOTTOM", f, "BOTTOM", 0, 44)
     aboutSubtitle:SetText(CritLog.Constants.helpAboutSubtitle)
