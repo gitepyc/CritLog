@@ -1,17 +1,10 @@
 -- Aura Sounds panel, opened via the "Aura Sounds..." button under the
--- AuraSoundFlag row on the Sound Settings panel. Split out once that panel
--- grew to 13 individually-toggleable aura/ritual sounds under one master
--- switch (see CHANGELOG.md) - same reasoning as Sound Settings itself
--- being split out of the main panel originally. AuraSoundFlag stays on
--- Sound Settings (it's the master switch for everything here, not
--- specific to this panel), not duplicated here - see the note row below
--- instead.
+-- AuraSoundFlag row on the Sound Settings panel. AuraSoundFlag stays on
+-- Sound Settings (it's the master switch for everything here) - see the
+-- note row below instead.
 --
--- Laid out as two columns rather than one long list (13 rows single-column
--- made this panel nearly as tall as Sound Settings used to be, defeating
--- the point of splitting it out) - split by position, not by theme/
--- category, so it's just "first 7" / "remaining 6" rather than a grouping
--- that would need explaining.
+-- Laid out as two columns rather than one long list, split by position
+-- (first 7 / remaining 6) rather than by theme.
 local AURA_CHECKBOXES_LEFT = {
     { field = "BloodlustSoundFlag", label = "Bloodlust/Heroism", sound = "bloodlust",
       hint = "Received Bloodlust or Heroism." },
@@ -52,17 +45,9 @@ local AURA_CHECKBOXES_RIGHT = {
 local auraSoundFrame
 
 local function buildAuraSoundFrame()
-    -- Wide enough for two columns, each needing ~350px (checkbox + label +
-    -- the Preview button's fixed PREVIEW_COLUMN_X(260)-from-checkbox
-    -- column - see UI/Shared.lua's buildToggleRows). Tall enough for the
-    -- heading, the note row, and the longer column (7 rows; hints are now
-    -- a hover tooltip, not a line underneath each row). Narrowed further
-    -- each round (920->820->790->710, colRightAnchor 446->400->390->350) -
-    -- in-game confirmed good at this size.
     local f = CritLog.UI.createPanelFrame("CritLogAuraSoundFrame", "CritLog Aura Sounds", 710, 400)
     -- Offset from center so it doesn't perfectly overlap the main panel or
-    -- Sound Settings when several are open at once; a one-time anchor, not
-    -- a continuous one, so dragging one doesn't drag the others.
+    -- Sound Settings when several are open at once.
     f:SetPoint("CENTER", UIParent, "CENTER", 0, 60)
 
     local heading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -73,12 +58,9 @@ local function buildAuraSoundFrame()
         { note = "Requires \"Aura/spell sound\" enabled on the Sound Settings panel." },
     }, heading)
 
-    -- Two independent anchor points at the same Y, one at the panel's left
-    -- margin (matching every other panel's row indent) and one far enough
-    -- right to clear the left column's Preview buttons (checkbox +
-    -- PREVIEW_COLUMN_X + button width, see the width comment above) -
-    -- buildToggleRows anchors each column's own rows relative to its own
-    -- start anchor, so the two chains never interact.
+    -- Two independent anchor points at the same Y - buildToggleRows
+    -- anchors each column's own rows relative to its own start anchor,
+    -- so the two chains never interact.
     local colLeftAnchor = CreateFrame("Frame", nil, f)
     colLeftAnchor:SetSize(1, 1)
     colLeftAnchor:SetPoint("TOPLEFT", noteRow, "BOTTOMLEFT", 0, -8)
