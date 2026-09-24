@@ -67,10 +67,9 @@ English/German spell name if the ID doesn't hit.
 
 Verification status of the less common spells: Mage Table and the
 Healthstone ritual are in-game verified castable on Classic Era/SoD.
-Drums of Battle is TBC-introduced and still unverified there. Hymn of
-Hope has no spell ID (it replaced the TBC-only "Symbol of Hope" in WotLK
-patch 3.0.2) and is expected uncastable on Classic Era/SoD, but that's
-also still unverified in-game.
+Hymn of Hope has no spell ID (it replaced the TBC-only "Symbol of Hope"
+in WotLK patch 3.0.2) and is expected uncastable on Classic Era/SoD, but
+that's still unverified in-game.
 
 | Trigger | Own flag | Source/destination condition | Spell ID(s) | Name fallback | Sound |
 | --- | --- | --- | --- | --- | --- |
@@ -81,12 +80,12 @@ also still unverified in-game.
 | Blessing of Protection received | `BlessingOfProtectionSoundFlag` | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
 | Divine Intervention received | `DivineInterventionSoundFlag` | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
 | Soulstone buff received (not the resurrection itself - real in-game name is "Soulstone Resurrection") | `SoulstoneSoundFlag` | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
-| Drums of Battle received | `DrumsSoundFlag` | Destination is the player. | `35476` (TBC-introduced, SoD unverified) | `Drums of Battle`, `Greater Drums of Battle`, `Trommeln der Schlacht`, `Große Trommeln der Schlacht` | `dkRapL.mp3` |
+| Drums of Battle received | `DrumsSoundFlag` | Destination is the player. | `35476` | `Drums of Battle`, `Greater Drums of Battle`, `Trommeln der Schlacht`, `Große Trommeln der Schlacht` | `dkRapL.mp3` |
 | Pain Suppression received | `PainSuppressionSoundFlag` | Destination is the player. | `402004` | `Pain Suppression`, `Schmerzunterdrückung` | `Painsup.mp3` |
 | Hymn of Hope received | `HymnOfHopeSoundFlag` | Destination is the player. | none | `Hymn of Hope`, `Hymne der Hoffnung` | `HymnOfHope.mp3` |
 | Evocation received | `EvocationSoundFlag` | Destination is the player. | `12051` | `Evocation`, `Hervorrufung` | `evo.mp3` |
-| Mage Table cast (`SPELL_CAST_SUCCESS`) | `MageTableSoundFlag` | Source is a party/raid member; at most once per 100s (shared cooldown gate). | `43987` (TBC-introduced, SoD verified) | `Ritual of Refreshment`, `Tischlein deck dich` | `Table.mp3` |
-| Warlock Healthstone ritual cast (`SPELL_CAST_SUCCESS`) | `HealthstoneSoundFlag` | Source is a party/raid member; at most once per 60s (shared cooldown gate). | `29893` (TBC-introduced, SoD verified) | `Ritual of Souls`, `Ritual der Seelen` | `healthstone.mp3` |
+| Mage Table cast (`SPELL_CAST_SUCCESS`) | `MageTableSoundFlag` | Source is a party/raid member; at most once per 100s (shared cooldown gate). | `43987` | `Ritual of Refreshment`, `Tischlein deck dich` | `Table.mp3` |
+| Warlock Healthstone ritual cast (`SPELL_CAST_SUCCESS`) | `HealthstoneSoundFlag` | Source is a party/raid member; at most once per 60s (shared cooldown gate). | `29893` | `Ritual of Souls`, `Ritual der Seelen` | `healthstone.mp3` |
 
 ## Deaths
 
