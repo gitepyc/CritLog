@@ -23,6 +23,8 @@ drafting pass.
 
 - **docs:** update lottery trigger wording to include guild chat
 
+- **docs:** correct Mage Table/Healthstone wording, not specifically SoD-verified
+
 - **refactor:** drop Spirit of Redemption, rename MarioDeath.mp3 to Toni.mp3, gate boss killing-blow chat message
 
 - **refactor:** trim narrative comments in ChatTriggers/Commands/Core/Persistence/Sounds/Events/CritLog.lua
@@ -40,6 +42,10 @@ drafting pass.
 
 - **chore:** consolidate -dev.N prerelease tags into their real release's CHANGELOG section
 
+- **chore:** ci: bump actions/checkout to v7
+
+- **chore:** ci: make lint image name generic, unify release.yml with TitanCritLine
+
 - **chore:** promote 0.3.8-dev.3 to the 0.3.8 release, confirmed in-game
 
 - **docs:** restyle roadmap as heading+summary per item, drop sound-rights review references
@@ -49,10 +55,6 @@ drafting pass.
 - **feature:** post highscores to chat from the Highscore List popup
 
 - **fix:** run migrations for a brand-new character too, not just upgrades
-
-- **other:** ci: bump actions/checkout to v7
-
-- **other:** ci: make lint image name generic, unify release.yml with TitanCritLine
 
 - **tweak:** post row below the list, test colored text on real channels too
 

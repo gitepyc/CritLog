@@ -74,5 +74,8 @@ commit_parsers = [
   { message = "^docs:", group = "docs" },
   { message = "^refactor:", group = "refactor" },
   { message = "^chore:", group = "chore" },
+  # `ci:` isn't a declared type on its own (see CONTRIBUTING.md) - treated
+  # as an alias for `chore:` rather than falling into "other".
+  { message = "^ci:", group = "chore" },
   { message = ".*", group = "other" },
 ]
