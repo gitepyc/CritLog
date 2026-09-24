@@ -2,8 +2,7 @@
 -- RosterPanel): frame construction, the Escape-key stack, and the checkbox-
 -- row layout helper. Deliberately plain: only built-in Blizzard templates
 -- (BasicFrameTemplateWithInset, UICheckButtonTemplate, UIPanelButtonTemplate),
--- no custom textures or third-party UI libs. Visual polish is a follow-up
--- once the layout itself is reviewed - see docs/ROADMAP.md.
+-- no custom textures or third-party UI libs.
 CritLog.UI = {}
 
 function CritLog.UI.anchorBelow(region, previous, yGap)
@@ -25,13 +24,11 @@ function CritLog.UI.previewSound(soundKey)
 end
 
 -- Thin wrapper around StaticPopup_Show that also bumps the resulting
--- dialog to FULLSCREEN_DIALOG strata. Our own panels sit at FULLSCREEN
--- (see createPanelFrame below) so they stay above ordinary addon windows -
--- but that put them ABOVE a StaticPopup's default DIALOG strata too,
--- hiding confirmation dialogs behind whichever CritLog panel opened them.
--- In-game reported: "Reset All"'s confirmation was invisible behind the
--- Highscore List window. Every StaticPopup_Show call in this addon should
--- go through here instead of calling it directly.
+-- dialog to FULLSCREEN_DIALOG strata - our own panels sit at FULLSCREEN
+-- (see createPanelFrame below), which is ABOVE a StaticPopup's default
+-- DIALOG strata, hiding confirmation dialogs behind whichever CritLog
+-- panel opened them. Every StaticPopup_Show call in this addon should go
+-- through here instead of calling it directly.
 function CritLog.UI.showConfirmation(which, textArg1, textArg2, data)
     local dialog = StaticPopup_Show(which, textArg1, textArg2, data)
     if dialog then
@@ -43,9 +40,6 @@ end
 -- Same confirmation pattern as MainPanel.lua's "Reset All" dialog
 -- (CRITLOG_RESET_ALL_HIGHSCORES) - parameterized on the category label via
 -- StaticPopup's text_arg1 substitution instead of one dialog per kind.
--- In-game requested: every reset action should confirm, not just "Reset
--- All" - a single accidental click on one of these used to lose a
--- category's highscores instantly, no way back.
 StaticPopupDialogs["CRITLOG_RESET_CATEGORY"] = {
     text = "Delete every %s highscore entry? This cannot be undone.",
     button1 = "Delete",
@@ -79,9 +73,7 @@ end
 
 -- Bottom-center "Close" button - the built-in corner X and Escape (via
 -- createPanelFrame's escape-stack registration) already close every
--- panel, but a corner X alone wasn't obvious enough (in-game reported for
--- the Help panel); added here as a shared helper so the Highscore List
--- and Roster Settings popups get the same, not just Help.
+-- panel, but a corner X alone isn't always obvious enough.
 function CritLog.UI.createCloseButton(parent)
     local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
     button:SetSize(90, 22)
@@ -117,12 +109,9 @@ end
 -- shared Preview-button column used throughout buildToggleRows below, and
 -- by SoundPanel.lua's own "Roll Sounds..." button which lines up with it.
 -- Exposed here (not a private local) so panels needing extra width for
--- that column (e.g. a wider-than-Preview button sharing it) can compute
--- their own minimum safe width from it instead of duplicating the number.
--- Lowered from 340 to 300, then again to 260 (in-game requested smaller
--- panels overall/less gap before the Preview column) - in-game confirmed
--- good, comfortably past every row label including Aura Sounds'
--- "Warlock Healthstone Ritual", the longest one.
+-- that column can compute their own minimum safe width from it instead
+-- of duplicating the number. Comfortably past every row label, including
+-- Aura Sounds' "Warlock Healthstone Ritual", the longest one.
 CritLog.UI.PREVIEW_COLUMN_X = 260
 
 -- Every checkbox created by buildToggleRows across all panels, keyed by
@@ -141,26 +130,16 @@ local dropdownsByField = {}
 -- number/"Off" label without duplicating that logic.
 local slidersByField = {}
 
--- Shows `text` in GameTooltip while the mouse is over `control` - shared by
--- checkbox and dropdown rows below, replacing the static hint line that
--- used to sit underneath every row (see CHANGELOG.md,
--- feature/toggle-row-tooltips). An earlier attempt at this apparently
--- didn't show reliably in-game because the checkbox's own hit area is tiny
--- and easy to miss with the mouse - see the SetHitRectInsets calls at each
--- call site, which grow the hit area out to cover the row's label too so
--- hovering the text works, not just the control itself.
+-- Shows `text` in GameTooltip while the mouse is over `control` - shared
+-- by checkbox and dropdown rows below. The checkbox's own hit area is
+-- tiny, so the SetHitRectInsets calls at each call site grow it to cover
+-- the row's label too, so hovering the text works, not just the control
+-- itself.
 --
--- In-game reported, across several attempts: the tooltip never appeared at
--- all. Root cause: every options panel deliberately sat on "TOOLTIP" frame
--- strata (added so panels stay above other addons like WeakAuras) - the
--- same strata GameTooltip itself defaults to, putting our own panel in
--- direct competition with it. Forcing GameTooltip's own strata/frame level
--- upward on every hover (tried first) was fragile and never reliably won
--- that competition in-game. The actual fix is createPanelFrame below no
--- longer using TOOLTIP strata at all (FULLSCREEN instead, still above
--- ordinary addon UI, but below GameTooltip's default) - once that's true,
--- this can be the same plain SetOwner/SetPoint/SetText/Show TitanCritLine's
--- settings panel uses, with nothing tooltip-strata-specific needed here.
+-- This relies on createPanelFrame below using FULLSCREEN strata, not
+-- TOOLTIP - GameTooltip itself defaults to TOOLTIP strata, so a panel
+-- using that same strata would put the tooltip in direct competition
+-- with the panel and lose.
 local function attachTooltip(control, text)
     if not text then
         return
@@ -168,14 +147,9 @@ local function attachTooltip(control, text)
 
     control:HookScript("OnEnter", function(self)
         -- Hide before re-showing: GameTooltip is a single shared frame
-        -- (used by every addon/Blizzard UI element, not just ours), and
-        -- it's a known quirk that it doesn't always shrink back down to a
-        -- new SetText's actual size if it's still showing when SetText is
-        -- called again - in-game reported: the tooltip sometimes rendered
-        -- much too large, fixed by moving the mouse away and re-hovering
-        -- (which hides and re-shows it). Hiding first forces a clean
-        -- reset every time instead of relying on that happening on its
-        -- own.
+        -- used by every addon, and doesn't always shrink back down to a
+        -- new SetText's actual size if it's still showing when SetText
+        -- is called again. Hiding first forces a clean reset every time.
         GameTooltip:Hide()
         GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
         GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -10, -4)
@@ -190,21 +164,15 @@ end
 local function createDropdownRow(parent, entry, previous, previousXOffset)
     -- UIDropDownMenuTemplate's clickable texture extends ~16px left of the
     -- frame's own left edge, so this is nudged left to keep the control
-    -- itself visually lined up with the checkboxes in the rows above/below
-    -- it - approximate, not pixel-verified in-game yet.
+    -- itself visually lined up with the checkboxes in the rows above/below it.
     local dropdown = CreateFrame("Frame", "CritLogOptions"..entry.field, parent, "UIDropDownMenuTemplate")
     dropdown:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", previousXOffset - 16, -8)
     UIDropDownMenu_SetWidth(dropdown, 110)
 
-    -- Reported in-game: clicking the dropdown showed no menu at all. The
-    -- options panels sit on "FULLSCREEN" strata (see createPanelFrame
-    -- below) so they stay above other addons' windows, but Blizzard's
-    -- shared dropdown-list frames (DropDownList1/2) are created at a lower
-    -- fixed strata - the menu was very likely opening behind our own
-    -- panel, not failing to open at all. Bumping the list frames to
-    -- "TOOLTIP" (a level above our own panel's strata, not just matching
-    -- it) right when this dropdown's button is clicked fixes that without
-    -- affecting anything else that uses dropdowns.
+    -- The options panels sit on "FULLSCREEN" strata (see createPanelFrame
+    -- below), but Blizzard's shared dropdown-list frames (DropDownList1/2)
+    -- are created at a lower fixed strata by default, so the menu opens
+    -- behind our own panel unless bumped to "TOOLTIP" here.
     local dropdownButton = _G[dropdown:GetName().."Button"]
     if dropdownButton then
         dropdownButton:HookScript("OnClick", function()
@@ -238,61 +206,36 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
     label:SetText(entry.label)
 
     if entry.sound then
-        -- PREVIEW_COLUMN_X relative to the checkbox rows' own baseline, same
-        -- column as their Preview buttons - but this dropdown sits 16px left
-        -- of that baseline (see the -16 nudge above), so +16 on top of it
-        -- lands back in the same column instead of 16px short of it. Labels here
-        -- are kept close in length to each other (see the DPS/"Damage
-        -- Dealer" comment in UI/SoundPanel.lua) specifically so this fixed
-        -- column doesn't run into any of them - it did once, when one
-        -- label was much longer than the rest (in-game
-        -- reported/screenshotted, fixed by shortening the label instead of
-        -- abandoning the shared column).
+        -- +16 cancels the -16 nudge above, landing back in the same
+        -- Preview-button column the checkbox rows use.
         local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
         previewButton:SetPoint("LEFT", dropdown, "LEFT", CritLog.UI.PREVIEW_COLUMN_X + 16, 0)
         -- Raised above the dropdown explicitly - the dropdown's own
-        -- expanded hit rect (SetHitRectInsets below) reaches right up to
-        -- x=450 from its own left edge, which fully covers this button
-        -- (it sits at x=356-426). Both are siblings at the same default
-        -- frame level, and in-game reported: the button was completely
-        -- unclickable, the dropdown's oversized hit rect was winning every
-        -- click meant for it. Same latent risk exists for the checkbox
-        -- row's Preview button below, fixed there too.
+        -- expanded hit rect (SetHitRectInsets below) reaches far enough
+        -- right to cover this button, and both are siblings at the same
+        -- default frame level, which would otherwise make the button
+        -- unclickable.
         previewButton:SetFrameLevel(dropdown:GetFrameLevel() + 1)
     end
 
     attachTooltip(dropdown, entry.hint)
     -- SetHitRectInsets(left, right, top, bottom) - a negative value grows
-    -- the hit area outward instead of shrinking it, so this extends the
-    -- dropdown's hit rect rightward to cover its own label too. A fixed
-    -- value, not label:GetStringWidth() - these rows are built while the
-    -- panel is still hidden (see "Created lazily" comments on each panel),
-    -- and a FontString that's never been drawn yet reliably reports a
-    -- width of 0, which silently shrank this back down to a few px past
-    -- the dropdown itself (in-game reported: tooltip never appeared at
-    -- all). PREVIEW_COLUMN_X matches the fixed Preview-button column used
-    -- everywhere else in this file, comfortably past every label in use. Same fix
-    -- TitanCritLine's settings panel uses (a flat XML HitRectInsets, not
-    -- a computed one).
+    -- the hit area outward, extending the dropdown's hit rect rightward
+    -- to cover its own label too. A fixed value, not
+    -- label:GetStringWidth() - these rows are built while the panel is
+    -- still hidden, and an undrawn FontString reliably reports a width of
+    -- 0.
     dropdown:SetHitRectInsets(0, -CritLog.UI.PREVIEW_COLUMN_X, 0, 0)
 
     return dropdown
 end
 
--- `entry.slider` is `{ min, max, step }`. Modeled on TitanCritLine's
--- level-adjustment slider (OptionsSliderTemplate) - see docs/ROADMAP.md
--- and Persistence/Database.lua's migrateAllLevelToThreshold for the
--- feature this replaces. Whether the setting this slider controls is
--- active at all is a separate checkbox row, not encoded in the slider's
--- own range (in-game reported: overloading the minimum value as "off" was
--- confusing) - see e.g. LevelFilterFlag/LevelDiffThreshold in
--- UI/MainPanel.lua.
+-- `entry.slider` is `{ min, max, step }` (OptionsSliderTemplate). Whether
+-- the setting this slider controls is active at all is a separate
+-- checkbox row, not encoded in the slider's own range - see e.g.
+-- LevelFilterFlag/LevelDiffThreshold in UI/MainPanel.lua.
 --
--- No extra x-offset for the slider itself, unlike an `indent` checkbox
--- row - there's no reason for one, and adding it here without a matching
--- reason to cancel it back out on the next row's offset shifted every row
--- after the slider left, in-game reported as "wrongly indented". -40 (not
--- the usual -10 checkbox/dropdown gap) leaves room for
+-- -40 (not the usual -10 checkbox/dropdown gap) leaves room for
 -- OptionsSliderTemplate's own "Text" label, which renders *above* the
 -- slider's own top edge, not inside its bounds.
 local function createSliderRow(parent, entry, previous, previousXOffset)
@@ -310,11 +253,8 @@ local function createSliderRow(parent, entry, previous, previousXOffset)
     _G[slider:GetName().."Text"]:SetText(entry.label)
 
     -- Centered under the slider (TOP/BOTTOM, not TOPLEFT/BOTTOMLEFT) so
-    -- the current value reads where you'd expect it, not jammed into the
-    -- bottom-left corner on top of the slider's own "Low" label (in-game
-    -- reported/screenshotted - a left-anchored valueText used to overlap
-    -- the "1" there). Purely visual now - not used for row-chaining below,
-    -- see rowAnchor.
+    -- the current value doesn't overlap the slider's own "Low" label.
+    -- Purely visual - not used for row-chaining below, see rowAnchor.
     local valueText = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     valueText:SetPoint("TOP", slider, "BOTTOM", 0, -2)
 
@@ -333,15 +273,9 @@ local function createSliderRow(parent, entry, previous, previousXOffset)
     attachTooltip(slider, entry.hint)
 
     -- A separate invisible anchor for buildToggleRows to chain the next
-    -- row from - TOPLEFT-based like every other row type, positioned
-    -- below the (centered) valueText so the next row doesn't overlap it.
-    -- Deliberately not valueText itself: an earlier version returned
-    -- valueText directly, which either had to be left-anchored (correct
-    -- column, but overlapping the slider's own "Low" label) or centered
-    -- (correct look, but its BOTTOMLEFT drifts toward the slider's middle,
-    -- shifting every row after it - see CHANGELOG.md, both were in-game
-    -- reported). Decoupling the visual element from the chaining anchor
-    -- avoids having to choose between the two.
+    -- row from, decoupled from the centered valueText: valueText's own
+    -- BOTTOMLEFT would drift toward the slider's middle and shift every
+    -- row after it.
     local rowAnchor = CreateFrame("Frame", nil, parent)
     rowAnchor:SetSize(1, 1)
     rowAnchor:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, -18)
@@ -352,11 +286,9 @@ end
 -- Shared row-building loop for every panel: a checkbox (or, for an entry
 -- with `options`, a dropdown - see createDropdownRow above - or with
 -- `slider`, a slider - see createSliderRow above), its label, an optional
--- preview button, and a `entry.hint` shown as a hover tooltip via
--- attachTooltip above instead of a static line underneath the row (see
--- CHANGELOG.md, feature/toggle-row-tooltips). Returns the last anchor
--- region and its x-offset so the caller can keep chaining further content
--- below.
+-- preview button, and `entry.hint` shown as a hover tooltip via
+-- attachTooltip above. Returns the last anchor region and its x-offset
+-- so the caller can keep chaining further content below.
 --
 -- `sound` on an entry is a key into CritLog.Constants.sounds and gets a
 -- "Preview" button on that row; flags with no sound of their own get none.
@@ -435,14 +367,11 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             -- click sound still plays; GetChecked() returns 1/nil on some
             -- clients, so normalize to a real boolean before writing it
             -- back to the DB. RefreshOptionsPanel() afterward so a toggle
-            -- with a visible effect elsewhere (e.g. DebugFlag showing/
-            -- hiding and resizing the Sound Settings panel's Raid Chat
-            -- Phrases section) applies immediately instead of only on the
-            -- next time a panel is opened - in-game reported having to
-            -- close and reopen Sound Settings to see it. Harmless for
-            -- every other checkbox: the registered refresh callbacks just
-            -- re-read CritLogDB and re-apply the same state, a cheap no-op
-            -- when nothing relevant changed.
+            -- with a visible effect elsewhere applies immediately instead
+            -- of only the next time a panel is opened - harmless for
+            -- every other checkbox, since the registered refresh
+            -- callbacks just re-read CritLogDB and re-apply the same
+            -- state.
             check:HookScript("OnClick", function(self)
                 CritLogDB[entry.field] = self:GetChecked() and true or false
                 CritLog:RefreshOptionsPanel()
@@ -456,32 +385,25 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
             if entry.sound then
                 -- Anchored to a fixed offset from the checkbox itself
                 -- rather than to the label, so button position doesn't
-                -- depend on how long a given label happens to be.
+                -- depend on label length.
                 local previewButton = CritLog.UI.createPreviewButton(parent, entry.sound)
                 previewButton:SetPoint("LEFT", check, "LEFT", CritLog.UI.PREVIEW_COLUMN_X - indent, 0)
-                -- Raised above the checkbox explicitly - same fix as
-                -- createDropdownRow's identical comment above, for the
-                -- same reason: the checkbox's own expanded hit rect
-                -- (SetHitRectInsets below) overlaps this button's left
-                -- edge, and both are siblings at the same default frame
-                -- level. In-game reported unclickable for the dropdown
-                -- rows specifically; this is the same latent risk here,
-                -- fixed proactively even though not (yet) reported for a
-                -- checkbox row.
+                -- Raised above the checkbox explicitly - same reason as
+                -- createDropdownRow above: the checkbox's own expanded
+                -- hit rect (SetHitRectInsets below) overlaps this
+                -- button's left edge, and both are siblings at the same
+                -- default frame level, which would otherwise make the
+                -- button unclickable.
                 previewButton:SetFrameLevel(check:GetFrameLevel() + 1)
             end
 
             attachTooltip(check, entry.hint)
-            -- SetHitRectInsets(left, right, top, bottom) - a negative value
-            -- grows the hit area outward instead of shrinking it, so this
-            -- extends the checkbox's hit rect rightward to cover its own
-            -- label too (fixes the "small hit area, easy to miss" problem
-            -- an earlier tooltip attempt apparently ran into - see
-            -- attachTooltip's comment above). A fixed value, not
-            -- label:GetStringWidth() - see createDropdownRow's identical
-            -- comment above for why a computed width silently broke this
-            -- entirely (checkboxes are built while the panel is still
-            -- hidden, so the label's width reads as 0 at this point).
+            -- SetHitRectInsets(left, right, top, bottom) - a negative
+            -- value grows the hit area outward, extending the checkbox's
+            -- hit rect rightward to cover its own label too. A fixed
+            -- value, not label:GetStringWidth() - checkboxes are built
+            -- while the panel is still hidden, so the label's width
+            -- reads as 0 at this point.
             check:SetHitRectInsets(0, -CritLog.UI.PREVIEW_COLUMN_X, 0, 0)
 
             previous = check
@@ -502,19 +424,11 @@ end
 local escapeFrameStack = {}
 
 -- The one name we've actually put in UISpecialFrames right now, or nil.
--- Tracked explicitly instead of inferred from the stack: an earlier version
--- assumed "whatever I just popped was the one occupying UISpecialFrames",
--- which is only true if panels are always closed in reverse-open order.
--- Closing a non-topmost panel (e.g. panel A opened, then B, then A is
--- closed directly via its own close button while B is still open) broke
--- that assumption - the pop re-added the new stack top on top of an entry
--- that was never actually removed, leaving a duplicate. Over a few
--- out-of-order closes those duplicates piled up until every panel's name
--- was permanently stuck in UISpecialFrames regardless of what was actually
--- open - exactly the in-game report ("always all entries, even with just
--- one window open"). Explicitly removing whatever `registeredFrame`
--- currently is - not whatever was just popped - fixes that regardless of
--- close order.
+-- Tracked explicitly instead of inferred from the stack, since panels
+-- aren't always closed in reverse-open order (e.g. panel A opened, then
+-- B, then A closed directly via its own close button while B is still
+-- open) - explicitly removing whatever `registeredFrame` currently is
+-- keeps UISpecialFrames correct regardless of close order.
 local registeredFrame
 
 local function removeFromTable(t, value)
@@ -547,16 +461,12 @@ local function popEscapeFrame(name)
     setRegisteredFrame(escapeFrameStack[#escapeFrameStack])
 end
 
--- Closes a panel's own direct children (by frame name) when it closes -
--- in-game reported: closing a panel left any sub-window it opened sitting
--- open, generalized from an earlier main-panel-only fix to every parent
--- panel in the tree (main -> Sound Settings/Help/Highscore List; Sound
--- Settings -> Aura/Death/Roll Sounds; Death Sounds -> Roster Settings).
+-- Closes a panel's own direct children (by frame name) when it closes.
 -- Each panel hooks this with its own literal list of the frame names it
 -- opens (see each UI/*.lua file's own buildXFrame) - no dynamic parent-
--- tracking needed, the tree is small and fixed at code-design time.
--- Cascades naturally: hiding a child here triggers that child's own
--- OnHide, which closes its own children the same way, all the way down.
+-- tracking needed, the tree is small and fixed. Cascades naturally:
+-- hiding a child here triggers that child's own OnHide, which closes its
+-- own children the same way, all the way down.
 function CritLog.UI.closeChildPanels(childNames)
     for _, name in ipairs(childNames) do
         local child = _G[name]
@@ -566,25 +476,17 @@ function CritLog.UI.closeChildPanels(childNames)
     end
 end
 
--- Every panel needs to stay above other addon UI (a WeakAuras display was
--- covering the panel before this was added) and share the same drag/close
--- behavior, so this sets up everything but the content.
+-- Every panel needs to stay above other addon UI and share the same
+-- drag/close behavior, so this sets up everything but the content.
 function CritLog.UI.createPanelFrame(name, title, width, height)
     local f = CreateFrame("Frame", name, UIParent, "BasicFrameTemplateWithInset")
     f:SetSize(width, height)
-    -- FULLSCREEN, not TOOLTIP: other addons (WeakAuras displays included)
-    -- commonly sit at MEDIUM/HIGH/DIALOG, so FULLSCREEN already keeps the
-    -- options panels on top of them without needing to know what strata
-    -- any specific one uses - and unlike TOOLTIP, it stays below
-    -- GameTooltip's own default strata. Using TOOLTIP here (the actual
-    -- highest strata WoW exposes) put our own panels in direct competition
-    -- with GameTooltip itself, which shares that same strata - toggle-row
-    -- hover tooltips (see attachTooltip in this file) kept rendering behind
-    -- the panel no matter how their own frame level was forced upward,
-    -- in-game reported repeatedly. TitanCritLine's settings panel (a
-    -- confirmed working reference) uses FULLSCREEN for exactly this reason.
-    -- SetToplevel raises it above same-strata siblings whenever it's
-    -- clicked, same as other dialogs.
+    -- FULLSCREEN, not TOOLTIP: other addons commonly sit at
+    -- MEDIUM/HIGH/DIALOG, so FULLSCREEN keeps the options panels on top
+    -- of them - and unlike TOOLTIP, it stays below GameTooltip's own
+    -- default strata, so toggle-row hover tooltips (see attachTooltip in
+    -- this file) still render on top. SetToplevel raises it above
+    -- same-strata siblings whenever it's clicked, same as other dialogs.
     f:SetFrameStrata("FULLSCREEN")
     f:SetToplevel(true)
     f:SetMovable(true)
