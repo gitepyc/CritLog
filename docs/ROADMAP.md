@@ -14,16 +14,6 @@ ability, updated on every relevant hit, not just new highscores) and a
 place to display the result (options panel, Titan tooltip, or a `/cl`
 command - undecided). May not happen at all.
 
-### 2. Watch a custom chat channel for the lottery trigger
-
-Let the CrossGambling-style lottery trigger react in a user-joined custom
-channel too, not just raid/party chat.
-
-Technically simple - named channels funnel through `CHAT_MSG_CHANNEL`,
-which passes the channel name - just needs a configurable channel-name
-setting (options panel field and/or `/cl` command) instead of the
-hardcoded raid/party phrases. Not started, no UI mockup yet.
-
 ## Parked
 
 Not active priorities, revisit only if the situation changes.
@@ -36,6 +26,15 @@ schema version is declared, the migration functions below it - and the
 `DEFAULTS` fields that exist purely as their source data - can be deleted.
 Not yet: needs real time/version-spread first, declaring one now would be
 a guess.
+
+Checked against the actual known user base (only `0.1.1`/`legacy-0.1.4.2`
+plus the current dev line - nobody else has tested the versions between):
+both predate every one of the 7 migrations (no `playerGroups`, no
+dps/tank/heal roles, no `BossSoundFlag`, raw `AllLevel` instead of
+`LevelFilterFlag`/`LevelDiffThreshold`, a single `DamageAbilityCrit` value
+instead of record lists), so all 7 are still load-bearing for that upgrade
+path today - none are safe to prune until a minimum supported version is
+actually declared.
 
 ## Known constraint
 
