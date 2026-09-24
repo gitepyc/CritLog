@@ -18,7 +18,7 @@ local SOUND_CHECKBOXES_TOP = {
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },
     { field = "GambleSoundFlag", label = "Lottery sound", sound = "lottery",
-      hint = "A CrossGambling lottery announcement in raid or party chat." },
+      hint = "A CrossGambling lottery announcement in raid, party, or guild chat." },
     { field = "RollSoundFlag", label = "Roll Sounds",
       hint = "Master switch for the roll-result sounds - see the button on the side." },
 }
