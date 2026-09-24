@@ -8,8 +8,8 @@ auras, and raid-leader chat triggers.
 > modernization. Targets Season of Discovery on Classic Era `1.15.9`
 > (Interface `11509`). The options panel, the Escape-key behavior, editable
 > dps/tank/heal rosters, and class/role-based death-sound detection
-> (party and raid) are in-game confirmed; Spirit of Redemption is not yet —
-> see [CHANGELOG.md](CHANGELOG.md) for the versioned list.
+> (party and raid) are in-game confirmed — see
+> [CHANGELOG.md](CHANGELOG.md) for the versioned list.
 
 ## Documentation
 
@@ -108,14 +108,14 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl options` (or `/cl opt`) | Opens/closes the in-game options panel (checkboxes for every toggle above, plus preview buttons for triggerable sounds). First draft, not yet in-game verified — see [CHANGELOG.md](CHANGELOG.md). |
 | `/cl ready` | Toggles the ready-check sound. |
 | `/cl roll` | Toggles sounds for specific `/roll` results/bands - exact 1/69/max, plus percentage-based low/high bands that work for any custom range starting at 1, not just 1-100. |
-| `/cl gamble` | Toggles the lottery sound (CrossGambling raid-chat announcement). |
+| `/cl gamble` | Toggles the lottery sound (CrossGambling raid/party/guild chat announcement). |
 | `/cl aura` | Toggles sounds for selected auras and abilities. |
 | `/cl player` | Toggles the player's own death sound. |
 | `/cl dps` | Toggles the Damage Dealer death sound between `none`/`both`; `/cl options` -> Death Sounds has a dropdown for `experimental`(Role)-only or `roster`-only. Role: not currently assigned Tank or Healer, any class - the real 3-role system's third bucket. |
 | `/cl tank` | Same toggle, for the tank death sound. Role: assigned Tank role. |
-| `/cl healer` | Same toggle, for the healer death sound. Role: assigned Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). Excludes a death delayed by Spirit of Redemption - see `/cl spirit`. |
-| `/cl spirit` | Toggles the Spirit of Redemption sound (a Priest's death delayed ~15s by the talent - Priest-only, unlike `/cl healer` above; own sound file, not shared with the plain healer death sound). Independent of `/cl healer` - plain on/off, not a detection mode; there's no roster equivalent for "this death was Spirit-delayed". |
+| `/cl healer` | Same toggle, for the healer death sound. Role: assigned Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). |
 | `/cl boss` | Toggles the boss death sound - plain on/off, not a detection mode: `UnitClassification` (`worldboss`) is the only signal, there's no roster fallback. |
+| `/cl bosskill` | Toggles the chat message naming who landed the killing blow on a live worldboss. |
 
 ## Repository layout
 
@@ -200,10 +200,10 @@ the live DPS/Tank/Healer role-based death-sound detection are now
 in-game confirmed for party members (an earlier class-based DPS guess's
 false-positive bug is fixed and confirmed too). Still open: the same
 detection for raid members specifically (a fix has landed, pending a
-real raid test), spell-ID aura matching (all fall back to the old
-name-based matching when the live check doesn't resolve), and Spirit of
-Redemption detection. No CurseForge/Wago project configured yet -
-releases only reach GitHub for now.
+real raid test), and spell-ID aura matching (all fall back to the old
+name-based matching when the live check doesn't resolve). No
+CurseForge/Wago project configured yet - releases only reach GitHub for
+now.
 Full prioritized list: [Roadmap](docs/ROADMAP.md).
 
 ## Development

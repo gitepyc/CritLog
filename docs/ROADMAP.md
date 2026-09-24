@@ -3,26 +3,19 @@
 Open, forward-looking items only, in priority order. Everything already
 done is in `CHANGELOG.md` and git history, not repeated here.
 
-### 1. Per-ability crit rate tracking (low priority, not committed to)
+### 1. Per-ability crit rate tracking
 
 Track normal-vs-crit hit counts per ability, not just the single
 highest-value crit per category like today, to show which ability crits
 most often - modeled on TitanCritLine's own equivalent feature.
 
-Needs new persisted state (a `{ normal = N, crit = M }` counter per
-ability, updated on every relevant hit, not just new highscores) and a
-place to display the result (options panel, Titan tooltip, or a `/cl`
-command - undecided). May not happen at all.
-
-### 2. Watch a custom chat channel for the lottery trigger
-
-Let the CrossGambling-style lottery trigger react in a user-joined custom
-channel too, not just raid/party chat.
-
-Technically simple - named channels funnel through `CHAT_MSG_CHANNEL`,
-which passes the channel name - just needs a configurable channel-name
-setting (options panel field and/or `/cl` command) instead of the
-hardcoded raid/party phrases. Not started, no UI mockup yet.
+A genuinely large overhaul, not a small addition: today CritLog only ever
+persists the current #1 (or top-N) highscore per category, discarding
+every other hit. This needs every single attack recorded (at least a
+running `{ normal = N, crit = M }` counter per ability, updated on every
+hit, not just new highscores), which touches the combat-log handling path
+throughout. Also needs a place to display the result (options panel,
+Titan tooltip, or a `/cl` command - undecided).
 
 ## Parked
 
@@ -36,6 +29,15 @@ schema version is declared, the migration functions below it - and the
 `DEFAULTS` fields that exist purely as their source data - can be deleted.
 Not yet: needs real time/version-spread first, declaring one now would be
 a guess.
+
+Checked against the actual known user base (only `0.1.1`/`legacy-0.1.4.2`
+plus the current dev line - nobody else has tested the versions between):
+both predate every one of the 7 migrations (no `playerGroups`, no
+dps/tank/heal roles, no `BossSoundFlag`, raw `AllLevel` instead of
+`LevelFilterFlag`/`LevelDiffThreshold`, a single `DamageAbilityCrit` value
+instead of record lists), so all 7 are still load-bearing for that upgrade
+path today - none are safe to prune until a minimum supported version is
+actually declared.
 
 ## Known constraint
 

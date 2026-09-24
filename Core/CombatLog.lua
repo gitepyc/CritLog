@@ -11,14 +11,6 @@ local function isPlayerSource(sourceGUID)
     return sourceGUID == UnitGUID("Player")
 end
 
--- Spirit of Redemption negates the killing blow: the priest's death is
--- delayed 15s (spirit form), so the eventual UNIT_DIED has no signal of its
--- own tying it back to the talent - the buff application is the only
--- moment the game tells us this death is coming. Cached by GUID here (not
--- restricted to the player - any priest in the raid can proc it) and read
--- back once in HandleDeath, then cleared.
-local spiritOfRedemptionGuids = {}
-
 -- Cooldown gates for the two group-member ritual sounds below (Mage Table,
 -- Warlock Healthstone ritual): every party/raid member's SPELL_CAST_SUCCESS
 -- fires its own combat-log event, so without this a 5-person group would
@@ -30,14 +22,6 @@ local lastMageTableSound = 0
 local lastHealthstoneSound = 0
 local MAGE_TABLE_COOLDOWN_SECONDS = 100
 local HEALTHSTONE_COOLDOWN_SECONDS = 60
-
-local function rememberSpiritOfRedemption(subevent, destGUID, spellId, spellName)
-    if subevent == "SPELL_AURA_APPLIED"
-        and CritLog.Filters.matchesSpell(CritLog.Constants.spells.spiritOfRedemption, spellId, spellName)
-    then
-        spiritOfRedemptionGuids[destGUID] = true
-    end
-end
 
 -- Finds a live unit token for a combat-log GUID. The combat log only gives
 -- us a GUID, but UnitLevel/UnitClassification need an actual unit token
@@ -476,7 +460,8 @@ function CritLog:PrintBossKillingBlow(
     -- is read positionally and isn't guaranteed to be a number for every
     -- subevent ending in "_DAMAGE" (see docs/BEHAVIOR.md), and comparing a
     -- non-number to 0 is a Lua error.
-    if not endsWith(subevent, "_DAMAGE")
+    if not CritLogDB.BossKillFlag
+        or not endsWith(subevent, "_DAMAGE")
         or type(overkill) ~= "number"
         or overkill <= 0
     then
@@ -543,8 +528,8 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         role = UnitGroupRolesAssigned(token)
     end
 
-    -- The live role checks below (dps/tank/heal, and Spirit of
-    -- Redemption) are gated on group membership - without this, any player
+    -- The live role checks below (dps/tank/heal) are gated on group
+    -- membership - without this, any player
     -- death that happens to resolve a unit token (e.g. an enemy player in
     -- PvP, or an unrelated player on a visible nameplate) could trigger
     -- these sounds just because their class/role matched, even though
@@ -632,42 +617,19 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         self:PlaySound(self.Constants.sounds.tankDeath)
     end
 
-    -- isGroupMember gates Spirit of Redemption too - the buff-apply
-    -- tracking in rememberSpiritOfRedemption has no way to know who's in
-    -- your group at that earlier point, so the check happens here instead.
-    local hasSpiritBuff = spiritOfRedemptionGuids[destGUID] and isGroupMember
-
     -- Healer death (CritLogDB.HealDetectionMode, renamed from
     -- PriestDetectionMode - see CHANGELOG.md and
-    -- Persistence/Database.lua's migratePriestToHeal) and Spirit of
-    -- Redemption used to share one gate, with the buff-apply cache above
-    -- only deciding which file played - meaning you couldn't hear one
-    -- without the other, and in practice couldn't tell them apart either,
-    -- since both used to point at the same file (they no longer do, see
-    -- Core/Constants.lua). Now independent, AND the live check itself
-    -- changed: Healer death used to require class PRIEST, same as Spirit;
-    -- now it matches the assigned Healer role instead (isAssignedHealer,
-    -- same pattern as isAssignedTank) - a Holy Paladin/Resto Druid/Resto
-    -- Shaman death counts here exactly like a Priest's. Spirit of
-    -- Redemption is the one case that still needs isPriestClass
-    -- specifically, since the talent itself is Priest-only, unlike the
-    -- Healer role. Spirit is a plain on/off flag (SpiritSoundFlag), not a
-    -- 4-way detection mode - there is no roster/name-list equivalent for
-    -- "this priest had Spirit of Redemption go off", the buff-apply cache
-    -- is the only signal that exists at all.
-    if not hasSpiritBuff and matchesMode(
+    -- Persistence/Database.lua's migratePriestToHeal): matches the
+    -- assigned Healer role (isAssignedHealer, same pattern as
+    -- isAssignedTank), not a Priest-specific check - a Holy Paladin/Resto
+    -- Druid/Resto Shaman death counts here exactly like a Priest's.
+    if matchesMode(
         CritLogDB.HealDetectionMode,
         token and isGroupMember and CritLog.Filters.isAssignedHealer(role),
         rosterMatchTrustworthy and tContains(CritLogDB.playerGroups.heal, destName)
     ) then
         self:PlaySound(self.Constants.sounds.healDeath)
     end
-
-    if hasSpiritBuff and CritLogDB.SpiritSoundFlag and CritLog.Filters.isPriestClass(class) then
-        self:PlaySound(self.Constants.sounds.spiritOfRedemption)
-    end
-
-    spiritOfRedemptionGuids[destGUID] = nil
 
     -- The classification (if any) has now been read for the boss check
     -- above; the GUID belongs to a dead unit and won't be looked up again.
@@ -691,7 +653,6 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
 
     self:HandleAuraSounds(subevent, sourceName, destGUID, sv1, sv2)
     self:HandleXtremeDamage(subevent, sourceGUID, sv4)
-    rememberSpiritOfRedemption(subevent, destGUID, sv1, sv2)
 
     if isPlayerSource(sourceGUID) then
         if subevent == "SWING_DAMAGE" then

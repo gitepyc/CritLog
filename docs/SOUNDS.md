@@ -32,15 +32,14 @@ metadata as before - no more `n/a` entries.
 | Blessing of Protection | `Bubble.mp3` | Player receives Blessing of Protection |
 | Divine Intervention | `divineInt.mp3` | Player receives Divine Intervention |
 | Soulstone | `soulstone.mp3` | Player receives the Soulstone buff (not the resurrection itself) |
-| Player death | `MarioDeath.mp3` | Player dies |
+| Player death | `Toni.mp3` | Player dies |
 | Damage Dealer death | `wilhelm.ogg` | Live: not currently assigned Tank or Healer (any class); and/or Damage Dealer roster, per detection mode - see `docs/BEHAVIOR.md` |
 | Tank death | `Tank.mp3` | Live assigned Tank role and/or tank roster, per detection mode |
-| Healer death | `Angels.mp3` | Live assigned Healer role (any class) and/or Healer roster, per detection mode; excludes a Spirit-of-Redemption-delayed death |
-| Spirit of Redemption | `Angels2.mp3` (own asset, restored from the legacy addon - see `CHANGELOG.md`) | A Priest's death (class-specific, not role-based) delayed by the talent; independent on/off toggle, not a detection mode |
+| Healer death | `Angels.mp3` | Live assigned Healer role (any class) and/or Healer roster, per detection mode |
 | Boss death | `FFX.mp3` | Live `worldboss` classification |
 | Raid end | `raidend.mp3` | Matching raid-leader message |
 | Wipe | `wipe.mp3` | Matching raid-leader message |
-| Lottery | `lottery.mp3` | Matching CrossGambling message in raid chat |
+| Lottery | `lottery.mp3` | Matching CrossGambling message in raid/party/guild chat |
 | Roll (exact 1) | `roll1.mp3` | `/roll` result is the lowest possible value on a 1-100 roll |
 | Roll (low band) | `roll5.mp3` | `/roll` result in the roughly-2-7% band on a 1-100 roll |
 | Roll (10 band) | `roll10.mp3` | `/roll` result in the roughly-8-10% band on a 1-100 roll |
@@ -63,7 +62,6 @@ complete trigger conditions.
 | File | Duration | Bitrate | Size | Used by |
 | --- | ---: | ---: | ---: | --- |
 | `Angels.mp3` | 5 s | 129 kbps | 86,995 B | healer death |
-| `Angels2.mp3` | 7 s | 129 kbps | 108,712 B | Spirit of Redemption |
 | `at_bam_babam.mp3` | 1 s | 134 kbps | 17,597 B | crit/highscore |
 | `Bloodlust.mp3` | 3 s | 130 kbps | 56,133 B | Bloodlust/Heroism |
 | `Bubble.mp3` | 2 s | 134 kbps | 26,467 B | Blessing of Protection |
@@ -76,7 +74,6 @@ complete trigger conditions.
 | `Innervate.mp3` | 3 s | 131 kbps | 47,783 B | Innervate |
 | `lottery.mp3` | 4 s | 130 kbps | 62,781 B | lottery (consolidated, see `CHANGELOG.md`) |
 | `Manatide.mp3` | 2 s | 132 kbps | 33,154 B | Mana Tide Totem |
-| `MarioDeath.mp3` | 2 s | 131 kbps | 37,334 B | player death |
 | `Painsup.mp3` | 3 s | 131 kbps | 50,709 B | Pain Suppression |
 | `Ready.mp3` | 2 s | 132 kbps | 29,718 B | ready check |
 | `raidend.mp3` | 9 s | 129 kbps | 146,746 B | raid end (consolidated, overlapping mix - see `CHANGELOG.md`) |
@@ -90,6 +87,7 @@ complete trigger conditions.
 | `Surprise.mp3` | 5 s | 129 kbps | 83,309 B | Power Infusion |
 | `Table.mp3` | 4 s | 130 kbps | 59,904 B | Mage Table |
 | `Tank.mp3` | 2 s | 131 kbps | 31,807 B | tank death |
+| `Toni.mp3` | 2 s | 131 kbps | 37,334 B | player death |
 | `wilhelm.ogg` | 1 s | 72 kbps | 10,861 B | Damage Dealer death |
 | `wipe.mp3` | 10 s | 128 kbps | 163,883 B | wipe chat phrase |
 | `Xtreme.mp3` | 3 s | 130 kbps | 43,092 B | extreme hit (off by default) |
