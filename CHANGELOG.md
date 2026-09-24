@@ -9,6 +9,32 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## Unreleased
+
+- **docs:** drop custom-channel lottery roadmap item
+
+- **docs:** clarify crit-rate-tracking scope as a large overhaul, drop low-prio label
+
+- **docs:** mark Mage Table and Healthstone ritual as in-game verified on SoD
+
+- **docs:** trim BEHAVIOR.md prose, keep tables as the primary content
+
+- **docs:** drop TBC-introduced/verification annotations from aura spell IDs
+
+- **docs:** update lottery trigger wording to include guild chat
+
+- **refactor:** drop Spirit of Redemption, rename MarioDeath.mp3 to Toni.mp3, gate boss killing-blow chat message
+
+- **refactor:** trim narrative comments in ChatTriggers/Commands/Core/Persistence/Sounds/Events/CritLog.lua
+
+- **refactor:** trim comments in UI/HelpPanel.lua and UI/MainPanel.lua
+
+- **refactor:** trim comments in Aura/Death/Roll/Roster sound panels
+
+- **refactor:** trim comments in UI/Shared.lua
+
+- **refactor:** trim comments in UI/SoundPanel.lua and UI/TitanButton.lua
+
 ## [0.3.8](https://github.com/gitepyc/CritLog/tree/0.3.8) (2026-09-24)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.6...0.3.8) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
