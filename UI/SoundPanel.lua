@@ -1,22 +1,12 @@
--- Sound Settings panel, opened via the main panel's button. Split out from
--- the main panel so the default /cl options view isn't 13 sound rows deep
--- before you even see whether crit tracking itself is configured how you
--- want.
+-- Sound Settings panel, opened via the main panel's button. What lives
+-- here directly is just the general toggles plus buttons into
+-- UI/AuraSoundPanel.lua, UI/DeathSoundPanel.lua, and
+-- UI/RollSoundPanel.lua.
 --
--- Three groups of rows used to live here directly and grew this panel too
--- tall: the 13 individual aura/ritual sounds (now UI/AuraSoundPanel.lua),
--- the player/heal/DPS/tank/boss death-sound block (now
--- UI/DeathSoundPanel.lua), and the 6 roll-result sounds (now
--- UI/RollSoundPanel.lua) - see CHANGELOG.md. What's left here is just the
--- general toggles plus the buttons to reach those panels.
 -- Split in two so the Roll Sounds button can sit directly under the
--- RollSoundFlag row instead of grouped with the Aura/Death Sounds buttons
--- at the very end - in-game requested. AuraSoundFlag stays in its own
--- list for the same reason: its button belongs right after it, then
--- Death Sounds' button alongside it as before.
+-- RollSoundFlag row instead of grouped with the Aura/Death Sounds
+-- buttons at the very end.
 local SOUND_CHECKBOXES_TOP = {
-    -- MasterSoundFlag itself moved to the main panel (UI/MainPanel.lua) -
-    -- in-game requested, muting everything shouldn't need a submenu.
     { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
       hint = "Plays on a new personal highscore." },
     { field = "AllCritFlag", label = "Sound for all crits",
@@ -29,10 +19,6 @@ local SOUND_CHECKBOXES_TOP = {
       hint = "Plays when a ready check starts." },
     { field = "GambleSoundFlag", label = "Lottery sound", sound = "lottery",
       hint = "A CrossGambling lottery announcement in raid or party chat." },
-    -- No exact count in the hint (matches the AuraSoundFlag hint below -
-    -- in-game requested the same treatment here), and "on the side" not
-    -- "below" - the Roll Sounds button sits on this same row now (see
-    -- buildSoundFrame), unlike the Aura/Death Sounds buttons.
     { field = "RollSoundFlag", label = "Roll Sounds",
       hint = "Master switch for the roll-result sounds - see the button on the side." },
 }
@@ -43,12 +29,11 @@ local SOUND_CHECKBOXES_BOTTOM = {
 }
 
 -- Raid-leader/raid-chat phrase sounds (ChatTriggers.lua's
--- CHAT_MSG_RAID_LEADER handler) - deliberately an Easter egg, in-game
--- requested: no CritLogDB flag at all (they always fire, gated only by
--- MasterSoundFlag like every CritLog:PlaySound call) and no toggle, so
--- previewOnly rows with no checkbox. The whole section is hidden unless
--- `/cl debug` is on - see buildSoundFrame's chatPhraseFrame below - so
--- it's not discoverable through the normal options UI either.
+-- CHAT_MSG_RAID_LEADER handler) - deliberately an Easter egg: no
+-- CritLogDB flag at all (they always fire, gated only by
+-- MasterSoundFlag) and no toggle, so previewOnly rows with no checkbox.
+-- The whole section is hidden unless `/cl debug` is on - see
+-- buildSoundFrame's chatPhraseFrame below.
 local CHAT_PHRASE_PREVIEWS = {
     { note = "Fires when the raid leader says \"raid end\"/\"raid ende\"\nor \"wipe\"/\"shit show\" in raid chat." },
     { label = "Raid end", sound = "raidEnd", previewOnly = true },
@@ -58,49 +43,26 @@ local CHAT_PHRASE_PREVIEWS = {
 local soundFrame
 
 -- The Raid Chat Phrases section (chatPhraseFrame below) only shows in
--- debug mode - the panel's own size now follows that instead of always
--- reserving room for it, in-game requested ("sound settings without debug
--- mode should be smaller, only the extra entries in debug mode"). Fixed
--- sizes instead of measuring real content height/width at runtime
--- (GetHeight()/GetWidth() on freshly-created FontStrings/rows unreliably
--- report 0 before the panel has ever been shown - see UI/Shared.lua's
--- SetHitRectInsets comments for the same class of problem). In-game
--- screenshotted: the first non-debug height (400) was too small, Close
--- crowded right up against the Aura/Death Sounds button row; bumped back
--- up, now in-game confirmed good both with and without debug mode.
--- Width used to also grow in debug mode (the Raid Chat Phrases note read
--- too cramped against the right edge at the base width otherwise) - in-
--- game requested keeping width the same in both modes instead, so the
--- note is now manually split across two lines (see CHAT_PHRASE_PREVIEWS
--- above) rather than growing the panel to fit it on one.
+-- debug mode - the panel's own height follows that instead of always
+-- reserving room for it. Fixed sizes instead of measuring real content
+-- height/width at runtime: GetHeight()/GetWidth() on freshly-created
+-- FontStrings/rows unreliably report 0 before the panel has ever been
+-- shown.
 local SOUND_FRAME_WIDTH = 460
 local SOUND_FRAME_HEIGHT = 460
--- +14 over the previous 590: the note above now wraps across two lines
--- instead of one, needs a bit more vertical room.
 local SOUND_FRAME_HEIGHT_DEBUG = 604
 
 local function buildSoundFrame()
-    -- SOUND_FRAME_HEIGHT tall enough for the toggles heading, all 8
-    -- checkbox rows (hints are now a hover tooltip, not a line underneath
-    -- each row - see UI/Shared.lua; MasterSoundFlag moved to the main
-    -- panel, one row fewer than before), the Roll Sounds button (its own
-    -- row, right under the RollSoundFlag checkbox), and the Aura Sounds/
-    -- Death Sounds button row below that - the Raid Chat Phrases section
-    -- isn't part of this base height at all, see the registerRefresh
-    -- height toggle below.
-    -- Kept wider than the other single-column panels (420) after the
-    -- general size-reduction pass: the Roll Sounds button above needs
-    -- PREVIEW_COLUMN_X(300) + its own 110px width + margin, more room than
-    -- the standard 70px Preview button the other panels only ever use.
+    -- Kept wider than the other single-column panels: the Roll Sounds
+    -- button below needs PREVIEW_COLUMN_X + its own 110px width + margin,
+    -- more room than the standard 70px Preview button.
     local f = CritLog.UI.createPanelFrame("CritLogSoundOptionsFrame", "CritLog Sound Settings", SOUND_FRAME_WIDTH, SOUND_FRAME_HEIGHT)
     -- Offset from center so it doesn't perfectly overlap the main panel
-    -- when both are open at once; a one-time anchor, not a continuous one,
-    -- so dragging either panel doesn't drag the other.
+    -- when both are open at once.
     f:SetPoint("CENTER", UIParent, "CENTER", 260, 0)
-    -- Closes its own children (Aura/Death/Roll Sounds) when it closes -
-    -- see CritLog.UI.closeChildPanels' own comment. Death Sounds closes
-    -- its own child (Roster Settings) the same way, so that closes
-    -- transitively from here too.
+    -- Closes its own children (Aura/Death/Roll Sounds) when it closes.
+    -- Death Sounds closes its own child (Roster Settings) the same way,
+    -- so that closes transitively from here too.
     f:HookScript("OnHide", function()
         CritLog.UI.closeChildPanels({
             "CritLogAuraSoundFrame",
@@ -115,17 +77,9 @@ local function buildSoundFrame()
 
     local lastAnchor, lastOffset = CritLog.UI.buildToggleRows(f, SOUND_CHECKBOXES_TOP, togglesHeading)
 
-    -- In-game screenshotted: a 140px button at the Preview column
-    -- overflowed past the panel's right edge, and sitting on its own row
-    -- below RollSoundFlag (rather than beside it) looked like it
-    -- belonged to the wrong row. Sized and positioned like a Preview
-    -- button instead - same row as the checkbox, same column, close to
-    -- the same size (Preview buttons are 70x20) - "Roll Sounds..." needs
-    -- a bit more width than "Preview" to stay readable, 110px comfortably
-    -- fits within this panel's right margin at this column. This button's
-    -- extra width (110 vs. the standard 70) is the reason this panel keeps
-    -- a bit more width than the other single-column panels after the
-    -- general size-reduction pass - see buildSoundFrame's width comment.
+    -- Sized and positioned like a Preview button - same row as the
+    -- checkbox, same column - just a bit wider (110 vs. 70) since "Roll
+    -- Sounds..." needs more room than "Preview" to stay readable.
     local rollSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     rollSoundsButton:SetSize(110, 20)
     rollSoundsButton:SetText("Roll Sounds...")
@@ -158,13 +112,10 @@ local function buildSoundFrame()
         CritLog:ShowDeathSounds()
     end)
 
-    -- Easter egg: these sounds always fire (no CritLogDB flag, no toggle -
-    -- see CHAT_PHRASE_PREVIEWS' own comment above), and the whole point is
-    -- that they're not meant to be discoverable through the normal options
-    -- UI. The section lives in its own child frame (not directly on `f`
-    -- like every other row) purely so it can be shown/hidden as one unit -
-    -- CritLog.UI.registerRefresh below toggles it based on DebugFlag every
-    -- time any options panel opens.
+    -- The section lives in its own child frame (not directly on `f` like
+    -- every other row) so it can be shown/hidden as one unit -
+    -- CritLog.UI.registerRefresh below toggles it based on DebugFlag
+    -- every time any options panel opens.
     local chatPhraseFrame = CreateFrame("Frame", nil, f)
     chatPhraseFrame:SetSize(1, 1)
     chatPhraseFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)

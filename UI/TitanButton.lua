@@ -1,36 +1,23 @@
--- Optional TitanPanel status-bar button (docs/ROADMAP.md item 3). Entirely
--- inert when TitanPanel isn't installed: CritLog:InitTitanPanelButton below
--- is only ever called from Events.lua's PLAYER_LOGIN handler, gated behind
--- IsAddOnLoaded("Titan") there - nothing in this file runs, and no frame is
--- created, if Titan isn't present. `## OptionalDeps: Titan` in CritLog.toc
--- just makes sure Titan's own API exists first at load time if both addons
--- are installed; it doesn't make Titan a hard requirement.
---
--- Not in-game verified - nobody working on this repo has a WoW client
--- available (see README.md's "Known technical issues and risks"). The Titan
--- Panel API surface used here (CreateFrame with "TitanPanelComboTemplate",
--- TitanPanelButton_OnLoad/OnClick, the registry table shape, Titan_Menu.*
--- for the right-click menu) is modeled directly on TitanCritLine, a
--- separate, already-working "track your crits" Titan plugin - not guessed.
+-- Optional TitanPanel status-bar button. Entirely inert when TitanPanel
+-- isn't installed: CritLog:InitTitanPanelButton below is only ever called
+-- from Events.lua's PLAYER_LOGIN handler, gated behind
+-- IsAddOnLoaded("Titan") there. The Titan Panel API surface used here
+-- (CreateFrame with "TitanPanelComboTemplate", TitanPanelButton_OnLoad/
+-- OnClick, the registry table shape, Titan_Menu.* for the right-click
+-- menu) is modeled directly on TitanCritLine, a separate, already-working
+-- "track your crits" Titan plugin.
 
--- "CL: <dmg>/<white>/<heal>" next to the button's icon - matches
--- TitanCritLine's own button text exactly (TITAN_CRITLINE_BUTTON_LABEL
--- "CL: " + TITAN_CRITLINE_BUTTON_TEXT "%s/%s/%s"), in-game requested
--- specifically instead of the longer "D:/W:/H:" first draft. Full detail
--- moved to the hover tooltip below - this is just the at-a-glance number.
--- A category with no record yet shows "-" instead of a number, so the
--- button has a stable shape from the very first login instead of
--- growing/shrinking as categories fill in. Titan re-calls this function by
--- name (see registry.buttonTextFunction below) every time it wants to
--- refresh the button, so it always reflects the live CritLogDB.records
--- state - nothing is cached here.
+-- "CL: <dmg>/<white>/<heal>" next to the button's icon, matching
+-- TitanCritLine's own button text format. Full detail moved to the hover
+-- tooltip below. A category with no record yet shows "-" instead of a
+-- number, so the button has a stable shape from the very first login.
+-- Titan re-calls this function by name (see registry.buttonTextFunction
+-- below) every time it wants to refresh the button, so it always
+-- reflects the live CritLogDB.records state - nothing is cached here.
 -- Numbers rendered white (|cffffffff...|r), "/" and "CL: " left in the
--- default inherited font color (GameFontNormalSmall's usual gold) -
--- in-game requested to match TitanCritLine's own look exactly. Verified
--- against their actual code (TitanCritLine.lua): BODY_TEXT_COLOR is
--- literally "|cffffffff", and only the %s values passed through their
--- COLOR() helper get wrapped in it - the "/" separators in their format
--- string are outside that wrapping, same split done here.
+-- default inherited font color, matching TitanCritLine's own look
+-- (verified against their actual code: BODY_TEXT_COLOR is literally
+-- "|cffffffff", and only the %s values get wrapped in it).
 function CritLogTitan_GetButtonText()
     local function top(kind)
         local entry = CritLogDB.records[kind][1]
@@ -41,27 +28,22 @@ function CritLogTitan_GetButtonText()
     return "CL: "..top("damage").."/"..top("whiteHit").."/"..top("heal")
 end
 
--- Full detail line per category for the hover tooltip, now sharing
--- Core/Records.lua's formatRecordTextColored instead of a third color
--- scheme kept only here - in-game requested applying the same styling to
--- the main options panel too (see UI/MainPanel.lua), so the coloring
--- logic moved to Core/Records.lua where both can use it. Still being
--- iterated on in-game ("sieht besser aus jetzt aber noch nicht gut") -
--- see Core/Records.lua's color constants for the current values.
+-- Full detail line per category for the hover tooltip, sharing
+-- Core/Records.lua's formatRecordTextColored with the main options panel
+-- (UI/MainPanel.lua) instead of a separate color scheme kept only here.
 function CritLogTitan_GetTooltipText()
     return CritLog.Records.formatRecordTextColored("damage", 1).."\n"
         ..CritLog.Records.formatRecordTextColored("whiteHit", 1).."\n"
         ..CritLog.Records.formatRecordTextColored("heal", 1)
 end
 
--- Right-click context menu. The roadmap only ever said "contents TBD" for
--- this, so it's kept deliberately small: a shortcut to the options panel,
--- and Reset All (reusing the existing CRITLOG_RESET_ALL_HIGHSCORES
--- confirmation popup from UI/MainPanel.lua rather than duplicating that
--- logic here). Titan_Menu.AddContextMenu already adds the plugin title and
--- the standard ShowIcon/ShowLabelText/Hide controls from
+-- Right-click context menu: a shortcut to the options panel, and Reset
+-- All (reusing the existing CRITLOG_RESET_ALL_HIGHSCORES confirmation
+-- popup from UI/MainPanel.lua rather than duplicating that logic here).
+-- Titan_Menu.AddContextMenu already adds the plugin title and the
+-- standard ShowIcon/ShowLabelText/Hide controls from
 -- registry.controlVariables before calling this, so only the CritLog-
--- specific entries are added here - same split TitanCritLine uses.
+-- specific entries are added here.
 function CritLogTitan_MenuGenerator(_, rootDescription)
     Titan_Menu.AddCommand(rootDescription, "CritLog", "Options", function()
         CritLog:ShowOptions()
@@ -71,48 +53,31 @@ function CritLogTitan_MenuGenerator(_, rootDescription)
     end)
 end
 
--- Called once from Events.lua's PLAYER_LOGIN, only after IsAddOnLoaded("Titan")
--- has already confirmed Titan Panel is present - see Events.lua. Builds the
--- button via a plain runtime CreateFrame call (no XML anywhere in CritLog,
--- see README.md's repository layout) inheriting Titan's own
--- "TitanPanelComboTemplate", the same template/registry shape TitanCritLine's
--- XML-based button ultimately produces - TitanPanelComboTemplate specifically
--- (not the plain TitanPanelTextTemplate the first draft used), since it's
--- the one that actually has an icon texture region (`$parentIcon`) in
--- addition to the text label - in-game requested: a visible icon next to
--- the button text. Verified against the real Titan Panel 9.3.2 source
--- (Titan/TitanTemplate.xml, Titan/TitanTemplate.lua's
--- TitanPanelButton_SetButtonIcon): it looks up `_G[buttonName.."Icon"]`,
--- which is nil (and silently does nothing) for TitanPanelTextTemplate -
--- that template has no icon region at all, only ComboTemplate does.
+-- Called once from Events.lua's PLAYER_LOGIN, only after
+-- IsAddOnLoaded("Titan") has already confirmed Titan Panel is present.
+-- Builds the button via a plain runtime CreateFrame call inheriting
+-- Titan's own "TitanPanelComboTemplate" - specifically that one, not the
+-- plain TitanPanelTextTemplate, since ComboTemplate is the one with an
+-- icon texture region (`$parentIcon`) in addition to the text label
+-- (verified against the real Titan Panel 9.3.2 source: TitanTemplate.lua's
+-- TitanPanelButton_SetButtonIcon looks up `_G[buttonName.."Icon"]`, which
+-- is nil for TitanPanelTextTemplate).
 function CritLog:InitTitanPanelButton()
-    -- In-game reported: Titan rejected registration with "Plugin 'CritLog'
-    -- already loaded" - this fires if InitTitanPanelButton somehow runs
-    -- twice (e.g. two CritLog addon folders both enabled at once, a common
-    -- mistake when a new test-build zip gets extracted into a new folder
-    -- instead of overwriting the old one - both would independently reach
-    -- PLAYER_LOGIN and both try to register the same Titan plugin id).
     -- CreateFrame with an existing global name returns the *same* frame
-    -- rather than creating a new one, so this check is enough to make a
-    -- second call a no-op regardless of why it happened.
+    -- rather than creating a new one, so this guards against
+    -- InitTitanPanelButton somehow running twice (e.g. two CritLog addon
+    -- folders both enabled at once) triggering Titan's "already loaded"
+    -- rejection.
     if _G.TitanPanelCritLogButton then
         return
     end
 
     local button = CreateFrame("Button", "TitanPanelCritLogButton", UIParent, "TitanPanelComboTemplate")
     button.registry = {
-        -- Plain "CritLog", no "Titan" prefix/suffix on the id itself - see
-        -- TitanCritLine's own TITAN_CRITLINE_ID ("CritLine", not
+        -- Plain "CritLog", no "Titan" prefix/suffix on the id itself -
+        -- see TitanCritLine's own TITAN_CRITLINE_ID ("CritLine", not
         -- "TitanCritLine"). The frame name above follows the matching
-        -- convention instead: "TitanPanel<Name>Button"
-        -- (TitanPanelCritLineButton in the reference, TitanPanelCritLogButton
-        -- here) - "Titan" is a naming prefix for the frame/addon, not the
-        -- registry id. An earlier attempt used "CritLogTitan" here while
-        -- chasing a since-debunked stale-SavedVariables theory for the
-        -- "already loaded" bug (the real cause, a genuine double
-        -- registration, is fixed below - see the comment above the removed
-        -- TitanPanelButton_OnLoad(button) call) - safe to use the plain
-        -- name again now that the actual bug is gone.
+        -- convention instead: "TitanPanel<Name>Button".
         id = "CritLog",
         category = "Combat",
         version = self.version,
@@ -124,10 +89,7 @@ function CritLog:InitTitanPanelButton()
         -- Reuses the existing Blizzard-AddOns-list icon (media/icon.png,
         -- wired up via CritLog.toc's ## IconTexture) rather than a second
         -- image asset. It's a 256x256 comic "CRIT LOG" burst; iconWidth
-        -- below scales it down to a normal Titan button icon (16px). In-game
-        -- confirmed: not very legible at that size, but accepted as-is
-        -- ("was ist das schon in der Größe") - not worth a dedicated
-        -- smaller icon asset for this.
+        -- below scales it down to a normal Titan button icon (16px).
         icon = "Interface\\AddOns\\CritLog\\media\\icon.png",
         iconWidth = 16,
         controlVariables = {
@@ -141,23 +103,15 @@ function CritLog:InitTitanPanelButton()
     }
 
     -- No explicit TitanPanelButton_OnLoad(button) call here - verified
-    -- against the real Titan Panel 9.3.2 source
-    -- (Titan/TitanTemplate.xml): "TitanPanelComboTemplate" (like
-    -- "TitanPanelTextTemplate" before it) inherits
-    -- "TitanPanelButtonTemplate", which has its own baked-in
-    -- <OnLoad>TitanPanelButton_OnLoad(self)</OnLoad> - it already fires
+    -- against the real Titan Panel 9.3.2 source: "TitanPanelComboTemplate"
+    -- inherits "TitanPanelButtonTemplate", which has its own baked-in
+    -- <OnLoad>TitanPanelButton_OnLoad(self)</OnLoad> that already fires
     -- once, synchronously, as part of the CreateFrame call above. Calling
-    -- it again here queued the *same* button frame for registration twice
-    -- (TitanUtils_PluginToRegister just appends to a deferred queue
-    -- processed later at PLAYER_ENTERING_WORLD - see TitanUtils.lua's
-    -- TitanUtils_RegisterPluginList/TitanUtils_RegisterPluginProtected),
-    -- so Titan tried to register the same id twice and rejected the
-    -- second attempt as "already loaded" - in-game reported, reproduced
-    -- even with a brand new id and a confirmed-fresh client restart,
-    -- which ruled out stale SavedVariables or a duplicate addon folder.
-    -- Setting button.registry above, before Titan actually processes the
-    -- queue at PLAYER_ENTERING_WORLD (later than PLAYER_LOGIN, where this
-    -- whole function runs), is enough - no second explicit call needed.
+    -- it again queues the *same* button frame for registration twice
+    -- (TitanUtils_PluginToRegister appends to a deferred queue processed
+    -- later at PLAYER_ENTERING_WORLD), so Titan rejects the second attempt
+    -- as "already loaded". Setting button.registry above, before Titan
+    -- processes that queue, is enough - no second explicit call needed.
 
     -- Only the left-click "open options" shortcut is handled here; right-
     -- click is left entirely to Titan's own default OnClick handling, which
@@ -172,16 +126,11 @@ function CritLog:InitTitanPanelButton()
 end
 
 -- Called from Persistence/Database.lua's AddRecord whenever a crit gets
--- recorded, so the button's own text (CritLogTitan_GetButtonText, the
--- current top score per category) actually refreshes. In-game reported:
--- a new crit updated the hover tooltip (rebuilt fresh every time it's
--- shown) but the button text itself stayed on its initial "-/-/-"
--- placeholder forever - Titan doesn't poll buttonTextFunction on its own,
+-- recorded, so the button's own text (CritLogTitan_GetButtonText)
+-- actually refreshes - Titan doesn't poll buttonTextFunction on its own,
 -- it only re-invokes it when explicitly told to via
--- TitanPanelButton_UpdateButton (verified against the real Titan Panel
--- 9.3.2 source, same as everything else in this file). No-op if the
--- button was never created (Titan not installed), same guard
--- InitTitanPanelButton uses.
+-- TitanPanelButton_UpdateButton. No-op if the button was never created
+-- (Titan not installed), same guard InitTitanPanelButton uses.
 function CritLog:RefreshTitanPanelButton()
     if _G.TitanPanelCritLogButton then
         TitanPanelButton_UpdateButton("CritLog")
