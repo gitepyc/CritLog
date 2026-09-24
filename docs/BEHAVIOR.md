@@ -66,10 +66,11 @@ Each trigger matches by spell ID first, falling back to the displayed
 English/German spell name if the ID doesn't hit.
 
 Verification status of the less common spells: Mage Table and the
-Healthstone ritual are in-game verified castable on Classic Era/SoD.
-Hymn of Hope has no spell ID (it replaced the TBC-only "Symbol of Hope"
-in WotLK patch 3.0.2) and is expected uncastable on Classic Era/SoD, but
-that's still unverified in-game.
+Healthstone ritual sounds are in-game verified working, though not
+specifically confirmed castable on Classic Era/SoD (vs. some other
+client version). Hymn of Hope has no spell ID (it replaced the
+TBC-only "Symbol of Hope" in WotLK patch 3.0.2) and is expected
+uncastable on Classic Era/SoD, but that's still unverified in-game.
 
 | Trigger | Own flag | Source/destination condition | Spell ID(s) | Name fallback | Sound |
 | --- | --- | --- | --- | --- | --- |
