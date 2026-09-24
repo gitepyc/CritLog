@@ -9,9 +9,12 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
-## Unreleased
+## [0.3.8](https://github.com/gitepyc/CritLog/tree/0.3.8) (2026-09-24)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.7.6...0.3.8) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
 - **chore:** consolidate -dev.N prerelease tags into their real release's CHANGELOG section
+
+- **chore:** promote 0.3.8-dev.3 to the 0.3.8 release, confirmed in-game
 
 - **docs:** restyle roadmap as heading+summary per item, drop sound-rights review references
 
@@ -20,6 +23,10 @@ drafting pass.
 - **feature:** post highscores to chat from the Highscore List popup
 
 - **fix:** run migrations for a brand-new character too, not just upgrades
+
+- **other:** ci: bump actions/checkout to v7
+
+- **other:** ci: make lint image name generic, unify release.yml with TitanCritLine
 
 - **tweak:** post row below the list, test colored text on real channels too
 
