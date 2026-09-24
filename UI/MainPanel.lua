@@ -109,6 +109,125 @@ local function createDeleteEntryButton(parent, kind, index)
     return button
 end
 
+-- Posts every category's current #1 (skipping a category with no record
+-- yet) as its own SendChatMessage call, not one combined message - chat
+-- doesn't render embedded newlines, so multiple lines need multiple calls
+-- either way, and a separate call per category reads more naturally than
+-- cramming three lines into one 255-char message. Colored (the same
+-- variant used everywhere else on-screen) for every destination, not just
+-- FOR_ME - WoW chat channels do render |c color codes for other players
+-- too, not just locally; in-game testing to decide if this stays or
+-- switches to formatRecordText's plain variant.
+local function postHighscores(channel, whisperTarget)
+    for _, kind in ipairs(RECORD_ORDER) do
+        if CritLogDB.records[kind][1] then
+            if channel == "FOR_ME" then
+                print(CritLog.Records.formatRecordTextColored(kind, 1))
+            elseif channel == "WHISPER" then
+                SendChatMessage(CritLog.Records.formatRecordTextColored(kind, 1), "WHISPER", nil, whisperTarget)
+            else
+                SendChatMessage(CritLog.Records.formatRecordTextColored(kind, 1), channel)
+            end
+        end
+    end
+end
+
+-- Post row: a channel dropdown + Post button on one line, plus a target
+-- name box that only shows up for Whisper (every other channel needs
+-- nothing extra). Anchored below `anchor` - buildHighscoreListFrame
+-- passes the bottom of the whole highscore list (last row of the last
+-- category), not the heading, so this sits between the list and the
+-- Close button.
+local function createPostRow(f, anchor)
+    local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    label:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -12)
+    label:SetText("Post to:")
+
+    -- Same "-16 nudge" reasoning as UI/Shared.lua's createDropdownRow -
+    -- UIDropDownMenuTemplate's clickable texture extends left of the
+    -- frame's own edge.
+    local dropdown = CreateFrame("Frame", "CritLogPostChannelDropdown", f, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("LEFT", label, "RIGHT", 8, 0)
+    UIDropDownMenu_SetWidth(dropdown, 90)
+
+    local postButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    postButton:SetSize(60, 20)
+    postButton:SetText("Post")
+    postButton:SetNormalFontObject("GameFontNormalSmall")
+    postButton:SetHighlightFontObject("GameFontHighlightSmall")
+    postButton:SetPoint("LEFT", dropdown, "RIGHT", 8, 2)
+
+    local whisperLabel = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    whisperLabel:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -10)
+    whisperLabel:SetText("Whisper to:")
+
+    local whisperBox = CreateFrame("EditBox", nil, f, "InputBoxTemplate")
+    whisperBox:SetSize(150, 20)
+    whisperBox:SetAutoFocus(false)
+    whisperBox:SetMaxLetters(30)
+    whisperBox:SetPoint("LEFT", whisperLabel, "RIGHT", 8, 0)
+    whisperBox:SetText(CritLogDB.PostWhisperTarget or "")
+    whisperBox:SetScript("OnEnterPressed", whisperBox.ClearFocus)
+    whisperBox:SetScript("OnEditFocusLost", function(self)
+        CritLogDB.PostWhisperTarget = self:GetText()
+    end)
+
+    local function updateWhisperRowVisibility()
+        if CritLogDB.PostChannel == "WHISPER" then
+            whisperLabel:Show()
+            whisperBox:Show()
+        else
+            whisperLabel:Hide()
+            whisperBox:Hide()
+        end
+    end
+
+    -- Same strata bump as UI/Shared.lua's createDropdownRow - our panels
+    -- sit on FULLSCREEN, above Blizzard's shared dropdown-list frames'
+    -- default strata, so the menu would otherwise open invisibly behind
+    -- this one.
+    local dropdownButton = _G[dropdown:GetName().."Button"]
+    if dropdownButton then
+        dropdownButton:HookScript("OnClick", function()
+            if DropDownList1 then
+                DropDownList1:SetFrameStrata("TOOLTIP")
+            end
+            if DropDownList2 then
+                DropDownList2:SetFrameStrata("TOOLTIP")
+            end
+        end)
+    end
+
+    UIDropDownMenu_Initialize(dropdown, function(_, level)
+        for _, option in ipairs(CritLog.Constants.postChannels) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = option.label
+            info.value = option.value
+            info.checked = (CritLogDB.PostChannel == option.value)
+            info.func = function()
+                CritLogDB.PostChannel = option.value
+                UIDropDownMenu_SetText(dropdown, option.label)
+                updateWhisperRowVisibility()
+                CloseDropDownMenus()
+            end
+            UIDropDownMenu_AddButton(info, level)
+        end
+    end)
+
+    for _, option in ipairs(CritLog.Constants.postChannels) do
+        if option.value == CritLogDB.PostChannel then
+            UIDropDownMenu_SetText(dropdown, option.label)
+        end
+    end
+    updateWhisperRowVisibility()
+
+    postButton:SetScript("OnClick", function()
+        postHighscores(CritLogDB.PostChannel, CritLogDB.PostWhisperTarget)
+    end)
+
+    return whisperLabel
+end
+
 -- Fixed x-offsets (from the panel's left edge) for the table columns,
 -- shared by both the column header row and every data row so values line
 -- up underneath their header regardless of text length.
@@ -236,6 +355,8 @@ local function layoutHighscoreList(f)
             end
         end
     end
+
+    return previous
 end
 
 -- Sized for the worst case (Constants.maxDisplayEntries rows in every
@@ -243,9 +364,12 @@ end
 -- character has built up a real history, which is expected for a first
 -- draft - see docs/ROADMAP.md. Widened from 420 for the table columns
 -- (Ability names in particular need more room than a single combined line
--- did).
+-- did). Height grown from 520 to 600 for the Post row + its conditional
+-- Whisper-target row below the highscore list, above the Close button
+-- (see createPostRow) - exact fit still pending in-game verification,
+-- like every other size in this panel.
 local function buildHighscoreListFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 520)
+    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 600)
     -- Opens to the left of center, mirroring the sound panel opening to the
     -- right, so both can be open next to the main panel at once.
     f:SetPoint("CENTER", UIParent, "CENTER", -260, 0)
@@ -277,7 +401,15 @@ local function buildHighscoreListFrame()
         f.columnHeaders[kind] = createColumnHeaderRow(f)
     end
 
-    layoutHighscoreList(f)
+    -- Post row goes below the whole list (last row of the last category),
+    -- not below the heading - in-game requested, reads more naturally
+    -- right above the Close button than competing with Reset All at the
+    -- top. The list's per-category height is fixed regardless of actual
+    -- entry count (see layoutHighscoreList's own comment), so this anchor
+    -- point never shifts between refreshes - built once here, not redone
+    -- on every layoutHighscoreList call below.
+    local lastRow = layoutHighscoreList(f)
+    f.postRow = createPostRow(f, lastRow)
 
     return f
 end

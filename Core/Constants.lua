@@ -23,6 +23,17 @@ CritLog.Constants = {
         whiteHit = { label = "White hit crit", hasName = false },
         heal = { label = "Heal crit", hasName = true },
     },
+    -- Highscore List popup's "Post" dropdown (see UI/MainPanel.lua's
+    -- postHighscores) - `value` doubles as the literal SendChatMessage
+    -- channel argument for every entry except FOR_ME (a local print, not
+    -- a real chat channel) and WHISPER (needs the extra target-name box).
+    postChannels = {
+        { label = "For me", value = "FOR_ME" },
+        { label = "Guild", value = "GUILD" },
+        { label = "Party", value = "PARTY" },
+        { label = "Raid", value = "RAID" },
+        { label = "Whisper", value = "WHISPER" },
+    },
     -- Top-N per highscore category instead of a single value, so
     -- highscores are a real list (each entry individually deletable in the
     -- options panel) rather than just the current best. Tracked and
