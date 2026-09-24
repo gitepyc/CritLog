@@ -14,10 +14,9 @@ end
 -- Cooldown gates for the two group-member ritual sounds below (Mage Table,
 -- Warlock Healthstone ritual): every party/raid member's SPELL_CAST_SUCCESS
 -- fires its own combat-log event, so without this a 5-person group would
--- play the sound 5 times for one ritual cast. Matches the legacy addon's
--- 100s/60s dedup windows. Plain module-level locals (not SavedVariables) -
--- resets on reload, which is fine, it's just spam prevention within a
--- session.
+-- play the sound 5 times for one ritual cast. Plain module-level locals,
+-- not SavedVariables - resets on reload, fine for session-only spam
+-- prevention.
 local lastMageTableSound = 0
 local lastHealthstoneSound = 0
 local MAGE_TABLE_COOLDOWN_SECONDS = 100
@@ -49,14 +48,9 @@ end
 
 -- Finds a live unit token for a GUID known to belong to a group member
 -- (party/raid), independent of findUnitToken above - that one only checks
--- "target" and visible nameplates, both far less likely to be true for a
--- raid member (up to 40 people, often out of nameplate range and not your
--- current target when they die) than a party member (a handful of people,
--- usually nearby). In-game reported: dps/tank/heal death-sound live role
--- detection seemed to only fire for party members because of exactly
--- this. party1-4/raid1-40 tokens resolve by roster membership regardless
--- of range or visibility, so checking them directly fixes this for any
--- group size.
+-- "target" and visible nameplates, unreliable for a raid member out of
+-- nameplate range. party1-4/raid1-40 tokens resolve by roster membership
+-- regardless of range or visibility.
 local function findGroupUnitToken(guid)
     if UnitGUID("player") == guid then
         return "player"
@@ -81,16 +75,8 @@ end
 
 -- True if the unit currently has Feign Death active - checked live via
 -- UnitBuff at the moment of death (see HandleDeath), not a cached
--- combat-log SPELL_AURA_APPLIED match. In-game reported: the earlier
--- cache-based version (matching only a hardcoded spell ID/name) still
--- missed real Feign Deaths - a raid-wide mass-feign showed multiple
--- hunters' deaths all still resolving to a live DPS role match, meaning
--- the cache was never actually getting set. Scanning the live buff
--- instead sidesteps needing to get an exact ID or name right at all: it
--- reuses the same ID-first-then-name-fallback matching every other spell
--- check in this codebase already uses (CritLog.Filters.matchesSpell), so
--- either one being slightly off (a rune-modified ID, a locale mismatch)
--- still doesn't lose the detection.
+-- combat-log SPELL_AURA_APPLIED match, so a stale/missed cache entry
+-- can't cause a false negative.
 local function hasFeignDeathBuff(unit)
     for i = 1, 40 do
         local name, _, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
@@ -383,10 +369,7 @@ function CritLog:HandleDamageCrit(
 
         -- A new highscore always sounds, same as ability/heal crits below -
         -- WhiteHitFlag only gates the "every crit" spam sound above, not
-        -- this one. Previously required WhiteHitFlag here too, so a muted
-        -- white-hit new record stayed silent - inconsistent with how
-        -- SPELL_DAMAGE/SPELL_HEAL already behaved, and not what a "new
-        -- record" notification should do.
+        -- this one.
         local whiteHitList = CritLogDB.records.whiteHit
         local isNewHighscore = CritLog.Records.isNewHighscore(amount, whiteHitList[1] and whiteHitList[1].amount or 0)
         if isNewHighscore then
@@ -407,10 +390,9 @@ function CritLog:HandleDamageCrit(
             alreadyPlayed = true
         end
 
-        -- Matches the SWING_DAMAGE fix above: AddRecord/print always happen
-        -- on a new highscore, and the sound is gated only by alreadyPlayed,
-        -- not WhiteHitFlag - previously a muted ranged white-hit record
-        -- wasn't even recorded, unlike its melee counterpart.
+        -- Matches SWING_DAMAGE above: AddRecord/print always happen on a
+        -- new highscore, and the sound is gated only by alreadyPlayed,
+        -- not WhiteHitFlag.
         local whiteHitList = CritLogDB.records.whiteHit
         local isNewHighscore = CritLog.Records.isNewHighscore(amount, whiteHitList[1] and whiteHitList[1].amount or 0)
         if isNewHighscore then
@@ -480,23 +462,16 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         return
     end
 
-    -- Live unit token for the dying player, resolved up front now (used
-    -- both by the Feign Death check right below and the class/role checks
-    -- further down). Straight to findGroupUnitToken, not findUnitToken -
-    -- the dying unit is by definition a group member here (isGroupMember
-    -- below gates on exactly that), so party/raid roster tokens are the
-    -- reliable standard path, not a fallback after target/nameplate. May
-    -- still end up nil (e.g. someone who left the group before dying) —
-    -- every check below falls back to the legacy name roster when that
-    -- happens, same as when the token resolves but the class/role check
-    -- itself doesn't match.
+    -- Used both by the Feign Death check right below and the class/role
+    -- checks further down. May end up nil (e.g. someone who left the
+    -- group before dying) - every check below falls back to the name
+    -- roster in that case, same as when the class/role check doesn't
+    -- match.
     local token = findGroupUnitToken(destGUID)
 
     -- Feign Death fires a real UNIT_DIED for the feigning unit - checked
     -- first, before even the player's own death sound below, since a
-    -- hunter feigning themselves would otherwise trigger it too. See
-    -- hasFeignDeathBuff's own comment for why this is a live buff scan,
-    -- not a cached combat-log match.
+    -- hunter feigning themselves would otherwise trigger it too.
     if token and hasFeignDeathBuff(token) then
         return
     end
@@ -509,12 +484,9 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     end
 
     -- Discard a resolved token unless it's actually a player: UnitClass()/
-    -- UnitGroupRolesAssigned() aren't guaranteed nil for NPCs (some enemy
-    -- units carry a class internally for combat/AI purposes), which let
-    -- enemy deaths in instances - a Necromancer trash mob at Mount Hyjal,
-    -- reported in-game - wrongly trigger the dps/tank/heal death
-    -- sounds. Nilling it here makes every check below fall back to the
-    -- name roster exactly like an unresolved token already does.
+    -- UnitGroupRolesAssigned() aren't guaranteed nil for NPCs. Nilling it
+    -- here makes every check below fall back to the name roster exactly
+    -- like an unresolved token already does.
     if token and not UnitIsPlayer(token) then
         token = nil
     end
@@ -529,55 +501,26 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     end
 
     -- The live role checks below (dps/tank/heal) are gated on group
-    -- membership - without this, any player
-    -- death that happens to resolve a unit token (e.g. an enemy player in
-    -- PvP, or an unrelated player on a visible nameplate) could trigger
-    -- these sounds just because their class/role matched, even though
-    -- they're nobody in your group. Checked by name (works whether or not
-    -- a token resolved), same as the Mana Tide Totem check in
-    -- HandleAuraSounds. The name-roster fallback below is deliberately NOT
-    -- gated by this - it's an explicit named allowlist of real people, not
-    -- a live-detection heuristic that needs a sanity check.
+    -- membership - without this, an enemy player in PvP or an unrelated
+    -- player on a visible nameplate could trigger these sounds just
+    -- because their class/role matched. The name-roster fallback below is
+    -- deliberately NOT gated by this - it's an explicit named allowlist,
+    -- not a live-detection heuristic that needs a sanity check.
     local isGroupMember = UnitInParty(destName) or UnitInRaid(destName)
 
-    -- Roster-fallback safety net: a name in the roster is normally trusted
-    -- as-is (deliberately not gated on isGroupMember, see the comment
-    -- above) - but in-game reported: an occasional false-positive death
-    -- sound in a raid for something that definitely wasn't a player or
-    -- the current target. Root cause: an NPC (raid trash, an add, a
-    -- totem, ...) can happen to share a display name with someone already
-    -- in a roster, and the roster check is pure name-matching with no
-    -- player/NPC distinction at all. findUnitToken (target/nameplate scan,
-    -- unlike findGroupUnitToken's group-only scan above) can sometimes
-    -- resolve a token for the dying unit regardless of group membership -
-    -- if it does and it's definitely not a player, the roster "match" is
-    -- definitely wrong. An unresolved token (e.g. off-screen, not
-    -- targeted) can't disprove anything, so it keeps the previous
-    -- permissive behavior of trusting the name.
+    -- Roster-fallback safety net: an NPC (raid trash, an add, a totem,
+    -- ...) can share a display name with someone in a roster - the roster
+    -- check is pure name-matching with no player/NPC distinction. If
+    -- findUnitToken resolves a token for the dying unit and it's
+    -- definitely not a player, the roster "match" is wrong. An unresolved
+    -- token can't disprove anything, so the name is still trusted.
     local rosterUnitToken = findUnitToken(destGUID)
     local rosterMatchTrustworthy = not rosterUnitToken or UnitIsPlayer(rosterUnitToken)
 
-    -- In-game reported: a false-positive DPS death sound happened even
-    -- with DpsDetectionMode set to "experimental" (role-only, no roster
-    -- involved at all). Feign Death (see the check near the top of this
-    -- function) was confirmed as ONE real trigger, but in-game explicitly
-    -- NOT the only one - still under observation, so this stays in.
-    -- TEMPORARY: a plain print(), not self:Debug() - deliberately NOT
-    -- gated on DebugFlag, since that mode logs a lot of unrelated stuff
-    -- too (aura triggers, level-filter decisions, ...) and would bury
-    -- this specific case in noise while hunting an intermittent bug.
-    -- Remove this (or move it back behind self:Debug()) once confirmed
-    -- there's nothing left to find - it'll otherwise print on every
-    -- single death in the game, forever.
-    --
-    -- Gated on isGroupMember: in-game reported this printed for every
-    -- creature death too (trash, adds, critters, ...), not just players -
-    -- HandleDeath runs on every UNIT_DIED regardless of what died, and
-    -- this line sat before anything narrowed that down, making it
-    -- unusable to actually debug in a raid. Every relevant path this is
-    -- investigating (the live role checks) already requires
-    -- isGroupMember anyway, so filtering on it here loses no real
-    -- candidate case - only the never-relevant NPC noise.
+    -- TEMPORARY debugging aid for an intermittent false-positive DPS death
+    -- sound not fully root-caused yet - a plain print(), not self:Debug(),
+    -- so it isn't buried by DebugFlag's other noise. Remove (or move
+    -- behind self:Debug()) once confirmed there's nothing left to find.
     if isGroupMember then
         print(
             "|cff33ff99CritLog Debug:|r HandleDeath", destName, destGUID,
@@ -587,11 +530,9 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         )
     end
 
-    -- Each category's sound now has a 4-way mode instead of a plain
-    -- on/off flag: "experimental" only trusts the live check, "roster"
-    -- only the name list, "both" either one (the original default
-    -- behavior), "none" (or anything else) never plays. See
-    -- Core/Filters.lua's matchesDetectionMode.
+    -- Each category's sound has a 4-way mode: "experimental" only trusts
+    -- the live check, "roster" only the name list, "both" either one,
+    -- "none" never plays. See Core/Filters.lua's matchesDetectionMode.
     local matchesMode = CritLog.Filters.matchesDetectionMode
 
     if matchesMode(
@@ -602,9 +543,8 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
         self:PlaySound(self.Constants.sounds.dpsDeath)
     end
 
-    -- Plain flag again, not a detection mode: no roster to fall back to
-    -- (see UI/DeathSoundPanel.lua and Core/Constants.lua's bosses table),
-    -- so live classification is the only signal.
+    -- Plain flag, not a detection mode: no roster to fall back to, live
+    -- classification is the only signal.
     if CritLogDB.BossSoundFlag and isClassifiedBoss(destGUID) then
         self:PlaySound(self.Constants.sounds.bossDeath)
     end

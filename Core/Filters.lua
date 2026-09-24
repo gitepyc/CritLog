@@ -14,43 +14,26 @@ end
 
 -- DPS is not a class, it's the real in-game 3-role system's third bucket:
 -- Tank, Healer, or everyone else - a Mage counts exactly like a Warrior
--- does, as long as neither is currently assigned Tank or Healer. Replaces
--- the old class-based guess (isMeleeClass, matched only Warrior/Rogue/
--- Paladin/Shaman/Druid and silently never fired for Hunter/Mage/Warlock/
--- Priest at all) - in-game requested, a real role check instead of
--- approximating "DPS" by which classes can melee.
+-- does, as long as neither is currently assigned Tank or Healer.
 function CritLog.Filters.isAssignedDps(role)
     return role ~= "TANK" and role ~= "HEALER"
 end
 
 -- True only if the unit currently has the Tank role explicitly assigned
--- (raid-frame role icons, or equivalent). Tank is a raid role, not a class
--- — a Warrior/Paladin/Druid can each be a tank or something else — and
--- assigned role only reflects a role someone actually set, which is not
--- guaranteed. It commonly reports "NONE" for a real tank who was never
--- manually flagged, especially outside a raid.
---
--- Known blind spot, accepted rather than solved: an unassigned real tank
--- is not detected here. Deliberately not falling back to a class-based
--- guess (e.g. "Warrior with no Healer role") — that would also flag every
--- non-tanking Warrior/Paladin/Druid, trading one gap for a worse one. The
--- playerGroups.tank name-roster fallback in HandleDeath covers this gap
--- for the same handful of characters it always has. See CHANGELOG.md.
+-- (raid-frame role icons, or equivalent). Assigned role only reflects a
+-- role someone actually set - a real tank who was never manually flagged
+-- reports "NONE". Known blind spot, accepted rather than solved: not
+-- falling back to a class-based guess, since that would flag every
+-- non-tanking Warrior/Paladin/Druid too. The playerGroups.tank
+-- name-roster fallback in HandleDeath covers this gap.
 function CritLog.Filters.isAssignedTank(role)
     return role == "TANK"
 end
 
 -- Same reasoning as isAssignedTank above, for Healer - a raid role, not a
--- class: a Priest/Paladin/Druid/Shaman can each be a healer or something
--- else. Used for the "Healer death" category (CritLogDB.PriestDetectionMode
--- - field name unchanged, only the UI label/roster meaning moved from
--- "Priest" to "assigned Healer role"), which is deliberately NOT
--- priest-specific anymore - a Holy Paladin's death counts here exactly
--- like a Priest's.
---
--- Known blind spot, same as isAssignedTank: an unassigned real healer is
--- not detected here; the playerGroups.priest name-roster fallback in
--- HandleDeath covers this gap.
+-- class, deliberately not Priest-specific: a Holy Paladin's death counts
+-- here exactly like a Priest's. Same known blind spot; the
+-- playerGroups.heal name-roster fallback in HandleDeath covers it.
 function CritLog.Filters.isAssignedHealer(role)
     return role == "HEALER"
 end
@@ -83,19 +66,15 @@ end
 
 -- Classifies a /roll result into a Constants.sounds key, or nil for a roll
 -- that doesn't hit any of the specific values/bands below. Requires
--- rollMin == 1 (a loot roll like /roll 1 5 starts elsewhere and is ignored)
--- but, unlike the legacy addon this was ported from, no longer requires
--- rollMax == 100 - any custom range starting at 1 (e.g. /roll 1-1000) is
--- classified too.
+-- rollMin == 1 (a loot roll like /roll 1 5 starts elsewhere and is
+-- ignored); any custom range starting at 1 (e.g. /roll 1-1000) is
+-- classified too, not just 1-100.
 --
--- roll1/roll100/roll69 are exact-value matches (rolled literally 1,
--- literally rollMax, or literally 69) and are checked first, so a literal
--- roll of 1 always plays roll1, never one of the percentage bands below.
--- roll5/roll10/roll95 are percentage bands (<8% / 8-10% / >=92% of
--- rollMax) - for a small custom range these are naturally unreachable (the
--- exact checks above already claim the only candidate integer values, or
--- the threshold falls below the smallest possible roll); that's fine, it
--- just falls silent for that range instead of needing an explicit floor.
+-- roll1/roll100/roll69 are exact-value matches, checked first, so a
+-- literal roll of 1 always plays roll1, never one of the percentage bands
+-- below. roll5/roll10/roll95 are percentage bands (<8% / 8-10% / >=92% of
+-- rollMax) - naturally unreachable for a small custom range, which just
+-- falls silent instead of needing an explicit floor.
 function CritLog.Filters.classifyRoll(rollResult, rollMin, rollMax)
     if rollMin ~= 1 then
         return nil
@@ -126,14 +105,10 @@ end
 --
 -- `filterEnabled` is the separate on/off master switch (`LevelFilterFlag`);
 -- `levelDiffThreshold` is how many levels below the player a target may be
--- before it's excluded once the filter is on - a user-configurable
--- replacement for what used to be a hardcoded `9` behind a single plain
--- on/off flag (`AllLevel`, see Persistence/Database.lua's
--- migrateAllLevelToThreshold). Deliberately one-directional, unlike
--- TitanCritLine's similar level-adjustment slider, which also excludes
--- crits against much *higher*-level targets: for a highscore tracker, a
--- crit against a tougher-than-you enemy is exactly the impressive case you
--- don't want filtered out.
+-- before it's excluded once the filter is on. Deliberately
+-- one-directional: a crit against a much *higher*-level target is never
+-- filtered out, since that's exactly the impressive case a highscore
+-- tracker shouldn't exclude.
 function CritLog.Filters.passesLevelFilter(targetLevel, targetClassification, playerLevel, filterEnabled, levelDiffThreshold)
     if not filterEnabled then
         return true

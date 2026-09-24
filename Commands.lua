@@ -7,12 +7,10 @@ local function toggle(field, enabledMessage, disabledMessage)
     end
 end
 
--- DPS/tank/heal death sounds are a 4-way mode now (see Core/Constants.lua's
--- detectionModes), not a plain flag - this chat command still only flips
--- between off ("none") and the original default ("both", live check with
--- roster fallback). For "experimental"- or "roster"-only, use
--- `/cl options` -> Sound Settings -> Death Sounds. Boss isn't part of this
--- system - see CHANGELOG.md.
+-- DPS/tank/heal death sounds are a 4-way mode (Core/Constants.lua's
+-- detectionModes), not a plain flag - this command only flips between
+-- off ("none") and the default ("both"). For "experimental"/"roster"
+-- only, use `/cl options` -> Sound Settings -> Death Sounds.
 local function toggleDetectionMode(field, label)
     if CritLogDB[field] == "none" then
         CritLogDB[field] = "both"
@@ -76,11 +74,9 @@ function CritLog:PrintCritLogs(message)
     local command = message or ""
 
     -- Same confirmation dialogs the options panel's reset buttons use
-    -- (CRITLOG_RESET_ALL_HIGHSCORES/CRITLOG_RESET_CATEGORY, both
-    -- registered in UI/MainPanel.lua/UI/Shared.lua, loaded before this
-    -- file per CritLog.toc) - in-game requested: every way to reset
-    -- highscores should confirm first, chat commands included, not just
-    -- the panel buttons.
+    -- (CRITLOG_RESET_ALL_HIGHSCORES/CRITLOG_RESET_CATEGORY, registered in
+    -- UI/MainPanel.lua/UI/Shared.lua, loaded before this file per
+    -- CritLog.toc).
     if command == "reset" then
         CritLog.UI.showConfirmation("CRITLOG_RESET_ALL_HIGHSCORES")
     elseif command == "reset damage" then

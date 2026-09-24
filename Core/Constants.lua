@@ -3,10 +3,8 @@ CritLog.soundPath = "Interface/AddOns/CritLog/sounds/"
 CritLog.Constants = {
     -- Options for the dps/tank/heal death-sound detection mode dropdowns
     -- in the Death Sounds panel: choose whether the live assigned-role
-    -- check, the roster/name-list fallback, both (the original,
-    -- still-default behavior), or neither decides whether the sound
-    -- plays. See Core/Filters.lua's matchesDetectionMode. Boss doesn't use
-    -- this system - plain on/off flag instead, see CHANGELOG.md.
+    -- check, the roster/name-list fallback, both, or neither decides
+    -- whether the sound plays. See Core/Filters.lua's matchesDetectionMode.
     detectionModes = {
         { value = "none", label = "None" },
         { value = "experimental", label = "Role" },
@@ -77,42 +75,26 @@ CritLog.Constants = {
         mageTable = "Table.mp3",
         healthstoneRitual = "healthstone.mp3",
     },
-    -- Boss detection is classification-only now - the hardcoded name-list
-    -- fallback (english/german) is gone: it was still the original Burning
-    -- Crusade roster and matched nothing in Classic Era/SoD, so it was
-    -- dead weight requiring manual upkeep for content it would never
-    -- actually cover. See CHANGELOG.md.
     bosses = {
         -- Accepted UnitClassification() values. "worldboss" is creature
-        -- rank 3 - the "Level ?? (Boss)" tooltip - which in the Classic
-        -- database covers the 40-man raid bosses (Lucifron, Ragnaros,
-        -- Onyxia, Nefarian, ...), the outdoor world bosses, and SoD's new
-        -- level-60 raid encounters. Deliberately nothing else: "elite" and
-        -- "rareelite" are ordinary dungeon trash and 5-man end bosses,
-        -- "rare" is a leveling rare spawn - accepting those would fire the
-        -- boss sound on most pulls. Known gap, accepted rather than
-        -- solved: 5-man end bosses and similarly-ranked NPCs aren't
-        -- "worldboss" and won't fire the sound at all anymore.
+        -- rank 3 - the "Level ?? (Boss)" tooltip - covering 40-man raid
+        -- bosses, outdoor world bosses, and SoD's level-60 raid
+        -- encounters. Deliberately nothing else: "elite"/"rareelite" are
+        -- dungeon trash and 5-man end bosses, "rare" is a leveling rare
+        -- spawn - accepting those would fire the boss sound on most
+        -- pulls.
         classifications = { "worldboss" },
     },
     -- Display labels for the three roster categories - Persistence's
     -- migration and UI/RosterPanel.lua both need a consistent name/order
     -- for them.
+    -- Key `dps` (Persistence/Database.lua's migrateMeleeToDps renames an
+    -- existing character's `melee`) and `heal` (migratePriestToHeal
+    -- renames `priest`) reflect the real role-based live check
+    -- (isAssignedDps/isAssignedHealer), not a class guess.
     rosterKinds = {
-        -- Key `dps`, renamed from `melee` (see Persistence/Database.lua's
-        -- migrateMeleeToDps) once the live check itself stopped being a
-        -- melee-capable-class guess and became the real 3-role system
-        -- (Tank/Healer/everyone else, see Core/Filters.lua's
-        -- isAssignedDps) - "Melee" in the key/field name was misleading
-        -- even before that, since ranged DPS names always belonged in
-        -- this free-form roster too.
         dps = { label = "Damage Dealer" },
         tank = { label = "Tank" },
-        -- Labeled "Healer" (key `heal`, renamed from `priest` - see
-        -- Persistence/Database.lua's migratePriestToHeal), same reasoning
-        -- as "Damage Dealer" above: the live check this falls back for
-        -- (isAssignedHealer) is role-based, not Priest-specific - a Holy
-        -- Paladin/Resto Druid/Resto Shaman belongs here too.
         heal = { label = "Healer" },
     },
     -- Matched by spell ID first (Season of Discovery, cross-checked against
@@ -149,35 +131,12 @@ CritLog.Constants = {
             ids = { 20707 },
             names = { "Seelenstein Auferstehung", "Soulstone Resurrection" },
         },
-        -- Hunter's Feign Death (5384) - a stable, unchanged-since-vanilla
-        -- ID across every WoW version. In-game reported: it fires a real
-        -- UNIT_DIED combat-log event for the feigning hunter (a
-        -- well-known WoW quirk, not a bug in the addon's event handling),
-        -- so it needs to be explicitly excluded - see Core/CombatLog.lua's
-        -- HandleDeath.
+        -- Feign Death fires a real UNIT_DIED for the feigning hunter (a
+        -- known WoW quirk) - see Core/CombatLog.lua's HandleDeath.
         feignDeath = {
             ids = { 5384 },
             names = { "Feign Death", "Totstellen" },
         },
-        -- Evocation's ID (12051) is confirmed on Wowhead Classic (a
-        -- genuine vanilla/Classic Era Mage spell). Pain Suppression's ID
-        -- (402004) is confirmed as the Season of Discovery Priest rune.
-        -- Drums of Battle (35476), Ritual of Refreshment/Mage Table
-        -- (43987), and Ritual of Souls/Healthstone (29893) are all
-        -- confirmed on Wowhead - but confirmed as TBC-introduced spells
-        -- (Drums of Battle and Ritual of Refreshment/Souls did not exist
-        -- in vanilla WoW at all, added in patches 2.0-2.1), not Classic
-        -- Era/SoD ones - whether SoD backports them (e.g. as drops/runes)
-        -- is unverified, so having the "right" TBC spell ID doesn't by
-        -- itself guarantee these fire on Classic Era/SoD (see
-        -- docs/ROADMAP.md). Hymn of Hope did not exist under that name
-        -- until WotLK patch 3.0.2 (it replaced the TBC-only, Draenei-only
-        -- "Symbol of Hope", spell id 32548 - a different spell with
-        -- different mechanics, not used here since the legacy addon's
-        -- trigger was always specifically "Hymn of Hope") - no ID exists
-        -- for it on Classic Era/SoD at all, so this trigger cannot fire
-        -- there under any circumstances until/unless SoD adds an
-        -- equivalent rune.
         evocation = {
             ids = { 12051 },
             names = { "Evocation", "Hervorrufung" },
@@ -212,20 +171,14 @@ CritLog.Constants = {
         wipe = { "shit show", "wipe" },
         gamble = "CrossGambling: A new game has been started! Type 1 to join!",
     },
-    -- Every slash command, shared by Commands.lua's `/cl help` (prints to
-    -- chat) and UI/HelpPanel.lua's Help panel (two-column layout, General
-    -- and Sounds side by side, matching UI/AuraSoundPanel.lua's column
-    -- pattern) - a single source of truth so the two can't drift apart.
-    -- Split into named lists instead of one flat list specifically so the
-    -- panel can lay General/Sounds out as two columns; Death Sounds and
-    -- the About line stay single-column below both (see UI/HelpPanel.lua).
+    -- Every slash command, shared by Commands.lua's `/cl help` and
+    -- UI/HelpPanel.lua's Help panel - a single source of truth so the two
+    -- can't drift apart. Split into named lists so the panel can lay
+    -- General/Sounds out as two columns.
     --
     -- `cmd` must not contain a literal "|" - WoW FontStrings/chat treat it
-    -- as the start of a color/texture escape sequence and can swallow or
-    -- garble the rest of the line (in-game reported: the
-    -- "/cl reset damage|whitehit|heal" line went missing). Use "/" instead
-    -- wherever a command lists several sub-options, same as
-    -- "/cl dps/tank/healer" below already did.
+    -- as the start of a color/texture escape sequence and can garble the
+    -- rest of the line. Use "/" instead when a command lists sub-options.
     helpGeneral = {
         { cmd = "/cl", desc = "prints highscores" },
         { cmd = "/cl reset", desc = "clears every highscore list" },
@@ -237,12 +190,9 @@ CritLog.Constants = {
         { cmd = "/cl help", desc = "lists this" },
         { cmd = "/cl debug", desc = "diagnostic chat output for troubleshooting (off by default)" },
     },
-    -- Order matches UI/SoundPanel.lua's actual row order (sound, allcrits,
-    -- whitehit, xtreme, ready, gamble, roll, aura) - in-game requested,
-    -- previously had roll/aura swapped and gamble at the end instead of
-    -- in the middle. /cl mute stays first: it's the master switch for
-    -- everything below, even though its own checkbox lives on the main
-    -- options panel now, not here.
+    -- Order matches UI/SoundPanel.lua's row order. /cl mute stays first:
+    -- it's the master switch for everything below, even though its own
+    -- checkbox lives on the main options panel, not here.
     helpSounds = {
         { cmd = "/cl mute", desc = "master sound switch, overrides everything below (on by default)" },
         { cmd = "/cl sound", desc = "sound on a new personal highscore (the \"BÄM\" sound) (on by default)" },
@@ -262,15 +212,10 @@ CritLog.Constants = {
         { cmd = "/cl bosskill", desc = "chat message naming who landed the killing blow on a live worldboss (on by default)" },
         { cmd = "/cl dps/tank/healer", desc = "toggles that role's death sound off/on (\"None\"/\"Both\"); the options panel dropdown adds Role-only (live assigned role) or Roster-only (saved name list) - see the Death Sounds panel (Both by default)" },
     },
-    -- Split into a title (CritLog) and a smaller two-line subtitle -
-    -- UI/HelpPanel.lua renders these as two separate FontStrings so the
-    -- subtitle can use a smaller font than the title (in-game requested);
-    -- Commands.lua's `/cl help` just joins them with a blank line, chat
-    -- has no font-size concept anyway. "©" in-game confirmed to render
-    -- fine (not a given - WoW's bundled Classic Era fonts aren't
-    -- guaranteed to have every Unicode glyph, which is why the roster
-    -- panel's OK button deliberately stuck with plain "OK" instead of a
-    -- checkmark glyph, see UI/RosterPanel.lua).
+    -- Split into a title and a smaller two-line subtitle - UI/HelpPanel.lua
+    -- renders these as two separate FontStrings so the subtitle can use a
+    -- smaller font; Commands.lua's `/cl help` just joins them with a
+    -- blank line.
     helpAboutTitle = "CritLog",
     helpAboutSubtitle = "© by Epyc, 2026\n(original addon by Kîtten aka Chabo)",
 }
