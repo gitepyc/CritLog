@@ -30,16 +30,11 @@ function CritLog.Records.formatRecordText(kind, index)
     return fields.label..": "..entry.amount.." ("..entry.target..")"
 end
 
--- Colored variant, shared between the main options panel's own highscore
--- display (UI/MainPanel.lua) and the TitanPanel tooltip (UI/TitanButton.lua)
--- - both want the same "spell/target/amount stand out" styling, in-game
--- requested to apply it in both places rather than just Titan. Kept as a
--- second function (not a parameter on formatRecordText) so chat's plain
--- /cl output and the Help panel stay untouched - nobody asked those to
--- look different.
---
--- Still being iterated on in-game ("sieht besser aus jetzt aber noch
--- nicht gut") - these hex values are not final, expect further tweaks.
+-- Colored variant, shared between the main options panel's highscore
+-- display (UI/MainPanel.lua) and the TitanPanel tooltip
+-- (UI/TitanButton.lua). Kept as a second function (not a parameter on
+-- formatRecordText) so chat's plain /cl output and the Help panel stay
+-- unstyled.
 CritLog.Records.NORMAL_COLOR = "|cffcc9900"
 CritLog.Records.SPELL_COLOR = "|cff3399ff"
 CritLog.Records.TARGET_COLOR = "|cff339933"
@@ -49,20 +44,14 @@ local function colored(color, text)
 end
 CritLog.Records.colored = colored
 
--- Amount colored by a rough "hotter = bigger" heat scale (green -> yellow ->
--- amber -> orange -> orange-red -> red -> dark red). Thresholds are a
--- reasonable guess, not measured against real data. The top tier reuses
--- 9000 - the same "extreme hit" threshold XtremeSoundFlag already sounds
--- on - so the color scale's hottest step lines up with that existing
--- concept instead of being an arbitrary new number.
--- Same threshold as the heat scale's top tier (also the existing Xtreme-hit
--- sound threshold) - exposed separately so UI code can bold just the amount
--- text without duplicating the magic number. Bold can't be embedded in the
--- colored string itself (no inline bold escape code in WoW's text engine,
--- unlike |cAARRGGBB...|r for color) - it's a FontString-level font property,
--- so callers need this as a plain boolean to decide whether to switch that
--- FontString to an outlined font, not something Records.lua (no WoW API
--- calls) can do itself.
+-- Amount colored by a "hotter = bigger" heat scale (green -> yellow ->
+-- amber -> orange -> orange-red -> red -> dark red). The top tier reuses
+-- 9000, the same "extreme hit" threshold XtremeSoundFlag sounds on.
+--
+-- Exposed separately (same 9000 threshold) so UI code can bold just the
+-- amount text - bold is a FontString-level font property, not an inline
+-- escape code like |cAARRGGBB...|r, so it can't be embedded in the
+-- colored string itself.
 function CritLog.Records.isExtremeAmount(amount)
     return amount >= 9000
 end

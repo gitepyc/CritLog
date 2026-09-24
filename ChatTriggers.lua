@@ -11,10 +11,7 @@ function CritLog:CHAT_MSG_RAID_LEADER(message)
 end
 
 -- Matches a third-party lottery addon's chat announcement (e.g.
--- CrossGambling) - not anything CritLog itself understands or runs, just a
--- fixed phrase to react to, same as raid end/wipe above. CrossGambling's
--- own chat-destination options are Party/Raid/Guild only (no custom
--- channel support), so all three are covered here.
+-- CrossGambling), not anything CritLog itself understands or runs.
 local function handleGambleMessage(message)
     if not CritLogDB.GambleSoundFlag then
         return
@@ -37,19 +34,10 @@ function CritLog:CHAT_MSG_GUILD(message)
     handleGambleMessage(message)
 end
 
--- /roll results arrive as a system message, not a real chat channel. Not
--- just an English/German wording split: the client also phrases your own
--- roll differently from someone else's ("You roll 47 (1-100)" vs
--- "PlayerName rolls 47 (1-100)", presumably a similar self-vs-other split
--- in German) - in-game reported: the sound only ever fired off someone
--- else's roll, never the player's own, which only stood out once solo
--- (nobody else around to roll and mask it). Rather than pin down every
--- exact self/other/locale verb form, this only requires the message to
--- mention rolling at all ("roll"/"ürfel" substring, case-insensitive -
--- matches "roll"/"rolls"/"rolled" and any würfeln conjugation) and reads
--- the trailing "N (min-max)" numbers, which every phrasing shares.
--- Actual classification is CritLog.Filters.classifyRoll (pure, no WoW
--- API) - this just parses the message and hands the numbers off.
+-- /roll results arrive as a system message. Matching only requires a
+-- "roll"/"ürfel" substring (case-insensitive, covers every self/other and
+-- English/German phrasing) plus the trailing "N (min-max)" numbers, since
+-- the exact wording differs by who rolled and by locale.
 function CritLog:CHAT_MSG_SYSTEM(message)
     if not CritLogDB.RollSoundFlag then
         return

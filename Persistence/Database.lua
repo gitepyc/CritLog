@@ -1,12 +1,9 @@
--- DamageAbilityCrit/DAC_Name/DAC_Tar etc. below are the old single-value
--- highscore fields, superseded by the CritLogDB.records lists (see
--- migrateToRecordLists below) but kept in DEFAULTS - and never actively
--- written again after migration - purely so an old SavedVariables file
--- never produces a nil field if something still reads them. Same reasoning
--- for PriestSoundFlag/TankSoundFlag/MeleeSoundFlag, now superseded by the
--- CritLogDB.<Kind>DetectionMode strings (see migrateDetectionModes below).
--- BossSoundFlag is the odd one out: still actively read (see
--- migrateBossModeToFlag below) - Boss went to a detection mode and back.
+-- DamageAbilityCrit/DAC_Name/DAC_Tar etc. below are superseded by
+-- CritLogDB.records (see migrateToRecordLists), and PriestSoundFlag/
+-- TankSoundFlag/MeleeSoundFlag by the CritLogDB.<Kind>DetectionMode
+-- strings (see migrateDetectionModes) - kept here only as one-time
+-- migration sources, never written again afterward. BossSoundFlag is the
+-- odd one out: still actively read (see migrateBossModeToFlag).
 local DEFAULTS = {
     DamageAbilityCrit = 0,
     DAC_Name = "",
@@ -58,39 +55,23 @@ local DEFAULTS = {
 
 -- Seed for CritLogDB.playerGroups on first install (migratePlayerGroups
 -- below copies from this once; from then on only the CritLogDB copy is
--- read or written - see Core/CombatLog.lua). Originally a fixed, code-only
--- roster tied to one specific historical raid group; now editable per
--- character via the options panel. As of the class/role-based matching in
--- Core/CombatLog.lua (see Core/Constants.lua's deathClasses), these are no
--- longer the primary check — they're kept as a fallback, same
--- ID-first-then-name-fallback pattern used for spells in Core/Constants.lua:
--- class/role detection needs a live unit token and (for tank) an explicitly
--- assigned raid role, neither of which is guaranteed available, so a name
--- still in this list keeps firing even when the live check can't.
+-- read or written). Editable per character via the options panel; serves
+-- as the name-roster fallback when the live class/role detection in
+-- Core/CombatLog.lua can't resolve a unit token or assigned role.
 local PLAYER_GROUPS_DEFAULTS = {
-    -- Key is `dps`, not `melee` (see migrateMeleeToDps below for the
-    -- rename of an already-existing character's data) - this seed only
-    -- ever runs for a brand-new install, which always gets the current
-    -- key name directly.
     dps = {
         "Schnutz", "Synday", "Kamicaze", "Alcira", "Shocksx",
         "Dripperx", "Enry", "Feniara", "Lemonsoda", "Cindarr",
         "Truffi", "Gradba", "Zoiy",
     },
     tank = { "Truby", "Ketamartin", "Hïnatahÿuuga", "Kîtten" },
-    -- Key is `heal`, not `priest` (see migratePriestToHeal below for the
-    -- rename of an already-existing character's data) - this seed only
-    -- ever runs for a brand-new install, which always gets the current
-    -- key name directly.
     heal = { "Ilenkov", "Epyç" },
 }
 
--- One-time migration: copies PLAYER_GROUPS_DEFAULTS (dps/tank/heal name
--- rosters, previously code-only) into CritLogDB, so they're editable per
--- character via the options panel. Guarded on CritLogDB.playerGroups itself
--- (not the schema version) so it runs exactly once regardless of which
--- version a character upgrades from - same pattern as the DEFAULTS
--- back-fill above, just for a nested table instead of scalar fields.
+-- One-time migration: copies PLAYER_GROUPS_DEFAULTS into CritLogDB, so
+-- they're editable per character. Guarded on CritLogDB.playerGroups
+-- itself, not the schema version, so it runs exactly once regardless of
+-- which version a character upgrades from.
 local function migratePlayerGroups()
     if CritLogDB.playerGroups then
         return
@@ -107,10 +88,9 @@ local function migratePlayerGroups()
 end
 
 -- One-time migration: seeds CritLogDB.records from the old single-value
--- fields, so existing highscores survive the switch to list-based storage.
--- Guarded on CritLogDB.records itself (not the schema version) so it runs
--- exactly once per character regardless of how many versions they skip -
--- same pattern as migratePlayerGroups above.
+-- fields, so existing highscores survive the switch to list-based
+-- storage. Guarded on CritLogDB.records itself, same reasoning as
+-- migratePlayerGroups above.
 local function migrateToRecordLists()
     if CritLogDB.records then
         return
@@ -142,19 +122,13 @@ end
 
 -- One-time migration: the dps/tank/heal death sounds used to be a plain
 -- on/off flag; now each is a 4-way mode ("none"/"experimental"/"roster"/
--- "both", see Core/Constants.lua's detectionModes and Core/Filters.lua's
--- matchesDetectionMode). Boss is deliberately NOT in this list - it never
--- had a roster to fall back to (see migrateBossModeToFlag below for its
--- own, opposite-direction migration) - Guarded per-category on the new
--- field itself, same pattern as the other migrations above - true becomes
--- "both" (live check with roster fallback, the original default
--- behavior), false becomes "none". Reads the old flag rather than a
--- hardcoded default so an existing character who had e.g. tank sounds
--- turned off keeps them off after upgrading. Run after migratePriestToHeal
--- below, so HealDetectionMode already has any pre-existing
--- PriestDetectionMode value by the time this runs - PriestSoundFlag here
--- is only the oldest generation's fallback (a character that never even
--- reached the PriestDetectionMode era).
+-- "both", see Core/Constants.lua's detectionModes). Boss is NOT in this
+-- list - it has no roster to fall back to (see migrateBossModeToFlag).
+-- Guarded per-category on the new field itself; true becomes "both",
+-- false becomes "none", so an existing character's prior setting
+-- carries forward. Must run after migratePriestToHeal below, so
+-- HealDetectionMode already has any pre-existing PriestDetectionMode
+-- value by the time this runs.
 local function migrateDetectionModes()
     local categories = {
         { mode = "DpsDetectionMode", oldFlag = "MeleeSoundFlag" },
@@ -170,16 +144,11 @@ end
 
 -- One-time migration, opposite direction from migrateDetectionModes above:
 -- Boss death sound went from a detection-mode dropdown back to a plain
--- on/off flag (BossSoundFlag) - it never had a roster to fall back to (see
--- Core/Constants.lua's bosses table and UI/DeathSoundPanel.lua), so
--- "Roster"/"Both" on that row were dead options. Guarded on
--- BossDetectionMode still being present (unlike every other migration
--- here, BossSoundFlag itself is never nil - it's been in DEFAULTS from
--- the start - so the usual "is the new field nil" guard doesn't work; the
--- old field's presence is the only signal that this hasn't run yet).
--- Must run after migrateDetectionModes above so a character upgrading
--- from the oldest BossSoundFlag-only era already has a BossDetectionMode
--- value to read here, same as every other era.
+-- on/off flag (BossSoundFlag) - it never had a roster to fall back to.
+-- Guarded on BossDetectionMode still being present, since BossSoundFlag
+-- itself is never nil (it's been in DEFAULTS from the start), so the
+-- usual "is the new field nil" guard doesn't apply here. Must run after
+-- migrateDetectionModes above.
 local function migrateBossModeToFlag()
     if CritLogDB.BossDetectionMode ~= nil then
         CritLogDB.BossSoundFlag = CritLogDB.BossDetectionMode == "both"
@@ -189,19 +158,12 @@ local function migrateBossModeToFlag()
 end
 
 -- One-time migration: PriestDetectionMode/playerGroups.priest renamed to
--- HealDetectionMode/playerGroups.heal for naming consistency - healer
--- detection became role-based (any class) rather than Priest-class-based,
--- so keeping "Priest" in the field/key name was misleading (see
--- CHANGELOG.md). Guarded on the new name being nil, not the old one's
--- absence, so this runs exactly once regardless of what an upgrading
--- character already has. Must run before migrateDetectionModes above, so
--- a character that already has a real PriestDetectionMode value (not just
--- the oldest PriestSoundFlag boolean) carries it forward instead of that
--- migration falling back to the boolean. The old names are cleared here
--- rather than left as orphaned clutter, unlike some other superseded
--- fields in DEFAULTS above - those are still read as a migration source by
--- name elsewhere, these two are not (nothing reads
--- PriestDetectionMode/playerGroups.priest ever again after this point).
+-- HealDetectionMode/playerGroups.heal, since healer detection became
+-- role-based (any class) rather than Priest-class-based. Guarded on the
+-- new name being nil, so this runs exactly once. Must run before
+-- migrateDetectionModes above, so a character with an existing
+-- PriestDetectionMode value carries it forward instead of that
+-- migration falling back to the oldest PriestSoundFlag boolean.
 local function migratePriestToHeal()
     if CritLogDB.HealDetectionMode == nil and CritLogDB.PriestDetectionMode ~= nil then
         CritLogDB.HealDetectionMode = CritLogDB.PriestDetectionMode
@@ -215,18 +177,13 @@ local function migratePriestToHeal()
 end
 
 -- One-time migration: the level filter used to be a single plain on/off
--- flag (AllLevel, see DEFAULTS above); now it's a separate enable checkbox
--- (LevelFilterFlag) plus a configurable slider (LevelDiffThreshold)
--- replacing the hardcoded "9" a trivial/grey target used to be compared
--- against - see Core/Filters.lua's passesLevelFilter and CHANGELOG.md.
--- Deliberately not in DEFAULTS itself (same reason HealDetectionMode
--- isn't, see migratePriestToHeal above): being in DEFAULTS would
--- back-fill these before this migration runs, and the nil guards below
--- would never trigger. AllLevel stays in DEFAULTS purely as a migration
--- source, same pattern as the MeleeSoundFlag/TankSoundFlag/etc. flags
--- above - never read again after this. Each field guarded independently
--- (not a single combined guard) since they're two independent facts
--- derived from the same old flag, not one field being renamed.
+-- flag (AllLevel, see DEFAULTS above); now it's a separate enable
+-- checkbox (LevelFilterFlag) plus a configurable slider
+-- (LevelDiffThreshold), see Core/Filters.lua's passesLevelFilter.
+-- LevelFilterFlag/LevelDiffThreshold are deliberately not in DEFAULTS
+-- itself - that would back-fill them before this migration runs, and the
+-- nil guards below would never trigger. Each field guarded independently
+-- since they're two independent facts derived from the same old flag.
 local function migrateAllLevelToThreshold()
     if CritLogDB.LevelDiffThreshold == nil then
         CritLogDB.LevelDiffThreshold = 9
@@ -238,16 +195,11 @@ local function migrateAllLevelToThreshold()
 end
 
 -- One-time migration: MeleeDetectionMode/playerGroups.melee renamed to
--- DpsDetectionMode/playerGroups.dps - DPS detection stopped being a
--- melee-capable-class guess (which silently never fired for Hunter/Mage/
--- Warlock/Priest at all) and became the real 3-role system instead
--- (Tank/Healer/everyone else, see Core/Filters.lua's isAssignedDps), so
--- keeping "Melee" in the field/key name was actively misleading. Same
--- pattern as migratePriestToHeal above, and must run before
--- migrateDetectionModes below for the same reason: a character already on
--- a real MeleeDetectionMode value (not just the oldest MeleeSoundFlag
--- boolean) needs to carry it forward before that generic migration's
--- nil-check would otherwise fall back to the boolean.
+-- DpsDetectionMode/playerGroups.dps - DPS detection became the real
+-- 3-role system (Tank/Healer/everyone else, see Core/Filters.lua's
+-- isAssignedDps) rather than a melee-capable-class guess. Same pattern
+-- and ordering reason as migratePriestToHeal above: must run before
+-- migrateDetectionModes below.
 local function migrateMeleeToDps()
     if CritLogDB.DpsDetectionMode == nil and CritLogDB.MeleeDetectionMode ~= nil then
         CritLogDB.DpsDetectionMode = CritLogDB.MeleeDetectionMode
@@ -261,17 +213,11 @@ local function migrateMeleeToDps()
 end
 
 -- Migrations, in the order they must actually run - several depend on an
--- earlier one's output (see each function's own comment above for why:
--- migratePlayerGroups must precede anything touching playerGroups.*,
--- migratePriestToHeal/migrateMeleeToDps must precede migrateDetectionModes,
--- etc.). CritLogDB.SchemaVersion (see SetDefaults below) is this table's
--- index after a migration has run - migratePlayerGroups is schema 1,
--- migrateAllLevelToThreshold is schema 7, and so on. Each function keeps
--- its own internal guard (checking the specific field it touches) as a
--- one-time bridge for characters upgrading from before SchemaVersion
--- existed at all (see SetDefaults) - once a character reaches
--- #MIGRATIONS (the highest schema version), none of these run again, so the internal guards
--- stop mattering in practice from that point on.
+-- earlier one's output (see each function's own comment above).
+-- CritLogDB.SchemaVersion (see SetDefaults below) is this table's index
+-- after a migration has run. Each function keeps its own internal guard
+-- as a one-time bridge for characters upgrading from before
+-- SchemaVersion existed at all.
 local MIGRATIONS = {
     migratePlayerGroups,
     migrateToRecordLists,
@@ -300,20 +246,12 @@ function CritLog:SetDefaults()
     end
 
     -- No special case for a brand-new character: DEFAULTS above only
-    -- back-fills scalar fields, several migrations below are the ONLY
+    -- back-fills scalar fields; several migrations below are the ONLY
     -- place that seed a fresh character's playerGroups roster, level
-    -- filter, and dps/tank/heal detection mode - skipping them for
-    -- `initialized` would leave those nil (found in review before this
-    -- ever shipped - would've silently disabled dps/tank/heal death
-    -- sounds and the roster for every new install). A character predating
-    -- this field entirely (nil SchemaVersion) also defaults to 0 here -
-    -- safe regardless of how far they'd already progressed under the old
-    -- unconditional-every-login scheme, since every migration below still
-    -- has its own internal guard as a one-time bridge. Either way, this
-    -- loop runs each migration at most once per character, ever - after
-    -- this login SchemaVersion reaches #MIGRATIONS (the highest schema version) and none of
-    -- these run again on future logins, unlike before, where all 7 ran
-    -- unconditionally, forever.
+    -- filter, and dps/tank/heal detection mode. A character predating
+    -- SchemaVersion entirely also defaults to 0 here, safe since every
+    -- migration below still has its own internal guard. This loop runs
+    -- each migration at most once per character, ever.
     CritLogDB.SchemaVersion = CritLogDB.SchemaVersion or 0
     for schemaVersion, migrate in ipairs(MIGRATIONS) do
         if CritLogDB.SchemaVersion < schemaVersion then

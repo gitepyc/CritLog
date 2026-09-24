@@ -1,7 +1,7 @@
--- Roster Settings panel, opened via the Death Sounds panel's button (moved
--- there from the main panel - see CHANGELOG.md). Editable copy
--- of the dps/tank/heal death-sound name rosters (CritLogDB.playerGroups,
--- migrated once from a code-only seed - see Persistence/Database.lua).
+-- Roster Settings panel, opened via the Death Sounds panel's button.
+-- Editable copy of the dps/tank/heal death-sound name rosters
+-- (CritLogDB.playerGroups, migrated once from a code-only seed - see
+-- Persistence/Database.lua).
 local ROSTER_ORDER = { "dps", "tank", "heal" }
 
 local rosterFrame
@@ -15,16 +15,13 @@ local rosterFrame
 --
 -- The name itself is an editable box, not static text: renames in place
 -- instead of a remove-then-re-add round trip. Deliberately NOT saved on
--- every focus loss (an earlier version did that, but clicking elsewhere on
--- the panel - e.g. a different row's Remove button - counts as focus loss
--- too, so it could commit a half-finished edit by accident) - a rename only
--- takes effect on Enter or the OK button, same as the Add box's explicit
--- Add button. A rejected rename (empty/duplicate) snaps the box back to
--- the stored value instead of leaving the rejected text in place - unlike
--- the Add box, which leaves rejected text so it can be corrected, there's
--- already a known-good value here to fall back to. Reset does the same
--- snap-back but as an explicit action, for discarding an in-progress edit
--- without committing anything first.
+-- every focus loss - clicking elsewhere on the panel (e.g. a different
+-- row's Remove button) counts as focus loss too, so it could commit a
+-- half-finished edit by accident. A rename only takes effect on Enter or
+-- the OK button. A rejected rename (empty/duplicate) snaps the box back
+-- to the stored value, unlike the Add box, which leaves rejected text so
+-- it can be corrected - there's already a known-good value here to fall
+-- back to. Reset does the same snap-back but as an explicit action.
 local function getOrCreateRosterRow(f, kind, index)
     f.rowPool[kind] = f.rowPool[kind] or {}
     local row = f.rowPool[kind][index]
@@ -175,9 +172,6 @@ end
 -- Sized generously tall since a roster has no fixed entry cap, unlike the
 -- highscore list popup.
 local function buildRosterFrame()
-    -- Reverted back to its original size (in-game requested) after the
-    -- general size-reduction pass - unlike the other panels, this one
-    -- wasn't actually too big.
     local f = CritLog.UI.createPanelFrame("CritLogRosterFrame", "CritLog Roster Settings", 440, 775)
     f:SetPoint("CENTER", UIParent, "CENTER", -260, -80)
 
@@ -185,16 +179,11 @@ local function buildRosterFrame()
     f.heading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     f.heading:SetText("Rosters")
 
-    -- In-game requested: explain the save behavior somewhere on this
-    -- panel, since it's not the same for every action here. Add/Remove
-    -- write to CritLogDB.playerGroups immediately, no confirmation - see
-    -- CritLog:AddRosterName/RemoveRosterName in Persistence/Database.lua.
-    -- A rename is the one exception: typing (or clicking away, which just
-    -- loses focus) does not save by itself - only Enter or OK commits it,
-    -- and Reset explicitly discards it - see commitRename above. A
-    -- separate field, not reusing f.heading for the anchor chain below -
-    -- f.heading is the panel title, keep it that way for anyone reading
-    -- this later.
+    -- Explains the save behavior, since it's not the same for every
+    -- action here. Add/Remove write to CritLogDB.playerGroups
+    -- immediately; a rename only saves on Enter/OK, and Reset explicitly
+    -- discards it - see commitRename above. A separate field, not
+    -- reusing f.heading, so the panel title stays just the title.
     f.behaviorNote = f:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     f.behaviorNote:SetPoint("TOPLEFT", f.heading, "BOTTOMLEFT", 0, -6)
     f.behaviorNote:SetWidth(400)

@@ -1,21 +1,14 @@
 -- Main options panel (/cl options): crit-tracking behavior that isn't about
 -- sound at all, plus buttons into the Sound Settings/Help panels and the
--- Highscore List popup. Label wording is lifted from Commands.lua's
--- printHelp()/printConfig() so the panel doesn't introduce new terminology
--- for the same settings.
--- LevelFilterFlag/LevelDiffThreshold replace the old single AllLevel
--- on/off flag (see Persistence/Database.lua's migrateAllLevelToThreshold
--- and Core/Filters.lua's passesLevelFilter): a checkbox for whether the
--- filter applies at all, plus a slider for how many levels below you a
--- target may be before its crit doesn't count once it does - instead of a
--- fixed hardcoded 9. Two separate controls, not one slider whose minimum
--- doubles as "off" (in-game reported as confusing) - matches AllLevel's
--- old on/off flag behavior more directly, and reads the same way as every
--- other checkbox-gates-a-detail-setting pair in this addon (e.g.
--- MasterSoundFlag above every other sound toggle). One-directional on
--- purpose, unlike TitanCritLine's similar level-adjustment slider (which
--- this is modeled on) - a crit against a tougher-than-you enemy is never
--- filtered out.
+-- Highscore List popup.
+--
+-- LevelFilterFlag/LevelDiffThreshold (see Core/Filters.lua's
+-- passesLevelFilter): a checkbox for whether the filter applies at all,
+-- plus a slider for how many levels below you a target may be before its
+-- crit doesn't count. Two separate controls, not one slider whose minimum
+-- doubles as "off", for the same reason MasterSoundFlag gates every other
+-- sound toggle separately. One-directional on purpose: a crit against a
+-- tougher-than-you enemy is never filtered out.
 local CRIT_CHECKBOXES = {
     { field = "LevelFilterFlag", label = "Enable level filter",
       hint = "Off: counts highscores from enemies of any level." },
@@ -23,20 +16,17 @@ local CRIT_CHECKBOXES = {
       hint = "How far below your level a target may be and still count. Worldbosses always count regardless." },
 }
 
--- Pulled out of Sound Settings and onto the main panel directly - in-game
--- requested: muting all sounds is common enough that it shouldn't require
--- opening a submenu. The rest of the sound toggles stay in Sound Settings.
+-- On the main panel directly rather than in Sound Settings, since muting
+-- everything is common enough to not require opening a submenu.
 local MASTER_SOUND_CHECKBOX = {
     { field = "MasterSoundFlag", label = "Sounds enabled",
       hint = "Mutes every CritLog sound without changing individual sound settings." },
 }
 
 -- Separate from CRIT_CHECKBOXES and rendered smaller (`indent = true`,
--- see UI/Shared.lua's buildToggleRows) below the Sound Settings/Help
--- button row instead of grouped with the real settings above - in-game
--- requested: this isn't something most players ever need, only useful
--- for troubleshooting/development, so it shouldn't sit at the same
--- visual weight as the level filter.
+-- see UI/Shared.lua's buildToggleRows), since this is only useful for
+-- troubleshooting and shouldn't sit at the same visual weight as the
+-- level filter.
 local DEBUG_CHECKBOX = {
     { field = "DebugFlag", label = "Debug mode (diagnostic chat output)", indent = true,
       hint = "Prints diagnostic chat messages for troubleshooting." },
@@ -53,10 +43,9 @@ local RECORD_ORDER = { "damage", "whiteHit", "heal" }
 local frame
 local highscoreListFrame
 
--- Every highscore-deleting action needs a confirmation dialog - a single
--- misclick used to lose a category's highscores (or, before this, a single
--- entry) instantly with no way back. Registered once at file scope, the
--- standard StaticPopupDialogs convention.
+-- Every highscore-deleting action needs a confirmation dialog, so a
+-- single misclick can't lose a category's highscores instantly. Registered
+-- once at file scope, the standard StaticPopupDialogs convention.
 StaticPopupDialogs["CRITLOG_RESET_ALL_HIGHSCORES"] = {
     text = "Delete ALL highscore entries in every category? This cannot be undone.",
     button1 = "Delete All",
@@ -72,12 +61,10 @@ StaticPopupDialogs["CRITLOG_RESET_ALL_HIGHSCORES"] = {
 }
 
 -- Same confirmation pattern as CRITLOG_RESET_ALL_HIGHSCORES above and
--- UI/Shared.lua's CRITLOG_RESET_CATEGORY - in-game requested, a single
--- entry's Delete button used to remove it immediately on one click.
--- text_arg1 is the formatted record line (CritLog.Records.formatRecordText),
--- computed at click time in createDeleteEntryButton below, so the dialog
--- shows exactly which entry is about to go even if the list shifted since
--- the button was created.
+-- UI/Shared.lua's CRITLOG_RESET_CATEGORY. text_arg1 is the formatted
+-- record line, computed at click time in createDeleteEntryButton below,
+-- so the dialog shows exactly which entry is about to go even if the
+-- list shifted since the button was created.
 StaticPopupDialogs["CRITLOG_DELETE_ENTRY"] = {
     text = "Delete this highscore entry?\n%s",
     button1 = "Delete",
@@ -110,34 +97,29 @@ local function createDeleteEntryButton(parent, kind, index)
 end
 
 -- Posts every category's current #1 (skipping a category with no record
--- yet) as its own SendChatMessage call, not one combined message - chat
--- doesn't render embedded newlines, so multiple lines need multiple calls
--- either way, and a separate call per category reads more naturally than
--- cramming three lines into one 255-char message. Colored (the same
--- variant used everywhere else on-screen) for every destination, not just
--- FOR_ME - WoW chat channels do render |c color codes for other players
--- too, not just locally; in-game testing to decide if this stays or
--- switches to formatRecordText's plain variant.
+-- yet) as its own SendChatMessage call - chat doesn't render embedded
+-- newlines, so multiple lines need multiple calls either way. FOR_ME
+-- prints the colored variant locally; real chat channels get the plain
+-- variant, since WoW's server silently drops |c color escapes on
+-- Party/Raid/Guild/Whisper.
 local function postHighscores(channel, whisperTarget)
     for _, kind in ipairs(RECORD_ORDER) do
         if CritLogDB.records[kind][1] then
             if channel == "FOR_ME" then
                 print(CritLog.Records.formatRecordTextColored(kind, 1))
             elseif channel == "WHISPER" then
-                SendChatMessage(CritLog.Records.formatRecordTextColored(kind, 1), "WHISPER", nil, whisperTarget)
+                SendChatMessage(CritLog.Records.formatRecordText(kind, 1), "WHISPER", nil, whisperTarget)
             else
-                SendChatMessage(CritLog.Records.formatRecordTextColored(kind, 1), channel)
+                SendChatMessage(CritLog.Records.formatRecordText(kind, 1), channel)
             end
         end
     end
 end
 
 -- Post row: a channel dropdown + Post button on one line, plus a target
--- name box that only shows up for Whisper (every other channel needs
--- nothing extra). Anchored below `anchor` - buildHighscoreListFrame
--- passes the bottom of the whole highscore list (last row of the last
--- category), not the heading, so this sits between the list and the
--- Close button.
+-- name box that only shows up for Whisper. Anchored below `anchor` -
+-- buildHighscoreListFrame passes the bottom of the whole highscore list,
+-- so this sits between the list and the Close button.
 local function createPostRow(f, anchor)
     local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     label:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -12)
@@ -244,14 +226,12 @@ local function createColumnHeaderRow(f)
 end
 
 -- Row widgets are pooled and reused rather than created/destroyed on every
--- refresh (WoW frames aren't cheap to churn, and the visible row count
--- changes often as entries are added/deleted) - same pattern as the roster
--- panel's row pool. Pool slot i for a given category always displays that
--- category's list position i when shown - its Delete button's index was
--- fixed at creation time.
+-- refresh, same pattern as the roster panel's row pool. Pool slot i for a
+-- given category always displays that category's list position i when
+-- shown - its Delete button's index was fixed at creation time.
 --
 -- One FontString per column instead of a single pre-formatted line, so
--- values actually line up in a table under the header row created by
+-- values line up in a table under the header row created by
 -- createColumnHeaderRow above.
 local function getOrCreateHighscoreRow(f, kind, index)
     f.rowPool[kind] = f.rowPool[kind] or {}
@@ -270,25 +250,20 @@ local function getOrCreateHighscoreRow(f, kind, index)
 end
 
 -- Lays out every row fresh on each call (cheap: at most 3 categories *
--- Constants.maxDisplayEntries rows) rather than trying to incrementally
--- patch anchors when the row count changes between refreshes.
+-- Constants.maxDisplayEntries rows) rather than incrementally patching
+-- anchors when the row count changes between refreshes.
 --
 -- Always lays out all Constants.maxDisplayEntries rows per category,
 -- regardless of how many entries actually exist yet - missing ones get a
--- "No record yet" placeholder (see the `not entry` branch below) instead
--- of being skipped. Previously the row count tracked `#list` (floored at
--- 1), so a category with e.g. only 1 real entry reserved just 1 row's
--- worth of space and the next category's heading shifted up to fill the
--- rest - every category "growing into" its final position as entries
--- accumulated, in-game reported as looking wrong. Fixed height per
--- category (even at 0 entries) means the whole popup's layout is stable
--- from the very first time it's opened.
+-- "No record yet" placeholder instead of being skipped, so the popup's
+-- layout is stable from the first time it's opened rather than each
+-- category growing into its final position as entries accumulate.
 --
 -- Only the top Constants.maxDisplayEntries are ever shown, even though up
 -- to Constants.maxTrackedEntries can be stored (see Persistence/
--- Database.lua's AddRecord) - deleting one of the visible entries doesn't
--- need a brand new crit to refill it, the next-best already-tracked
--- entry just shifts into view on the next refresh.
+-- Database.lua's AddRecord) - deleting a visible entry doesn't need a
+-- brand new crit to refill it, the next-best tracked entry shifts into
+-- view on the next refresh.
 local function layoutHighscoreList(f)
     local previous = f.heading
 
@@ -313,11 +288,9 @@ local function layoutHighscoreList(f)
             previous = row.rankText
 
             -- Colored the same way as the main panel's top-3 summary and
-            -- the TitanPanel tooltip (Core/Records.lua's shared palette) -
-            -- in-game requested. Each column here is its own FontString
-            -- (unlike those two, which build one combined string), so
-            -- `colored()` just wraps that cell's whole text in one color
-            -- instead of needing per-segment wrapping.
+            -- the TitanPanel tooltip (Core/Records.lua's shared palette).
+            -- Each column here is its own FontString, so `colored()` just
+            -- wraps that cell's whole text in one color.
             local Records = CritLog.Records
             if not entry then
                 row.rankText:SetText(Records.colored(Records.NORMAL_COLOR, "No record yet"))
@@ -330,13 +303,10 @@ local function layoutHighscoreList(f)
 
                 row.amountText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.amount - COLUMN_X.rank, 0)
                 row.amountText:SetText(Records.colored(Records.amountColor(entry.amount), tostring(entry.amount)))
-                -- Bold (via an outline flag - no inline bold escape code
-                -- exists) only works here, not on the main panel's combined
-                -- summary lines or the TitanPanel tooltip: this column is
-                -- its own dedicated FontString containing only the amount,
-                -- unlike those, which build one string mixing label/ability/
-                -- amount/target together - bolding just the number there
-                -- would mean bolding the whole line instead.
+                -- Bold via an outline flag (no inline bold escape code
+                -- exists) only works here, not on the combined summary
+                -- lines elsewhere, since this column is its own dedicated
+                -- FontString containing only the amount.
                 local path, size = row.amountText:GetFont()
                 row.amountText:SetFont(path, size, Records.isExtremeAmount(entry.amount) and "THICKOUTLINE" or "")
                 row.amountText:Show()
@@ -360,14 +330,7 @@ local function layoutHighscoreList(f)
 end
 
 -- Sized for the worst case (Constants.maxDisplayEntries rows in every
--- category at once) so it never overflows; looks mostly empty until a
--- character has built up a real history, which is expected for a first
--- draft - see docs/ROADMAP.md. Widened from 420 for the table columns
--- (Ability names in particular need more room than a single combined line
--- did). Height grown from 520 to 600 for the Post row + its conditional
--- Whisper-target row below the highscore list, above the Close button
--- (see createPostRow) - exact fit still pending in-game verification,
--- like every other size in this panel.
+-- category at once) so it never overflows.
 local function buildHighscoreListFrame()
     local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 600)
     -- Opens to the left of center, mirroring the sound panel opening to the
@@ -401,13 +364,10 @@ local function buildHighscoreListFrame()
         f.columnHeaders[kind] = createColumnHeaderRow(f)
     end
 
-    -- Post row goes below the whole list (last row of the last category),
-    -- not below the heading - in-game requested, reads more naturally
-    -- right above the Close button than competing with Reset All at the
-    -- top. The list's per-category height is fixed regardless of actual
-    -- entry count (see layoutHighscoreList's own comment), so this anchor
-    -- point never shifts between refreshes - built once here, not redone
-    -- on every layoutHighscoreList call below.
+    -- Post row goes below the whole list, not below the heading. The
+    -- list's per-category height is fixed regardless of actual entry
+    -- count, so this anchor point never shifts between refreshes - built
+    -- once here, not redone on every layoutHighscoreList call below.
     local lastRow = layoutHighscoreList(f)
     f.postRow = createPostRow(f, lastRow)
 
@@ -415,33 +375,15 @@ local function buildHighscoreListFrame()
 end
 
 local function buildFrame()
-    -- Tall enough for the header block, the Highscore List button, the
-    -- level-filter checkbox and slider row (taller than a plain checkbox -
-    -- Low/High/value labels), the Sounds enabled master switch right above
-    -- the Sound Settings button (pulled in from Sound Settings - in-game
-    -- requested, muting everything shouldn't require a submenu), the
-    -- Sound Settings/Help button row (Roster Settings moved to the Death
-    -- Sounds panel, so this is back to a single row - see CHANGELOG.md),
-    -- and the small indented Debug checkbox below that. Widened from 420
-    -- so a long spell/target name in a highscore line has room before
-    -- running into that row's Reset button. The slider's own look is now
-    -- in-game confirmed okay too.
-    -- Height cut from 576 to 500 (in-game screenshotted: a lot of empty
-    -- space below the Debug checkbox down to the Close button) - width
-    -- left untouched, see the "Widened from 420" note above. This size
-    -- overall in-game confirmed good.
     local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 500)
     f:SetPoint("CENTER")
-    -- In-game reported/generalized: closing a panel should close its own
-    -- sub-windows too, not just the main panel closing everything - see
-    -- CritLog.UI.closeChildPanels' own comment. This main panel's direct
-    -- children are Sound Settings, Help, and its own Highscore List
-    -- popup; Sound Settings/Death Sounds close their own children the
-    -- same way (see UI/SoundPanel.lua, UI/DeathSoundPanel.lua), which is
-    -- how a still-open Death Sounds/Roster Settings etc. also gets
-    -- closed transitively from here. HookScript, not SetScript, so
-    -- createPanelFrame's own OnHide (the Escape-stack bookkeeping) still
-    -- runs too, not replaced.
+    -- Closing this panel closes its own sub-windows too - direct children
+    -- are Sound Settings, Help, and the Highscore List popup; Sound
+    -- Settings/Death Sounds close their own children the same way (see
+    -- UI/SoundPanel.lua, UI/DeathSoundPanel.lua), which transitively
+    -- closes a still-open Death Sounds/Roster Settings etc. too.
+    -- HookScript, not SetScript, so createPanelFrame's own OnHide (the
+    -- Escape-stack bookkeeping) still runs, not replaced.
     f:HookScript("OnHide", function()
         CritLog.UI.closeChildPanels({
             "CritLogSoundOptionsFrame",
@@ -451,11 +393,9 @@ local function buildFrame()
     end)
 
     local highscoresHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    -- Anchored directly to the frame rather than f.Inset: that child region
-    -- isn't guaranteed to exist on every BasicFrameTemplateWithInset variant
-    -- (SoD's client doesn't expose it), and a nil relativeTo here silently
-    -- anchors everything downstream to the screen instead of the panel.
-    -- -30 clears the title bar.
+    -- Anchored directly to the frame rather than f.Inset: that child
+    -- region isn't guaranteed to exist on every BasicFrameTemplateWithInset
+    -- variant. -30 clears the title bar.
     highscoresHeading:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -30)
     highscoresHeading:SetText("Highscores")
 
@@ -512,10 +452,8 @@ local function buildFrame()
         CritLog:ShowSoundOptions()
     end)
 
-    -- Roster Settings moved to the Death Sounds panel (it's only relevant
-    -- to the dps/tank/heal roster fallback used there, not to anything
-    -- else on this main panel) - just Sound Settings and Help remain here,
-    -- side by side on one row.
+    -- Roster Settings lives on the Death Sounds panel instead - just
+    -- Sound Settings and Help remain here, side by side on one row.
     local helpButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     helpButton:SetSize(140, 24)
     helpButton:SetText("Help...")
@@ -534,9 +472,6 @@ local function buildFrame()
 end
 
 CritLog.UI.registerRefresh(function()
-    -- Colored variant (Core/Records.lua's formatRecordTextColored) - in-game
-    -- requested applying the same spell/target/amount styling used on the
-    -- TitanPanel tooltip here too, not just there.
     if frame then
         frame.dacText:SetText(CritLog.Records.formatRecordTextColored("damage", 1))
         frame.whcText:SetText(CritLog.Records.formatRecordTextColored("whiteHit", 1))
