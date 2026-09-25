@@ -127,7 +127,7 @@ end
 -- so this sits between the list and the Close button.
 local function createPostRow(f, anchor)
     local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    label:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -12)
+    label:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -28)
     label:SetText("Post to:")
 
     -- Same "-16 nudge" reasoning as UI/Shared.lua's createDropdownRow -
@@ -337,7 +337,7 @@ end
 -- Sized for the worst case (Constants.maxDisplayEntries rows in every
 -- category at once) so it never overflows.
 local function buildHighscoreListFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 600)
+    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 540)
     -- Opens to the left of center, mirroring the sound panel opening to the
     -- right, so both can be open next to the main panel at once.
     f:SetPoint("CENTER", UIParent, "CENTER", -260, 0)
