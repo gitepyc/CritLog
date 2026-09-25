@@ -159,6 +159,38 @@ local function createPostRow(f, anchor)
         CritLogDB.PostWhisperTarget = self:GetText()
     end)
 
+    -- Inline autocomplete against the online friends list, browser-address-
+    -- bar style: the first online friend whose name starts with what's
+    -- typed so far gets appended and pre-selected, so continued typing (or
+    -- Backspace) just overwrites/removes the suggested part. `suppressing`
+    -- guards against SetText below re-triggering this same handler.
+    local suppressing = false
+    whisperBox:SetScript("OnTextChanged", function(self, isUserInput)
+        if suppressing or not isUserInput then
+            return
+        end
+
+        local typed = self:GetText()
+        if typed == "" then
+            return
+        end
+
+        local typedLower = typed:lower()
+        for i = 1, C_FriendList.GetNumFriends() do
+            local info = C_FriendList.GetFriendInfoByIndex(i)
+            if info and info.connected and info.name
+                and info.name:sub(1, #typed):lower() == typedLower
+                and info.name:lower() ~= typedLower then
+                suppressing = true
+                self:SetText(info.name)
+                self:HighlightText(#typed, #info.name)
+                self:SetCursorPosition(#info.name)
+                suppressing = false
+                break
+            end
+        end
+    end)
+
     local function updateWhisperRowVisibility()
         if CritLogDB.PostChannel == "WHISPER" then
             whisperLabel:Show()

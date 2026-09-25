@@ -22,6 +22,9 @@ stds.wow = {
         "UnitIsPlayer", -- excludes NPCs from the dps/tank/priest death-sound role checks
         "UnitLevel",
         "tContains",
+        -- UI/MainPanel.lua: online-friend-name autocomplete for the
+        -- Highscore List's "Whisper to" box
+        "C_FriendList",
         "GetAddOnMetadata",
         "C_AddOns",
         "C_NamePlate",
