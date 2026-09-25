@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-# Deletes -dev git tags that are already covered by a newer real release (a
-# plain X.Y.Z tag, no -dev suffix) - CHANGELOG.md folds their content into
-# that release's own entry (see the consolidation pattern there), so the
+# Deletes -dev.N git tags whose target version already has (or is older
+# than) a real release (a plain X.Y.Z or X.Y.Z.W tag, no -dev suffix) -
+# CHANGELOG.md folds their content into that release's own entry, so the
 # tag itself is pure clutter afterward. Real release tags and the
-# `legacy-*` archival tag are never touched; any -dev tag at or after the
-# latest real release (ongoing, not-yet-released work) is left alone too.
+# `legacy-*` archival tag are never touched; a -dev.N tag ahead of the
+# latest real release (ongoing, not-yet-released work) is left alone.
 #
 # Dry-run by default - prints what would be deleted. Pass --yes to
 # actually delete. Deletes via `git push --delete`, which the Gitea ->
-# GitHub push-mirror propagates automatically - no separate GitHub step
-# needed. Also deletes the matching Gitea Release object, if one exists,
-# for each tag removed.
+# GitHub push-mirror propagates automatically. Also deletes the matching
+# Gitea Release object, if one exists, for each tag removed.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -30,7 +29,7 @@ fi
 tags=$(curl -s -H "Authorization: token $GITEA_ACCESS_TOKEN" "$API/tags?limit=100" \
     | python3 -c "import json,sys; print('\n'.join(t['name'] for t in json.load(sys.stdin)))")
 
-latest_release=$(echo "$tags" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+latest_release=$(echo "$tags" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
 
 if [[ -z "$latest_release" ]]; then
     echo "No real release tag found (X.Y.Z, no -dev suffix) - aborting." >&2
@@ -41,10 +40,10 @@ echo "Latest real release: $latest_release"
 
 to_delete=()
 while IFS= read -r tag; do
-    [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+-dev$ ]] || continue
-    version="${tag%-dev}"
-    older=$(printf '%s\n%s\n' "$version" "$latest_release" | sort -V | head -1)
-    if [[ "$version" != "$latest_release" && "$older" == "$version" ]]; then
+    [[ "$tag" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-dev\.[0-9]+$ ]] || continue
+    version="${BASH_REMATCH[1]}"
+    newer=$(printf '%s\n%s\n' "$version" "$latest_release" | sort -V | tail -1)
+    if [[ "$newer" == "$latest_release" ]]; then
         to_delete+=("$tag")
     fi
 done <<< "$tags"

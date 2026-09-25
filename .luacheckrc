@@ -11,15 +11,15 @@ stds.wow = {
         "CreateFrame",
         "CombatLogGetCurrentEventInfo",
         "PlaySoundFile",
-        "GetTime", -- cooldown gate for the Mage Table/Healthstone ritual sounds (feature/legacy-sound-port)
+        "GetTime", -- cooldown gate for the Mage Table/Healthstone ritual sounds
         "UnitBuff", -- live Feign Death detection (see Core/CombatLog.lua's hasFeignDeathBuff)
-        "UnitClass", -- class/role-based death-sound matching (feature/class-based-death-sounds)
+        "UnitClass", -- class/role-based death-sound matching
         "UnitClassification",
         "UnitGUID",
-        "UnitGroupRolesAssigned", -- class/role-based death-sound matching (feature/class-based-death-sounds)
+        "UnitGroupRolesAssigned", -- class/role-based death-sound matching
         "UnitInParty",
         "UnitInRaid",
-        "UnitIsPlayer", -- excludes NPCs from the dps/tank/priest death-sound role checks
+        "UnitIsPlayer", -- excludes NPCs from the dps/tank/heal death-sound role checks
         "UnitLevel",
         "tContains",
         "GetAddOnMetadata",
@@ -30,7 +30,7 @@ stds.wow = {
         -- UI/Shared.lua: registers panels so Escape closes them
         "UISpecialFrames",
         "tinsert",
-        -- UI/Shared.lua: the dps/tank/priest/boss detection-mode dropdowns
+        -- UI/Shared.lua: the dps/tank/heal/boss detection-mode dropdowns
         "UIDropDownMenu_SetWidth",
         "UIDropDownMenu_Initialize",
         "UIDropDownMenu_CreateInfo",
@@ -41,17 +41,15 @@ stds.wow = {
         "DropDownList2",
         -- UI/MainPanel.lua: confirmation dialog before Reset All
         "StaticPopup_Show",
-        -- UI/Shared.lua: hover tooltip for each toggle row, replacing the
-        -- static hint line underneath (feature/toggle-row-tooltips)
+        -- UI/Shared.lua: hover tooltip for each toggle row
         "GameTooltip",
         -- Events.lua/UI/TitanButton.lua: gate + build the optional
-        -- TitanPanel status-bar button (feature/titan-panel-integration)
+        -- TitanPanel status-bar button
         "IsAddOnLoaded",
         "TitanPanelButton_OnClick",
         "TitanPanelButton_UpdateButton",
         "Titan_Menu",
         -- UI/MainPanel.lua: Highscore List popup's Post button
-        -- (feature/post-highscores-to-chat)
         "SendChatMessage",
     },
     globals = {
