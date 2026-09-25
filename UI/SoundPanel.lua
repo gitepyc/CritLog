@@ -50,7 +50,7 @@ local soundFrame
 -- shown.
 local SOUND_FRAME_WIDTH = 460
 local SOUND_FRAME_HEIGHT = 460
-local SOUND_FRAME_HEIGHT_DEBUG = 604
+local SOUND_FRAME_HEIGHT_DEBUG = 550
 
 local function buildSoundFrame()
     -- Kept wider than the other single-column panels: the Roll Sounds
