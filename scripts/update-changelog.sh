@@ -24,3 +24,14 @@ docker run --rm \
     -w /repo \
     orhunp/git-cliff:latest \
     --config cliff.toml -o CHANGELOG.md
+
+# Sanity check: a dev tag (X.Y.Z-dev.N) should never get its own heading -
+# cliff.toml's [git] ignore_tags is what folds it into the next real
+# release's section instead. If this ever fires, that regex broke (or got
+# edited away) and CHANGELOG.md just fragmented into a heading per dev
+# build - CONTRIBUTING.md's "Releasing" section documents the intended
+# behavior this is meant to protect.
+if grep -qE '^## \[[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?-dev\.[0-9]+\]' CHANGELOG.md; then
+    echo "error: CHANGELOG.md has a heading for a -dev tag - cliff.toml's ignore_tags isn't folding it in anymore" >&2
+    exit 1
+fi
