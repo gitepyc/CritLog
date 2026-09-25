@@ -170,7 +170,7 @@ local function createPostRow(f, anchor)
 
     local postButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     postButton:SetSize(60, 20)
-    postButton:SetText("Post")
+    postButton:SetText("Send")
     postButton:SetNormalFontObject("GameFontNormalSmall")
     postButton:SetHighlightFontObject("GameFontHighlightSmall")
     postButton:SetPoint("LEFT", dropdown, "RIGHT", 8, 2)
