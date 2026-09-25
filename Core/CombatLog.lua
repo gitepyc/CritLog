@@ -255,8 +255,6 @@ function CritLog:HandleAuraSounds(
         return
     end
 
-    self:Debug("SPELL_AURA_APPLIED on player - id:", spellId, "name:", spellName)
-
     -- AuraSoundFlag (checked above) is the master switch; each of these 7
     -- also has its own flag, individually toggleable in the Sound Settings
     -- panel instead of all-or-nothing.
@@ -517,13 +515,9 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     local rosterUnitToken = findUnitToken(destGUID)
     local rosterMatchTrustworthy = not rosterUnitToken or UnitIsPlayer(rosterUnitToken)
 
-    -- TEMPORARY debugging aid for an intermittent false-positive DPS death
-    -- sound not fully root-caused yet - a plain print(), not self:Debug(),
-    -- so it isn't buried by DebugFlag's other noise. Remove (or move
-    -- behind self:Debug()) once confirmed there's nothing left to find.
     if isGroupMember then
-        print(
-            "|cff33ff99CritLog Debug:|r HandleDeath", destName, destGUID,
+        self:Debug(
+            "HandleDeath", destName, destGUID,
             "token:", token or "none",
             "class:", class or "n/a", "role:", role or "n/a",
             "isGroupMember:", tostring(isGroupMember)
