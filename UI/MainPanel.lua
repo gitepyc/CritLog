@@ -121,6 +121,37 @@ local function postHighscores(channel, whisperTarget)
     end
 end
 
+-- Finds the best whisper-target autocomplete suggestion for `typed`, a
+-- non-empty prefix. Prefers Blizzard's own account-wide autocomplete (the
+-- same one behind the default UI's whisper/mail "To:" boxes) since that
+-- alone covers everything the user actually wants here - regular friends,
+-- Battle.net friends, guildmates, and the account's own other characters -
+-- without CritLog re-implementing each source's API separately. Falls back
+-- to a plain online-friends-only scan (this addon's original behavior) if
+-- that global isn't available on this client, wrapped in pcall since its
+-- exact signature isn't guaranteed to match across client versions.
+local function findWhisperAutocompleteMatch(typed)
+    local typedLower = typed:lower()
+
+    if GetAutoCompleteResults then
+        local results = {}
+        local ok = pcall(GetAutoCompleteResults, typed, true, true, true, true, false, results)
+        if ok and results[1] and results[1]:sub(1, #typed):lower() == typedLower then
+            return results[1]
+        end
+    end
+
+    for i = 1, C_FriendList.GetNumFriends() do
+        local info = C_FriendList.GetFriendInfoByIndex(i)
+        if info and info.connected and info.name
+            and info.name:sub(1, #typed):lower() == typedLower then
+            return info.name
+        end
+    end
+
+    return nil
+end
+
 -- Post row: a channel dropdown + Post button on one line, plus a target
 -- name box that only shows up for Whisper. Anchored below `anchor` -
 -- buildHighscoreListFrame passes the bottom of the whole highscore list,
@@ -159,11 +190,12 @@ local function createPostRow(f, anchor)
         CritLogDB.PostWhisperTarget = self:GetText()
     end)
 
-    -- Inline autocomplete against the online friends list, browser-address-
-    -- bar style: the first online friend whose name starts with what's
-    -- typed so far gets appended and pre-selected, so continued typing (or
-    -- Backspace) just overwrites/removes the suggested part. `suppressing`
-    -- guards against SetText below re-triggering this same handler.
+    -- Inline autocomplete, browser-address-bar style: the best whisper
+    -- target match for what's typed so far (see findWhisperAutocompleteMatch
+    -- above - friends, Battle.net friends, guildmates, own alts) gets
+    -- appended and pre-selected, so continued typing (or Backspace) just
+    -- overwrites/removes the suggested part. `suppressing` guards against
+    -- SetText below re-triggering this same handler.
     local suppressing = false
     whisperBox:SetScript("OnTextChanged", function(self, isUserInput)
         if suppressing or not isUserInput then
@@ -175,22 +207,16 @@ local function createPostRow(f, anchor)
             return
         end
 
-        local typedLower = typed:lower()
-        for i = 1, C_FriendList.GetNumFriends() do
-            local info = C_FriendList.GetFriendInfoByIndex(i)
-            if info and info.connected and info.name
-                and info.name:sub(1, #typed):lower() == typedLower
-                and info.name:lower() ~= typedLower then
-                suppressing = true
-                self:SetText(info.name)
-                -- No separate SetCursorPosition here - it would collapse
-                -- the selection HighlightText just set, and Backspace would
-                -- then only eat one character of the suggested tail before
-                -- re-triggering the same suggestion right back.
-                self:HighlightText(#typed, #info.name)
-                suppressing = false
-                break
-            end
+        local match = findWhisperAutocompleteMatch(typed)
+        if match and match:lower() ~= typed:lower() then
+            suppressing = true
+            self:SetText(match)
+            -- No separate SetCursorPosition here - it would collapse
+            -- the selection HighlightText just set, and Backspace would
+            -- then only eat one character of the suggested tail before
+            -- re-triggering the same suggestion right back.
+            self:HighlightText(#typed, #match)
+            suppressing = false
         end
     end)
 

@@ -22,9 +22,12 @@ stds.wow = {
         "UnitIsPlayer", -- excludes NPCs from the dps/tank/priest death-sound role checks
         "UnitLevel",
         "tContains",
-        -- UI/MainPanel.lua: online-friend-name autocomplete for the
-        -- Highscore List's "Whisper to" box
+        -- UI/MainPanel.lua: whisper-target autocomplete for the Highscore
+        -- List's "Whisper to" box (GetAutoCompleteResults is Blizzard's own
+        -- account-wide autocomplete; C_FriendList is the online-friends-only
+        -- fallback if that's unavailable on the running client)
         "C_FriendList",
+        "GetAutoCompleteResults",
         "GetAddOnMetadata",
         "C_AddOns",
         "C_NamePlate",
