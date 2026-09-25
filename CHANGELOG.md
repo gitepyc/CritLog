@@ -9,6 +9,39 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.9.3](https://github.com/gitepyc/CritLog/tree/0.3.9.3) (2026-09-25)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.9.2...0.3.9.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** hover tooltips for Highscore List ability/target cells, resize Options panel
+
+- **feature:** inline autocomplete for Whisper-to box from online friends list
+
+- **feature:** widen Whisper-to autocomplete beyond online friends
+
+- **fix:** label Aura/spell toggle as "sounds" (plural)
+
+- **fix:** replace misleading "worldboss" wording with "boss-level mob"
+
+- **fix:** Backspace not deleting in Whisper-to autocomplete suggestion
+
+- **fix:** bare /cl uses colored highscore output like "Post to: For me"
+
+- **fix:** Whisper-to autocomplete not widening beyond friends, Backspace stuck
+
+- **fix:** autocomplete suggestion flickering on/off every keystroke
+
+- **refactor:** trim narrative comments in workflows/scripts/config, fix stale references
+
+- **tweak:** shrink Highscore List popup, push Post row down
+
+- **tweak:** rename Highscore List's "Reset All" button to "Reset Everything"
+
+- **tweak:** rename Highscore List's "Post" button to "Send"
+
+- **tweak:** shrink Sound Settings window height with debug mode on
+
+- **tweak:** uppercase "Reset Everything" confirmation's Delete All button
+
 ## [0.3.9.2](https://github.com/gitepyc/CritLog/tree/0.3.9.2) (2026-09-25)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.9.1...0.3.9.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
