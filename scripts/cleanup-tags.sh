@@ -40,7 +40,7 @@ echo "Latest real release: $latest_release"
 
 to_delete=()
 while IFS= read -r tag; do
-    [[ "$tag" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-dev\.[0-9]+$ ]] || continue
+    [[ "$tag" =~ ^([0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?)-dev\.[0-9]+$ ]] || continue
     version="${BASH_REMATCH[1]}"
     newer=$(printf '%s\n%s\n' "$version" "$latest_release" | sort -V | tail -1)
     if [[ "$newer" == "$latest_release" ]]; then
