@@ -187,7 +187,7 @@ parsed numbers into a sound.
 | Exactly 69 | `roll69.mp3` |
 | >= 92% of max | `roll95.mp3` |
 | < 8% of max | `roll5.mp3` |
-| 8-10% of max | `roll10.mp3` |
+| 8-12% of max | `roll10.mp3` |
 | Anything else | No sound. |
 
 The percentage bands (`roll5`/`roll10`/`roll95`) are unreachable for a
