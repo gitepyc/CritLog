@@ -235,6 +235,32 @@ end
 -- given category always displays that category's list position i when
 -- shown - its Delete button's index was fixed at creation time.
 --
+-- Attaches a hover tooltip to `fontString` that shows whatever plain text
+-- is currently in `row[fullTextField]` at hover time - not a fixed string
+-- like CritLog.UI.attachTooltip's other callers use, since this same
+-- pooled row/FontString gets reused for a different entry on every
+-- refresh (see the row-pool comment below). A plain Frame overlay is used
+-- since FontString itself has no EnableMouse/OnEnter support.
+local function attachCellTooltip(parent, fontString, row, fullTextField)
+    local hitbox = CreateFrame("Frame", nil, parent)
+    hitbox:SetAllPoints(fontString)
+    hitbox:EnableMouse(true)
+    hitbox:HookScript("OnEnter", function(self)
+        local text = row[fullTextField]
+        if not text then
+            return
+        end
+        GameTooltip:Hide()
+        GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+        GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -10, -4)
+        GameTooltip:SetText(text, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    hitbox:HookScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+end
+
 -- One FontString per column instead of a single pre-formatted line, so
 -- values line up in a table under the header row created by
 -- createColumnHeaderRow above.
@@ -249,6 +275,8 @@ local function getOrCreateHighscoreRow(f, kind, index)
             targetText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight"),
             deleteButton = createDeleteEntryButton(f, kind, index),
         }
+        attachCellTooltip(f, row.abilityText, row, "abilityFullText")
+        attachCellTooltip(f, row.targetText, row, "targetFullText")
         f.rowPool[kind][index] = row
     end
     return row
@@ -303,6 +331,8 @@ local function layoutHighscoreList(f)
                 row.abilityText:Hide()
                 row.targetText:Hide()
                 row.deleteButton:Hide()
+                row.abilityFullText = nil
+                row.targetFullText = nil
             else
                 row.rankText:SetText(Records.colored(Records.NORMAL_COLOR, index.."."))
 
@@ -318,10 +348,12 @@ local function layoutHighscoreList(f)
 
                 row.abilityText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.ability - COLUMN_X.rank, 0)
                 row.abilityText:SetText(Records.colored(Records.SPELL_COLOR, entry.name or "-"))
+                row.abilityFullText = entry.name or "-"
                 row.abilityText:Show()
 
                 row.targetText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.target - COLUMN_X.rank, 0)
                 row.targetText:SetText(Records.colored(Records.TARGET_COLOR, entry.target))
+                row.targetFullText = entry.target
                 row.targetText:Show()
 
                 row.deleteButton:SetPoint("TOP", row.rankText, "TOP", 0, 0)
@@ -380,7 +412,7 @@ local function buildHighscoreListFrame()
 end
 
 local function buildFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 500)
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 530)
     f:SetPoint("CENTER")
     -- Closing this panel closes its own sub-windows too - direct children
     -- are Sound Settings, Help, and the Highscore List popup; Sound
