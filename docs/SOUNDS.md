@@ -42,7 +42,7 @@ metadata as before - no more `n/a` entries.
 | Lottery | `lottery.mp3` | Matching CrossGambling message in raid/party/guild chat |
 | Roll (exact 1) | `roll1.mp3` | `/roll` result is the lowest possible value on a 1-100 roll |
 | Roll (low band) | `roll5.mp3` | `/roll` result in the roughly-2-7% band on a 1-100 roll |
-| Roll (10 band) | `roll10.mp3` | `/roll` result in the roughly-8-10% band on a 1-100 roll |
+| Roll (10 band) | `roll10.mp3` | `/roll` result in the roughly-8-12% band on a 1-100 roll |
 | Roll (69) | `roll69.mp3` | `/roll` result is exactly 69 |
 | Roll (95 band) | `roll95.mp3` | `/roll` result in the roughly-92-99% band on a 1-100 roll |
 | Roll (100) | `roll100.mp3` | `/roll` result is the maximum on a 1-100 roll |
@@ -78,7 +78,7 @@ complete trigger conditions.
 | `Ready.mp3` | 2 s | 132 kbps | 29,718 B | ready check |
 | `raidend.mp3` | 9 s | 129 kbps | 146,746 B | raid end (consolidated, overlapping mix - see `CHANGELOG.md`) |
 | `roll1.mp3` | 3 s | 131 kbps | 43,185 B | roll result 1 |
-| `roll10.mp3` | 10 s | 129 kbps | 155,523 B | roll result 8-10% band |
+| `roll10.mp3` | 10 s | 129 kbps | 155,523 B | roll result 8-12% band |
 | `roll100.mp3` | 5 s | 129 kbps | 86,657 B | roll result 100 |
 | `roll5.mp3` | 2 s | 132 kbps | 31,503 B | roll result 2-7% band |
 | `roll69.mp3` | 3 s | 131 kbps | 53,634 B | roll result 69 |
