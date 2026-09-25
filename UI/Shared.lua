@@ -140,7 +140,9 @@ local slidersByField = {}
 -- TOOLTIP - GameTooltip itself defaults to TOOLTIP strata, so a panel
 -- using that same strata would put the tooltip in direct competition
 -- with the panel and lose.
-local function attachTooltip(control, text)
+-- Exported as CritLog.UI.attachTooltip since UI/MainPanel.lua also uses it,
+-- for the Highscore List's table cells (e.g. a truncated target name).
+function CritLog.UI.attachTooltip(control, text)
     if not text then
         return
     end
@@ -218,7 +220,7 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
         previewButton:SetFrameLevel(dropdown:GetFrameLevel() + 1)
     end
 
-    attachTooltip(dropdown, entry.hint)
+    CritLog.UI.attachTooltip(dropdown, entry.hint)
     -- SetHitRectInsets(left, right, top, bottom) - a negative value grows
     -- the hit area outward, extending the dropdown's hit rect rightward
     -- to cover its own label too. A fixed value, not
@@ -270,7 +272,7 @@ local function createSliderRow(parent, entry, previous, previousXOffset)
 
     slidersByField[entry.field] = { slider = slider, updateValueText = updateValueText }
 
-    attachTooltip(slider, entry.hint)
+    CritLog.UI.attachTooltip(slider, entry.hint)
 
     -- A separate invisible anchor for buildToggleRows to chain the next
     -- row from, decoupled from the centered valueText: valueText's own
@@ -397,7 +399,7 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
                 previewButton:SetFrameLevel(check:GetFrameLevel() + 1)
             end
 
-            attachTooltip(check, entry.hint)
+            CritLog.UI.attachTooltip(check, entry.hint)
             -- SetHitRectInsets(left, right, top, bottom) - a negative
             -- value grows the hit area outward, extending the checkbox's
             -- hit rect rightward to cover its own label too. A fixed

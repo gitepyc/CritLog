@@ -24,7 +24,7 @@ local SOUND_CHECKBOXES_TOP = {
 }
 
 local SOUND_CHECKBOXES_BOTTOM = {
-    { field = "AuraSoundFlag", label = "Aura/spell sound",
+    { field = "AuraSoundFlag", label = "Aura/spell sounds",
       hint = "Master switch for the spell sounds - see the button below." },
 }
 
@@ -50,7 +50,7 @@ local soundFrame
 -- shown.
 local SOUND_FRAME_WIDTH = 460
 local SOUND_FRAME_HEIGHT = 460
-local SOUND_FRAME_HEIGHT_DEBUG = 604
+local SOUND_FRAME_HEIGHT_DEBUG = 550
 
 local function buildSoundFrame()
     -- Kept wider than the other single-column panels: the Roll Sounds

@@ -13,12 +13,12 @@ local CRIT_CHECKBOXES = {
     { field = "LevelFilterFlag", label = "Enable level filter",
       hint = "Off: counts highscores from enemies of any level." },
     { field = "LevelDiffThreshold", label = "Max levels below you", slider = { min = 1, max = 20, step = 1 },
-      hint = "How far below your level a target may be and still count. Worldbosses always count regardless." },
+      hint = "How far below your level a target may be and still count. Boss-level mobs always count regardless." },
 }
 
 local BOSS_KILL_CHECKBOX = {
     { field = "BossKillFlag", label = "Boss killing-blow chat message",
-      hint = "Announces in chat who landed the killing blow on a live worldboss." },
+      hint = "Announces in chat who landed the killing blow on a boss-level mob." },
 }
 
 -- On the main panel directly rather than in Sound Settings, since muting
@@ -53,7 +53,7 @@ local highscoreListFrame
 -- once at file scope, the standard StaticPopupDialogs convention.
 StaticPopupDialogs["CRITLOG_RESET_ALL_HIGHSCORES"] = {
     text = "Delete ALL highscore entries in every category? This cannot be undone.",
-    button1 = "Delete All",
+    button1 = "DELETE ALL",
     button2 = "Cancel",
     OnAccept = function()
         CritLog:ResetRecords()
@@ -121,13 +121,59 @@ local function postHighscores(channel, whisperTarget)
     end
 end
 
+-- Finds the best whisper-target autocomplete suggestion for `typed`, a
+-- non-empty prefix. GetAutoCompleteResults (Blizzard's own account-wide
+-- autocomplete behind the default UI's whisper/mail "To:" boxes) turned out
+-- not to actually widen the results on live testing, so this queries each
+-- source directly instead: online regular friends, then online Battle.net
+-- friends currently playing WoW (any realm/faction), then online guild
+-- members. There's no clean addon-facing API for "the account's other
+-- characters" (Blizzard's own autocomplete gets that server-side, not
+-- through anything exposed to addons), so that part of the original ask
+-- isn't covered here.
+local function findWhisperAutocompleteMatch(typed)
+    local typedLower = typed:lower()
+    local function prefixMatches(name)
+        return name ~= nil and name:sub(1, #typed):lower() == typedLower
+    end
+
+    for i = 1, C_FriendList.GetNumFriends() do
+        local info = C_FriendList.GetFriendInfoByIndex(i)
+        if info and info.connected and prefixMatches(info.name) then
+            return info.name
+        end
+    end
+
+    if BNGetNumFriends and C_BattleNet and C_BattleNet.GetFriendNumGameAccounts then
+        for friendIndex = 1, BNGetNumFriends() do
+            for accountIndex = 1, C_BattleNet.GetFriendNumGameAccounts(friendIndex) do
+                local accountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, accountIndex)
+                if accountInfo and accountInfo.isOnline and prefixMatches(accountInfo.characterName) then
+                    return accountInfo.characterName
+                end
+            end
+        end
+    end
+
+    if IsInGuild and IsInGuild() then
+        for i = 1, GetNumGuildMembers() do
+            local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
+            if online and prefixMatches(name) then
+                return name
+            end
+        end
+    end
+
+    return nil
+end
+
 -- Post row: a channel dropdown + Post button on one line, plus a target
 -- name box that only shows up for Whisper. Anchored below `anchor` -
 -- buildHighscoreListFrame passes the bottom of the whole highscore list,
 -- so this sits between the list and the Close button.
 local function createPostRow(f, anchor)
     local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    label:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -12)
+    label:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -28)
     label:SetText("Post to:")
 
     -- Same "-16 nudge" reasoning as UI/Shared.lua's createDropdownRow -
@@ -139,7 +185,7 @@ local function createPostRow(f, anchor)
 
     local postButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     postButton:SetSize(60, 20)
-    postButton:SetText("Post")
+    postButton:SetText("Send")
     postButton:SetNormalFontObject("GameFontNormalSmall")
     postButton:SetHighlightFontObject("GameFontHighlightSmall")
     postButton:SetPoint("LEFT", dropdown, "RIGHT", 8, 2)
@@ -157,6 +203,36 @@ local function createPostRow(f, anchor)
     whisperBox:SetScript("OnEnterPressed", whisperBox.ClearFocus)
     whisperBox:SetScript("OnEditFocusLost", function(self)
         CritLogDB.PostWhisperTarget = self:GetText()
+    end)
+
+    -- Inline autocomplete, browser-address-bar style: the best whisper
+    -- target match for what's typed so far (see findWhisperAutocompleteMatch
+    -- above - friends, Battle.net friends, guildmates, own alts) gets
+    -- appended and pre-selected, so continued typing just overwrites the
+    -- suggested part.
+    --
+    -- Hooked on OnChar, not OnTextChanged: OnChar only fires when the user
+    -- actually inserts a character, never for Backspace/Delete, so there's
+    -- no need to guess direction from a length comparison. That length-based
+    -- approach was tried first and broke on the very case it needed to
+    -- handle - typing the correct next letter replaces the selected
+    -- suggestion tail with that one character, which *shrinks* the total
+    -- text even though the user typed forward, so it looked identical to a
+    -- Backspace and got suppressed - only for the suggestion to reappear on
+    -- the next keystroke, flickering on/off every character.
+    whisperBox:SetScript("OnChar", function(self)
+        local typed = self:GetText()
+        if typed == "" then
+            return
+        end
+
+        local match = findWhisperAutocompleteMatch(typed)
+        if match and match:lower() ~= typed:lower() then
+            self:SetText(match)
+            -- No separate SetCursorPosition here - it would collapse the
+            -- selection HighlightText just set.
+            self:HighlightText(#typed, #match)
+        end
     end)
 
     local function updateWhisperRowVisibility()
@@ -235,6 +311,32 @@ end
 -- given category always displays that category's list position i when
 -- shown - its Delete button's index was fixed at creation time.
 --
+-- Attaches a hover tooltip to `fontString` that shows whatever plain text
+-- is currently in `row[fullTextField]` at hover time - not a fixed string
+-- like CritLog.UI.attachTooltip's other callers use, since this same
+-- pooled row/FontString gets reused for a different entry on every
+-- refresh (see the row-pool comment below). A plain Frame overlay is used
+-- since FontString itself has no EnableMouse/OnEnter support.
+local function attachCellTooltip(parent, fontString, row, fullTextField)
+    local hitbox = CreateFrame("Frame", nil, parent)
+    hitbox:SetAllPoints(fontString)
+    hitbox:EnableMouse(true)
+    hitbox:HookScript("OnEnter", function(self)
+        local text = row[fullTextField]
+        if not text then
+            return
+        end
+        GameTooltip:Hide()
+        GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+        GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -10, -4)
+        GameTooltip:SetText(text, nil, nil, nil, nil, true)
+        GameTooltip:Show()
+    end)
+    hitbox:HookScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+end
+
 -- One FontString per column instead of a single pre-formatted line, so
 -- values line up in a table under the header row created by
 -- createColumnHeaderRow above.
@@ -249,6 +351,8 @@ local function getOrCreateHighscoreRow(f, kind, index)
             targetText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight"),
             deleteButton = createDeleteEntryButton(f, kind, index),
         }
+        attachCellTooltip(f, row.abilityText, row, "abilityFullText")
+        attachCellTooltip(f, row.targetText, row, "targetFullText")
         f.rowPool[kind][index] = row
     end
     return row
@@ -303,6 +407,8 @@ local function layoutHighscoreList(f)
                 row.abilityText:Hide()
                 row.targetText:Hide()
                 row.deleteButton:Hide()
+                row.abilityFullText = nil
+                row.targetFullText = nil
             else
                 row.rankText:SetText(Records.colored(Records.NORMAL_COLOR, index.."."))
 
@@ -318,10 +424,12 @@ local function layoutHighscoreList(f)
 
                 row.abilityText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.ability - COLUMN_X.rank, 0)
                 row.abilityText:SetText(Records.colored(Records.SPELL_COLOR, entry.name or "-"))
+                row.abilityFullText = entry.name or "-"
                 row.abilityText:Show()
 
                 row.targetText:SetPoint("TOPLEFT", row.rankText, "TOPLEFT", COLUMN_X.target - COLUMN_X.rank, 0)
                 row.targetText:SetText(Records.colored(Records.TARGET_COLOR, entry.target))
+                row.targetFullText = entry.target
                 row.targetText:Show()
 
                 row.deleteButton:SetPoint("TOP", row.rankText, "TOP", 0, 0)
@@ -337,7 +445,7 @@ end
 -- Sized for the worst case (Constants.maxDisplayEntries rows in every
 -- category at once) so it never overflows.
 local function buildHighscoreListFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 600)
+    local f = CritLog.UI.createPanelFrame("CritLogHighscoreListFrame", "CritLog Highscore List", 460, 540)
     -- Opens to the left of center, mirroring the sound panel opening to the
     -- right, so both can be open next to the main panel at once.
     f:SetPoint("CENTER", UIParent, "CENTER", -260, 0)
@@ -347,8 +455,8 @@ local function buildHighscoreListFrame()
     f.heading:SetText("Highscores")
 
     local resetAllButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-    resetAllButton:SetSize(90, 20)
-    resetAllButton:SetText("Reset All")
+    resetAllButton:SetSize(110, 20)
+    resetAllButton:SetText("Reset Everything")
     resetAllButton:SetNormalFontObject("GameFontNormalSmall")
     resetAllButton:SetHighlightFontObject("GameFontHighlightSmall")
     resetAllButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -14, -28)
@@ -380,7 +488,7 @@ local function buildHighscoreListFrame()
 end
 
 local function buildFrame()
-    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 500)
+    local f = CritLog.UI.createPanelFrame("CritLogOptionsFrame", "CritLog Options", 470, 530)
     f:SetPoint("CENTER")
     -- Closing this panel closes its own sub-windows too - direct children
     -- are Sound Settings, Help, and the Highscore List popup; Sound

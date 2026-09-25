@@ -10,7 +10,7 @@ local DEATH_CHECKBOXES = {
     -- did anything beyond what "Role" already did alone. Live `worldboss`
     -- classification is now the only signal, on or off.
     { field = "BossSoundFlag", label = "Boss death sound", sound = "bossDeath",
-      hint = "Plays on a live worldboss classification (raid bosses, outdoor world bosses, and other level-60 raid encounters)." },
+      hint = "Plays on a live boss-level-mob classification (raid bosses, outdoor world bosses, and other level-60 raid encounters)." },
     -- These three (unlike PlayerSoundFlag/BossSoundFlag above) can be
     -- driven by the live role detection in Core/CombatLog.lua
     -- (isAssignedDps, isAssignedTank, isAssignedHealer), the hardcoded

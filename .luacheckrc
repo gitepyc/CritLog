@@ -22,6 +22,15 @@ stds.wow = {
         "UnitIsPlayer", -- excludes NPCs from the dps/tank/heal death-sound role checks
         "UnitLevel",
         "tContains",
+        -- UI/MainPanel.lua: whisper-target autocomplete for the Highscore
+        -- List's "Whisper to" box - online friends, Battle.net friends
+        -- currently playing WoW, and online guild members
+        "C_FriendList",
+        "BNGetNumFriends",
+        "C_BattleNet",
+        "IsInGuild",
+        "GetNumGuildMembers",
+        "GetGuildRosterInfo",
         "GetAddOnMetadata",
         "C_AddOns",
         "C_NamePlate",

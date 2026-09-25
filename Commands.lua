@@ -64,9 +64,9 @@ end
 -- main options panel shows inline. The full top-N list with individual
 -- delete buttons is `/cl options` -> "Highscore List...".
 local function printHighscores()
-    print(CritLog.Records.formatRecordText("damage", 1))
-    print(CritLog.Records.formatRecordText("whiteHit", 1))
-    print(CritLog.Records.formatRecordText("heal", 1))
+    print(CritLog.Records.formatRecordTextColored("damage", 1))
+    print(CritLog.Records.formatRecordTextColored("whiteHit", 1))
+    print(CritLog.Records.formatRecordTextColored("heal", 1))
     print("/cl help for list of commands")
 end
 

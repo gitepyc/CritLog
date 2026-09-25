@@ -55,7 +55,7 @@ local function buildAuraSoundFrame()
     heading:SetText("Aura Sounds")
 
     local noteRow = CritLog.UI.buildToggleRows(f, {
-        { note = "Requires \"Aura/spell sound\" enabled on the Sound Settings panel." },
+        { note = "Requires \"Aura/spell sounds\" enabled on the Sound Settings panel." },
     }, heading)
 
     -- Two independent anchor points at the same Y - buildToggleRows
