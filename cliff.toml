@@ -1,11 +1,10 @@
 # Config for https://git-cliff.org - generates CHANGELOG.md sections and
 # GitHub release notes straight from commit messages. Requires every commit
-# on `dev` (except merges and "chore: bump version"/"chore: release" ones,
+# on `main` (except merges and "chore: bump version"/"chore: release" ones,
 # both explicitly skipped below) to start with `type: ` matching one of the
-# groups in [git] commit_parsers - same convention already used in commit
-# messages all session, just now load-bearing instead of cosmetic. See
-# scripts/update-changelog.sh (local, pre-tag) and
-# .github/workflows/release.yml (CI, post-tag) for the two places this runs.
+# groups in [git] commit_parsers. See scripts/update-changelog.sh (local,
+# pre-tag) and .github/workflows/release.yml (CI, post-tag) for the two
+# places this runs.
 
 [changelog]
 header = """# Changelog
@@ -46,9 +45,7 @@ filter_commits = false
 tag_pattern = "[0-9]*"
 # Prerelease tags (X.Y.Z-dev.N) get folded into the next real release's
 # section instead of a heading of their own - see CONTRIBUTING.md's
-# "Releasing" section. Verified in an isolated repo copy before adopting:
-# a matched tag's commits roll up into the next non-matched tag (or
-# "Unreleased" if there isn't one yet), not duplicated or dropped.
+# "Releasing" section.
 ignore_tags = '-dev\.[0-9]+$'
 topo_order = false
 sort_commits = "oldest"

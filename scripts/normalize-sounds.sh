@@ -32,13 +32,11 @@ for f in /sounds/*.mp3 /sounds/*.wav /sounds/*.ogg; do
     measured_thresh=$(echo "$json" | jq -r .input_thresh)
     offset=$(echo "$json" | jq -r .target_offset)
 
-    # A handful of these files are old, junk-laden novelty rips
-    # (misdetected containers, garbage bytes at the start) whose measured
-    # loudness comes back nonsensical (e.g. positive LUFS) - loudnorm
-    # rejects those outside its own [-99, 0] range and pass two would
-    # abort the whole file. Falls back to loudnorms one-pass dynamic mode
-    # (no measured_* args, less precise but always succeeds) instead of
-    # failing the file entirely.
+    # A handful of these files are old, junk-laden novelty rips whose
+    # measured loudness comes back nonsensical (e.g. positive LUFS) -
+    # loudnorm rejects those outside its own [-99, 0] range and pass two
+    # would abort the whole file. Falls back to loudnorm's one-pass
+    # dynamic mode instead of failing the file entirely.
     if awk -v v="$measured_I" "BEGIN { exit !(v >= -70 && v <= 0) }"; then
         filter="loudnorm=I=-16:TP=-1.5:LRA=11:measured_I=${measured_I}:measured_TP=${measured_TP}:measured_LRA=${measured_LRA}:measured_thresh=${measured_thresh}:offset=${offset}:linear=true:print_format=summary"
     else
