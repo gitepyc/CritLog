@@ -9,6 +9,17 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.9.2](https://github.com/gitepyc/CritLog/tree/0.3.9.2) (2026-09-25)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.9.1...0.3.9.2) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **docs:** update roll10 band to 8-12% in BEHAVIOR/SOUNDS docs
+
+- **docs:** mention main panel checkbox for boss killing-blow message
+
+- **feature:** add UI checkbox for boss killing-blow chat message
+
+- **tweak:** widen low-roll band from 8-10% to 8-12%
+
 ## [0.3.9.1](https://github.com/gitepyc/CritLog/tree/0.3.9.1) (2026-09-25)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.9...0.3.9.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
