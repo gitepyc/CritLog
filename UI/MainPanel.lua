@@ -13,12 +13,12 @@ local CRIT_CHECKBOXES = {
     { field = "LevelFilterFlag", label = "Enable level filter",
       hint = "Off: counts highscores from enemies of any level." },
     { field = "LevelDiffThreshold", label = "Max levels below you", slider = { min = 1, max = 20, step = 1 },
-      hint = "How far below your level a target may be and still count. Worldbosses always count regardless." },
+      hint = "How far below your level a target may be and still count. Boss-level mobs always count regardless." },
 }
 
 local BOSS_KILL_CHECKBOX = {
     { field = "BossKillFlag", label = "Boss killing-blow chat message",
-      hint = "Announces in chat who landed the killing blow on a live worldboss." },
+      hint = "Announces in chat who landed the killing blow on a boss-level mob." },
 }
 
 -- On the main panel directly rather than in Sound Settings, since muting

@@ -208,8 +208,8 @@ CritLog.Constants = {
     -- boss, then dps/tank/healer).
     helpDeathSounds = {
         { cmd = "/cl player", desc = "player death sound (on by default)" },
-        { cmd = "/cl boss", desc = "boss death sound - plain on/off, live worldboss classification is the only signal (on by default)" },
-        { cmd = "/cl bosskill", desc = "chat message naming who landed the killing blow on a live worldboss - also on the main options panel (on by default)" },
+        { cmd = "/cl boss", desc = "boss death sound - plain on/off, live boss-level-mob classification is the only signal (on by default)" },
+        { cmd = "/cl bosskill", desc = "chat message naming who landed the killing blow on a boss-level mob - also on the main options panel (on by default)" },
         { cmd = "/cl dps/tank/healer", desc = "toggles that role's death sound off/on (\"None\"/\"Both\"); the options panel dropdown adds Role-only (live assigned role) or Roster-only (saved name list) - see the Death Sounds panel (Both by default)" },
     },
     -- Split into a title and a smaller two-line subtitle - UI/HelpPanel.lua

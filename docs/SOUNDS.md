@@ -36,7 +36,7 @@ metadata as before - no more `n/a` entries.
 | Damage Dealer death | `wilhelm.ogg` | Live: not currently assigned Tank or Healer (any class); and/or Damage Dealer roster, per detection mode - see `docs/BEHAVIOR.md` |
 | Tank death | `Tank.mp3` | Live assigned Tank role and/or tank roster, per detection mode |
 | Healer death | `Angels.mp3` | Live assigned Healer role (any class) and/or Healer roster, per detection mode |
-| Boss death | `FFX.mp3` | Live `worldboss` classification |
+| Boss death | `FFX.mp3` | Live boss-level-mob classification (`worldboss`) |
 | Raid end | `raidend.mp3` | Matching raid-leader message |
 | Wipe | `wipe.mp3` | Matching raid-leader message |
 | Lottery | `lottery.mp3` | Matching CrossGambling message in raid/party/guild chat |

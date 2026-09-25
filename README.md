@@ -115,7 +115,7 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl tank` | Same toggle, for the tank death sound. Role: assigned Tank role. |
 | `/cl healer` | Same toggle, for the healer death sound. Role: assigned Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). |
 | `/cl boss` | Toggles the boss death sound - plain on/off, not a detection mode: `UnitClassification` (`worldboss`) is the only signal, there's no roster fallback. |
-| `/cl bosskill` | Toggles the chat message naming who landed the killing blow on a live worldboss - also on the main options panel. |
+| `/cl bosskill` | Toggles the chat message naming who landed the killing blow on a boss-level mob - also on the main options panel. |
 
 ## Repository layout
 
