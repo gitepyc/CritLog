@@ -53,7 +53,7 @@ local highscoreListFrame
 -- once at file scope, the standard StaticPopupDialogs convention.
 StaticPopupDialogs["CRITLOG_RESET_ALL_HIGHSCORES"] = {
     text = "Delete ALL highscore entries in every category? This cannot be undone.",
-    button1 = "Delete All",
+    button1 = "DELETE ALL",
     button2 = "Cancel",
     OnAccept = function()
         CritLog:ResetRecords()
