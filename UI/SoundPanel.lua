@@ -24,7 +24,7 @@ local SOUND_CHECKBOXES_TOP = {
 }
 
 local SOUND_CHECKBOXES_BOTTOM = {
-    { field = "AuraSoundFlag", label = "Aura/spell sound",
+    { field = "AuraSoundFlag", label = "Aura/spell sounds",
       hint = "Master switch for the spell sounds - see the button below." },
 }
 
