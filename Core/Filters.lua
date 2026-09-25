@@ -72,7 +72,7 @@ end
 --
 -- roll1/roll100/roll69 are exact-value matches, checked first, so a
 -- literal roll of 1 always plays roll1, never one of the percentage bands
--- below. roll5/roll10/roll95 are percentage bands (<8% / 8-10% / >=92% of
+-- below. roll5/roll10/roll95 are percentage bands (<8% / 8-12% / >=92% of
 -- rollMax) - naturally unreachable for a small custom range, which just
 -- falls silent instead of needing an explicit floor.
 function CritLog.Filters.classifyRoll(rollResult, rollMin, rollMax)
@@ -90,7 +90,7 @@ function CritLog.Filters.classifyRoll(rollResult, rollMin, rollMax)
         return "roll95"
     elseif rollResult < 8 * rollMax / 100 then
         return "roll5"
-    elseif rollResult <= 10 * rollMax / 100 then
+    elseif rollResult <= 12 * rollMax / 100 then
         return "roll10"
     end
 
