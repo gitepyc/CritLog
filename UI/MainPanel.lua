@@ -16,6 +16,11 @@ local CRIT_CHECKBOXES = {
       hint = "How far below your level a target may be and still count. Worldbosses always count regardless." },
 }
 
+local BOSS_KILL_CHECKBOX = {
+    { field = "BossKillFlag", label = "Boss killing-blow chat message",
+      hint = "Announces in chat who landed the killing blow on a live worldboss." },
+}
+
 -- On the main panel directly rather than in Sound Settings, since muting
 -- everything is common enough to not require opening a submenu.
 local MASTER_SOUND_CHECKBOX = {
@@ -440,6 +445,7 @@ local function buildFrame()
     togglesHeading:SetText("Options")
 
     local lastAnchor = CritLog.UI.buildToggleRows(f, CRIT_CHECKBOXES, togglesHeading)
+    lastAnchor = CritLog.UI.buildToggleRows(f, BOSS_KILL_CHECKBOX, lastAnchor)
     lastAnchor = CritLog.UI.buildToggleRows(f, MASTER_SOUND_CHECKBOX, lastAnchor)
 
     local soundButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
