@@ -9,6 +9,11 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.3.9.1](https://github.com/gitepyc/CritLog/tree/0.3.9.1) (2026-09-25)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.9...0.3.9.1) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **fix:** gate HandleDeath's DPS-investigation debug log behind /cl debug
+
 ## [0.3.9](https://github.com/gitepyc/CritLog/tree/0.3.9) (2026-09-25)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.8...0.3.9) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
