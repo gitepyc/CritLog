@@ -209,46 +209,29 @@ local function createPostRow(f, anchor)
     -- target match for what's typed so far (see findWhisperAutocompleteMatch
     -- above - friends, Battle.net friends, guildmates, own alts) gets
     -- appended and pre-selected, so continued typing just overwrites the
-    -- suggested part. `suppressing` guards against SetText below
-    -- re-triggering this same handler.
+    -- suggested part.
     --
-    -- `lastDisplayedLength` tracks the box's own text length after our last
-    -- pass, so a shorter length on the next event means the user just
-    -- deleted characters (Backspace/Delete) rather than typed forward.
-    -- Without this, pressing Backspace while a suggestion's tail is
-    -- selected would just delete that selection, landing back on the exact
-    -- prefix that produced the same suggestion in the first place - which
-    -- would then immediately get re-appended, making Backspace look like it
-    -- does nothing at all. Only a growing length re-triggers a suggestion.
-    local suppressing = false
-    local lastDisplayedLength = 0
-    whisperBox:SetScript("OnTextChanged", function(self, isUserInput)
-        if suppressing or not isUserInput then
-            return
-        end
-
+    -- Hooked on OnChar, not OnTextChanged: OnChar only fires when the user
+    -- actually inserts a character, never for Backspace/Delete, so there's
+    -- no need to guess direction from a length comparison. That length-based
+    -- approach was tried first and broke on the very case it needed to
+    -- handle - typing the correct next letter replaces the selected
+    -- suggestion tail with that one character, which *shrinks* the total
+    -- text even though the user typed forward, so it looked identical to a
+    -- Backspace and got suppressed - only for the suggestion to reappear on
+    -- the next keystroke, flickering on/off every character.
+    whisperBox:SetScript("OnChar", function(self)
         local typed = self:GetText()
         if typed == "" then
-            lastDisplayedLength = 0
-            return
-        end
-
-        if #typed <= lastDisplayedLength then
-            lastDisplayedLength = #typed
             return
         end
 
         local match = findWhisperAutocompleteMatch(typed)
         if match and match:lower() ~= typed:lower() then
-            suppressing = true
             self:SetText(match)
             -- No separate SetCursorPosition here - it would collapse the
             -- selection HighlightText just set.
             self:HighlightText(#typed, #match)
-            suppressing = false
-            lastDisplayedLength = #match
-        else
-            lastDisplayedLength = #typed
         end
     end)
 
