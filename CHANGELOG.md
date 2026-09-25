@@ -9,7 +9,12 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
-## Unreleased
+## [0.3.9](https://github.com/gitepyc/CritLog/tree/0.3.9) (2026-09-25)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.8...0.3.9) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **chore:** fold ci: commits into the chore group instead of other
+
+- **chore:** promote 0.3.9-dev.1 to the 0.3.9 release, confirmed in-game
 
 - **docs:** drop custom-channel lottery roadmap item
 
