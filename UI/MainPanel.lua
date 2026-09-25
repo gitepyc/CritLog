@@ -183,8 +183,11 @@ local function createPostRow(f, anchor)
                 and info.name:lower() ~= typedLower then
                 suppressing = true
                 self:SetText(info.name)
+                -- No separate SetCursorPosition here - it would collapse
+                -- the selection HighlightText just set, and Backspace would
+                -- then only eat one character of the suggested tail before
+                -- re-triggering the same suggestion right back.
                 self:HighlightText(#typed, #info.name)
-                self:SetCursorPosition(#info.name)
                 suppressing = false
                 break
             end
