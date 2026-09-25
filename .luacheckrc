@@ -23,11 +23,14 @@ stds.wow = {
         "UnitLevel",
         "tContains",
         -- UI/MainPanel.lua: whisper-target autocomplete for the Highscore
-        -- List's "Whisper to" box (GetAutoCompleteResults is Blizzard's own
-        -- account-wide autocomplete; C_FriendList is the online-friends-only
-        -- fallback if that's unavailable on the running client)
+        -- List's "Whisper to" box - online friends, Battle.net friends
+        -- currently playing WoW, and online guild members
         "C_FriendList",
-        "GetAutoCompleteResults",
+        "BNGetNumFriends",
+        "C_BattleNet",
+        "IsInGuild",
+        "GetNumGuildMembers",
+        "GetGuildRosterInfo",
         "GetAddOnMetadata",
         "C_AddOns",
         "C_NamePlate",

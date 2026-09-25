@@ -122,30 +122,45 @@ local function postHighscores(channel, whisperTarget)
 end
 
 -- Finds the best whisper-target autocomplete suggestion for `typed`, a
--- non-empty prefix. Prefers Blizzard's own account-wide autocomplete (the
--- same one behind the default UI's whisper/mail "To:" boxes) since that
--- alone covers everything the user actually wants here - regular friends,
--- Battle.net friends, guildmates, and the account's own other characters -
--- without CritLog re-implementing each source's API separately. Falls back
--- to a plain online-friends-only scan (this addon's original behavior) if
--- that global isn't available on this client, wrapped in pcall since its
--- exact signature isn't guaranteed to match across client versions.
+-- non-empty prefix. GetAutoCompleteResults (Blizzard's own account-wide
+-- autocomplete behind the default UI's whisper/mail "To:" boxes) turned out
+-- not to actually widen the results on live testing, so this queries each
+-- source directly instead: online regular friends, then online Battle.net
+-- friends currently playing WoW (any realm/faction), then online guild
+-- members. There's no clean addon-facing API for "the account's other
+-- characters" (Blizzard's own autocomplete gets that server-side, not
+-- through anything exposed to addons), so that part of the original ask
+-- isn't covered here.
 local function findWhisperAutocompleteMatch(typed)
     local typedLower = typed:lower()
-
-    if GetAutoCompleteResults then
-        local results = {}
-        local ok = pcall(GetAutoCompleteResults, typed, true, true, true, true, false, results)
-        if ok and results[1] and results[1]:sub(1, #typed):lower() == typedLower then
-            return results[1]
-        end
+    local function prefixMatches(name)
+        return name ~= nil and name:sub(1, #typed):lower() == typedLower
     end
 
     for i = 1, C_FriendList.GetNumFriends() do
         local info = C_FriendList.GetFriendInfoByIndex(i)
-        if info and info.connected and info.name
-            and info.name:sub(1, #typed):lower() == typedLower then
+        if info and info.connected and prefixMatches(info.name) then
             return info.name
+        end
+    end
+
+    if BNGetNumFriends and C_BattleNet and C_BattleNet.GetFriendNumGameAccounts then
+        for friendIndex = 1, BNGetNumFriends() do
+            for accountIndex = 1, C_BattleNet.GetFriendNumGameAccounts(friendIndex) do
+                local accountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, accountIndex)
+                if accountInfo and accountInfo.isOnline and prefixMatches(accountInfo.characterName) then
+                    return accountInfo.characterName
+                end
+            end
+        end
+    end
+
+    if IsInGuild and IsInGuild() then
+        for i = 1, GetNumGuildMembers() do
+            local name, _, _, _, _, _, _, _, online = GetGuildRosterInfo(i)
+            if online and prefixMatches(name) then
+                return name
+            end
         end
     end
 
@@ -193,10 +208,20 @@ local function createPostRow(f, anchor)
     -- Inline autocomplete, browser-address-bar style: the best whisper
     -- target match for what's typed so far (see findWhisperAutocompleteMatch
     -- above - friends, Battle.net friends, guildmates, own alts) gets
-    -- appended and pre-selected, so continued typing (or Backspace) just
-    -- overwrites/removes the suggested part. `suppressing` guards against
-    -- SetText below re-triggering this same handler.
+    -- appended and pre-selected, so continued typing just overwrites the
+    -- suggested part. `suppressing` guards against SetText below
+    -- re-triggering this same handler.
+    --
+    -- `lastDisplayedLength` tracks the box's own text length after our last
+    -- pass, so a shorter length on the next event means the user just
+    -- deleted characters (Backspace/Delete) rather than typed forward.
+    -- Without this, pressing Backspace while a suggestion's tail is
+    -- selected would just delete that selection, landing back on the exact
+    -- prefix that produced the same suggestion in the first place - which
+    -- would then immediately get re-appended, making Backspace look like it
+    -- does nothing at all. Only a growing length re-triggers a suggestion.
     local suppressing = false
+    local lastDisplayedLength = 0
     whisperBox:SetScript("OnTextChanged", function(self, isUserInput)
         if suppressing or not isUserInput then
             return
@@ -204,6 +229,12 @@ local function createPostRow(f, anchor)
 
         local typed = self:GetText()
         if typed == "" then
+            lastDisplayedLength = 0
+            return
+        end
+
+        if #typed <= lastDisplayedLength then
+            lastDisplayedLength = #typed
             return
         end
 
@@ -211,12 +242,13 @@ local function createPostRow(f, anchor)
         if match and match:lower() ~= typed:lower() then
             suppressing = true
             self:SetText(match)
-            -- No separate SetCursorPosition here - it would collapse
-            -- the selection HighlightText just set, and Backspace would
-            -- then only eat one character of the suggested tail before
-            -- re-triggering the same suggestion right back.
+            -- No separate SetCursorPosition here - it would collapse the
+            -- selection HighlightText just set.
             self:HighlightText(#typed, #match)
             suppressing = false
+            lastDisplayedLength = #match
+        else
+            lastDisplayedLength = #typed
         end
     end)
 
