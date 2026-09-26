@@ -198,7 +198,7 @@ candidate values, or the threshold falls below the smallest possible roll.
 
 | Function | Status |
 | --- | --- |
-| Boss killing-blow output | `BossKillFlag` (main panel checkbox or `/cl bosskill`, on by default). Prints a chat line for a `_DAMAGE` event with a positive numeric fifth payload value (`overkill`), where the destination is a live-classified boss-level mob (`worldboss`). |
+| Boss killing-blow output | `BossKillFlag` (main panel checkbox or `/cl bosskill`, on by default). Prints a chat line naming whoever last damaged a boss-level mob (`worldboss`), read when its real `UNIT_DIED` fires - not a live `_DAMAGE`-event overkill check, since some encounters script the unit to sit at 1 HP for a while before actually dying, which would otherwise print a line for every hit landed during that window. |
 
 ## Stored data
 
