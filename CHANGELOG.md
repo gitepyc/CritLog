@@ -9,6 +9,17 @@ see [docs/ROADMAP.md](docs/ROADMAP.md) for the full prioritized list.
 actual wording in the commit message, not here - this file (and each
 GitHub release's notes) are a mechanical render of it, not a second
 drafting pass.
+## [0.4.0](https://github.com/gitepyc/CritLog/tree/0.4.0) (2026-10-02)
+[Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.9.3...0.4.0) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
+
+- **feature:** guard against a -dev tag ever getting its own CHANGELOG heading
+
+- **fix:** cleanup-tags.sh dev-tag regex didn't match 4-component versions
+
+- **fix:** tie boss killing-blow output to the real death event, not overkill
+
+- **tweak:** cleanup-tags.sh also prunes superseded dev builds of an unreleased version
+
 ## [0.3.9.3](https://github.com/gitepyc/CritLog/tree/0.3.9.3) (2026-09-25)
 [Full Changelog](https://github.com/gitepyc/CritLog/compare/0.3.9.2...0.3.9.3) [Previous Releases](https://github.com/gitepyc/CritLog/releases)
 
