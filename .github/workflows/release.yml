@@ -40,21 +40,16 @@ jobs:
             *-*) PRERELEASE=true ;;
           esac
 
-          # cliff.toml's ignore_tags folds every -dev.N tag's own commits
-          # into the next real release's section (see CONTRIBUTING.md), so
-          # git-cliff no longer sees a prerelease tag as a real boundary
-          # and `--current` errors out for one. Give a prerelease tag an
-          # explicit commit range instead: everything since the last real
-          # tag. A real release keeps using `--current`, which then
-          # naturally includes every -dev.N iteration folded into it too.
-          if [ "$PRERELEASE" = true ]; then
-            PREV_TAG=$(git describe --tags --abbrev=0 --exclude '*-*' "$TAG^" 2>/dev/null || true)
-            docker run --rm -v "$PWD":/repo -w /repo orhunp/git-cliff:latest \
-              --config cliff.toml "${PREV_TAG:+$PREV_TAG..}$TAG" --strip header -o release-notes.md
-          else
-            docker run --rm -v "$PWD":/repo -w /repo orhunp/git-cliff:latest \
-              --config cliff.toml --current --strip header -o release-notes.md
-          fi
+          # Explicit commit range (everything since the last real tag) for
+          # prereleases and real releases alike, never `--current`: with
+          # cliff.toml's ignore_tags, git-cliff's tag-boundary detection
+          # breaks as soon as any -dev.N tag still exists inside the range
+          # (empty notes for a real release, an error for a prerelease).
+          # A real release's range naturally includes every -dev.N iteration
+          # folded into it (see CONTRIBUTING.md).
+          PREV_TAG=$(git describe --tags --abbrev=0 --exclude '*-*' "$TAG^" 2>/dev/null || true)
+          docker run --rm -v "$PWD":/repo -w /repo orhunp/git-cliff:latest \
+            --config cliff.toml "${PREV_TAG:+$PREV_TAG..}$TAG" --strip header -o release-notes.md
 
           MAX_CHARS=4000
           if [ "$(wc -c < release-notes.md)" -gt "$MAX_CHARS" ]; then
