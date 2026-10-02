@@ -131,6 +131,48 @@ local function forgetClassification(guid)
     end
 end
 
+-- Boss killing-blow tracking: remembers the name of whoever most recently
+-- landed a damage hit on a given NPC GUID, read by HandleDeath once that
+-- GUID's real UNIT_DIED fires. Deliberately not based on a live-event
+-- "overkill > 0" check (this addon's original approach): some boss
+-- encounters script the unit to sit at 1 HP for a while before UNIT_DIED
+-- actually fires, and every hit landed during that window also has
+-- overkill > 0 (the raw damage still exceeds the 1 HP remaining) - the old
+-- approach printed a "killed" line for every single one of those hits.
+-- Tying the print to the real death event instead means it only ever fires
+-- once, using whoever hit last before it - the closest available signal to
+-- "the killing blow" without literally re-deriving HP from every event.
+-- Same plain-runtime-table, GUID-keyed, size-capped pattern as the
+-- classification cache above, and for the same reason: this describes the
+-- current fight only, not something worth persisting.
+local LAST_DAMAGER_CACHE_LIMIT = 200
+
+local lastDamager = {}
+local lastDamagerCount = 0
+
+local function rememberLastDamager(subevent, sourceName, destGUID)
+    if not isNpcGUID(destGUID) or not sourceName or not endsWith(subevent, "_DAMAGE") then
+        return
+    end
+
+    if lastDamager[destGUID] == nil then
+        if lastDamagerCount >= LAST_DAMAGER_CACHE_LIMIT then
+            lastDamager = {}
+            lastDamagerCount = 0
+        end
+        lastDamagerCount = lastDamagerCount + 1
+    end
+
+    lastDamager[destGUID] = sourceName
+end
+
+local function forgetLastDamager(guid)
+    if lastDamager[guid] ~= nil then
+        lastDamager[guid] = nil
+        lastDamagerCount = lastDamagerCount - 1
+    end
+end
+
 -- Classifies an NPC GUID once and caches the result. A GUID whose token
 -- can't be resolved yet (no nameplate on screen, not targeted) is retried on
 -- later combat-log events, but only a few times - otherwise every event from
@@ -428,33 +470,6 @@ function CritLog:HandleHealCrit(
     end
 end
 
-function CritLog:PrintBossKillingBlow(
-    subevent,
-    sourceName,
-    destGUID,
-    destName,
-    overkill
-)
-    -- Cheap checks first: this runs on every combat-log event, and the boss
-    -- check below can scan nameplates. The type() guard is new - `overkill`
-    -- is read positionally and isn't guaranteed to be a number for every
-    -- subevent ending in "_DAMAGE" (see docs/BEHAVIOR.md), and comparing a
-    -- non-number to 0 is a Lua error.
-    if not CritLogDB.BossKillFlag
-        or not endsWith(subevent, "_DAMAGE")
-        or type(overkill) ~= "number"
-        or overkill <= 0
-    then
-        return
-    end
-
-    -- Classification-only now - the hardcoded name-list fallback (english/
-    -- german) is gone, see Core/Constants.lua's bosses table.
-    if isClassifiedBoss(destGUID) then
-        print(sourceName.." killed "..destName)
-    end
-end
-
 function CritLog:HandleDeath(subevent, destGUID, destName)
     if subevent ~= "UNIT_DIED" then
         return
@@ -538,9 +553,21 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     end
 
     -- Plain flag, not a detection mode: no roster to fall back to, live
-    -- classification is the only signal.
-    if CritLogDB.BossSoundFlag and isClassifiedBoss(destGUID) then
+    -- classification is the only signal. Read once and reused for the
+    -- killing-blow print below too.
+    local classifiedAsBoss = isClassifiedBoss(destGUID)
+
+    if CritLogDB.BossSoundFlag and classifiedAsBoss then
         self:PlaySound(self.Constants.sounds.bossDeath)
+    end
+
+    -- See rememberLastDamager's comment above for why this is tied to the
+    -- real death event instead of a live "overkill" damage-event check.
+    if CritLogDB.BossKillFlag and classifiedAsBoss then
+        local killer = lastDamager[destGUID]
+        if killer then
+            print(killer.." killed "..destName)
+        end
     end
 
     if matchesMode(
@@ -568,11 +595,12 @@ function CritLog:HandleDeath(subevent, destGUID, destName)
     -- The classification (if any) has now been read for the boss check
     -- above; the GUID belongs to a dead unit and won't be looked up again.
     forgetClassification(destGUID)
+    forgetLastDamager(destGUID)
 end
 
 function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
     local _, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName,
-        _, _, sv1, sv2, _, sv4, sv5, _, sv7, _, _, sv10 =
+        _, _, sv1, sv2, _, sv4, _, _, sv7, _, _, sv10 =
         CombatLogGetCurrentEventInfo()
 
     -- Boss detection, part 2: feed the cache from both sides of every
@@ -584,6 +612,7 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
     -- event here doesn't add meaningful overhead to this hot path.
     rememberClassification(sourceGUID)
     rememberClassification(destGUID)
+    rememberLastDamager(subevent, sourceName, destGUID)
 
     self:HandleAuraSounds(subevent, sourceName, destGUID, sv1, sv2)
     self:HandleXtremeDamage(subevent, sourceGUID, sv4)
@@ -597,6 +626,5 @@ function CritLog:COMBAT_LOG_EVENT_UNFILTERED()
         self:HandleHealCrit(subevent, destName, sv4, sv2, sv7)
     end
 
-    self:PrintBossKillingBlow(subevent, sourceName, destGUID, destName, sv5)
     self:HandleDeath(subevent, destGUID, destName)
 end
