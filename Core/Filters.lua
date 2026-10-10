@@ -114,5 +114,5 @@ function CritLog.Filters.passesLevelFilter(targetLevel, targetClassification, pl
         return true
     end
 
-    return targetLevel > playerLevel - levelDiffThreshold or targetClassification == "worldboss"
+    return targetLevel >= playerLevel - levelDiffThreshold or targetClassification == "worldboss"
 end
