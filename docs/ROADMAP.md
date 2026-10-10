@@ -31,7 +31,7 @@ Not yet: needs real time/version-spread first, declaring one now would be
 a guess.
 
 Checked against the actual known user base (only `0.1.1`/`legacy-0.1.4.2`
-plus the current dev line - nobody else has tested the versions between):
+plus the current release line - nobody else has tested the versions between):
 both predate every one of the 7 migrations (no `playerGroups`, no
 dps/tank/heal roles, no `BossSoundFlag`, raw `AllLevel` instead of
 `LevelFilterFlag`/`LevelDiffThreshold`, a single `DamageAbilityCrit` value

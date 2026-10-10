@@ -34,11 +34,17 @@ otherwise a visible nameplate with a matching GUID) rather than assuming
 the selected target is the unit that was hit; if no token resolves, the
 crit is allowed through. The filter only applies to damage, not healing.
 
+`LevelFilterFlag` (`/cl level`, on by default) excludes damage crits
+against targets whose level is `LevelDiffThreshold` (default 9, adjustable
+with the options-panel slider, range 1-20) or more levels below the
+player's. Targets classified `worldboss` always pass, and higher-level
+targets are never filtered.
+
 | Combat-log type | Condition | State change | Sound condition | Sound |
 | --- | --- | --- | --- | --- |
 | `SPELL_DAMAGE` | Player source, critical hit, level filter passes | Inserted into the damage-crit list. | Every crit with `/cl allcrits`; also every new #1. | `at_bam_babam.mp3` |
-| `SWING_DAMAGE` | Player source, critical hit, level filter passes | Inserted into the white-hit list only if it beats the current #1. | Every crit when both `/cl allcrits` and `/cl whitehit` are enabled; a new #1 when `/cl whitehit` is enabled. | `at_bam_babam.mp3` |
-| `RANGE_DAMAGE` | Player source, critical hit, level filter passes | Inserted into the white-hit list only if it beats the current #1 **and** `/cl whitehit` is enabled. | Every crit with `/cl allcrits`; a new #1 with `/cl whitehit`. | `at_bam_babam.mp3` |
+| `SWING_DAMAGE` | Player source, critical hit, level filter passes | Inserted into the white-hit list only if it beats the current #1. | Every crit when both `/cl allcrits` and `/cl whitehit` are enabled; every new #1 regardless of `/cl whitehit` (played once). | `at_bam_babam.mp3` |
+| `RANGE_DAMAGE` | Player source, critical hit, level filter passes | Inserted into the white-hit list only if it beats the current #1. | Every crit with `/cl allcrits`; every new #1 (played once). | `at_bam_babam.mp3` |
 | `SPELL_HEAL` | Player source, critical heal | Inserted into the heal-crit list. | Every crit with `/cl allcrits`; also every new #1. | `at_bam_babam.mp3` |
 
 `/cl sound` is the master switch for `at_bam_babam.mp3` and suppresses it
@@ -65,12 +71,7 @@ triggers below, each individually toggleable in the Sound Settings panel.
 Each trigger matches by spell ID first, falling back to the displayed
 English/German spell name if the ID doesn't hit.
 
-Verification status of the less common spells: Mage Table and the
-Healthstone ritual sounds are in-game verified working, though not
-specifically confirmed castable on Classic Era/SoD (vs. some other
-client version). Hymn of Hope has no spell ID (it replaced the
-TBC-only "Symbol of Hope" in WotLK patch 3.0.2) and is expected
-uncastable on Classic Era/SoD, but that's still unverified in-game.
+Hymn of Hope has no spell ID and matches by name only.
 
 | Trigger | Own flag | Source/destination condition | Spell ID(s) | Name fallback | Sound |
 | --- | --- | --- | --- | --- | --- |
@@ -80,7 +81,7 @@ uncastable on Classic Era/SoD, but that's still unverified in-game.
 | Power Infusion received | `PowerInfusionSoundFlag` | Destination is the player. | `10060` | `Power Infusion`, `Seele der Macht` | `Surprise.mp3` |
 | Blessing of Protection received | `BlessingOfProtectionSoundFlag` | Destination is the player. | `1022` | `Blessing of Protection`, `Segen des Schutzes` | `Bubble.mp3` |
 | Divine Intervention received | `DivineInterventionSoundFlag` | Destination is the player. | `19752` | `Divine Intervention`, `Göttliches Eingreifen` | `divineInt.mp3` |
-| Soulstone buff received (not the resurrection itself - real in-game name is "Soulstone Resurrection") | `SoulstoneSoundFlag` | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
+| Soulstone Resurrection buff received | `SoulstoneSoundFlag` | Destination is the player. | `20707` | `Soulstone Resurrection`, `Seelenstein Auferstehung` | `soulstone.mp3` |
 | Drums of Battle received | `DrumsSoundFlag` | Destination is the player. | `35476` | `Drums of Battle`, `Greater Drums of Battle`, `Trommeln der Schlacht`, `Große Trommeln der Schlacht` | `dkRapL.mp3` |
 | Pain Suppression received | `PainSuppressionSoundFlag` | Destination is the player. | `402004` | `Pain Suppression`, `Schmerzunterdrückung` | `Painsup.mp3` |
 | Hymn of Hope received | `HymnOfHopeSoundFlag` | Destination is the player. | none | `Hymn of Hope`, `Hymne der Hoffnung` | `HymnOfHope.mp3` |
@@ -117,7 +118,9 @@ plain toggle, not a mode.
 
 Hunter's Feign Death fires a real `UNIT_DIED`. Checked first in
 `HandleDeath` via a live `UnitBuff` scan on the resolved group token
-(`hasFeignDeathBuff`, spell id `5384`, ID-first-then-name-fallback).
+(`hasFeignDeathBuff`, spell id `5384`, ID-first-then-name-fallback). If
+present, the death is ignored entirely (no player, role, boss or
+killing-blow output).
 
 The live dps/tank/healer checks resolve the dying player's unit token via
 `findGroupUnitToken()` (`Core/CombatLog.lua`), which checks
@@ -136,12 +139,9 @@ display name with a rostered player). An unresolved token doesn't
 suppress the roster match. Boss detection only accepts the `"worldboss"`
 classification, no name-list fallback.
 
-The three death-sound rosters (dps/tank/heal - `playerGroups.melee` and
-`playerGroups.priest` were renamed to `playerGroups.dps`/`playerGroups.heal`,
-see `Persistence/Database.lua`'s `migrateMeleeToDps()`/
-`migratePriestToHeal()`) are editable per character: `/cl options` →
-"Death Sounds..." → "Roster Settings..." shows each with Add/Remove
-controls. `CritLogDB.playerGroups` is a per-character copy, seeded once
+The three death-sound rosters (`playerGroups.dps`/`tank`/`heal`) are
+editable per character: `/cl options` → "Death Sounds..." → "Roster
+Settings..." shows each with Add/Rename/Remove controls. `CritLogDB.playerGroups` is a per-character copy, seeded once
 from code defaults on first load (`migratePlayerGroups()`); only the
 `CritLogDB` copy is read or written afterward.
 
@@ -161,9 +161,6 @@ these).
 `GambleSoundFlag` (`/cl gamble`). Reacts to a fixed announcement phrase
 from a third-party lottery addon (e.g. CrossGambling) - a chat-string
 match only, CritLog does not run or understand any lottery itself.
-CrossGambling's own chat-destination options are `PARTY`/`RAID`/`GUILD`
-only (no custom channel support), matching the three events listened to
-here.
 
 | Raid/party/guild chat message contains | Reaction |
 | --- | --- |
@@ -190,15 +187,14 @@ parsed numbers into a sound.
 | 8-12% of max | `roll10.mp3` |
 | Anything else | No sound. |
 
-The percentage bands (`roll5`/`roll10`/`roll95`) are unreachable for a
-small custom range - the exact-value checks already claim the only
-candidate values, or the threshold falls below the smallest possible roll.
+The percentage bands are evaluated after the exact values, and are
+unreachable for a small custom range.
 
 ## Other code paths
 
 | Function | Status |
 | --- | --- |
-| Boss killing-blow output | `BossKillFlag` (main panel checkbox or `/cl bosskill`, on by default). Prints a chat line naming whoever last damaged a boss-level mob (`worldboss`), read when its real `UNIT_DIED` fires - not a live `_DAMAGE`-event overkill check, since some encounters script the unit to sit at 1 HP for a while before actually dying, which would otherwise print a line for every hit landed during that window. |
+| Boss killing-blow output | `BossKillFlag` (main panel checkbox or `/cl bosskill`, on by default). Prints `<last damager> killed <boss>` when a `worldboss` unit's `UNIT_DIED` fires; the last damager comes from a per-GUID cache of the most recent `_DAMAGE` source. |
 
 ## Stored data
 
@@ -209,12 +205,15 @@ candidate values, or the threshold falls below the smallest possible roll.
   each with an amount, target, and (except white-hit) the ability name.
   Only the top `Constants.maxDisplayEntries` (5) are shown in the options
   panel's Highscore List popup. Individually deletable there, or
-  clearable a whole category at a time via `/cl reset damage|whitehit|heal`.
-  The popup's "Reset All" button clears every category and is the only
-  highscore action that asks for confirmation first (`StaticPopupDialogs`).
+  clearable a whole category at a time via `/cl reset damage/whitehit/heal`;
+  "Reset Everything" and `/cl reset` clear every category. Every delete and
+  reset asks for confirmation first (`StaticPopupDialogs`).
 - the legacy single-value fields (`DamageAbilityCrit`, `DAC_Name`, ...) -
-  no longer read or written, kept only so an old SavedVariables file never
-  produces a nil field if something still reads them
+  one-time migration sources for `records`, not used otherwise
+- `SchemaVersion`: index into the ordered `MIGRATIONS` list in
+  `Persistence/Database.lua`; each migration runs once per character
+- `Version`, `PostChannel` (default `FOR_ME`) and `PostWhisperTarget`: the
+  stored addon version and the Highscore List's posting destination/target
 - all command toggles
 
 Known storage and event-handling issues are listed in the
