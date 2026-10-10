@@ -2,21 +2,14 @@
 
 ## Overview
 
-The catalog contains **31 files**, all in active use, totaling approximately
-**1.9 MB**. See `CHANGELOG.md` for how it got here (dedup, profile
-consolidation, random-pick removal, the `feature/legacy-sound-port` batch of
-14 files ported from the original single-file addon, the lottery and
-raid-end two-clip-to-one-file consolidations); [ROADMAP.md](ROADMAP.md) for
-what's still outstanding.
+The catalog contains **30 files**, all in active use, totaling approximately
+**1.6 MB**. See [ROADMAP.md](ROADMAP.md) for what's still outstanding.
 
-Every file has been loudness-, sample-rate-, and bitrate-normalized (see
-`feature/sound-normalization` in `CHANGELOG.md` and
-`scripts/normalize-sounds.sh`): two-pass EBU R128 loudnorm to -16 LUFS
-integrated / -1.5 dBTP true peak, resampled to 44.1kHz, re-encoded at a
-consistent bitrate per format (mp3 128k CBR, ogg libvorbis q5, wav PCM).
-Filenames/extensions/codec families are unchanged. Duration and bitrate
-values below come from `ffprobe` against the normalized files, not Windows
-metadata as before - no more `n/a` entries.
+Sounds are normalized with `scripts/normalize-sounds.sh`: two-pass EBU R128
+loudnorm to -16 LUFS integrated / -1.5 dBTP true peak, resampled to 44.1kHz,
+re-encoded per format (mp3 128k CBR, ogg libvorbis q5, wav PCM). The ogg
+setting is quality-based (VBR), so a short file can land well below the
+nominal ~160 kbps. Duration and bitrate values below come from `ffprobe`.
 
 ## Sounds requested by code
 
@@ -40,12 +33,12 @@ metadata as before - no more `n/a` entries.
 | Raid end | `raidend.mp3` | Matching raid-leader message |
 | Wipe | `wipe.mp3` | Matching raid-leader message |
 | Lottery | `lottery.mp3` | Matching CrossGambling message in raid/party/guild chat |
-| Roll (exact 1) | `roll1.mp3` | `/roll` result is the lowest possible value on a 1-100 roll |
-| Roll (low band) | `roll5.mp3` | `/roll` result in the roughly-2-7% band on a 1-100 roll |
-| Roll (10 band) | `roll10.mp3` | `/roll` result in the roughly-8-12% band on a 1-100 roll |
+| Roll (exact 1) | `roll1.mp3` | `/roll` result is 1 (the roll's minimum must be 1) |
+| Roll (low band) | `roll5.mp3` | `/roll` result below 8% of the max (on 1-100: 2-7) |
+| Roll (10 band) | `roll10.mp3` | `/roll` result from 8% to 12% of the max (on 1-100: 8-12) |
 | Roll (69) | `roll69.mp3` | `/roll` result is exactly 69 |
-| Roll (95 band) | `roll95.mp3` | `/roll` result in the roughly-92-99% band on a 1-100 roll |
-| Roll (100) | `roll100.mp3` | `/roll` result is the maximum on a 1-100 roll |
+| Roll (95 band) | `roll95.mp3` | `/roll` result at or above 92% of the max, below the max (on 1-100: 92-99) |
+| Roll (100) | `roll100.mp3` | `/roll` result equals the max (any roll starting at 1) |
 | Drums of Battle | `dkRapL.mp3` | Player receives Drums of Battle |
 | Pain Suppression | `Painsup.mp3` | Player receives Pain Suppression (SoD Priest rune) |
 | Hymn of Hope | `HymnOfHope.mp3` | Player receives Hymn of Hope |
@@ -53,8 +46,7 @@ metadata as before - no more `n/a` entries.
 | Mage Table | `Table.mp3` | Party/raid member casts Ritual of Refreshment (max once per 100s) |
 | Warlock Healthstone ritual | `healthstone.mp3` | Party/raid member casts Ritual of Souls (max once per 60s) |
 
-Every entry above is a single fixed file — no more random multi-clip
-selection anywhere in the addon. See [BEHAVIOR.md](BEHAVIOR.md) for the
+Each trigger plays one fixed file. See [BEHAVIOR.md](BEHAVIOR.md) for the
 complete trigger conditions.
 
 ## Catalog (`sounds/`)
@@ -72,17 +64,17 @@ complete trigger conditions.
 | `healthstone.mp3` | 2 s | 131 kbps | 35,151 B | Warlock Healthstone ritual |
 | `HymnOfHope.mp3` | 2 s | 132 kbps | 25,120 B | Hymn of Hope |
 | `Innervate.mp3` | 3 s | 131 kbps | 47,783 B | Innervate |
-| `lottery.mp3` | 4 s | 130 kbps | 62,781 B | lottery (consolidated, see `CHANGELOG.md`) |
+| `lottery.mp3` | 4 s | 130 kbps | 62,736 B | lottery |
 | `Manatide.mp3` | 2 s | 132 kbps | 33,154 B | Mana Tide Totem |
 | `Painsup.mp3` | 3 s | 131 kbps | 50,709 B | Pain Suppression |
 | `Ready.mp3` | 2 s | 132 kbps | 29,718 B | ready check |
-| `raidend.mp3` | 9 s | 129 kbps | 146,746 B | raid end (consolidated, overlapping mix - see `CHANGELOG.md`) |
+| `raidend.mp3` | 9 s | 129 kbps | 146,746 B | raid end |
 | `roll1.mp3` | 3 s | 131 kbps | 43,185 B | roll result 1 |
-| `roll10.mp3` | 10 s | 129 kbps | 155,523 B | roll result 8-12% band |
+| `roll10.mp3` | 3 s | 100 kbps | 31,344 B | roll result 8-12% of max |
 | `roll100.mp3` | 5 s | 129 kbps | 86,657 B | roll result 100 |
-| `roll5.mp3` | 2 s | 132 kbps | 31,503 B | roll result 2-7% band |
+| `roll5.mp3` | 2 s | 132 kbps | 31,503 B | roll result below 8% of max |
 | `roll69.mp3` | 3 s | 131 kbps | 53,634 B | roll result 69 |
-| `roll95.mp3` | 4 s | 130 kbps | 62,840 B | roll result 92-99% band |
+| `roll95.mp3` | 4 s | 130 kbps | 62,840 B | roll result at or above 92% of max |
 | `soulstone.mp3` | 2 s | 132 kbps | 26,885 B | Soulstone |
 | `Surprise.mp3` | 5 s | 129 kbps | 83,309 B | Power Infusion |
 | `Table.mp3` | 4 s | 130 kbps | 59,904 B | Mage Table |

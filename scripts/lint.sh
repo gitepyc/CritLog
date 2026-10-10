@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs luacheck against the repo inside the tools/lint container image.
+# Runs luacheck against the repo inside the tests/lint container image.
 # Builds the image on first use or after Dockerfile changes.
 set -euo pipefail
 

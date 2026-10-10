@@ -20,41 +20,50 @@ asks for:
 
 ## Pull requests
 
-- Branch off `main` (there's no separate `dev` branch - trunk-based,
-  short-lived feature branches only) and open the PR against `main`.
+- Trunk-based: `main` is the only long-lived branch. Branch off `main`
+  with a short-lived feature branch and open the PR against `main`.
 - Run `scripts/lint.sh` before opening the PR if you changed any `.lua` file.
 - Write commit messages as `type: short description` (`feature`/`fix`/
-  `tweak`/`docs`/`debug`/`refactor`/`chore`) - `CHANGELOG.md` is generated
-  from these automatically via [git-cliff](https://git-cliff.org), not
-  hand-edited.
+  `tweak`/`docs`/`debug`/`refactor`/`chore`; `ci:` is accepted as an alias
+  for `chore:`) - `CHANGELOG.md` is generated from these automatically via
+  [git-cliff](https://git-cliff.org), not hand-edited. A commit without a
+  recognized type lands in an `other` group, so the prefix is required.
+  Merge commits and `chore: bump version`/`chore: release` commits are left
+  out of the changelog.
 - Keep the PR focused on one change - a bug fix doesn't need unrelated
   cleanup bundled in.
 
 ## Releasing
 
-- Tags follow [SemVer 2.0.0](https://semver.org): `X.Y.Z` for a real
-  release, `X.Y.Z-dev.N` for a prerelease pending in-game verification
-  (dotted number, so version-precedence sorts correctly - not a bare
-  `-dev` suffix). Both live on `main`; there's no separate branch for
-  "not yet verified" state.
-- Bump `CritLog.toc`'s `## Version:`, commit, tag, then run
-  `scripts/update-changelog.sh` and fold the result into the same commit
-  (see that script's header comment for the exact sequence) - this way the
-  generated CHANGELOG.md section reads the tag's real commit date.
-- `.github/workflows/release.yml` marks the GitHub Release as a prerelease
-  automatically whenever the tag contains a `-`.
+- Tags: `X.Y.Z` or `X.Y.Z.W` for a real release, `X.Y.Z(.W)-dev.N` for a
+  prerelease pending in-game verification (dotted number, so version
+  precedence sorts correctly - not a bare `-dev` suffix). Both live on
+  `main`. `legacy-*` tags are archival.
+- To release: bump `CritLog.toc`'s `## Version:` and commit it as
+  `chore: bump version to X.Y.Z for release`, tag it, run
+  `scripts/update-changelog.sh`, amend the result into the same commit,
+  move the tag onto the amended commit, then push `main` and the tag (see
+  the script's header comment for the exact sequence). This way the
+  generated `CHANGELOG.md` section reads the tag's real commit date.
+- `.github/workflows/release.yml` packages the addon and marks the GitHub
+  Release as a prerelease automatically whenever the tag contains a `-`.
 - Keep incrementing `-dev.N` for the same target version across iterations -
   only bump the version itself when starting toward a genuinely new target,
-  not on every change. Once a `-dev.N` build is confirmed working in-game,
-  tag the same commit again without the suffix (the real release) and
-  delete the now-superseded `-dev.N` tag(s) for that target.
+  not on every change. Only one `-dev.N` tag exists per unreleased version:
+  when tagging `-dev.N+1`, remove `-dev.N`. Once a build is confirmed working
+  in-game, tag the real release and remove all of that version's `-dev.N`
+  tags. `scripts/cleanup-tags.sh` does this (dry run by default, `--yes` to
+  apply); deleting a tag leaves its GitHub release behind as a draft, which
+  has to be deleted separately.
 - `cliff.toml`'s `ignore_tags` folds every `-dev.N` tag's commits into the
   next real release's section automatically - `CHANGELOG.md` never shows
   `X.Y.Z-dev.1`/`.2`/... as separate permanent entries, only the final
   `X.Y.Z` heading with everything since the previous real release. The
   in-progress, not-yet-tagged-clean work shows as `## Unreleased` until
-  then. `release.yml`'s release-notes step accounts for this: a real
-  release keeps using git-cliff's `--current` (which now naturally
-  includes every folded-in `-dev.N` commit too), a prerelease tag gets an
-  explicit commit range instead, since `--current` can't resolve a tag
-  that `ignore_tags` excludes.
+  then. `scripts/update-changelog.sh` fails if a `-dev.N` heading ever shows
+  up anyway.
+- `release.yml` builds the release notes from the explicit range
+  `<last real tag>..<tag>` for prereleases and real releases alike, so a
+  real release's notes include every folded-in `-dev.N` commit. It does not
+  use git-cliff's `--current`, which returns empty notes while any `-dev.N`
+  tag still sits inside the range.

@@ -1,33 +1,19 @@
 # CritLog Wiki
 
-This documentation describes the current state of CritLog. It distinguishes
-user-confirmed runtime behavior, behavior derived from static code review, and
-checks that are still outstanding — see [`../CHANGELOG.md`](../CHANGELOG.md)
-for the versioned list of what changed when.
+This documentation describes the current behavior of CritLog; see
+[`../CHANGELOG.md`](../CHANGELOG.md) for the versioned list of what changed
+when.
 
-## Target environment
+## Client compatibility
 
-- **Game mode:** Season of Discovery
-- **Client family:** WoW Classic Era
-- **Client version:** `1.15.9`
-- **TOC interface:** `11509`
-- **Runtime status:** The current user confirms that the addon works in this
-  client.
+`CritLog.toc` declares the interface versions `120100, 50504, 20506, 11509`
+(Retail, Mists Classic, TBC Anniversary, Classic Era). Development happens
+on Classic Era / Season of Discovery `1.15.9` (interface `11509`).
 
-The interface number primarily prevents the client from marking the addon as
-out of date. It does not by itself prove that every API call behaves correctly.
-
-### Interface-version verification
-
-`11509` was cross-checked on August 31, 2026 against multiple actively
-maintained Classic Era addons:
-
-- [MoveAny `MoveAny_Vanilla.toc`](https://github.com/d4kir92/MoveAny/blob/main/MoveAny_Vanilla.toc)
-- [ApogeePartyHealthBars compatibility statement](https://github.com/notify353/ApogeePartyHealthBars)
-- [BetterBags report using Classic Era/SoD 1.15.9](https://github.com/Cidan/BetterBags/issues/1053)
-
-Recheck this value against the installed client or current Classic Era TOCs
-after future client patches.
+The interface number only prevents the client from marking the addon as out
+of date; it does not prove that every API call behaves correctly. Recheck
+the values against the installed client or current TOCs after client
+patches.
 
 ## Pages
 
@@ -45,7 +31,6 @@ after future client patches.
 | Registered events and handlers | Inventoried from code |
 | Slash commands | Inventoried from code |
 | Sound files and technical metadata | Fully inventoried |
-| Byte-identical duplicates | Verified through SHA-256 comparison |
 | In-game playback of every trigger on SoD | Not yet recorded as a test matrix |
 
 ## Maintenance rule

@@ -26,15 +26,12 @@ actually verified.
 
 ### CI
 
-`.github/workflows/lint.yml` runs the same container against the GitHub push
-mirror (`sync_on_commit` triggers it on every Gitea push; the Gitea instance
-itself has no Actions runner registered). It only fails the build on real
-`luacheck` errors (exit code ≥ 2, e.g. a syntax error) — pre-existing, known
-warnings (currently 1, the intentionally-unused `SREDEMPTION_NAMES` in
-`Core/CombatLog.lua`, see CHANGELOG.md) don't turn the pipeline red, since
-a pipeline that's always red trains people to ignore it. Trigger it manually
-from the GitHub UI ("Actions" tab → "Lint" → "Run workflow") or via
-`gh workflow run lint.yml --repo gitepyc/critlog`.
+`.github/workflows/lint.yml` runs the same container on every push and pull
+request (and manually from the GitHub UI: "Actions" tab → "Lint" → "Run
+workflow"). It only fails the build on real `luacheck` errors (exit code ≥ 2,
+e.g. a syntax error); warnings alone (exit code 1) don't turn the pipeline
+red, since a pipeline that's always red trains people to ignore it. The
+codebase currently has no warnings.
 
 ## What cannot be automated here
 
@@ -49,13 +46,18 @@ Use [docs/BEHAVIOR.md](../docs/BEHAVIOR.md) as the checklist: it lists every
 registered event, its condition, and the expected sound/state change. Before
 merging a behavior-affecting change:
 
-1. Load the character in Classic Era / Season of Discovery.
+1. Load a character on a supported client (see `## Interface` in
+   `CritLog.toc`).
 2. `/reload` and confirm `CritLogDB` migrated without wiping unrelated
    settings.
-3. Walk the relevant rows of the BEHAVIOR.md matrix (crits, auras, deaths,
-   raid-leader chat, ready check) and confirm the expected clip plays from
+3. Walk the relevant rows of the BEHAVIOR.md matrix (crits, boss killing
+   blow on `UNIT_DIED`, auras, deaths, rolls including the 8-12% band,
+   chat triggers, ready check) and confirm the expected clip plays from
    the current sound catalog.
-4. Watch for Lua errors with `/console scriptErrors 1` or an error-display
+4. For UI changes, check the options panel (checkboxes, level-filter
+   slider), the Highscore List popup (tooltips, delete, post) and, if Titan
+   Panel is installed, the Titan button and tooltip.
+5. Watch for Lua errors with `/console scriptErrors 1` or an error-display
    addon enabled.
 
 Record what you tested (client version, class/spec, reproduction steps) in
