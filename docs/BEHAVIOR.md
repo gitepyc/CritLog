@@ -35,10 +35,11 @@ the selected target is the unit that was hit; if no token resolves, the
 crit is allowed through. The filter only applies to damage, not healing.
 
 `LevelFilterFlag` (`/cl level`, on by default) excludes damage crits
-against targets whose level is `LevelDiffThreshold` (default 9, adjustable
-with the options-panel slider, range 1-20) or more levels below the
-player's. Targets classified `worldboss` always pass, and higher-level
-targets are never filtered.
+against targets more than `LevelDiffThreshold` levels below the player
+(default 9, adjustable with the options-panel slider, range 1-20): at 9,
+a target 9 levels below you still counts, one 10 below doesn't. Targets
+classified `worldboss` always pass, and higher-level targets are never
+filtered.
 
 | Combat-log type | Condition | State change | Sound condition | Sound |
 | --- | --- | --- | --- | --- |
