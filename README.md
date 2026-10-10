@@ -11,6 +11,55 @@ auras, and raid-leader chat triggers.
 > (party and raid) are in-game confirmed — see
 > [CHANGELOG.md](CHANGELOG.md) for the versioned list.
 
+## Install
+
+1. Download `CritLog-<version>.zip` from the
+   [latest release](https://github.com/gitepyc/CritLog/releases/latest).
+2. Extract it into your AddOns folder
+   (`World of Warcraft/_classic_era_/Interface/AddOns/`), so that
+   `AddOns/CritLog/CritLog.toc` exists afterwards.
+3. Start the game (or `/reload`) and make sure CritLog is enabled in the
+   addon list on the character selection screen.
+
+CritLog targets Season of Discovery on Classic Era `1.15.9`. Highscores and
+settings are stored per character, not shared between characters. There is
+no CurseForge/Wago listing yet, so updating means repeating the steps above
+with the newer zip.
+
+## Getting started
+
+CritLog works out of the box: it records your best critical hits and
+critical heals and plays sounds for new highscores, deaths, ready checks,
+`/roll` results and more. Everything can be switched on/off.
+
+- `/cl` prints your current highscores in chat.
+- `/cl options` opens the options panel (`/cl help` lists all commands).
+- `/cl mute` is the master switch for all sounds.
+
+**Options panel**
+
+- *Enable level filter* / *Max levels below you* - crits against much
+  lower-level targets don't count as highscores (boss-level mobs always
+  count).
+- *Boss killing-blow chat message* - announces who landed the killing blow
+  on a boss-level mob.
+- *Sounds enabled* - mutes every CritLog sound without touching the
+  individual settings.
+- **Highscore List...** - your top 5 per category (damage crit, white-hit
+  crit, heal crit). Delete single entries or *Reset Everything*, and share
+  your best ones via *Post to:* For me / Guild / Party / Raid / Whisper (the
+  whisper box suggests online friends, Battle.net friends and guild members
+  as you type).
+- **Sound Settings...** - toggle each sound group, with *Preview* buttons
+  to hear them. Sub-panels cover aura/spell sounds, death sounds (you,
+  bosses, and the dps/tank/healer roles, with editable rosters) and `/roll`
+  sounds.
+- **Help...** - the full command list and explanations, in-game.
+
+If you use Titan Panel, CritLog adds an optional status-bar button
+automatically. Something not working? `/cl debug` turns on diagnostic chat
+output; see [CONTRIBUTING.md](CONTRIBUTING.md) for how to report a bug.
+
 ## Documentation
 
 - [Wiki home](docs/README.md)
@@ -18,54 +67,6 @@ auras, and raid-leader chat triggers.
 - [Complete sound catalog](docs/SOUNDS.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Contributing](CONTRIBUTING.md) — bug report checklist, pull request guidelines, and the release process
-
-## Install
-
-A release pipeline exists (`.github/workflows/release.yml`, BigWigsMods'
-packager, runs on every tag push) and packages a versioned zip attached to
-[GitHub Releases](https://github.com/gitepyc/CritLog/releases). There's no
-CurseForge/Wago listing yet though, so installation is still manual either
-way:
-
-- **Tagged release:** download the zip from GitHub Releases and extract it
-  into your AddOns folder.
-- **`dev`/unreleased:** copy this repository's contents into a folder named
-  `CritLog` inside the addon directory of the Classic Era client:
-
-```text
-World of Warcraft/
-└── _classic_era_/
-    └── Interface/
-        └── AddOns/
-            └── CritLog/
-                ├── CritLog.toc
-                ├── CritLog.lua
-                ├── Core/
-                │   ├── Constants.lua
-                │   ├── Filters.lua
-                │   ├── Records.lua
-                │   └── CombatLog.lua
-                ├── Persistence/
-                │   └── Database.lua
-                ├── UI/
-                │   ├── Shared.lua
-                │   ├── MainPanel.lua
-                │   ├── SoundPanel.lua
-                │   ├── AuraSoundPanel.lua
-                │   ├── DeathSoundPanel.lua
-                │   ├── RollSoundPanel.lua
-                │   ├── RosterPanel.lua
-                │   ├── HelpPanel.lua
-                │   └── TitanButton.lua
-                ├── Sounds.lua
-                ├── ChatTriggers.lua
-                ├── Commands.lua
-                ├── Events.lua
-                └── sounds/
-```
-
-Enable CritLog in the character selection addon list. The currently confirmed
-target is Season of Discovery on Classic Era `1.15.9`.
 
 ## Current behavior at a glance
 
@@ -116,6 +117,46 @@ See [Behavior and triggers](docs/BEHAVIOR.md) for the complete event → conditi
 | `/cl healer` | Same toggle, for the healer death sound. Role: assigned Healer role, any class (Priest, Holy Paladin, Resto Druid, Resto Shaman, ...). |
 | `/cl boss` | Toggles the boss death sound - plain on/off, not a detection mode: `UnitClassification` (`worldboss`) is the only signal, there's no roster fallback. |
 | `/cl bosskill` | Toggles the chat message naming who landed the killing blow on a boss-level mob - also on the main options panel. |
+
+## Installing from source
+
+For unreleased changes, copy this repository's contents into a folder named
+`CritLog` inside the addon directory of the Classic Era client:
+
+```text
+World of Warcraft/
+└── _classic_era_/
+    └── Interface/
+        └── AddOns/
+            └── CritLog/
+                ├── CritLog.toc
+                ├── CritLog.lua
+                ├── Core/
+                │   ├── Constants.lua
+                │   ├── Filters.lua
+                │   ├── Records.lua
+                │   └── CombatLog.lua
+                ├── Persistence/
+                │   └── Database.lua
+                ├── UI/
+                │   ├── Shared.lua
+                │   ├── MainPanel.lua
+                │   ├── SoundPanel.lua
+                │   ├── AuraSoundPanel.lua
+                │   ├── DeathSoundPanel.lua
+                │   ├── RollSoundPanel.lua
+                │   ├── RosterPanel.lua
+                │   ├── HelpPanel.lua
+                │   └── TitanButton.lua
+                ├── Sounds.lua
+                ├── ChatTriggers.lua
+                ├── Commands.lua
+                ├── Events.lua
+                └── sounds/
+```
+
+Enable CritLog in the character selection addon list. The currently confirmed
+target is Season of Discovery on Classic Era `1.15.9`.
 
 ## Repository layout
 
