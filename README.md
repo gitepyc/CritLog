@@ -119,7 +119,7 @@ available in-game via `/cl help` or `/cl options` -> "Help...".
 | `/cl roll` | Master switch for the 6 `/roll` result sounds (1, 69, max, plus three percentage bands that work for any range starting at 1) - each one individually in the Roll Sounds panel (on by default). |
 | `/cl aura` | Master switch for 13 individually toggleable aura/ritual sounds - see the Aura Sounds panel (on by default). |
 | `/cl player` | Your own death sound (on by default). |
-| `/cl boss` | Boss death sound (on by default). |
+| `/cl boss` | Boss death sound (off by default). |
 | `/cl bosskill` | Chat message naming who landed the killing blow on a boss - also on the main options panel (on by default). |
 | `/cl dps` / `tank` / `healer` | Toggles that role's death sound between None and Both (default Both); the Death Sounds panel dropdown also offers Role-only (live assigned role) and Roster-only (saved name list). DPS means any group member who isn't assigned Tank or Healer. |
 

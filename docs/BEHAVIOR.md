@@ -92,8 +92,8 @@ Hymn of Hope has no spell ID and matches by name only.
 
 ## Deaths
 
-`PlayerSoundFlag` (`/cl player`) and `BossSoundFlag` (`/cl boss`) are
-plain on/off flags. The Damage Dealer/Tank/Healer groups each use a
+`PlayerSoundFlag` (`/cl player`, on by default) and `BossSoundFlag`
+(`/cl boss`, off by default) are plain on/off flags. The Damage Dealer/Tank/Healer groups each use a
 **detection mode** instead (`CritLogDB.<Kind>DetectionMode`, a dropdown
 in the Death Sounds panel, one of `CritLog.Constants.detectionModes`);
 setting all three to `none` is the equivalent of a master switch.
