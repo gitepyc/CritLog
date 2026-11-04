@@ -6,8 +6,8 @@ when.
 
 ## Client compatibility
 
-`CritLog.toc` declares the interface versions `120100, 50504, 20506, 11509`
-(Retail, Mists Classic, TBC Anniversary, Classic Era). Development happens
+`CritLog.toc` declares the interface versions `120100, 50504, 20506, 11509, 16001`
+(Retail, Mists Classic, TBC Anniversary, Classic Era, WoW Forever). Development happens
 on Classic Era / Season of Discovery `1.15.9` (interface `11509`).
 
 The interface number only prevents the client from marking the addon as out
