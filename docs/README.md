@@ -10,6 +10,12 @@ when.
 (Retail, Mists Classic, TBC Anniversary, Classic Era, WoW Forever). Development happens
 on Classic Era / Season of Discovery `1.15.9` (interface `11509`).
 
+Retail (since 12.0) and WoW Forever block the combat log for addons. On
+these clients CritLog does not register `COMBAT_LOG_EVENT_UNFILTERED` and
+prints a notice at login: crit highscores, death, aura and killing-blow
+features are unavailable there. Ready check, `/roll`, lottery and chat
+trigger sounds still work. Detection: the global `issecretvalue` exists.
+
 The interface number only prevents the client from marking the addon as out
 of date; it does not prove that every API call behaves correctly. Recheck
 the values against the installed client or current TOCs after client

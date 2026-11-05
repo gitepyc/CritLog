@@ -4,7 +4,17 @@ local isAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
 
 local frame = CreateFrame("Frame")
 
-frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+-- Retail since Midnight (12.0) and WoW Forever block the combat log for
+-- addons: registering COMBAT_LOG_EVENT_UNFILTERED raises
+-- ADDON_ACTION_FORBIDDEN, and its payload is secret values that can't be
+-- compared. `issecretvalue` only exists on those clients, so its presence
+-- marks them. There CritLog skips the combat log entirely and keeps only
+-- the features driven by other events (ready check, rolls, chat triggers).
+CritLog.combatLogRestricted = issecretvalue ~= nil
+
+if not CritLog.combatLogRestricted then
+    frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+end
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("READY_CHECK")
 frame:RegisterEvent("CHAT_MSG_RAID_LEADER")
@@ -20,6 +30,10 @@ end)
 function CritLog:PLAYER_LOGIN()
     self:SetDefaults()
     self:PrintCritLogs()
+
+    if self.combatLogRestricted then
+        print("CritLog: this client blocks the combat log for addons - crit highscores, death, aura and killing-blow features are unavailable. Ready check, roll and chat sounds still work.")
+    end
 
     -- Optional TitanPanel status-bar button (UI/TitanButton.lua), gated
     -- here so it's completely inert when Titan isn't installed.
