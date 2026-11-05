@@ -55,6 +55,8 @@ stds.wow = {
         -- Events.lua/UI/TitanButton.lua: gate + build the optional
         -- TitanPanel status-bar button
         "IsAddOnLoaded",
+        -- Events.lua: detects clients that block the combat log for addons
+        "issecretvalue",
         "TitanPanelButton_OnClick",
         "TitanPanelButton_UpdateButton",
         "Titan_Menu",
