@@ -15,6 +15,10 @@ these clients CritLog does not register `COMBAT_LOG_EVENT_UNFILTERED` and
 prints a notice at login: crit highscores, death, aura and killing-blow
 features are unavailable there. Ready check, `/roll`, lottery and chat
 trigger sounds still work. Detection: the global `issecretvalue` exists.
+The options panel shows a "Limited mode" line there; combat-log-only options
+are greyed out with a tooltip explaining why, the Aura Sounds and Death
+Sounds buttons are disabled, and the matching `/cl` toggles only print a
+notice.
 
 The interface number only prevents the client from marking the addon as out
 of date; it does not prove that every API call behaves correctly. Recheck

@@ -55,6 +55,8 @@ stds.wow = {
         -- Events.lua/UI/TitanButton.lua: gate + build the optional
         -- TitanPanel status-bar button
         "IsAddOnLoaded",
+        -- UI/Shared.lua: greys out combat-log-only dropdown rows
+        "UIDropDownMenu_DisableDropDown",
         -- Events.lua: detects clients that block the combat log for addons
         "issecretvalue",
         "TitanPanelButton_OnClick",

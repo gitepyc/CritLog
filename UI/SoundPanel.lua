@@ -7,13 +7,13 @@
 -- RollSoundFlag row instead of grouped with the Aura/Death Sounds
 -- buttons at the very end.
 local SOUND_CHECKBOXES_TOP = {
-    { field = "SoundFlag", label = "Highscore sound (BÄM)", sound = "crit",
+    { field = "SoundFlag", needsCombatLog = true, label = "Highscore sound (BÄM)", sound = "crit",
       hint = "Plays on a new personal highscore." },
-    { field = "AllCritFlag", label = "Sound for all crits",
+    { field = "AllCritFlag", needsCombatLog = true, label = "Sound for all crits",
       hint = "Plays on every crit, not just new highscores." },
-    { field = "WhiteHitFlag", label = "Sound for white hit crits",
+    { field = "WhiteHitFlag", needsCombatLog = true, label = "Sound for white hit crits",
       hint = "White-hit highscores need this; ability crits don't." },
-    { field = "XtremeSoundFlag", label = "Xtreme damage sound", sound = "xtremeDamage",
+    { field = "XtremeSoundFlag", needsCombatLog = true, label = "Xtreme damage sound", sound = "xtremeDamage",
       hint = "Extra sound when a hit deals over 9000 damage." },
     { field = "ReadySoundFlag", label = "Ready check sound", sound = "readyCheck",
       hint = "Plays when a ready check starts." },
@@ -24,7 +24,7 @@ local SOUND_CHECKBOXES_TOP = {
 }
 
 local SOUND_CHECKBOXES_BOTTOM = {
-    { field = "AuraSoundFlag", label = "Aura/spell sounds",
+    { field = "AuraSoundFlag", needsCombatLog = true, label = "Aura/spell sounds",
       hint = "Master switch for the spell sounds - see the button below." },
 }
 
@@ -101,6 +101,7 @@ local function buildSoundFrame()
     auraSoundsButton:SetScript("OnClick", function()
         CritLog:ShowAuraSounds()
     end)
+    CritLog.UI.markButtonUnavailable(auraSoundsButton)
 
     local deathSoundsButton = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     deathSoundsButton:SetSize(140, 24)
@@ -111,6 +112,7 @@ local function buildSoundFrame()
     deathSoundsButton:SetScript("OnClick", function()
         CritLog:ShowDeathSounds()
     end)
+    CritLog.UI.markButtonUnavailable(deathSoundsButton)
 
     -- The section lives in its own child frame (not directly on `f` like
     -- every other row) so it can be shown/hidden as one unit -
