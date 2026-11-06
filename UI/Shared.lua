@@ -163,6 +163,39 @@ function CritLog.UI.attachTooltip(control, text)
     end)
 end
 
+-- Tooltip line appended to every control that needs the combat log, on
+-- clients that block it for addons (CritLog.combatLogRestricted, see
+-- Events.lua).
+CritLog.UI.UNAVAILABLE_TEXT = "|cffff4040Not available on this client: it blocks combat log access for addons.|r"
+
+-- True if `entry` (a buildToggleRows entry) needs the combat log and this
+-- client blocks it.
+local function isUnavailable(entry)
+    return entry.needsCombatLog and CritLog.combatLogRestricted
+end
+
+-- Hint text for a row, with the unavailable notice appended when needed.
+local function rowHint(entry)
+    if isUnavailable(entry) then
+        return entry.hint and (entry.hint.."\n\n"..CritLog.UI.UNAVAILABLE_TEXT) or CritLog.UI.UNAVAILABLE_TEXT
+    end
+    return entry.hint
+end
+
+local function greyOut(fontString)
+    fontString:SetTextColor(0.5, 0.5, 0.5)
+end
+
+-- Disables a panel button that opens a combat-log-only sub-panel and
+-- explains why on hover. Disabled buttons still fire OnEnter/OnLeave.
+function CritLog.UI.markButtonUnavailable(button)
+    if not CritLog.combatLogRestricted then
+        return
+    end
+    button:Disable()
+    CritLog.UI.attachTooltip(button, CritLog.UI.UNAVAILABLE_TEXT)
+end
+
 local function createDropdownRow(parent, entry, previous, previousXOffset)
     -- UIDropDownMenuTemplate's clickable texture extends ~16px left of the
     -- frame's own left edge, so this is nudged left to keep the control
@@ -220,7 +253,12 @@ local function createDropdownRow(parent, entry, previous, previousXOffset)
         previewButton:SetFrameLevel(dropdown:GetFrameLevel() + 1)
     end
 
-    CritLog.UI.attachTooltip(dropdown, entry.hint)
+    if isUnavailable(entry) then
+        UIDropDownMenu_DisableDropDown(dropdown)
+        greyOut(label)
+    end
+
+    CritLog.UI.attachTooltip(dropdown, rowHint(entry))
     -- SetHitRectInsets(left, right, top, bottom) - a negative value grows
     -- the hit area outward, extending the dropdown's hit rect rightward
     -- to cover its own label too. A fixed value, not
@@ -272,7 +310,13 @@ local function createSliderRow(parent, entry, previous, previousXOffset)
 
     slidersByField[entry.field] = { slider = slider, updateValueText = updateValueText }
 
-    CritLog.UI.attachTooltip(slider, entry.hint)
+    if isUnavailable(entry) then
+        slider:Disable()
+        greyOut(_G[slider:GetName().."Text"])
+        greyOut(valueText)
+    end
+
+    CritLog.UI.attachTooltip(slider, rowHint(entry))
 
     -- A separate invisible anchor for buildToggleRows to chain the next
     -- row from, decoupled from the centered valueText: valueText's own
@@ -302,7 +346,9 @@ end
 -- createDropdownRow's sibling branch below. `previewOnly` renders just a
 -- label + Preview button with no checkbox/field at all, for entries that
 -- share one master toggle elsewhere instead of each having their own
--- independent flag.
+-- independent flag. `needsCombatLog = true` marks a row whose feature
+-- relies on the combat log: on clients that block it for addons the
+-- control is disabled, its label greyed out and the tooltip says why.
 function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
     local previous = startAnchor
     -- 0 for the first row: startAnchor (a section heading) has no x-indent
@@ -399,7 +445,12 @@ function CritLog.UI.buildToggleRows(parent, checkboxes, startAnchor)
                 previewButton:SetFrameLevel(check:GetFrameLevel() + 1)
             end
 
-            CritLog.UI.attachTooltip(check, entry.hint)
+            if isUnavailable(entry) then
+                check:Disable()
+                greyOut(label)
+            end
+
+            CritLog.UI.attachTooltip(check, rowHint(entry))
             -- SetHitRectInsets(left, right, top, bottom) - a negative
             -- value grows the hit area outward, extending the checkbox's
             -- hit rect rightward to cover its own label too. A fixed

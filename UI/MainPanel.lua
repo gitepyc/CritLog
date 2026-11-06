@@ -10,14 +10,14 @@
 -- sound toggle separately. One-directional on purpose: a crit against a
 -- tougher-than-you enemy is never filtered out.
 local CRIT_CHECKBOXES = {
-    { field = "LevelFilterFlag", label = "Enable level filter",
+    { field = "LevelFilterFlag", needsCombatLog = true, label = "Enable level filter",
       hint = "Off: counts highscores from enemies of any level." },
-    { field = "LevelDiffThreshold", label = "Max levels below you", slider = { min = 1, max = 20, step = 1 },
+    { field = "LevelDiffThreshold", needsCombatLog = true, label = "Max levels below you", slider = { min = 1, max = 20, step = 1 },
       hint = "How far below your level a target may be and still count. Boss-level mobs always count regardless." },
 }
 
 local BOSS_KILL_CHECKBOX = {
-    { field = "BossKillFlag", label = "Boss killing-blow chat message",
+    { field = "BossKillFlag", needsCombatLog = true, label = "Boss killing-blow chat message",
       hint = "Announces in chat who landed the killing blow on a boss-level mob." },
 }
 
@@ -548,8 +548,18 @@ local function buildFrame()
     CritLog.UI.anchorBelow(f.versionText, infoHeading, 8)
     f.versionText:SetText("CritLog version: "..CritLog.version)
 
+    local infoAnchor = f.versionText
+    if CritLog.combatLogRestricted then
+        local limitedText = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        CritLog.UI.anchorBelow(limitedText, f.versionText, 6)
+        limitedText:SetTextColor(1, 0.5, 0)
+        limitedText:SetText("Limited mode: this client blocks the combat log")
+        infoAnchor = limitedText
+        f:SetHeight(f:GetHeight() + 20)
+    end
+
     local togglesHeading = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    CritLog.UI.anchorBelow(togglesHeading, f.versionText, 16)
+    CritLog.UI.anchorBelow(togglesHeading, infoAnchor, 16)
     togglesHeading:SetText("Options")
 
     local lastAnchor = CritLog.UI.buildToggleRows(f, CRIT_CHECKBOXES, togglesHeading)

@@ -70,8 +70,22 @@ local function printHighscores()
     print("/cl help for list of commands")
 end
 
+-- Commands whose feature relies on the combat log - on clients that block
+-- it for addons (CritLog.combatLogRestricted, see Events.lua) they only
+-- print a notice instead of toggling a setting that can't do anything.
+local COMBAT_LOG_COMMANDS = {
+    level = true, sound = true, allcrits = true, whitehit = true,
+    xtreme = true, aura = true, player = true, boss = true,
+    bosskill = true, dps = true, tank = true, healer = true,
+}
+
 function CritLog:PrintCritLogs(message)
     local command = message or ""
+
+    if CritLog.combatLogRestricted and COMBAT_LOG_COMMANDS[command] then
+        print("CritLog: /cl "..command.." is not available on this client - it blocks combat log access for addons.")
+        return
+    end
 
     -- Same confirmation dialogs the options panel's reset buttons use
     -- (CRITLOG_RESET_ALL_HIGHSCORES/CRITLOG_RESET_CATEGORY, registered in
