@@ -6,6 +6,11 @@ on:
       - '**'
   workflow_dispatch:
 
+# Runs on GitHub and on Forgejo/Gitea. GitHub: BigWigsMods/packager creates
+# the release itself (zip + release.json), the notes step then rewrites its
+# body. Forgejo/Gitea: packager only builds the zip (it can only upload to
+# GitHub), the release is created through the Forgejo/Gitea API instead.
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -13,20 +18,75 @@ jobs:
       contents: write
     env:
       GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+      IS_GITHUB: ${{ github.server_url == 'https://github.com' }}
+      IS_TAG: ${{ startsWith(github.ref, 'refs/tags/') }}
     steps:
       - name: Clone project
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
-      - name: Package and release
+      # Container-based runners (e.g. Forgejo's) have neither a Docker CLI
+      # nor the tools a GitHub-hosted image ships with.
+      - name: Install tools
+        run: |
+          SUDO=""
+          if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
+          if ! command -v jq >/dev/null || ! command -v zip >/dev/null || ! command -v curl >/dev/null; then
+            $SUDO apt-get update -qq
+            $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+              curl ca-certificates jq zip unzip
+          fi
+          GIT_CLIFF_VERSION=2.14.2
+          curl -fsSL "https://github.com/orhun/git-cliff/releases/download/v${GIT_CLIFF_VERSION}/git-cliff-${GIT_CLIFF_VERSION}-x86_64-unknown-linux-musl.tar.gz" \
+            | tar -xz -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/git-cliff-${GIT_CLIFF_VERSION}" >> "$GITHUB_PATH"
+
+      - name: Package and release (GitHub)
+        if: env.IS_GITHUB == 'true'
         uses: BigWigsMods/packager@v2
 
+      - name: Package (Forgejo/Gitea)
+        if: env.IS_GITHUB != 'true'
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/BigWigsMods/packager/v2/release.sh -o "$RUNNER_TEMP/release.sh"
+          # -d: build only, no upload
+          bash "$RUNNER_TEMP/release.sh" -d -r "$PWD/.release"
+          ls -l .release/*.zip
+
       # packager's manual-changelog (.pkgmeta) dumps the entire CHANGELOG.md
-      # into the release body it just created. Overwrites that body with
-      # just this tag's own section (header incl. date/compare-link,
-      # stripped, via cliff.toml).
-      - name: Format release notes
+      # into the release body it just created. This step generates just this
+      # tag's own section (header incl. date/compare-link, stripped, via
+      # cliff.toml) for the release body on either platform.
+      - name: Generate release notes
+        if: env.IS_TAG == 'true'
+        run: |
+          TAG="${{ github.ref_name }}"
+
+          # Explicit commit range (everything since the last real tag) for
+          # prereleases and real releases alike, never `--current`: with
+          # cliff.toml's ignore_tags, git-cliff's tag-boundary detection
+          # breaks as soon as any -dev.N tag still exists inside the range
+          # (empty notes for a real release, an error for a prerelease).
+          # A real release's range naturally includes every -dev.N iteration
+          # folded into it (see CONTRIBUTING.md).
+          PREV_TAG=$(git describe --tags --abbrev=0 --exclude '*-*' "$TAG^" 2>/dev/null || true)
+          git-cliff --config cliff.toml "${PREV_TAG:+$PREV_TAG..}$TAG" --strip header -o release-notes.md
+
+          if [ "$IS_GITHUB" = true ]; then
+            CHANGELOG_URL="${{ github.server_url }}/${{ github.repository }}/blob/main/CHANGELOG.md"
+          else
+            CHANGELOG_URL="${{ github.server_url }}/${{ github.repository }}/src/branch/main/CHANGELOG.md"
+          fi
+          MAX_CHARS=4000
+          if [ "$(wc -c < release-notes.md)" -gt "$MAX_CHARS" ]; then
+            head -c "$MAX_CHARS" release-notes.md > release-notes.trunc.md
+            printf '\n\n…truncated - see the full changelog: %s\n' "$CHANGELOG_URL" >> release-notes.trunc.md
+            mv release-notes.trunc.md release-notes.md
+          fi
+
+      - name: Format release notes (GitHub)
+        if: env.IS_TAG == 'true' && env.IS_GITHUB == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -40,25 +100,47 @@ jobs:
             *-*) PRERELEASE=true ;;
           esac
 
-          # Explicit commit range (everything since the last real tag) for
-          # prereleases and real releases alike, never `--current`: with
-          # cliff.toml's ignore_tags, git-cliff's tag-boundary detection
-          # breaks as soon as any -dev.N tag still exists inside the range
-          # (empty notes for a real release, an error for a prerelease).
-          # A real release's range naturally includes every -dev.N iteration
-          # folded into it (see CONTRIBUTING.md).
-          PREV_TAG=$(git describe --tags --abbrev=0 --exclude '*-*' "$TAG^" 2>/dev/null || true)
-          docker run --rm -v "$PWD":/repo -w /repo orhunp/git-cliff:latest \
-            --config cliff.toml "${PREV_TAG:+$PREV_TAG..}$TAG" --strip header -o release-notes.md
-
-          MAX_CHARS=4000
-          if [ "$(wc -c < release-notes.md)" -gt "$MAX_CHARS" ]; then
-            head -c "$MAX_CHARS" release-notes.md > release-notes.trunc.md
-            printf '\n\n…truncated - see the full changelog: %s/blob/main/CHANGELOG.md\n' \
-              "${{ github.server_url }}/${{ github.repository }}" >> release-notes.trunc.md
-            mv release-notes.trunc.md release-notes.md
-          fi
-
           gh release edit "$TAG" --notes-file release-notes.md --repo "$REPO" \
             --prerelease="$PRERELEASE" --latest="$([ "$PRERELEASE" = true ] && echo false || echo true)"
+          rm -f release-notes.md
+
+      - name: Create release (Forgejo/Gitea)
+        if: env.IS_TAG == 'true' && env.IS_GITHUB != 'true'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${{ github.ref_name }}"
+          API="${{ github.server_url }}/api/v1/repos/${{ github.repository }}"
+
+          PRERELEASE=false
+          case "$TAG" in
+            *-*) PRERELEASE=true ;;
+          esac
+
+          BODY=$(jq -n --arg tag "$TAG" --rawfile body release-notes.md --argjson pre "$PRERELEASE" \
+            '{tag_name:$tag, name:$tag, body:$body, draft:false, prerelease:$pre}')
+
+          # Re-running the job updates the existing release instead of failing.
+          ID=$(curl -fsS -H "Authorization: token $TOKEN" "$API/releases/tags/$TAG" 2>/dev/null | jq -r '.id // empty' || true)
+          if [ -n "$ID" ]; then
+            curl -fsS -X PATCH "$API/releases/$ID" -H "Authorization: token $TOKEN" \
+              -H "Content-Type: application/json" -d "$BODY" >/dev/null
+          else
+            ID=$(curl -fsS -X POST "$API/releases" -H "Authorization: token $TOKEN" \
+              -H "Content-Type: application/json" -d "$BODY" | jq -r '.id')
+          fi
+          [ -n "$ID" ] && [ "$ID" != "null" ] || { echo "release creation failed" >&2; exit 1; }
+
+          EXISTING=$(curl -fsS -H "Authorization: token $TOKEN" "$API/releases/$ID/assets" | jq -r '.[].name')
+          for ZIP in .release/*.zip; do
+            NAME=$(basename "$ZIP")
+            if echo "$EXISTING" | grep -qxF "$NAME"; then
+              echo "asset $NAME already attached, skipping"
+              continue
+            fi
+            curl -fsS -X POST "$API/releases/$ID/assets?name=$NAME" \
+              -H "Authorization: token $TOKEN" -F "attachment=@$ZIP" >/dev/null
+            echo "uploaded $NAME"
+          done
           rm -f release-notes.md
