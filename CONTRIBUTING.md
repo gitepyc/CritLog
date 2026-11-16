@@ -45,8 +45,10 @@ asks for:
   move the tag onto the amended commit, then push `main` and the tag (see
   the script's header comment for the exact sequence). This way the
   generated `CHANGELOG.md` section reads the tag's real commit date.
-- `.github/workflows/release.yml` packages the addon and marks the GitHub
-  Release as a prerelease automatically whenever the tag contains a `-`.
+- `.github/workflows/release.yml` packages the addon and marks the release
+  as a prerelease automatically whenever the tag contains a `-`. It runs on
+  GitHub and on Forgejo/Gitea Actions; on GitHub the release also carries
+  the packager's `release.json` for addon managers.
 - Keep incrementing `-dev.N` for the same target version across iterations -
   only bump the version itself when starting toward a genuinely new target,
   not on every change. Only one `-dev.N` tag exists per unreleased version:

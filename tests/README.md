@@ -26,9 +26,11 @@ actually verified.
 
 ### CI
 
-`.github/workflows/lint.yml` runs the same container on every push and pull
-request (and manually from the GitHub UI: "Actions" tab → "Lint" → "Run
-workflow"). It only fails the build on real `luacheck` errors (exit code ≥ 2,
+`.github/workflows/lint.yml` runs `luacheck` (Lua 5.1) on every push and pull
+request, on GitHub as well as on Forgejo/Gitea Actions (and manually from the
+"Actions" tab → "Lint" → "Run workflow"). It installs `luacheck` directly on
+the runner instead of using the container, because container-based runners
+don't provide a Docker CLI. It only fails the build on real `luacheck` errors (exit code ≥ 2,
 e.g. a syntax error); warnings alone (exit code 1) don't turn the pipeline
 red, since a pipeline that's always red trains people to ignore it. The
 codebase currently has no warnings.

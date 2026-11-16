@@ -147,7 +147,7 @@ critlog/
 ├── cliff.toml            # git-cliff config - CHANGELOG.md and release notes are generated from commit messages
 ├── .luacheckrc           # luacheck config; stds.wow lists only the WoW API CritLog calls
 ├── .pkgmeta              # BigWigsMods/packager config, used by release.yml on tag push
-├── .github/workflows/    # lint.yml (luacheck) and release.yml (packaging + release notes); run on the GitHub push mirror
+├── .github/workflows/    # lint.yml (luacheck) and release.yml (packaging + release notes); run on GitHub and Forgejo/Gitea Actions
 ├── CritLog.toc           # WoW metadata and SavedVariables declaration
 ├── CritLog.lua           # Addon namespace and version
 ├── Core/                 # Domain logic - matching rules and event decoding
