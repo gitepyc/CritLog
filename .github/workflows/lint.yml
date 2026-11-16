@@ -11,12 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Build lint image
+      # luacheck is installed natively rather than through tests/lint/Dockerfile
+      # (which scripts/lint.sh uses locally): container-based runners such as
+      # Forgejo's don't provide a Docker CLI inside the job.
+      - name: Install luacheck
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY##*/}"
-          IMAGE="$(echo "$REPO_NAME" | tr '[:upper:]' '[:lower:]')-luacheck:5.1"
-          echo "LUACHECK_IMAGE=$IMAGE" >> "$GITHUB_ENV"
-          docker build -t "$IMAGE" -f tests/lint/Dockerfile tests/lint
+          SUDO=""
+          if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
+          $SUDO apt-get update -qq
+          $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+            lua5.1 liblua5.1-0-dev luarocks build-essential unzip
+          $SUDO luarocks --lua-version=5.1 install luacheck
 
       - name: Run luacheck
         # luacheck exits 1 for warnings-only, 2+ for actual errors (e.g.
@@ -24,7 +29,7 @@ jobs:
         # accepted warnings shouldn't turn every run red.
         run: |
           set +e
-          docker run --rm -v "$PWD":/addon:ro "$LUACHECK_IMAGE" .
+          luacheck .
           code=$?
           set -e
           echo "luacheck exit code: $code"
