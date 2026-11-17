@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 CritLog: WoW Classic Era / SoD crit and heal highscore tracker with
 event-driven sounds. User docs: `README.md` (incl. repository layout),
