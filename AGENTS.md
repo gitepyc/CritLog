@@ -7,12 +7,10 @@ read it before releasing).
 
 ## Repos
 
-- Mainline and PRs: GitHub `gitepyc/CritLog` (tag pushes build the release
-  via `.github/workflows/release.yml`; Forgejo pull-mirrors GitHub).
-- Gitea `claude-bot-mh/CritLog` push-mirrors to GitHub with ref pruning:
-  push branches to Gitea (they appear on GitHub within seconds), then open
-  the PR on GitHub. A branch pushed only to GitHub, or deleted on Gitea, is
-  removed from GitHub on the next sync and its PR closes.
+- Mainline, issues and PRs: GitHub `gitepyc/CritLog`; tag pushes build the
+  release via `.github/workflows/release.yml`. Branches are pushed to GitHub.
+- Forgejo pull-mirrors GitHub (read-only). The old Gitea repo
+  `claude-bot-mh/CritLog` is not used anymore.
 
 ## Commands
 
@@ -32,9 +30,8 @@ read it before releasing).
 - Short-lived branch off `main` + PR; never commit directly to `main`.
 - Large or behavior-changing reworks: PR stays open until the user confirms
   an in-game test. A test build can be tagged `-dev.N` on the branch commit.
-- Merge locally (`git merge --no-ff`, push `main` to Gitea) so the merge
-  commit keeps the `gitepyc` identity. Don't merge in the GitHub UI: the
-  next mirror sync overwrites GitHub `main` with Gitea's.
+- Merge with a merge commit (`--no-ff` locally, or the GitHub UI) so the
+  merge keeps the `gitepyc` identity.
 - Commit author and committer: `gitepyc <git@brauteam.de>` (repo-local
   `git config`, set right after cloning).
 - Commit subject `type: description` (`feature`/`fix`/`tweak`/`docs`/
