@@ -20,3 +20,4 @@ ignore:
   - .luacheckrc
   - .editorconfig
   - .gitattributes
+  - CLAUDE.md
